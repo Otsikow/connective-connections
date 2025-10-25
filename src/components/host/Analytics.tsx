@@ -75,73 +75,92 @@ const Analytics = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold">Analytics Dashboard</h2>
-          <p className="text-muted-foreground">Track your performance metrics and insights</p>
-        </div>
-        <Select value={timeRange} onValueChange={setTimeRange}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select time range" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="week">Last 7 days</SelectItem>
-            <SelectItem value="month">Last 30 days</SelectItem>
-            <SelectItem value="quarter">Last 3 months</SelectItem>
-            <SelectItem value="year">Last 12 months</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <Card className="border-border/50 shadow-sm">
+        <CardContent className="p-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold flex items-center gap-2">
+                <TrendingUp className="h-6 w-6 text-primary" />
+                Analytics Dashboard
+              </h2>
+              <p className="text-muted-foreground mt-1">Track your performance metrics and insights</p>
+            </div>
+            <Select value={timeRange} onValueChange={setTimeRange}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select time range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="week">Last 7 days</SelectItem>
+                <SelectItem value="month">Last 30 days</SelectItem>
+                <SelectItem value="quarter">Last 3 months</SelectItem>
+                <SelectItem value="year">Last 12 months</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Key Metrics */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+          <div className="h-1 bg-gradient-to-r from-green-500 to-emerald-500" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Earnings</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center">
+              <DollarSign className="h-5 w-5 text-green-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${earningsData[earningsData.length - 1].earnings}</div>
-            <div className="flex items-center text-xs text-green-600 mt-1">
+            <div className="text-3xl font-bold">${earningsData[earningsData.length - 1].earnings}</div>
+            <div className="flex items-center text-xs text-green-600 font-medium mt-2">
               <TrendingUp className="h-3 w-3 mr-1" />
               +{earningsTrend.toFixed(1)}% from last month
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+          <div className="h-1 bg-gradient-to-r from-blue-500 to-cyan-500" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Attendance Rate</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Attendance Rate</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center">
+              <Users className="h-5 w-5 text-blue-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{avgAttendanceRate.toFixed(1)}%</div>
-            <div className="flex items-center text-xs text-green-600 mt-1">
+            <div className="text-3xl font-bold">{avgAttendanceRate.toFixed(1)}%</div>
+            <div className="flex items-center text-xs text-green-600 font-medium mt-2">
               <TrendingUp className="h-3 w-3 mr-1" />
               +2.3% from last month
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+          <div className="h-1 bg-gradient-to-r from-yellow-500 to-orange-500" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Rating</CardTitle>
-            <Star className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Average Rating</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-yellow-500/10 flex items-center justify-center">
+              <Star className="h-5 w-5 text-yellow-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{avgRating.toFixed(1)}/5.0</div>
-            <div className="flex items-center text-xs text-green-600 mt-1">
+            <div className="text-3xl font-bold">{avgRating.toFixed(1)}/5.0</div>
+            <div className="flex items-center text-xs text-green-600 font-medium mt-2">
               <TrendingUp className="h-3 w-3 mr-1" />
               +0.2 from last month
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+          <div className="h-1 bg-gradient-to-r from-purple-500 to-pink-500" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Events</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Events</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-purple-500/10 flex items-center justify-center">
+              <Calendar className="h-5 w-5 text-purple-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{earningsData[earningsData.length - 1].events}</div>
-            <div className="flex items-center text-xs text-muted-foreground mt-1">
+            <div className="text-3xl font-bold">{earningsData[earningsData.length - 1].events}</div>
+            <div className="flex items-center text-xs text-muted-foreground font-medium mt-2">
               Same as last month
             </div>
           </CardContent>
@@ -149,10 +168,17 @@ const Analytics = () => {
       </div>
 
       {/* Earnings Chart */}
-      <Card>
+      <Card className="border-border/50 shadow-sm">
         <CardHeader>
-          <CardTitle>Earnings Over Time</CardTitle>
-          <CardDescription>Your monthly revenue from events</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <DollarSign className="h-5 w-5 text-primary" />
+                Earnings Over Time
+              </CardTitle>
+              <CardDescription className="mt-1">Your monthly revenue from events</CardDescription>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
@@ -183,10 +209,13 @@ const Analytics = () => {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Attendance Rate Chart */}
-        <Card>
+        <Card className="border-border/50 shadow-sm">
           <CardHeader>
-            <CardTitle>Attendance Rate by Event</CardTitle>
-            <CardDescription>Percentage of confirmed attendees who showed up</CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-primary" />
+              Attendance Rate by Event
+            </CardTitle>
+            <CardDescription className="mt-1">Percentage of confirmed attendees who showed up</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -212,10 +241,13 @@ const Analytics = () => {
         </Card>
 
         {/* Event Type Distribution */}
-        <Card>
+        <Card className="border-border/50 shadow-sm">
           <CardHeader>
-            <CardTitle>Event Type Distribution</CardTitle>
-            <CardDescription>Breakdown of your events by category</CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-primary" />
+              Event Type Distribution
+            </CardTitle>
+            <CardDescription className="mt-1">Breakdown of your events by category</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -248,10 +280,13 @@ const Analytics = () => {
       </div>
 
       {/* Ratings Distribution */}
-      <Card>
+      <Card className="border-border/50 shadow-sm">
         <CardHeader>
-          <CardTitle>Ratings Distribution</CardTitle>
-          <CardDescription>How attendees have rated your events</CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <Star className="h-5 w-5 text-primary" />
+            Ratings Distribution
+          </CardTitle>
+          <CardDescription className="mt-1">How attendees have rated your events</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -276,43 +311,46 @@ const Analytics = () => {
       </Card>
 
       {/* Performance Summary */}
-      <Card>
+      <Card className="border-border/50 shadow-sm bg-gradient-to-br from-card to-primary/5">
         <CardHeader>
-          <CardTitle>Performance Summary</CardTitle>
-          <CardDescription>Key insights from your events</CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-primary" />
+            Performance Summary
+          </CardTitle>
+          <CardDescription className="mt-1">Key insights from your events</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-start gap-4 p-4 rounded-lg border bg-card">
-              <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center">
-                <TrendingUp className="h-5 w-5 text-green-500" />
+            <div className="flex items-start gap-4 p-5 rounded-xl border-2 border-green-500/20 bg-green-500/5 hover:bg-green-500/10 transition-colors">
+              <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center ring-4 ring-green-500/10">
+                <TrendingUp className="h-6 w-6 text-green-600" />
               </div>
               <div className="flex-1">
-                <h4 className="font-semibold mb-1">Strong Growth</h4>
+                <h4 className="font-semibold mb-1 text-lg">Strong Growth</h4>
                 <p className="text-sm text-muted-foreground">
                   Your earnings have increased by {earningsTrend.toFixed(1)}% this month. Keep up the
                   great work!
                 </p>
               </div>
             </div>
-            <div className="flex items-start gap-4 p-4 rounded-lg border bg-card">
-              <div className="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <Users className="h-5 w-5 text-blue-500" />
+            <div className="flex items-start gap-4 p-5 rounded-xl border-2 border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10 transition-colors">
+              <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center ring-4 ring-blue-500/10">
+                <Users className="h-6 w-6 text-blue-600" />
               </div>
               <div className="flex-1">
-                <h4 className="font-semibold mb-1">High Attendance</h4>
+                <h4 className="font-semibold mb-1 text-lg">High Attendance</h4>
                 <p className="text-sm text-muted-foreground">
                   Your average attendance rate of {avgAttendanceRate.toFixed(1)}% is excellent. Attendees
                   are consistently showing up to your events.
                 </p>
               </div>
             </div>
-            <div className="flex items-start gap-4 p-4 rounded-lg border bg-card">
-              <div className="h-10 w-10 rounded-full bg-yellow-500/10 flex items-center justify-center">
-                <Star className="h-5 w-5 text-yellow-500" />
+            <div className="flex items-start gap-4 p-5 rounded-xl border-2 border-yellow-500/20 bg-yellow-500/5 hover:bg-yellow-500/10 transition-colors">
+              <div className="h-12 w-12 rounded-full bg-yellow-500/10 flex items-center justify-center ring-4 ring-yellow-500/10">
+                <Star className="h-6 w-6 text-yellow-600" />
               </div>
               <div className="flex-1">
-                <h4 className="font-semibold mb-1">Excellent Ratings</h4>
+                <h4 className="font-semibold mb-1 text-lg">Excellent Ratings</h4>
                 <p className="text-sm text-muted-foreground">
                   With an average rating of {avgRating.toFixed(1)}/5.0, your events are highly rated.{" "}
                   {ratingsData[0].percentage}% of attendees gave you 5 stars!
