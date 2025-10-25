@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Home as HomeIcon, MessageSquare, Search, User, Calendar as CalendarIcon } from "lucide-react";
+import { Home as HomeIcon, MessageSquare, Search, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
@@ -81,15 +81,10 @@ const Home = () => {
 
         {/* Upcoming Events */}
         <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold">Upcoming Events</h2>
-            <Button variant="ghost" onClick={() => navigate("/events")} className="text-[#E8B956]">
-              View All
-            </Button>
-          </div>
+          <h2 className="text-2xl font-bold mb-4">Upcoming Events</h2>
           <div className="space-y-4">
             {events.map((event, index) => (
-              <Card key={index} className="border-border overflow-hidden cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/events")}>
+              <Card key={index} className="border-border overflow-hidden">
                 <div className="h-40 bg-muted"></div>
                 <CardContent className="p-4">
                   <h3 className="font-semibold text-lg mb-2">{event.title}</h3>
@@ -134,10 +129,6 @@ const Home = () => {
         <button className="flex flex-col items-center gap-1 text-[#E8B956]">
           <HomeIcon size={24} />
           <span className="text-xs font-medium">Home</span>
-        </button>
-        <button className="flex flex-col items-center gap-1 text-muted-foreground" onClick={() => navigate("/events")}>
-          <CalendarIcon size={24} />
-          <span className="text-xs">Events</span>
         </button>
         <button className="flex flex-col items-center gap-1 text-muted-foreground" onClick={() => navigate("/messages")}>
           <MessageSquare size={24} />
