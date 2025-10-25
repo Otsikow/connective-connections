@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { 
+  Card, CardContent, CardDescription, CardHeader, CardTitle 
+} from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   ArrowLeft,
   Settings,
@@ -23,8 +26,9 @@ import {
   Heart,
   Clock,
   CheckCircle,
-  XCircle,
   Plus,
+  Sparkles,
+  ChevronRight,
 } from "lucide-react";
 
 const Profile = () => {
@@ -51,25 +55,25 @@ const Profile = () => {
 
   const events = {
     attending: [
-      { id: 1, title: "Coffee & Books Meetup", date: "Dec 15, 2024", time: "2:00 PM", location: "Blue Bottle Coffee" },
-      { id: 2, title: "Hiking Adventure", date: "Dec 20, 2024", time: "8:00 AM", location: "Golden Gate Park" },
+      { id: 1, title: "Coffee & Coding Meetup", date: "Nov 2, 2025", time: "2:00 PM", location: "Blue Bottle Coffee" },
+      { id: 2, title: "Weekend Hiking Adventure", date: "Nov 5, 2025", time: "8:00 AM", location: "Golden Gate Park" },
     ],
     past: [
-      { id: 3, title: "Photography Workshop", date: "Dec 8, 2024", time: "10:00 AM", location: "SF MOMA" },
-      { id: 4, title: "Book Club Discussion", date: "Dec 1, 2024", time: "7:00 PM", location: "City Lights Bookstore" },
+      { id: 3, title: "Book Club Discussion", date: "Oct 20, 2025", time: "7:00 PM", location: "City Lights Bookstore" },
+      { id: 4, title: "Photography Walk", date: "Oct 15, 2025", time: "10:00 AM", location: "SF MOMA" },
     ],
     hosted: [
-      { id: 5, title: "Newcomers Welcome Party", date: "Dec 12, 2024", time: "6:00 PM", location: "My Apartment" },
+      { id: 5, title: "Brunch & Connect", date: "Oct 28, 2025", time: "10:00 AM", location: "My Apartment" },
     ],
   };
 
   const badges = [
-    { id: 1, name: "First Connection", description: "Made your first friend", icon: "🤝", earned: true, date: "Dec 1, 2024" },
-    { id: 2, name: "Event Attendee", description: "Attended 5 events", icon: "🎉", earned: true, date: "Dec 5, 2024" },
-    { id: 3, name: "Community Builder", description: "Hosted 3 events", icon: "🏗️", earned: true, date: "Dec 10, 2024" },
-    { id: 4, name: "Social Butterfly", description: "Made 10 friends", icon: "🦋", earned: false, progress: 70 },
-    { id: 5, name: "Event Master", description: "Attended 20 events", icon: "🎯", earned: false, progress: 40 },
-    { id: 6, name: "Trust Champion", description: "Reach 100 trust score", icon: "⭐", earned: false, progress: 85 },
+    { id: 1, name: "First Connection", description: "Made your first friend", icon: "🤝", earned: true },
+    { id: 2, name: "Event Attendee", description: "Attended 5 events", icon: "🎉", earned: true },
+    { id: 3, name: "Community Builder", description: "Hosted 3 events", icon: "🏗️", earned: true },
+    { id: 4, name: "Trusted Member", description: "Achieved 80+ trust score", icon: "⭐", earned: true },
+    { id: 5, name: "Social Butterfly", description: "Made 10 connections", icon: "🦋", earned: false, progress: 70 },
+    { id: 6, name: "Event Master", description: "Attended 20 events", icon: "🎯", earned: false, progress: 40 },
   ];
 
   const settings = {
@@ -90,14 +94,12 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <div className="bg-card border-b border-border px-6 py-4 flex items-center justify-between">
+      <div className="bg-card border-b border-border px-6 py-4 flex items-center justify-between sticky top-0 z-10">
         <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
           <ArrowLeft className="w-6 h-6" />
         </button>
         <h1 className="text-lg font-semibold">Profile</h1>
-        <button className="p-2 hover:bg-muted rounded-full">
-          <Settings className="w-6 h-6" />
-        </button>
+        <div className="w-10" />
       </div>
 
       {/* Main Content */}
@@ -105,13 +107,11 @@ const Profile = () => {
         {/* Profile Header */}
         <div className="flex flex-col items-center text-center">
           <div className="relative mb-2">
-            <Avatar className="w-32 h-32 ring-4 ring-[#E8B956]/20">
+            <Avatar className="w-32 h-32 ring-4 ring-amber-400/30">
               <AvatarImage src="/placeholder.svg" />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
-
-            {/* Trust Score */}
-            <div className="absolute -bottom-2 -right-2 flex items-center gap-1 rounded-full bg-[#E8B956] px-3 py-1 text-xs font-bold text-black shadow-lg">
+            <div className="absolute -bottom-2 -right-2 flex items-center gap-1 rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-black shadow-lg">
               <Star className="w-3.5 h-3.5" />
               <span>{profile.trustScore}</span>
             </div>
@@ -126,19 +126,13 @@ const Profile = () => {
             <Calendar size={16} />
             <span>Joined {profile.joinedDate}</span>
           </div>
-
-          <div className="flex items-center gap-2 px-4 py-2 bg-yellow-100 rounded-full mb-4">
-            <Star className="w-5 h-5 text-yellow-500" fill="#E8B956" />
-            <span className="font-semibold">Trust Score: {profile.trustScore}</span>
-          </div>
         </div>
 
         {/* About Me */}
-        <Card className="border-border">
-          <CardContent className="p-6">
-            <h3 className="font-semibold text-lg mb-3">About Me</h3>
+        <Card>
+          <CardContent className="p-6 text-center">
             <p className="text-muted-foreground leading-relaxed mb-4">{profile.bio}</p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap justify-center gap-2">
               {profile.interests.map((interest, i) => (
                 <Badge key={i} variant="secondary" className="text-sm">
                   {interest}
@@ -150,15 +144,17 @@ const Profile = () => {
 
         {/* Premium CTA */}
         {!profile.isPremium && (
-          <Card className="border-2 border-yellow-300 bg-yellow-50">
+          <Card className="border-2 border-amber-400 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20">
             <CardContent className="p-6 text-center">
-              <Crown className="w-12 h-12 text-yellow-600 mx-auto mb-4" />
-              <h3 className="text-xl font-bold mb-2">Upgrade to Premium</h3>
+              <Crown className="w-12 h-12 text-amber-600 mx-auto mb-4" />
+              <h3 className="text-xl font-bold mb-2 flex justify-center items-center gap-1">
+                Upgrade to Premium <Sparkles className="w-4 h-4 text-amber-500" />
+              </h3>
               <p className="text-muted-foreground mb-4">
-                Unlock exclusive features, priority matching, and advanced filters.
+                Unlock unlimited matches, event access, and exclusive badges.
               </p>
-              <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white">
-                Upgrade Now - $9.99/month
+              <Button className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white">
+                Upgrade Now
               </Button>
             </CardContent>
           </Card>
@@ -236,9 +232,7 @@ const Profile = () => {
                           {event.date} at {event.time} • {event.location}
                         </p>
                       </div>
-                      <Button size="sm" variant="outline">
-                        View
-                      </Button>
+                      <Button size="sm" variant="outline">View</Button>
                     </CardContent>
                   </Card>
                 ))}
@@ -291,23 +285,24 @@ const Profile = () => {
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="w-5 h-5" /> Privacy
                 </CardTitle>
+                <CardDescription>Control your profile visibility</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span>Profile Visibility</span>
+                  <Label>Profile Visibility</Label>
                   <Badge variant="outline">{settings.privacy.profileVisibility}</Badge>
                 </div>
                 <Separator />
                 <div className="flex items-center justify-between">
-                  <span>Show Location</span>
+                  <Label>Show Location</Label>
                   <Switch checked={settings.privacy.showLocation} />
                 </div>
                 <div className="flex items-center justify-between">
-                  <span>Show Interests</span>
+                  <Label>Show Interests</Label>
                   <Switch checked={settings.privacy.showInterests} />
                 </div>
                 <div className="flex items-center justify-between">
-                  <span>Show Events</span>
+                  <Label>Show Events</Label>
                   <Switch checked={settings.privacy.showEvents} />
                 </div>
               </CardContent>
@@ -318,11 +313,12 @@ const Profile = () => {
                 <CardTitle className="flex items-center gap-2">
                   <Bell className="w-5 h-5" /> Notifications
                 </CardTitle>
+                <CardDescription>Manage how you stay updated</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {Object.entries(settings.notifications).map(([key, value]) => (
                   <div key={key} className="flex items-center justify-between">
-                    <span className="capitalize">{key.replace(/([A-Z])/g, " $1")}</span>
+                    <Label className="capitalize">{key.replace(/([A-Z])/g, " $1")}</Label>
                     <Switch checked={value} />
                   </div>
                 ))}
@@ -334,6 +330,7 @@ const Profile = () => {
                 <CardTitle className="flex items-center gap-2">
                   <CreditCard className="w-5 h-5" /> Subscription
                 </CardTitle>
+                <CardDescription>Manage your premium plan</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
