@@ -1,39 +1,38 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft, Plus, Send } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { sampleEvents } from "@/lib/events";
 
 const Messages = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [message, setMessage] = useState("");
 
-  const messages = [
-    {
-      id: 1,
-      sender: "Alex Doe",
-      content: "Hey! How's it going? 👋",
-      time: "10:00 AM",
-      isMine: false,
-    },
-    {
-      id: 2,
-      sender: "You",
-      content: "I'm doing great, thanks for asking! Just enjoying a quiet morning. How about you?",
-      time: "10:01 AM",
-      isMine: true,
-    },
-    {
-      id: 3,
-      sender: "Alex Doe",
-      content: "Same here! I was thinking of grabbing coffee later, are you free?",
-      time: "10:02 AM",
-      isMine: false,
-    },
+  const groupId = searchParams.get("group");
+  const groupEvent = useMemo(() => sampleEvents.find((e) => e.id === groupId), [groupId]);
+
+  const defaultMessages = [
+    { id: 1, sender: "Alex Doe", content: "Hey! How's it going? 👋", time: "10:00 AM", isMine: false },
+    { id: 2, sender: "You", content: "I'm doing great, thanks!", time: "10:01 AM", isMine: true },
+    { id: 3, sender: "Alex Doe", content: "Want to grab coffee later?", time: "10:02 AM", isMine: false },
   ];
 
-  const quickReplies = ["Sounds good! ☕", "What time were you thinking?"];
+  const groupMessages = groupEvent
+    ? [
+        { id: 1, sender: groupEvent.host.name, content: `Welcome to ${groupEvent.title} group chat!`, time: "9:00 AM", isMine: false },
+        { id: 2, sender: "You", content: "Hi everyone! Excited to join 👋", time: "9:01 AM", isMine: true },
+        { id: 3, sender: groupEvent.participants[0]?.name || "Member", content: "See you all there!", time: "9:05 AM", isMine: false },
+      ]
+    : [];
+
+  const messages = groupEvent ? groupMessages : defaultMessages;
+
+  const quickReplies = groupEvent
+    ? ["Where's the meetup point?", "Any parking tips?", "Can I bring a friend?"]
+    : ["Sounds good! ☕", "What time were you thinking?"];
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -42,14 +41,38 @@ const Messages = () => {
         <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <Avatar className="w-10 h-10">
-          <AvatarImage src="/placeholder.svg" />
-          <AvatarFallback>AD</AvatarFallback>
-        </Avatar>
-        <h1 className="text-lg font-semibold flex-1">Alex Doe</h1>
-        <button className="p-2 hover:bg-muted rounded-full">
-          <div className="w-6 h-6 flex items-center justify-center">⋮</div>
-        </button>
+        {groupEvent ? (
+          <>
+            <div className="flex items-center gap-3 flex-1">
+              <div className="flex -space-x-3">
+                {[groupEvent.host, ...groupEvent.participants].slice(0, 4).map((p, idx) => (
+                  <Avatar key={idx} className="w-8 h-8 ring-2 ring-background">
+                    <AvatarImage src={(p as any).avatarUrl} />
+                    <AvatarFallback>{(p as any).name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                ))}
+              </div>
+              <div>
+                <h1 className="text-base font-semibold leading-tight">{groupEvent.title}</h1>
+                <p className="text-xs text-muted-foreground">Event group chat · {groupEvent.participants.length + 1} members</p>
+              </div>
+            </div>
+            <button className="p-2 hover:bg-muted rounded-full">
+              <div className="w-6 h-6 flex items-center justify-center">⋮</div>
+            </button>
+          </>
+        ) : (
+          <>
+            <Avatar className="w-10 h-10">
+              <AvatarImage src="/placeholder.svg" />
+              <AvatarFallback>AD</AvatarFallback>
+            </Avatar>
+            <h1 className="text-lg font-semibold flex-1">Alex Doe</h1>
+            <button className="p-2 hover:bg-muted rounded-full">
+              <div className="w-6 h-6 flex items-center justify-center">⋮</div>
+            </button>
+          </>
+        )}
       </div>
 
       {/* Messages */}
