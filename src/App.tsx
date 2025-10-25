@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { PageTransition } from "@/components/PageTransition";
 
+// Pages
 import Splash from "./pages/Splash";
 import Onboarding from "./pages/Onboarding";
 import Signup from "./pages/Signup";
@@ -13,12 +14,12 @@ import Home from "./pages/Home";
 import Matches from "./pages/Matches";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
-import Community from "./pages/Community";
-import Admin from "./pages/Admin";
-import NotFound from "./pages/NotFound";
 import Events from "./pages/Events";
 import EventDetail from "./pages/EventDetail";
+import Community from "./pages/Community";
+import Admin from "./pages/Admin";
 import HostDashboard from "./pages/HostDashboard";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
