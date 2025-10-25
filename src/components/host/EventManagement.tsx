@@ -104,15 +104,18 @@ const EventManagement = () => {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="border-border/50 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <div>
-            <CardTitle>Event Management</CardTitle>
-            <CardDescription>Create and manage your hosted events</CardDescription>
+            <CardTitle className="flex items-center gap-2 text-2xl">
+              <Calendar className="h-6 w-6 text-primary" />
+              Event Management
+            </CardTitle>
+            <CardDescription className="mt-2">Create and manage your hosted events</CardDescription>
           </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button size="lg" className="shadow-md">
                 <Plus className="mr-2 h-4 w-4" />
                 Create Event
               </Button>
@@ -124,29 +127,31 @@ const EventManagement = () => {
                   Fill in the details to create a new event for your attendees
                 </DialogDescription>
               </DialogHeader>
-              <div className="space-y-4 py-4">
+              <div className="space-y-5 py-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Event Title</Label>
+                  <Label htmlFor="title" className="text-sm font-semibold">Event Title *</Label>
                   <Input
                     id="title"
-                    placeholder="Enter event title"
+                    placeholder="e.g., Wine Tasting Evening"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    className="h-11"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description" className="text-sm font-semibold">Description *</Label>
                   <Textarea
                     id="description"
-                    placeholder="Describe your event"
+                    placeholder="Describe what makes your event special..."
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={4}
+                    className="resize-none"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Event Date</Label>
+                    <Label className="text-sm font-semibold">Event Date *</Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -166,49 +171,55 @@ const EventManagement = () => {
                     </Popover>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="location">Location</Label>
+                    <Label htmlFor="location" className="text-sm font-semibold">Location *</Label>
                     <Input
                       id="location"
-                      placeholder="Event location"
+                      placeholder="e.g., Downtown Wine Bar"
                       value={formData.location}
                       onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      className="h-11"
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="capacity">Max Capacity</Label>
+                    <Label htmlFor="capacity" className="text-sm font-semibold">Max Capacity *</Label>
                     <Input
                       id="capacity"
                       type="number"
-                      placeholder="Number of attendees"
+                      placeholder="e.g., 30"
                       value={formData.capacity}
                       onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
+                      className="h-11"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="deposit">Deposit Amount ($)</Label>
+                    <Label htmlFor="deposit" className="text-sm font-semibold">Deposit Amount ($) *</Label>
                     <Input
                       id="deposit"
                       type="number"
-                      placeholder="Deposit required"
+                      placeholder="e.g., 25"
                       value={formData.deposit}
                       onChange={(e) => setFormData({ ...formData, deposit: e.target.value })}
+                      className="h-11"
                     />
                   </div>
                 </div>
               </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+              <div className="flex justify-end gap-3 pt-2">
+                <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)} size="lg">
                   Cancel
                 </Button>
-                <Button onClick={handleCreateEvent}>Create Event</Button>
+                <Button onClick={handleCreateEvent} size="lg" className="shadow-md">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Event
+                </Button>
               </div>
             </DialogContent>
           </Dialog>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border">
+          <div className="rounded-lg border border-border/50 overflow-hidden shadow-sm">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -226,8 +237,8 @@ const EventManagement = () => {
                   <TableRow key={event.id}>
                     <TableCell>
                       <div>
-                        <div className="font-medium">{event.title}</div>
-                        <div className="text-sm text-muted-foreground line-clamp-1">
+                        <div className="font-semibold text-base">{event.title}</div>
+                        <div className="text-sm text-muted-foreground line-clamp-1 mt-1">
                           {event.description}
                         </div>
                       </div>
@@ -257,16 +268,16 @@ const EventManagement = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge className={getStatusColor(event.status)}>
-                        {event.status}
+                      <Badge className={getStatusColor(event.status) + " font-medium"}>
+                        {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="icon">
+                      <div className="flex justify-end gap-1">
+                        <Button variant="ghost" size="icon" className="hover:bg-primary/10 hover:text-primary">
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" className="hover:bg-destructive/10 hover:text-destructive">
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>

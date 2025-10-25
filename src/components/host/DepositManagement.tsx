@@ -130,63 +130,79 @@ const DepositManagement = () => {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
+      <div className="grid gap-6 md:grid-cols-3">
+        <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+          <div className="h-1 bg-gradient-to-r from-green-500 to-emerald-500" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Received</CardTitle>
-            <DollarSign className="h-4 w-4 text-green-600" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Received</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center">
+              <DollarSign className="h-5 w-5 text-green-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">${totalReceived}</div>
-            <p className="text-xs text-muted-foreground">
-              {deposits.filter((d) => d.status === "received").length} transactions
+            <div className="text-3xl font-bold text-green-600">${totalReceived}</div>
+            <p className="text-xs text-muted-foreground font-medium mt-2">
+              {deposits.filter((d) => d.status === "received").length} transactions completed
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+          <div className="h-1 bg-gradient-to-r from-yellow-500 to-orange-500" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending</CardTitle>
-            <Clock className="h-4 w-4 text-yellow-600" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Pending</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-yellow-500/10 flex items-center justify-center">
+              <Clock className="h-5 w-5 text-yellow-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">${totalPending}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-3xl font-bold text-yellow-600">${totalPending}</div>
+            <p className="text-xs text-muted-foreground font-medium mt-2">
               {deposits.filter((d) => d.status === "pending").length} awaiting payment
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+          <div className="h-1 bg-gradient-to-r from-red-500 to-pink-500" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Refunded</CardTitle>
-            <TrendingUp className="h-4 w-4 text-red-600" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Refunded</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-red-500/10 flex items-center justify-center">
+              <AlertCircle className="h-5 w-5 text-red-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">${totalRefunded}</div>
-            <p className="text-xs text-muted-foreground">
-              {deposits.filter((d) => d.status === "refunded").length} transactions
+            <div className="text-3xl font-bold text-red-600">${totalRefunded}</div>
+            <p className="text-xs text-muted-foreground font-medium mt-2">
+              {deposits.filter((d) => d.status === "refunded").length} transactions refunded
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
+      <Card className="border-border/50 shadow-sm">
         <CardHeader>
-          <CardTitle>Deposit Management</CardTitle>
-          <CardDescription>Track and manage deposits for your events</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <DollarSign className="h-6 w-6 text-primary" />
+                Deposit Management
+              </CardTitle>
+              <CardDescription className="mt-2">Track and manage deposits for your events</CardDescription>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex gap-4">
-            <div className="relative flex-1">
+        <CardContent className="space-y-6">
+          <div className="flex gap-4 flex-wrap">
+            <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="Search by name or transaction ID..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9"
+                className="pl-9 h-11"
               />
             </div>
             <Select value={selectedEvent} onValueChange={setSelectedEvent}>
-              <SelectTrigger className="w-[250px]">
+              <SelectTrigger className="w-[280px] h-11">
                 <SelectValue placeholder="Filter by event" />
               </SelectTrigger>
               <SelectContent>
@@ -196,31 +212,52 @@ const DepositManagement = () => {
                 <SelectItem value="Sunset Yacht Party">Sunset Yacht Party</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline">
+            <Button variant="outline" size="lg" className="shadow-sm">
               <Download className="mr-2 h-4 w-4" />
               Export
             </Button>
           </div>
 
           <Tabs defaultValue="all" className="w-full">
-            <TabsList>
-              <TabsTrigger value="all">
-                All ({filteredDeposits.length})
+            <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-muted/50">
+              <TabsTrigger value="all" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all py-2.5">
+                <div className="flex items-center gap-2">
+                  <span>All</span>
+                  <Badge variant="secondary" className="ml-1">{filteredDeposits.length}</Badge>
+                </div>
               </TabsTrigger>
-              <TabsTrigger value="received">
-                Received ({filteredDeposits.filter((d) => d.status === "received").length})
+              <TabsTrigger value="received" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all py-2.5">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-3 w-3" />
+                  <span>Received</span>
+                  <Badge variant="secondary" className="ml-1 bg-green-500/10 text-green-600">
+                    {filteredDeposits.filter((d) => d.status === "received").length}
+                  </Badge>
+                </div>
               </TabsTrigger>
-              <TabsTrigger value="pending">
-                Pending ({filteredDeposits.filter((d) => d.status === "pending").length})
+              <TabsTrigger value="pending" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all py-2.5">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-3 w-3" />
+                  <span>Pending</span>
+                  <Badge variant="secondary" className="ml-1 bg-yellow-500/10 text-yellow-600">
+                    {filteredDeposits.filter((d) => d.status === "pending").length}
+                  </Badge>
+                </div>
               </TabsTrigger>
-              <TabsTrigger value="refunded">
-                Refunded ({filteredDeposits.filter((d) => d.status === "refunded").length})
+              <TabsTrigger value="refunded" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all py-2.5">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="h-3 w-3" />
+                  <span>Refunded</span>
+                  <Badge variant="secondary" className="ml-1 bg-red-500/10 text-red-600">
+                    {filteredDeposits.filter((d) => d.status === "refunded").length}
+                  </Badge>
+                </div>
               </TabsTrigger>
             </TabsList>
 
             {["all", "received", "pending", "refunded"].map((status) => (
-              <TabsContent key={status} value={status}>
-                <div className="rounded-md border">
+              <TabsContent key={status} value={status} className="mt-4">
+                <div className="rounded-lg border border-border/50 overflow-hidden shadow-sm">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -243,19 +280,23 @@ const DepositManagement = () => {
                       ) : (
                         filterByStatus(status).map((deposit) => (
                           <TableRow key={deposit.id}>
-                            <TableCell className="font-mono text-sm">
+                            <TableCell className="font-mono text-sm text-muted-foreground">
                               {deposit.transactionId}
                             </TableCell>
-                            <TableCell className="font-medium">{deposit.attendeeName}</TableCell>
-                            <TableCell>{deposit.event}</TableCell>
+                            <TableCell className="font-semibold">{deposit.attendeeName}</TableCell>
+                            <TableCell className="font-medium">{deposit.event}</TableCell>
                             <TableCell>
-                              <div className="flex items-center gap-1 font-semibold">
-                                <DollarSign className="h-4 w-4" />
+                              <div className="flex items-center gap-1 font-bold text-lg">
+                                <DollarSign className="h-5 w-5" />
                                 {deposit.amount}
                               </div>
                             </TableCell>
-                            <TableCell>{deposit.method}</TableCell>
-                            <TableCell>{deposit.date}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="font-medium">
+                                {deposit.method}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-muted-foreground">{deposit.date}</TableCell>
                             <TableCell>{getStatusBadge(deposit.status)}</TableCell>
                           </TableRow>
                         ))

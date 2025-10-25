@@ -121,15 +121,25 @@ const AttendeeApproval = () => {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="border-border/50 shadow-sm">
         <CardHeader>
-          <CardTitle>Attendee Approval</CardTitle>
-          <CardDescription>Review and approve attendees for your events</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <User className="h-6 w-6 text-primary" />
+                Attendee Approval
+              </CardTitle>
+              <CardDescription className="mt-2">Review and approve attendees for your events</CardDescription>
+            </div>
+            <Badge variant="outline" className="text-base px-4 py-2">
+              {attendees.filter(a => a.status === "pending").length} Pending
+            </Badge>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <div className="flex gap-4">
             <Select value={selectedEvent} onValueChange={setSelectedEvent}>
-              <SelectTrigger className="w-[250px]">
+              <SelectTrigger className="w-[280px] h-11">
                 <SelectValue placeholder="Filter by event" />
               </SelectTrigger>
               <SelectContent>
@@ -141,16 +151,45 @@ const AttendeeApproval = () => {
           </div>
 
           <Tabs defaultValue="all" className="w-full">
-            <TabsList>
-              <TabsTrigger value="all">All ({attendees.length})</TabsTrigger>
-              <TabsTrigger value="pending">Pending ({attendees.filter(a => a.status === "pending").length})</TabsTrigger>
-              <TabsTrigger value="approved">Approved ({attendees.filter(a => a.status === "approved").length})</TabsTrigger>
-              <TabsTrigger value="rejected">Rejected ({attendees.filter(a => a.status === "rejected").length})</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-muted/50">
+              <TabsTrigger value="all" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all py-2.5">
+                <div className="flex items-center gap-2">
+                  <span>All</span>
+                  <Badge variant="secondary" className="ml-1">{attendees.length}</Badge>
+                </div>
+              </TabsTrigger>
+              <TabsTrigger value="pending" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all py-2.5">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-3 w-3" />
+                  <span>Pending</span>
+                  <Badge variant="secondary" className="ml-1 bg-yellow-500/10 text-yellow-600">
+                    {attendees.filter(a => a.status === "pending").length}
+                  </Badge>
+                </div>
+              </TabsTrigger>
+              <TabsTrigger value="approved" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all py-2.5">
+                <div className="flex items-center gap-2">
+                  <Check className="h-3 w-3" />
+                  <span>Approved</span>
+                  <Badge variant="secondary" className="ml-1 bg-green-500/10 text-green-600">
+                    {attendees.filter(a => a.status === "approved").length}
+                  </Badge>
+                </div>
+              </TabsTrigger>
+              <TabsTrigger value="rejected" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all py-2.5">
+                <div className="flex items-center gap-2">
+                  <X className="h-3 w-3" />
+                  <span>Rejected</span>
+                  <Badge variant="secondary" className="ml-1 bg-red-500/10 text-red-600">
+                    {attendees.filter(a => a.status === "rejected").length}
+                  </Badge>
+                </div>
+              </TabsTrigger>
             </TabsList>
 
             {["all", "pending", "approved", "rejected"].map((status) => (
-              <TabsContent key={status} value={status}>
-                <div className="rounded-md border">
+              <TabsContent key={status} value={status} className="mt-4">
+                <div className="rounded-lg border border-border/50 overflow-hidden shadow-sm">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -174,20 +213,22 @@ const AttendeeApproval = () => {
                           <TableRow key={attendee.id}>
                             <TableCell>
                               <div className="flex items-center gap-3">
-                                <Avatar>
+                                <Avatar className="h-10 w-10">
                                   <AvatarImage src={attendee.avatar} />
-                                  <AvatarFallback>{getInitials(attendee.name)}</AvatarFallback>
+                                  <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                                    {getInitials(attendee.name)}
+                                  </AvatarFallback>
                                 </Avatar>
                                 <div>
-                                  <div className="font-medium">{attendee.name}</div>
+                                  <div className="font-semibold">{attendee.name}</div>
                                   <div className="text-sm text-muted-foreground">{attendee.email}</div>
                                 </div>
                               </div>
                             </TableCell>
                             <TableCell>
                               <div>
-                                <div className="font-medium">{attendee.event}</div>
-                                <div className="text-sm text-muted-foreground">{attendee.eventDate}</div>
+                                <div className="font-semibold">{attendee.event}</div>
+                                <div className="text-sm text-muted-foreground mt-1">{attendee.eventDate}</div>
                               </div>
                             </TableCell>
                             <TableCell>{attendee.appliedDate}</TableCell>
@@ -210,29 +251,30 @@ const AttendeeApproval = () => {
                             <TableCell className="text-right">
                               <div className="flex justify-end gap-2">
                                 <Button
-                                  variant="ghost"
+                                  variant="outline"
                                   size="sm"
                                   onClick={() => viewDetails(attendee)}
+                                  className="hover:bg-primary/10"
                                 >
-                                  View
+                                  View Details
                                 </Button>
                                 {attendee.status === "pending" && (
                                   <>
                                     <Button
-                                      variant="ghost"
                                       size="sm"
-                                      className="text-green-600 hover:text-green-700"
+                                      className="bg-green-600 hover:bg-green-700 text-white"
                                       onClick={() => handleApprove(attendee.id)}
                                     >
-                                      <Check className="h-4 w-4" />
+                                      <Check className="h-4 w-4 mr-1" />
+                                      Approve
                                     </Button>
                                     <Button
-                                      variant="ghost"
                                       size="sm"
-                                      className="text-red-600 hover:text-red-700"
+                                      variant="destructive"
                                       onClick={() => handleReject(attendee.id)}
                                     >
-                                      <X className="h-4 w-4" />
+                                      <X className="h-4 w-4 mr-1" />
+                                      Reject
                                     </Button>
                                   </>
                                 )}
@@ -251,9 +293,9 @@ const AttendeeApproval = () => {
       </Card>
 
       <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Attendee Details</DialogTitle>
+            <DialogTitle className="text-2xl">Attendee Details</DialogTitle>
             <DialogDescription>Complete information about the applicant</DialogDescription>
           </DialogHeader>
           {selectedAttendee && (
@@ -313,27 +355,28 @@ const AttendeeApproval = () => {
               </div>
 
               {selectedAttendee.status === "pending" && (
-                <div className="flex gap-2 border-t pt-4">
+                <div className="flex gap-3 border-t pt-4">
                   <Button
-                    className="flex-1"
-                    variant="default"
+                    className="flex-1 bg-green-600 hover:bg-green-700"
+                    size="lg"
                     onClick={() => {
                       handleApprove(selectedAttendee.id);
                       setIsDetailsOpen(false);
                     }}
                   >
-                    <Check className="mr-2 h-4 w-4" />
-                    Approve
+                    <Check className="mr-2 h-5 w-5" />
+                    Approve Attendee
                   </Button>
                   <Button
                     className="flex-1"
                     variant="destructive"
+                    size="lg"
                     onClick={() => {
                       handleReject(selectedAttendee.id);
                       setIsDetailsOpen(false);
                     }}
                   >
-                    <X className="mr-2 h-4 w-4" />
+                    <X className="mr-2 h-5 w-5" />
                     Reject
                   </Button>
                 </div>
