@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 
 const Signup = () => {
@@ -18,8 +19,14 @@ const Signup = () => {
     location: "",
   });
 
+  // Onboarding consent gating
+  const [consentOver18, setConsentOver18] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const canContinueFromAuth = consentOver18 && agreedToTerms;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canContinueFromAuth) return;
     // Navigate to home after signup
     navigate("/home");
   };
@@ -135,18 +142,38 @@ const Signup = () => {
             </div>
           </div>
 
+          <div className="space-y-3">
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="over18"
+                checked={consentOver18}
+                onCheckedChange={(checked) => setConsentOver18(checked === true)}
+              />
+              <Label htmlFor="over18" className="text-sm text-foreground">
+                I am 18 years or older
+              </Label>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="agree"
+                checked={agreedToTerms}
+                onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
+              />
+              <Label htmlFor="agree" className="text-sm text-foreground">
+                I agree to the <a href="#" className="text-[#E8B956] underline">Terms of Service</a> and {" "}
+                <a href="#" className="text-[#E8B956] underline">Privacy Policy</a>.
+              </Label>
+            </div>
+          </div>
+
           <Button
             type="submit"
-            className="w-full h-14 text-lg font-semibold rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal shadow-md"
+            disabled={!canContinueFromAuth}
+            className="w-full h-14 text-lg font-semibold rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal shadow-md disabled:opacity-60 disabled:hover:bg-[#E8B956]"
           >
             Continue
           </Button>
-
-          <p className="text-xs text-center text-muted-foreground">
-            By continuing, you agree to our{" "}
-            <a href="#" className="text-[#E8B956] underline">Terms of Service</a> and{" "}
-            <a href="#" className="text-[#E8B956] underline">Privacy Policy</a>.
-          </p>
         </form>
       </div>
     </div>
