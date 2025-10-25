@@ -1,18 +1,26 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowLeft, Plus, Send } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, MoreVertical, Shield, Clock, Phone, Video } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { MessageInput } from "@/components/MessageInput";
+
+interface Message {
+  id: number;
+  sender: string;
+  content: string;
+  time: string;
+  isMine: boolean;
+  type?: 'text' | 'image' | 'voice' | 'location';
+}
 
 const Messages = () => {
   const navigate = useNavigate();
-  const [message, setMessage] = useState("");
-
-  const messages = [
+  const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      sender: "Alex Doe",
+      sender: "Sarah M.",
       content: "Hey! How's it going? 👋",
       time: "10:00 AM",
       isMine: false,
@@ -26,41 +34,127 @@ const Messages = () => {
     },
     {
       id: 3,
-      sender: "Alex Doe",
+      sender: "Sarah M.",
       content: "Same here! I was thinking of grabbing coffee later, are you free?",
       time: "10:02 AM",
       isMine: false,
     },
-  ];
+    {
+      id: 4,
+      sender: "You",
+      content: "That sounds perfect! I know a great little coffee shop downtown. What time were you thinking?",
+      time: "10:03 AM",
+      isMine: true,
+    },
+    {
+      id: 5,
+      sender: "Sarah M.",
+      content: "How about 2 PM? I'm flexible though!",
+      time: "10:04 AM",
+      isMine: false,
+    }
+  ]);
 
-  const quickReplies = ["Sounds good! ☕", "What time were you thinking?"];
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isOnline, setIsOnline] = useState(true);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleSendMessage = (message: string) => {
+    const newMessage: Message = {
+      id: messages.length + 1,
+      sender: "You",
+      content: message,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      isMine: true,
+    };
+    setMessages(prev => [...prev, newMessage]);
+  };
+
+  const handleSelectIcebreaker = (icebreaker: string) => {
+    handleSendMessage(icebreaker);
+  };
+
+  const handleCall = () => {
+    // TODO: Implement voice call
+    // Placeholder: Could integrate with WebRTC or third-party calling service
+  };
+
+  const handleVideoCall = () => {
+    // TODO: Implement video call
+    // Placeholder: Could integrate with WebRTC or third-party video service
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <div className="bg-card border-b border-border px-6 py-4 flex items-center gap-4">
-        <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
-          <ArrowLeft className="w-6 h-6" />
+      <div className="bg-card border-b border-border px-4 py-3 flex items-center gap-3">
+        <button 
+          onClick={() => navigate(-1)} 
+          className="p-2 hover:bg-muted rounded-full transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
         </button>
+        
         <Avatar className="w-10 h-10">
           <AvatarImage src="/placeholder.svg" />
-          <AvatarFallback>AD</AvatarFallback>
+          <AvatarFallback>SM</AvatarFallback>
         </Avatar>
-        <h1 className="text-lg font-semibold flex-1">Alex Doe</h1>
-        <button className="p-2 hover:bg-muted rounded-full">
-          <div className="w-6 h-6 flex items-center justify-center">⋮</div>
-        </button>
+        
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-semibold truncate">Sarah M.</h1>
+            <Badge className="bg-green-500 text-white gap-1 text-xs trust-badge">
+              <Shield className="w-3 h-3" />
+              Verified
+            </Badge>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-gray-400'}`} />
+            <span>Available now</span>
+            <Clock className="w-3 h-3" />
+            <span>Usually responds within 5 minutes</span>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleCall}
+            className="h-8 w-8 p-0 hover:bg-green-100"
+          >
+            <Phone className="w-4 h-4 text-green-600" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleVideoCall}
+            className="h-8 w-8 p-0 hover:bg-blue-100"
+          >
+            <Video className="w-4 h-4 text-blue-600" />
+          </Button>
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <MoreVertical className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4">
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
         {messages.map((msg) => (
-          <div key={msg.id} className={`flex ${msg.isMine ? "justify-end" : "justify-start"}`}>
+          <div key={msg.id} className={`flex ${msg.isMine ? "justify-end" : "justify-start"} message-enter`}>
             <div className={`flex gap-3 max-w-[80%] ${msg.isMine ? "flex-row-reverse" : ""}`}>
               {!msg.isMine && (
-                <Avatar className="w-10 h-10 flex-shrink-0">
+                <Avatar className="w-8 h-8 flex-shrink-0">
                   <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback>AD</AvatarFallback>
+                  <AvatarFallback>SM</AvatarFallback>
                 </Avatar>
               )}
               <div>
@@ -74,7 +168,7 @@ const Messages = () => {
                       : "bg-[#FF8663] text-white rounded-bl-sm"
                   }`}
                 >
-                  <p>{msg.content}</p>
+                  <p className="text-sm leading-relaxed">{msg.content}</p>
                 </div>
                 <p className={`text-xs text-muted-foreground mt-1 ${msg.isMine ? "text-right" : ""}`}>
                   {msg.time}
@@ -83,35 +177,14 @@ const Messages = () => {
             </div>
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
 
-      {/* Quick Replies */}
-      <div className="px-6 py-3 flex gap-2 overflow-x-auto">
-        {quickReplies.map((reply, index) => (
-          <button
-            key={index}
-            className="px-4 py-2 bg-card border border-border rounded-full text-sm whitespace-nowrap hover:bg-muted transition-colors"
-          >
-            {reply}
-          </button>
-        ))}
-      </div>
-
-      {/* Input */}
-      <div className="bg-card border-t border-border px-6 py-4 flex items-center gap-3">
-        <button className="p-2 hover:bg-muted rounded-full">
-          <Plus className="w-6 h-6" />
-        </button>
-        <Input
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type a message..."
-          className="flex-1 rounded-full bg-background border-border"
-        />
-        <Button className="w-12 h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] p-0">
-          <Send className="w-5 h-5 text-charcoal" />
-        </Button>
-      </div>
+      {/* Message Input */}
+      <MessageInput 
+        onSendMessage={handleSendMessage}
+        onSelectIcebreaker={handleSelectIcebreaker}
+      />
     </div>
   );
 };
