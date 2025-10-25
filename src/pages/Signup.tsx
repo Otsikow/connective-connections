@@ -383,5 +383,31 @@ const Signup = () => {
                 }
                 variant="outline"
                 className="rounded-full"
+                disabled={isUploading}
               >
-                <ImageIcon classN
+                <ImageIcon className="w-4 h-4 mr-2" />
+                {isUploading ? "Uploading..." : "Upload Photo"}
+              </Button>
+              <input
+                id="photo-upload"
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                className="hidden"
+              />
+            </div>
+
+            <Button
+              onClick={next}
+              className="w-full h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal mt-8"
+            >
+              Continue
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Signup;
