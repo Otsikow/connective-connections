@@ -1,24 +1,23 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Heart, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Heart } from "lucide-react";
+import BackButton from "@/components/BackButton";
 
 const profiles = [
   {
     name: "Jane D.",
     tags: ["Bookworm", "Hiking Enthusiast", "Dog Lover", "New in Town"],
-    image: "/placeholder.svg",
+    image: "/images/avatars/avatar-1.svg",
   },
   {
     name: "Sarah M.",
     tags: ["Coffee Addict", "Yoga Lover", "Plant Parent", "Art Enthusiast"],
-    image: "/placeholder.svg",
+    image: "/images/avatars/avatar-2.svg",
   },
 ];
 
 const Matches = () => {
-  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleSkip = () => {
@@ -37,20 +36,15 @@ const Matches = () => {
 
   return (
     <div className="min-h-screen bg-background px-6 py-8">
-      <button
-        onClick={() => navigate(-1)}
-        className="mb-6 p-2 hover:bg-muted rounded-full transition-colors"
-      >
-        <ArrowLeft className="w-6 h-6" />
-      </button>
+      <BackButton className="mb-6" />
 
       <div className="max-w-md mx-auto">
         <Card className="border-border overflow-hidden shadow-lg animate-fade-in">
-          <div className="h-96 bg-muted relative">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-48 h-48 rounded-full bg-card"></div>
-            </div>
-          </div>
+          <img
+            src={currentProfile.image}
+            alt={currentProfile.name}
+            className="w-full h-96 object-cover"
+          />
           <CardContent className="p-6 text-center">
             <h2 className="text-3xl font-bold mb-4">{currentProfile.name}</h2>
             <div className="flex flex-wrap gap-2 justify-center mb-6">

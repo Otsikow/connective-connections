@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import BackButton from "@/components/BackButton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -72,7 +73,11 @@ const HostDashboard = () => {
   return (
     <div className="min-h-screen bg-background pb-6">
       <div className="sticky top-0 z-10 bg-card border-b border-border px-6 py-4">
-        <h1 className="text-xl font-bold">Host Dashboard</h1>
+        <div className="flex items-center justify-between">
+          <BackButton />
+          <h1 className="text-xl font-bold">Host Dashboard</h1>
+          <div className="w-10" />
+        </div>
         <p className="text-sm text-muted-foreground">Create events, approve attendees, manage deposits, and view analytics.</p>
       </div>
 

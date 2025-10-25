@@ -7,8 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Send, Users } from "lucide-react";
+import { Send, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import BackButton from "@/components/BackButton";
 
 interface Profile {
   id: string;
@@ -256,9 +257,7 @@ const Admin = () => {
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <div className="bg-card border-b border-border px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-        <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
-          <ArrowLeft className="w-6 h-6" />
-        </button>
+        <BackButton />
         <h1 className="text-lg font-semibold">Admin Panel</h1>
         <div className="w-10"></div>
       </div>

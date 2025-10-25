@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
-  ArrowLeft,
   Settings as SettingsIcon,
   MapPin,
   Calendar,
@@ -16,6 +15,7 @@ import {
   Shield,
   Crown,
 } from "lucide-react";
+import BackButton from "@/components/BackButton";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -23,9 +23,9 @@ const Profile = () => {
   const badges = ["First Connection", "Event Attendee", "Community Builder"];
 
   const friends = [
-    { name: "Jane D.", subtitle: "3 mutual interests", image: "/placeholder.svg" },
-    { name: "Sarah M.", subtitle: "Met at Coffee Club", image: "/placeholder.svg" },
-    { name: "Alex P.", subtitle: "Hiking group", image: "/placeholder.svg" },
+    { name: "Jane D.", subtitle: "3 mutual interests", image: "/images/avatars/avatar-1.svg" },
+    { name: "Sarah M.", subtitle: "Met at Coffee Club", image: "/images/avatars/avatar-2.svg" },
+    { name: "Alex P.", subtitle: "Hiking group", image: "/images/avatars/avatar-3.svg" },
   ];
 
   const eventsAttending = [
@@ -45,9 +45,7 @@ const Profile = () => {
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <div className="bg-card border-b border-border px-6 py-4 flex items-center justify-between">
-        <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
-          <ArrowLeft className="w-6 h-6" />
-        </button>
+        <BackButton />
         <h1 className="text-lg font-semibold">Profile</h1>
         <button className="p-2 hover:bg-muted rounded-full">
           <SettingsIcon className="w-6 h-6" />
@@ -59,7 +57,7 @@ const Profile = () => {
         <div className="flex flex-col items-center text-center">
           <div className="relative mb-2">
             <Avatar className="w-32 h-32">
-              <AvatarImage src="/placeholder.svg" />
+              <AvatarImage src="/images/avatars/avatar-1.svg" />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
             <div className="absolute -bottom-2 -right-2 flex items-center gap-1 rounded-full bg-[#E8B956] px-2 py-1 text-xs font-bold text-black shadow">

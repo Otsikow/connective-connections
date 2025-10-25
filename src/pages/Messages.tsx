@@ -2,11 +2,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowLeft, Plus, Send } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Plus, Send } from "lucide-react";
+import BackButton from "@/components/BackButton";
 
 const Messages = () => {
-  const navigate = useNavigate();
   const [message, setMessage] = useState("");
 
   const messages = [
@@ -39,11 +38,9 @@ const Messages = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <div className="bg-card border-b border-border px-6 py-4 flex items-center gap-4">
-        <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
-          <ArrowLeft className="w-6 h-6" />
-        </button>
+        <BackButton />
         <Avatar className="w-10 h-10">
-          <AvatarImage src="/placeholder.svg" />
+          <AvatarImage src="/images/avatars/avatar-2.svg" />
           <AvatarFallback>AD</AvatarFallback>
         </Avatar>
         <h1 className="text-lg font-semibold flex-1">Alex Doe</h1>
@@ -59,7 +56,7 @@ const Messages = () => {
             <div className={`flex gap-3 max-w-[80%] ${msg.isMine ? "flex-row-reverse" : ""}`}>
               {!msg.isMine && (
                 <Avatar className="w-10 h-10 flex-shrink-0">
-                  <AvatarImage src="/placeholder.svg" />
+                  <AvatarImage src="/images/avatars/avatar-2.svg" />
                   <AvatarFallback>AD</AvatarFallback>
                 </Avatar>
               )}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import BackButton from "@/components/BackButton";
 import onboarding1 from "@/assets/onboarding-1.png";
 import onboarding2 from "@/assets/onboarding-2.png";
 import onboarding3 from "@/assets/onboarding-3.png";
@@ -59,6 +60,9 @@ const Onboarding = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 py-8">
       <div className="w-full max-w-md flex flex-col items-center animate-fade-in">
+        <div className="w-full flex justify-start mb-4">
+          <BackButton />
+        </div>
         <div className="w-full bg-card rounded-3xl shadow-lg p-8 mb-8">
           <img
             src={slides[currentSlide].image}
