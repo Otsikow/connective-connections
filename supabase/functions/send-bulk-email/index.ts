@@ -1,194 +1,179 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+// supabase/functions/send-bulk-email/index.ts
+import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.42.3";
 
+// --- CORS headers ---
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
+// --- Interfaces ---
 interface BulkEmailRequest {
-  subject: string
-  content: string
-  template?: string
+  subject: string;
+  message: string;
 }
 
 interface UserProfile {
-  id: string
-  email: string
-  full_name?: string
+  id: string;
+  email: string;
+  full_name?: string;
 }
 
-// Admin role check function
+// --- Verify admin role ---
 async function verifyAdminRole(authHeader: string): Promise<boolean> {
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    
-    const supabase = createClient(supabaseUrl, supabaseServiceKey)
-    
-    // Extract token from Authorization header
-    const token = authHeader.replace('Bearer ', '')
-    
-    // Verify the JWT token and get user info
-    const { data: { user }, error } = await supabase.auth.getUser(token)
-    
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const { data: { user }, error } = await supabase.auth.getUser();
     if (error || !user) {
-      console.error('Auth error:', error)
-      return false
+      console.error("Auth error:", error);
+      return false;
     }
-    
-    // Check if user has admin role in user_metadata or app_metadata
-    const isAdmin = user.user_metadata?.role === 'admin' || 
-                   user.app_metadata?.role === 'admin' ||
-                   user.email?.endsWith('@admin.connective.com') // Example admin email pattern
-    
-    return isAdmin
-  } catch (error) {
-    console.error('Error verifying admin role:', error)
-    return false
+
+    const role =
+      user.user_metadata?.role ||
+      user.app_metadata?.role ||
+      (user.email?.endsWith("@admin.connective.com") ? "admin" : "user");
+
+    return role === "admin";
+  } catch (err) {
+    console.error("Error verifying admin role:", err);
+    return false;
   }
 }
 
-// Send email function (placeholder - integrate with your email service)
-async function sendEmail(to: string, subject: string, content: string): Promise<boolean> {
+// --- Placeholder email sender (replace with Resend/SendGrid integration) ---
+async function sendEmail(
+  to: string,
+  subject: string,
+  message: string
+): Promise<boolean> {
   try {
-    // TODO: Integrate with your email service (SendGrid, Resend, etc.)
-    console.log(`Sending email to ${to}: ${subject}`)
-    
-    // Example with Resend (uncomment and configure):
-    /*
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: 'noreply@connective.com',
-        to: [to],
-        subject: subject,
-        html: content,
-      }),
-    })
-    
-    return response.ok
-    */
-    
-    // For now, just log the email (remove in production)
-    console.log(`Email would be sent to ${to}`)
-    return true
-  } catch (error) {
-    console.error('Error sending email:', error)
-    return false
+    console.log(`Queued email to ${to}: ${subject}`);
+    // Example integration:
+    // await fetch('https://api.resend.com/emails', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({
+    //     from: 'noreply@connective.com',
+    //     to: [to],
+    //     subject,
+    //     html: message,
+    //   }),
+    // });
+    return true;
+  } catch (err) {
+    console.error("Error sending email:", err);
+    return false;
   }
 }
 
-serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+// --- Main handler ---
+serve(async (req: Request) => {
+  // Handle CORS
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    // Check if request is from an authenticated admin
-    const authHeader = req.headers.get('Authorization')
+    const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(
-        JSON.stringify({ error: 'Authorization header required' }),
-        { 
-          status: 401, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        JSON.stringify({ error: "Missing Authorization header" }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
-      )
+      );
     }
 
-    // Verify admin role
-    const isAdmin = await verifyAdminRole(authHeader)
+    // Verify admin
+    const isAdmin = await verifyAdminRole(authHeader);
     if (!isAdmin) {
       return new Response(
-        JSON.stringify({ error: 'Admin access required' }),
-        { 
-          status: 403, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        JSON.stringify({ error: "Forbidden: Admin access required" }),
+        {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
-      )
+      );
     }
 
     // Parse request body
-    const { subject, content, template }: BulkEmailRequest = await req.json()
-    
-    if (!subject || !content) {
+    const { subject, message }: BulkEmailRequest = await req.json();
+    if (!subject || !message) {
       return new Response(
-        JSON.stringify({ error: 'Subject and content are required' }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        JSON.stringify({ error: "Subject and message are required" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
-      )
+      );
     }
 
-    // Create Supabase client with service role key
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const supabase = createClient(supabaseUrl, supabaseServiceKey)
+    // Create Supabase admin client
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
 
-    // Fetch all user profiles with email addresses
-    const { data: profiles, error: profilesError } = await supabase
-      .from('profiles')
-      .select('id, email, full_name')
-      .not('email', 'is', null)
+    // Fetch all user emails (excluding admins)
+    const { data: profiles, error: fetchError } = await supabaseAdmin
+      .from("profiles")
+      .select("email")
+      .neq("role", "admin")
+      .not("email", "is", null);
 
-    if (profilesError) {
-      console.error('Error fetching profiles:', profilesError)
-      return new Response(
-        JSON.stringify({ error: 'Failed to fetch user profiles' }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      )
+    if (fetchError) {
+      console.error("Error fetching profiles:", fetchError);
+      throw new Error("Failed to fetch user profiles");
     }
 
-    if (!profiles || profiles.length === 0) {
-      return new Response(
-        JSON.stringify({ error: 'No users found' }),
-        { 
-          status: 404, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
+    // Send emails (parallel)
+    const emailResults = await Promise.allSettled(
+      (profiles || []).map((p: UserProfile) =>
+        sendEmail(p.email, subject, message)
       )
-    }
+    );
 
-    // Send emails to all users
-    const emailPromises = profiles.map((profile: UserProfile) => 
-      sendEmail(profile.email, subject, content)
-    )
+    const successful = emailResults.filter(
+      (r) => r.status === "fulfilled" && r.value
+    ).length;
 
-    const results = await Promise.allSettled(emailPromises)
-    const successful = results.filter(result => result.status === 'fulfilled' && result.value).length
-    const failed = results.length - successful
+    const failed = emailResults.length - successful;
 
     return new Response(
-      JSON.stringify({ 
-        message: 'Bulk email sent successfully',
-        total: profiles.length,
+      JSON.stringify({
+        success: true,
+        message: "Bulk email operation completed",
+        total: profiles?.length || 0,
         successful,
-        failed
+        failed,
       }),
-      { 
-        status: 200, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
-    )
-
-  } catch (error) {
-    console.error('Error in send-bulk-email function:', error)
+    );
+  } catch (err) {
+    console.error("send-bulk-email error:", err);
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      JSON.stringify({
+        error: err instanceof Error ? err.message : "Internal server error",
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
-    )
+    );
   }
-})
+});
