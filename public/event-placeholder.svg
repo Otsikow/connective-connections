@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" fill="none">
+  <defs>
+    <linearGradient id="eventGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFF7ED;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#E8B956;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#FF8663;stop-opacity:0.3" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#eventGrad)"/>
+  
+  <!-- Calendar icon -->
+  <rect x="320" y="200" width="160" height="180" rx="12" fill="#E8B956" opacity="0.2"/>
+  <rect x="325" y="205" width="150" height="170" rx="10" fill="none" stroke="#E8B956" stroke-width="3"/>
+  <rect x="325" y="205" width="150" height="40" rx="10" fill="#E8B956" opacity="0.3"/>
+  <line x1="360" y1="195" x2="360" y2="215" stroke="#E8B956" stroke-width="4" stroke-linecap="round"/>
+  <line x1="440" y1="195" x2="440" y2="215" stroke="#E8B956" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Date markers -->
+  <circle cx="360" cy="280" r="8" fill="#E8B956" opacity="0.5"/>
+  <circle cx="400" cy="280" r="8" fill="#E8B956" opacity="0.5"/>
+  <circle cx="440" cy="280" r="8" fill="#E8B956" opacity="0.5"/>
+  <circle cx="360" cy="320" r="8" fill="#E8B956" opacity="0.5"/>
+  <circle cx="400" cy="320" r="8" fill="#E8B956" opacity="0.5"/>
+  <circle cx="440" cy="320" r="8" fill="#E8B956" opacity="0.5"/>
+  <circle cx="360" cy="360" r="10" fill="#E8B956"/>
+</svg>

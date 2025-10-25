@@ -8,8 +8,8 @@ const Home = () => {
   const navigate = useNavigate();
 
   const matches = [
-    { name: "Jessica", interests: "Hiking, Painting", avatar: "/placeholder.svg" },
-    { name: "Alex", interests: "Music, Traveling", avatar: "/placeholder.svg" },
+    { name: "Jessica", interests: "Hiking, Painting", avatar: "/avatar-placeholder.svg" },
+    { name: "Alex", interests: "Music, Traveling", avatar: "/avatar-placeholder.svg" },
   ];
 
   const events = [
@@ -17,13 +17,13 @@ const Home = () => {
       title: "Coffee & Chat",
       date: "Sat, Nov 25, 10:00 AM",
       location: "The Grind Café",
-      image: "/placeholder.svg",
+      image: "/event-placeholder.svg",
     },
     {
       title: "Book Club",
       date: "Sun, Nov 26, 3:00 PM",
       location: "Central Library",
-      image: "/placeholder.svg",
+      image: "/event-placeholder.svg",
     },
   ];
 
@@ -32,19 +32,19 @@ const Home = () => {
       name: "Board Game Enthusiasts",
       description: "From Catan to modern classics.",
       members: "1.2k members",
-      image: "/placeholder.svg",
+      image: "/community-placeholder.svg",
     },
     {
       name: "Local Foodies",
       description: "Exploring the best eats in town.",
       members: "2.5k members",
-      image: "/placeholder.svg",
+      image: "/community-placeholder.svg",
     },
     {
       name: "Creative Writers Circle",
       description: "Share your stories and get feedback.",
       members: "850 members",
-      image: "/placeholder.svg",
+      image: "/community-placeholder.svg",
     },
   ];
 
@@ -54,7 +54,7 @@ const Home = () => {
       <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4 flex items-center justify-between">
         <h1 className="text-xl font-bold">Connective</h1>
         <Avatar className="w-10 h-10 cursor-pointer" onClick={() => navigate("/profile")}>
-          <AvatarImage src="/placeholder.svg" />
+          <AvatarImage src="/avatar-placeholder.svg" />
           <AvatarFallback>JD</AvatarFallback>
         </Avatar>
       </div>
@@ -85,7 +85,7 @@ const Home = () => {
           <div className="space-y-4">
             {events.map((event, index) => (
               <Card key={index} className="border-border overflow-hidden">
-                <div className="h-40 bg-muted"></div>
+                <img src={event.image} alt={event.title} className="h-40 w-full object-cover" />
                 <CardContent className="p-4">
                   <h3 className="font-semibold text-lg mb-2">{event.title}</h3>
                   <p className="text-sm text-muted-foreground mb-1">{event.date}</p>
@@ -106,7 +106,7 @@ const Home = () => {
             {communities.map((community, index) => (
               <Card key={index} className="border-border">
                 <CardContent className="p-4 flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-xl bg-muted flex-shrink-0"></div>
+                  <img src={community.image} alt={community.name} className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
                   <div className="flex-1">
                     <h3 className="font-semibold mb-1">{community.name}</h3>
                     <p className="text-sm text-muted-foreground mb-1">
