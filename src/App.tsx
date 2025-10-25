@@ -24,7 +24,10 @@ const App = () => (
           <Route path="/signup" element={<Signup />} />
           <Route path="/home" element={<Home />} />
           <Route path="/matches" element={<Matches />} />
+          {/* Keep legacy messages route for bottom nav compatibility */}
           <Route path="/messages" element={<Messages />} />
+          {/* Dynamic chat route per match */}
+          <Route path="/messages/:id" element={<Messages />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
