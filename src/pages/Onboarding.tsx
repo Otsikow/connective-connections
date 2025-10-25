@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 import onboarding1 from "@/assets/onboarding-1.png";
 import onboarding2 from "@/assets/onboarding-2.png";
 import onboarding3 from "@/assets/onboarding-3.png";
@@ -8,24 +9,27 @@ import onboarding3 from "@/assets/onboarding-3.png";
 const slides = [
   {
     image: onboarding1,
-    title: "Welcome to Connective",
-    description: "Find meaningful friendships in a safe and inclusive environment designed for adults like you.",
+    title: "Find genuine friends nearby.",
   },
   {
     image: onboarding2,
-    title: "Find Your People",
-    description: "Connective helps you find meaningful connections in a safe and supportive environment. With features like verified profiles and community guidelines, you can be sure that you're connecting with real people who share your interests and values.",
+    title: "Join groups that match your vibe.",
   },
   {
     image: onboarding3,
-    title: "Discover Meaningful Connections",
-    description: "Find your people, your way. Connective helps you build genuine friendships based on shared interests and values in a safe and inclusive environment.",
+    title: "Attend events safely & easily.",
   },
 ];
 
 const Onboarding = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [showSplash, setShowSplash] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const t = setTimeout(() => setShowSplash(false), 1500);
+    return () => clearTimeout(t);
+  }, []);
 
   const handleNext = () => {
     if (currentSlide < slides.length - 1) {
@@ -39,8 +43,27 @@ const Onboarding = () => {
     navigate("/signup");
   };
 
+  if (showSplash) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
+        <div className="flex flex-col items-center animate-fade-in">
+          <div className="w-20 h-20 rounded-2xl bg-[#E8B956] mb-6 shadow-md flex items-center justify-center text-charcoal text-2xl font-bold">
+            C
+          </div>
+          <h1 className="text-3xl font-extrabold tracking-tight">Connective</h1>
+          <p className="mt-2 text-muted-foreground">Real Friends. Real Connection.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 py-8">
+      <div className="absolute top-6 left-6">
+        <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
+          <ArrowLeft className="w-6 h-6" />
+        </button>
+      </div>
       <div className="w-full max-w-md flex flex-col items-center animate-fade-in">
         <div className="w-full bg-card rounded-3xl shadow-lg p-8 mb-8">
           <img
@@ -48,12 +71,9 @@ const Onboarding = () => {
             alt={slides[currentSlide].title}
             className="w-full h-auto mb-6 rounded-2xl"
           />
-          <h1 className="text-2xl font-bold text-foreground mb-4 text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-2 text-center">
             {slides[currentSlide].title}
           </h1>
-          <p className="text-muted-foreground text-center leading-relaxed">
-            {slides[currentSlide].description}
-          </p>
         </div>
 
         <Button

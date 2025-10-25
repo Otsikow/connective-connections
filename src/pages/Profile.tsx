@@ -1,161 +1,95 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { 
+  Card, CardContent, CardDescription, CardHeader, CardTitle 
+} from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { 
-  ArrowLeft, 
-  Settings as SettingsIcon, 
-  Star, 
-  Users, 
-  Calendar, 
-  Award, 
-  Crown,
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  ArrowLeft,
+  Settings,
   MapPin,
-  Clock,
-  Heart,
-  Bell,
+  Calendar,
+  Star,
+  Users,
+  Award,
   Shield,
+  Bell,
   CreditCard,
-  ChevronRight,
-  Trophy,
+  Crown,
+  MessageCircle,
+  Heart,
+  Clock,
+  CheckCircle,
+  Plus,
   Sparkles,
-  CheckCircle2
+  ChevronRight,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 const Profile = () => {
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState(true);
-  const [publicProfile, setPublicProfile] = useState(true);
-  const [showLocation, setShowLocation] = useState(true);
+  const [activeTab, setActiveTab] = useState("friends");
 
-  // Mock data for friends (matches)
+  // Profile mock data
+  const profile = {
+    name: "Jane Doe",
+    location: "San Francisco, CA",
+    joinedDate: "November 2025",
+    trustScore: 85,
+    bio: "Love exploring new coffee shops and hiking trails. Always up for a good book discussion or planning the next adventure. New to the city and excited to meet genuine people!",
+    interests: ["Hiking", "Photography", "Coffee", "Reading", "Travel"],
+    isPremium: false,
+  };
+
   const friends = [
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      avatar: "/placeholder.svg",
-      mutualFriends: 3,
-      location: "San Francisco",
-      trustScore: 92,
-    },
-    {
-      id: 2,
-      name: "Mike Chen",
-      avatar: "/placeholder.svg",
-      mutualFriends: 5,
-      location: "Oakland",
-      trustScore: 88,
-    },
-    {
-      id: 3,
-      name: "Emma Davis",
-      avatar: "/placeholder.svg",
-      mutualFriends: 2,
-      location: "Berkeley",
-      trustScore: 95,
-    },
+    { id: 1, name: "Alex Chen", avatar: "/placeholder.svg", lastSeen: "2 hours ago", mutualFriends: 3 },
+    { id: 2, name: "Sarah Johnson", avatar: "/placeholder.svg", lastSeen: "1 day ago", mutualFriends: 5 },
+    { id: 3, name: "Mike Rodriguez", avatar: "/placeholder.svg", lastSeen: "3 days ago", mutualFriends: 2 },
+    { id: 4, name: "Emma Wilson", avatar: "/placeholder.svg", lastSeen: "1 week ago", mutualFriends: 4 },
   ];
 
-  // Mock data for events
-  const attendingEvents = [
-    {
-      id: 1,
-      title: "Coffee & Coding Meetup",
-      date: "Nov 2, 2025",
-      time: "2:00 PM",
-      attendees: 12,
-    },
-    {
-      id: 2,
-      title: "Weekend Hiking Adventure",
-      date: "Nov 5, 2025",
-      time: "8:00 AM",
-      attendees: 8,
-    },
-  ];
+  const events = {
+    attending: [
+      { id: 1, title: "Coffee & Coding Meetup", date: "Nov 2, 2025", time: "2:00 PM", location: "Blue Bottle Coffee" },
+      { id: 2, title: "Weekend Hiking Adventure", date: "Nov 5, 2025", time: "8:00 AM", location: "Golden Gate Park" },
+    ],
+    past: [
+      { id: 3, title: "Book Club Discussion", date: "Oct 20, 2025", time: "7:00 PM", location: "City Lights Bookstore" },
+      { id: 4, title: "Photography Walk", date: "Oct 15, 2025", time: "10:00 AM", location: "SF MOMA" },
+    ],
+    hosted: [
+      { id: 5, title: "Brunch & Connect", date: "Oct 28, 2025", time: "10:00 AM", location: "My Apartment" },
+    ],
+  };
 
-  const pastEvents = [
-    {
-      id: 3,
-      title: "Book Club Discussion",
-      date: "Oct 20, 2025",
-      attendees: 15,
-    },
-    {
-      id: 4,
-      title: "Photography Walk",
-      date: "Oct 15, 2025",
-      attendees: 10,
-    },
-  ];
-
-  const hostedEvents = [
-    {
-      id: 5,
-      title: "Brunch & Connect",
-      date: "Oct 28, 2025",
-      attendees: 20,
-      status: "Completed",
-    },
-  ];
-
-  // Mock data for badges
   const badges = [
-    {
-      id: 1,
-      name: "First Connection",
-      description: "Made your first friend",
-      icon: Users,
-      color: "text-blue-500",
-      unlocked: true,
-    },
-    {
-      id: 2,
-      name: "Event Attendee",
-      description: "Attended 5 events",
-      icon: Calendar,
-      color: "text-green-500",
-      unlocked: true,
-    },
-    {
-      id: 3,
-      name: "Community Builder",
-      description: "Hosted 3 events",
-      icon: Trophy,
-      color: "text-purple-500",
-      unlocked: true,
-    },
-    {
-      id: 4,
-      name: "Trusted Member",
-      description: "Achieved 80+ trust score",
-      icon: Shield,
-      color: "text-amber-500",
-      unlocked: true,
-    },
-    {
-      id: 5,
-      name: "Social Butterfly",
-      description: "Make 10 connections",
-      icon: Heart,
-      color: "text-pink-500",
-      unlocked: false,
-    },
-    {
-      id: 6,
-      name: "Event Master",
-      description: "Attend 20 events",
-      icon: Award,
-      color: "text-indigo-500",
-      unlocked: false,
-    },
+    { id: 1, name: "First Connection", description: "Made your first friend", icon: "🤝", earned: true },
+    { id: 2, name: "Event Attendee", description: "Attended 5 events", icon: "🎉", earned: true },
+    { id: 3, name: "Community Builder", description: "Hosted 3 events", icon: "🏗️", earned: true },
+    { id: 4, name: "Trusted Member", description: "Achieved 80+ trust score", icon: "⭐", earned: true },
+    { id: 5, name: "Social Butterfly", description: "Made 10 connections", icon: "🦋", earned: false, progress: 70 },
+    { id: 6, name: "Event Master", description: "Attended 20 events", icon: "🎯", earned: false, progress: 40 },
   ];
+
+  const settings = {
+    privacy: {
+      profileVisibility: "public",
+      showLocation: true,
+      showInterests: true,
+      showEvents: true,
+    },
+    notifications: {
+      newMatches: true,
+      eventReminders: true,
+      messages: true,
+      eventUpdates: false,
+    },
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -165,399 +99,254 @@ const Profile = () => {
           <ArrowLeft className="w-6 h-6" />
         </button>
         <h1 className="text-lg font-semibold">Profile</h1>
-        <div className="w-10" /> {/* Spacer for alignment */}
+        <div className="w-10" />
       </div>
 
-      {/* Profile Header Section */}
-      <div className="px-6 py-8 space-y-6">
+      {/* Main Content */}
+      <div className="px-6 py-6 space-y-6">
+        {/* Profile Header */}
         <div className="flex flex-col items-center text-center">
-          <div className="relative">
-            <Avatar className="w-32 h-32 mb-4 border-4 border-primary/20">
+          <div className="relative mb-2">
+            <Avatar className="w-32 h-32 ring-4 ring-amber-400/30">
               <AvatarImage src="/placeholder.svg" />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
-            {/* Trust Score Badge */}
-            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-amber-600 text-white px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
-              <Star className="w-4 h-4" fill="white" />
-              <span className="text-sm font-bold">85</span>
+            <div className="absolute -bottom-2 -right-2 flex items-center gap-1 rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-black shadow-lg">
+              <Star className="w-3.5 h-3.5" />
+              <span>{profile.trustScore}</span>
             </div>
           </div>
-          <h2 className="text-2xl font-bold mb-2 mt-4">Jane Doe</h2>
-          <div className="flex items-center gap-2 text-muted-foreground mb-3">
+
+          <h2 className="text-2xl font-bold mb-2">{profile.name}</h2>
+          <div className="flex items-center gap-2 text-muted-foreground mb-1">
             <MapPin size={16} />
-            <span>San Francisco, CA</span>
+            <span>{profile.location}</span>
+          </div>
+          <div className="flex items-center gap-2 text-muted-foreground mb-4">
+            <Calendar size={16} />
+            <span>Joined {profile.joinedDate}</span>
           </div>
         </div>
 
-        {/* Bio */}
-        <Card className="border-border">
-          <CardContent className="p-6">
-            <p className="text-muted-foreground leading-relaxed text-center">
-              Love exploring new coffee shops and hiking trails. Always up for a good book discussion or planning the next adventure. New to the city and excited to meet genuine people! ✨
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Upgrade to Premium Card */}
-        <Card className="border-2 border-amber-500/50 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              <div className="p-3 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full">
-                <Crown className="w-6 h-6 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-bold text-lg mb-1 flex items-center gap-2">
-                  Upgrade to Premium
-                  <Sparkles className="w-4 h-4 text-amber-500" />
-                </h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Unlock unlimited matches, priority event access, and exclusive badges
-                </p>
-                <Button className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white">
-                  Upgrade Now
-                </Button>
-              </div>
+        {/* About Me */}
+        <Card>
+          <CardContent className="p-6 text-center">
+            <p className="text-muted-foreground leading-relaxed mb-4">{profile.bio}</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {profile.interests.map((interest, i) => (
+                <Badge key={i} variant="secondary" className="text-sm">
+                  {interest}
+                </Badge>
+              ))}
             </div>
           </CardContent>
         </Card>
 
+        {/* Premium CTA */}
+        {!profile.isPremium && (
+          <Card className="border-2 border-amber-400 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20">
+            <CardContent className="p-6 text-center">
+              <Crown className="w-12 h-12 text-amber-600 mx-auto mb-4" />
+              <h3 className="text-xl font-bold mb-2 flex justify-center items-center gap-1">
+                Upgrade to Premium <Sparkles className="w-4 h-4 text-amber-500" />
+              </h3>
+              <p className="text-muted-foreground mb-4">
+                Unlock unlimited matches, event access, and exclusive badges.
+              </p>
+              <Button className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white">
+                Upgrade Now
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Tabs Section */}
-        <Tabs defaultValue="friends" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6">
-            <TabsTrigger value="friends" className="text-xs sm:text-sm">
-              <Users className="w-4 h-4 mr-1" />
-              Friends
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="friends">
+              <Users className="w-4 h-4 mr-2" /> Friends
             </TabsTrigger>
-            <TabsTrigger value="events" className="text-xs sm:text-sm">
-              <Calendar className="w-4 h-4 mr-1" />
-              Events
+            <TabsTrigger value="events">
+              <Calendar className="w-4 h-4 mr-2" /> Events
             </TabsTrigger>
-            <TabsTrigger value="badges" className="text-xs sm:text-sm">
-              <Award className="w-4 h-4 mr-1" />
-              Badges
+            <TabsTrigger value="badges">
+              <Award className="w-4 h-4 mr-2" /> Badges
             </TabsTrigger>
-            <TabsTrigger value="settings" className="text-xs sm:text-sm">
-              <SettingsIcon className="w-4 h-4 mr-1" />
-              Settings
+            <TabsTrigger value="settings">
+              <Settings className="w-4 h-4 mr-2" /> Settings
             </TabsTrigger>
           </TabsList>
 
-          {/* Friends Tab */}
+          {/* Friends */}
           <TabsContent value="friends" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Your Connections</CardTitle>
-                <CardDescription>People you've matched with</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {friends.map((friend) => (
-                  <Card key={friend.id} className="border-border hover:border-primary/50 transition-colors cursor-pointer">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-4">
-                        <Avatar className="w-16 h-16">
-                          <AvatarImage src={friend.avatar} />
-                          <AvatarFallback>{friend.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <h3 className="font-semibold mb-1">{friend.name}</h3>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                            <MapPin size={14} />
-                            <span>{friend.location}</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <Users size={12} />
-                              {friend.mutualFriends} mutual
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Star size={12} className="text-amber-500" />
-                              {friend.trustScore}
-                            </span>
-                          </div>
-                        </div>
-                        <Button variant="outline" size="sm">
-                          View
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </CardContent>
-            </Card>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Friends ({friends.length})</h3>
+              <Button size="sm" variant="outline">
+                <Plus className="w-4 h-4 mr-2" /> Add Friend
+              </Button>
+            </div>
+            {friends.map((friend) => (
+              <Card key={friend.id}>
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="w-12 h-12">
+                      <AvatarImage src={friend.avatar} />
+                      <AvatarFallback>{friend.name.split(" ").map((n) => n[0]).join("")}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h4 className="font-semibold">{friend.name}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {friend.mutualFriends} mutual friends • {friend.lastSeen}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline">
+                      <MessageCircle className="w-4 h-4" />
+                    </Button>
+                    <Button size="sm" variant="outline">
+                      <Heart className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </TabsContent>
 
-          {/* Events Tab */}
-          <TabsContent value="events" className="space-y-4">
-            {/* Attending Events */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-green-500" />
-                  Attending
-                </CardTitle>
-                <CardDescription>Upcoming events you're going to</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {attendingEvents.map((event) => (
-                  <Card key={event.id} className="border-border">
-                    <CardContent className="p-4">
-                      <h3 className="font-semibold mb-2">{event.title}</h3>
-                      <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <div className="flex items-center gap-4">
-                          <span className="flex items-center gap-1">
-                            <Calendar size={14} />
-                            {event.date}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Clock size={14} />
-                            {event.time}
-                          </span>
-                        </div>
-                        <Badge variant="secondary">
-                          <Users size={12} className="mr-1" />
-                          {event.attendees}
-                        </Badge>
+          {/* Events */}
+          <TabsContent value="events" className="space-y-6">
+            {Object.entries(events).map(([key, list]) => (
+              <div key={key}>
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 capitalize">
+                  {key === "attending" && <Clock className="w-5 h-5" />}
+                  {key === "past" && <CheckCircle className="w-5 h-5" />}
+                  {key === "hosted" && <Crown className="w-5 h-5" />}
+                  {key} ({list.length})
+                </h3>
+                {list.map((event) => (
+                  <Card key={event.id}>
+                    <CardContent className="p-4 flex items-center justify-between">
+                      <div>
+                        <h4 className="font-semibold">{event.title}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {event.date} at {event.time} • {event.location}
+                        </p>
                       </div>
+                      <Button size="sm" variant="outline">View</Button>
                     </CardContent>
                   </Card>
                 ))}
-              </CardContent>
-            </Card>
-
-            {/* Past Events */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-blue-500" />
-                  Past Events
-                </CardTitle>
-                <CardDescription>Events you've attended</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {pastEvents.map((event) => (
-                  <Card key={event.id} className="border-border">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="font-semibold mb-1">{event.title}</h3>
-                          <span className="text-sm text-muted-foreground">{event.date}</span>
-                        </div>
-                        <Badge variant="outline">
-                          <Users size={12} className="mr-1" />
-                          {event.attendees}
-                        </Badge>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Hosted Events */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Trophy className="w-5 h-5 text-purple-500" />
-                  Hosted by You
-                </CardTitle>
-                <CardDescription>Events you've organized</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {hostedEvents.map((event) => (
-                  <Card key={event.id} className="border-border">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="font-semibold mb-1">{event.title}</h3>
-                          <span className="text-sm text-muted-foreground">{event.date}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline">
-                            <Users size={12} className="mr-1" />
-                            {event.attendees}
-                          </Badge>
-                          <Badge className="bg-green-500">{event.status}</Badge>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </CardContent>
-            </Card>
+              </div>
+            ))}
           </TabsContent>
 
-          {/* Badges Tab */}
+          {/* Badges */}
           <TabsContent value="badges" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Achievements</CardTitle>
-                <CardDescription>Your earned rewards and progress</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="grid grid-cols-1 gap-3">
-                  {badges.map((badge) => {
-                    const IconComponent = badge.icon;
-                    return (
-                      <Card 
-                        key={badge.id} 
-                        className={`border-border ${!badge.unlocked && 'opacity-50'}`}
-                      >
-                        <CardContent className="p-4">
-                          <div className="flex items-center gap-4">
-                            <div className={`p-3 rounded-full ${badge.unlocked ? 'bg-primary/10' : 'bg-muted'}`}>
-                              <IconComponent className={`w-6 h-6 ${badge.unlocked ? badge.color : 'text-muted-foreground'}`} />
-                            </div>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <h3 className="font-semibold">{badge.name}</h3>
-                                {badge.unlocked && (
-                                  <CheckCircle2 className="w-4 h-4 text-green-500" />
-                                )}
-                              </div>
-                              <p className="text-sm text-muted-foreground">{badge.description}</p>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Achievements</h3>
+              <Badge variant="outline">
+                {badges.filter((b) => b.earned).length} / {badges.length} earned
+              </Badge>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {badges.map((badge) => (
+                <Card key={badge.id} className={badge.earned ? "bg-green-50 border-green-200" : "opacity-70"}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="text-2xl">{badge.icon}</div>
+                      <div>
+                        <h4 className="font-semibold flex items-center gap-2">
+                          {badge.name}
+                          {badge.earned && <CheckCircle className="w-4 h-4 text-green-600" />}
+                        </h4>
+                        <p className="text-sm text-muted-foreground">{badge.description}</p>
+                        {!badge.earned && (
+                          <div className="mt-2">
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div
+                                className="bg-blue-600 h-2 rounded-full"
+                                style={{ width: `${badge.progress}%` }}
+                              />
                             </div>
                           </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </TabsContent>
 
-          {/* Settings Tab */}
-          <TabsContent value="settings" className="space-y-4">
-            {/* Privacy Settings */}
+          {/* Settings */}
+          <TabsContent value="settings" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Shield className="w-5 h-5" />
-                  Privacy
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="w-5 h-5" /> Privacy
                 </CardTitle>
                 <CardDescription>Control your profile visibility</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="public-profile">Public Profile</Label>
-                    <p className="text-sm text-muted-foreground">Make your profile visible to everyone</p>
-                  </div>
-                  <Switch 
-                    id="public-profile" 
-                    checked={publicProfile}
-                    onCheckedChange={setPublicProfile}
-                  />
+                  <Label>Profile Visibility</Label>
+                  <Badge variant="outline">{settings.privacy.profileVisibility}</Badge>
                 </div>
                 <Separator />
                 <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="show-location">Show Location</Label>
-                    <p className="text-sm text-muted-foreground">Display your city on your profile</p>
-                  </div>
-                  <Switch 
-                    id="show-location" 
-                    checked={showLocation}
-                    onCheckedChange={setShowLocation}
-                  />
+                  <Label>Show Location</Label>
+                  <Switch checked={settings.privacy.showLocation} />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label>Show Interests</Label>
+                  <Switch checked={settings.privacy.showInterests} />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label>Show Events</Label>
+                  <Switch checked={settings.privacy.showEvents} />
                 </div>
               </CardContent>
             </Card>
 
-            {/* Notification Settings */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Bell className="w-5 h-5" />
-                  Notifications
+                <CardTitle className="flex items-center gap-2">
+                  <Bell className="w-5 h-5" /> Notifications
                 </CardTitle>
-                <CardDescription>Manage your notification preferences</CardDescription>
+                <CardDescription>Manage how you stay updated</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="notifications">Push Notifications</Label>
-                    <p className="text-sm text-muted-foreground">Receive updates about matches and events</p>
+                {Object.entries(settings.notifications).map(([key, value]) => (
+                  <div key={key} className="flex items-center justify-between">
+                    <Label className="capitalize">{key.replace(/([A-Z])/g, " $1")}</Label>
+                    <Switch checked={value} />
                   </div>
-                  <Switch 
-                    id="notifications" 
-                    checked={notifications}
-                    onCheckedChange={setNotifications}
-                  />
-                </div>
-                <Separator />
-                <div className="flex items-center justify-between py-2 cursor-pointer hover:bg-muted/50 -mx-2 px-2 rounded">
-                  <div className="space-y-0.5">
-                    <Label>Email Preferences</Label>
-                    <p className="text-sm text-muted-foreground">Configure email notifications</p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                </div>
+                ))}
               </CardContent>
             </Card>
 
-            {/* Subscription Management */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <CreditCard className="w-5 h-5" />
-                  Subscription
+                <CardTitle className="flex items-center gap-2">
+                  <CreditCard className="w-5 h-5" /> Subscription
                 </CardTitle>
-                <CardDescription>Manage your premium subscription</CardDescription>
+                <CardDescription>Manage your premium plan</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="p-4 bg-muted rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold">Current Plan</span>
-                    <Badge>Free</Badge>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">Current Plan</p>
+                    <p className="text-sm text-muted-foreground">
+                      {profile.isPremium ? "Premium" : "Free Plan"}
+                    </p>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    Upgrade to Premium for exclusive features
-                  </p>
+                  <Badge variant={profile.isPremium ? "default" : "outline"}>
+                    {profile.isPremium ? "Active" : "Free"}
+                  </Badge>
                 </div>
-                <Button className="w-full" variant="outline">
-                  View Plans & Pricing
+                <Button className="w-full">
+                  {profile.isPremium ? "Manage Subscription" : "Upgrade to Premium"}
                 </Button>
-                <Separator />
-                <div className="flex items-center justify-between py-2 cursor-pointer hover:bg-muted/50 -mx-2 px-2 rounded">
-                  <div className="space-y-0.5">
-                    <Label>Billing History</Label>
-                    <p className="text-sm text-muted-foreground">View past payments</p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                </div>
-                <div className="flex items-center justify-between py-2 cursor-pointer hover:bg-muted/50 -mx-2 px-2 rounded">
-                  <div className="space-y-0.5">
-                    <Label>Payment Methods</Label>
-                    <p className="text-sm text-muted-foreground">Manage saved cards</p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Additional Settings Options */}
-            <Card>
-              <CardContent className="p-4 space-y-2">
-                <div className="flex items-center justify-between py-2 cursor-pointer hover:bg-muted/50 -mx-2 px-2 rounded">
-                  <Label>Edit Profile</Label>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                </div>
-                <Separator />
-                <div className="flex items-center justify-between py-2 cursor-pointer hover:bg-muted/50 -mx-2 px-2 rounded">
-                  <Label>Account Settings</Label>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                </div>
-                <Separator />
-                <div className="flex items-center justify-between py-2 cursor-pointer hover:bg-muted/50 -mx-2 px-2 rounded">
-                  <Label>Help & Support</Label>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                </div>
-                <Separator />
-                <div className="flex items-center justify-between py-2 cursor-pointer hover:bg-muted/50 -mx-2 px-2 rounded">
-                  <Label className="text-destructive">Log Out</Label>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                </div>
               </CardContent>
             </Card>
           </TabsContent>
