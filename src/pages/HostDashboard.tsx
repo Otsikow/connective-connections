@@ -1,13 +1,22 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Calendar, Users, DollarSign, BarChart3 } from "lucide-react";
+import EventManagement from "@/components/host/EventManagement";
+import AttendeeApproval from "@/components/host/AttendeeApproval";
+import DepositManagement from "@/components/host/DepositManagement";
+import Analytics from "@/components/host/Analytics";
 
 const mockAttendance = [
   { month: "Jan", attendance: 42 },
@@ -28,6 +37,7 @@ const mockEarnings = [
 ];
 
 const HostDashboard = () => {
+  const [activeTab, setActiveTab] = useState("overview");
   const [eventForm, setEventForm] = useState({
     title: "",
     date: "",
@@ -37,181 +47,146 @@ const HostDashboard = () => {
     type: "in_person",
   });
 
-  // Placeholder React Query hooks (stubbed)
   const queryClient = useQueryClient();
   const { data: pendingApprovals = [
     { id: 1, user: "User #1", event: "Coffee & Chat" },
     { id: 2, user: "User #2", event: "Coffee & Chat" },
   ] } = useQuery({
     queryKey: ["host", "approvals"],
-    queryFn: async () => {
-      // Replace with supabase query later
-      return [
-        { id: 1, user: "User #1", event: "Coffee & Chat" },
-        { id: 2, user: "User #2", event: "Coffee & Chat" },
-      ];
-    },
+    queryFn: async () => [
+      { id: 1, user: "User #1", event: "Coffee & Chat" },
+      { id: 2, user: "User #2", event: "Coffee & Chat" },
+    ],
   });
 
   const approveMutation = useMutation({
-    mutationFn: async (id: number) => {
-      // Replace with supabase update later
-      return id;
-    },
+    mutationFn: async (id: number) => id,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["host", "approvals"] }),
   });
 
   const rejectMutation = useMutation({
-    mutationFn: async (id: number) => {
-      // Replace with supabase update later
-      return id;
-    },
+    mutationFn: async (id: number) => id,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["host", "approvals"] }),
   });
 
   return (
-    <div className="min-h-screen bg-background pb-6">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-6">
       <div className="sticky top-0 z-10 bg-card border-b border-border px-6 py-4">
-        <h1 className="text-xl font-bold">Host Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Create events, approve attendees, manage deposits, and view analytics.</p>
+        <h1 className="text-2xl font-bold">Host Dashboard</h1>
+        <p className="text-sm text-muted-foreground">
+          Manage events, attendees, deposits, and performance analytics.
+        </p>
       </div>
 
       <div className="px-6 pt-6">
-        <Tabs defaultValue="events">
-          <TabsList className="mb-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="flex flex-wrap gap-2 mb-6">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
-            <TabsTrigger value="approvals">Approvals</TabsTrigger>
+            <TabsTrigger value="attendees">Attendees</TabsTrigger>
             <TabsTrigger value="deposits">Deposits</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="events">
-            <div className="grid gap-6 lg:grid-cols-2">
-              <Card className="border-border">
-                <CardContent className="p-6 space-y-4">
-                  <h2 className="text-lg font-semibold">Create Event</h2>
-                  <div className="grid gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="title">Title</Label>
-                      <Input id="title" placeholder="Coffee & Chat" value={eventForm.title} onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })} />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="date">Date & Time</Label>
-                      <Input id="date" type="datetime-local" value={eventForm.date} onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })} />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="location">Location</Label>
-                      <Input id="location" placeholder="The Grind Café" value={eventForm.location} onChange={(e) => setEventForm({ ...eventForm, location: e.target.value })} />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="capacity">Capacity</Label>
-                        <Input id="capacity" type="number" placeholder="20" value={eventForm.capacity} onChange={(e) => setEventForm({ ...eventForm, capacity: e.target.value })} />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="deposit">Deposit ($)</Label>
-                        <Input id="deposit" type="number" placeholder="10" value={eventForm.deposit} onChange={(e) => setEventForm({ ...eventForm, deposit: e.target.value })} />
-                      </div>
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="type">Type</Label>
-                      <Select value={eventForm.type} onValueChange={(v) => setEventForm({ ...eventForm, type: v })}>
-                        <SelectTrigger id="type">
-                          <SelectValue placeholder="Select type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="in_person">In-person</SelectItem>
-                          <SelectItem value="virtual">Virtual</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <Button className="w-full rounded-full bg-primary" onClick={() => alert("Stub: create event")}>Create Event</Button>
-                  </div>
+          {/* Overview Section */}
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <Card>
+                <CardHeader className="flex items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium">Total Events</CardTitle>
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">12</div>
+                  <p className="text-xs text-muted-foreground">+2 from last month</p>
                 </CardContent>
               </Card>
 
-              <Card className="border-border">
-                <CardContent className="p-6">
-                  <h2 className="text-lg font-semibold mb-4">Your Events</h2>
-                  <div className="space-y-4">
-                    {[1,2,3].map((i) => (
-                      <div key={i} className="flex items-center justify-between border rounded-lg p-4">
-                        <div>
-                          <p className="font-medium">Coffee & Chat #{i}</p>
-                          <p className="text-sm text-muted-foreground">Sat, 10:00 AM · 18/24 attending</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button variant="outline">Edit</Button>
-                          <Button variant="destructive">Cancel</Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+              <Card>
+                <CardHeader className="flex items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium">Total Attendees</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">248</div>
+                  <p className="text-xs text-muted-foreground">+18% from last month</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
+                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">$4,850</div>
+                  <p className="text-xs text-muted-foreground">+12% from last month</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium">Avg Rating</CardTitle>
+                  <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">4.8</div>
+                  <p className="text-xs text-muted-foreground">+0.2 from last month</p>
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
 
-          <TabsContent value="approvals">
-            <Card className="border-border">
-              <CardContent className="p-6">
-                <h2 className="text-lg font-semibold mb-4">Pending Approvals</h2>
-                <div className="space-y-3">
-                  {pendingApprovals.map((row) => (
-                    <div key={row.id} className="flex items-center justify-between border rounded-lg p-4">
-                      <div>
-                        <p className="font-medium">{row.user}</p>
-                        <p className="text-sm text-muted-foreground">Requested to join {row.event}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" onClick={() => rejectMutation.mutate(row.id)}>Reject</Button>
-                        <Button onClick={() => approveMutation.mutate(row.id)}>Approve</Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Quick Actions</CardTitle>
+                <CardDescription>Manage your most common host tasks</CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-4 md:grid-cols-2">
+                <button
+                  onClick={() => setActiveTab("events")}
+                  className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <Calendar className="h-5 w-5" />
+                    <span className="font-medium">Create New Event</span>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setActiveTab("attendees")}
+                  className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <Users className="h-5 w-5" />
+                    <span className="font-medium">Review Attendees</span>
+                  </div>
+                </button>
               </CardContent>
             </Card>
           </TabsContent>
 
+          {/* Events Section */}
+          <TabsContent value="events">
+            <EventManagement />
+          </TabsContent>
+
+          {/* Attendees Section */}
+          <TabsContent value="attendees">
+            <AttendeeApproval />
+          </TabsContent>
+
+          {/* Deposits Section */}
           <TabsContent value="deposits">
-            <Card className="border-border">
-              <CardContent className="p-6 space-y-4">
-                <h2 className="text-lg font-semibold">Deposits</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-lg border p-4">
-                    <p className="text-sm text-muted-foreground">Held Deposits</p>
-                    <p className="text-2xl font-bold">$420</p>
-                  </div>
-                  <div className="rounded-lg border p-4">
-                    <p className="text-sm text-muted-foreground">Released This Month</p>
-                    <p className="text-2xl font-bold">$390</p>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  {[1,2,3].map((i) => (
-                    <div key={i} className="flex items-center justify-between border rounded-lg p-4">
-                      <div>
-                        <p className="font-medium">Deposit #{i} · $10</p>
-                        <p className="text-sm text-muted-foreground">Coffee & Chat · Jane D.</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline">Refund</Button>
-                        <Button>Release</Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <DepositManagement />
           </TabsContent>
 
+          {/* Analytics Section */}
           <TabsContent value="analytics">
-            <div className="grid gap-6 lg:grid-cols-2">
-              <Card className="border-border">
+            <Analytics />
+            <div className="grid gap-6 lg:grid-cols-2 mt-6">
+              <Card>
                 <CardContent className="p-6">
                   <h2 className="text-lg font-semibold mb-2">Attendance Rate</h2>
-                  <p className="text-sm text-muted-foreground mb-4">Percent of RSVPs that attended</p>
                   <ChartContainer
                     config={{ attendance: { label: "Attendance", color: "hsl(var(--primary))" } }}
                     className="h-64"
@@ -220,16 +195,21 @@ const HostDashboard = () => {
                       <CartesianGrid vertical={false} />
                       <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} />
                       <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-                      <Area dataKey="attendance" type="natural" fill="var(--color-attendance)" stroke="var(--color-attendance)" fillOpacity={0.2} />
+                      <Area
+                        dataKey="attendance"
+                        type="natural"
+                        fill="var(--color-attendance)"
+                        stroke="var(--color-attendance)"
+                        fillOpacity={0.2}
+                      />
                     </AreaChart>
                   </ChartContainer>
                 </CardContent>
               </Card>
 
-              <Card className="border-border">
+              <Card>
                 <CardContent className="p-6">
                   <h2 className="text-lg font-semibold mb-2">Earnings</h2>
-                  <p className="text-sm text-muted-foreground mb-4">Total earnings from deposits</p>
                   <ChartContainer
                     config={{ earnings: { label: "Earnings", color: "hsl(var(--primary))" } }}
                     className="h-64"
@@ -238,7 +218,13 @@ const HostDashboard = () => {
                       <CartesianGrid vertical={false} />
                       <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} />
                       <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-                      <Area dataKey="earnings" type="natural" fill="var(--color-earnings)" stroke="var(--color-earnings)" fillOpacity={0.2} />
+                      <Area
+                        dataKey="earnings"
+                        type="natural"
+                        fill="var(--color-earnings)"
+                        stroke="var(--color-earnings)"
+                        fillOpacity={0.2}
+                      />
                     </AreaChart>
                   </ChartContainer>
                 </CardContent>
