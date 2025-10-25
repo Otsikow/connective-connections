@@ -83,12 +83,12 @@ const Messages = () => {
 
   const handleCall = () => {
     // TODO: Implement voice call
-    console.log("Voice call");
+    // Placeholder: Could integrate with WebRTC or third-party calling service
   };
 
   const handleVideoCall = () => {
     // TODO: Implement video call
-    console.log("Video call");
+    // Placeholder: Could integrate with WebRTC or third-party video service
   };
 
   return (

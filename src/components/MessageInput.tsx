@@ -51,27 +51,27 @@ export const MessageInput = ({ onSendMessage, onSelectIcebreaker, className = ""
 
   const handleTTS = () => {
     // TODO: Implement text-to-speech
-    console.log("TTS feature");
+    // Placeholder: Could integrate with Web Speech API
   };
 
   const handleScheduleMeetup = () => {
     // TODO: Implement schedule meetup
-    console.log("Schedule meetup");
+    // Placeholder: Could open calendar picker modal
   };
 
   const handleEmoji = () => {
     // TODO: Implement emoji picker
-    console.log("Emoji picker");
+    // Placeholder: Could open emoji picker component
   };
 
   const handleImage = () => {
     // TODO: Implement image upload
-    console.log("Image upload");
+    // Placeholder: Could trigger file input for image selection
   };
 
   const handleLocation = () => {
     // TODO: Implement location sharing
-    console.log("Location sharing");
+    // Placeholder: Could use geolocation API
   };
 
   return (
