@@ -10,7 +10,14 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Home as HomeIcon, MessageSquare, Plus, Search, User } from "lucide-react";
+import {
+  Home as HomeIcon,
+  MessageSquare,
+  Plus,
+  Search,
+  User,
+  Calendar as CalendarIcon,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
@@ -85,7 +92,10 @@ const Home = () => {
       <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4">
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-xl font-bold">Connective</h1>
-          <Avatar className="w-10 h-10 cursor-pointer" onClick={() => navigate("/profile")}>
+          <Avatar
+            className="w-10 h-10 cursor-pointer"
+            onClick={() => navigate("/profile")}
+          >
             <AvatarImage src="/placeholder.svg" />
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
@@ -99,6 +109,7 @@ const Home = () => {
         </div>
       </div>
 
+      {/* Tabs Section */}
       <div className="px-6 py-6 space-y-8">
         <Tabs defaultValue="matches" className="w-full">
           <TabsList className="w-full grid grid-cols-3">
@@ -114,15 +125,23 @@ const Home = () => {
               <Carousel className="w-full">
                 <CarouselContent>
                   {matches.map((match, index) => (
-                    <CarouselItem key={index} className="basis-2/3 sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
-                      <Card className="border-border cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/matches")}>
+                    <CarouselItem
+                      key={index}
+                      className="basis-2/3 sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+                    >
+                      <Card
+                        className="border-border cursor-pointer hover:shadow-md transition-shadow"
+                        onClick={() => navigate("/matches")}
+                      >
                         <CardContent className="p-4 flex flex-col items-center text-center">
                           <Avatar className="w-20 h-20 mb-3">
                             <AvatarImage src={match.avatar} />
                             <AvatarFallback>{match.name[0]}</AvatarFallback>
                           </Avatar>
                           <h3 className="font-semibold">{match.name}</h3>
-                          <p className="text-xs text-muted-foreground">{match.interests}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {match.interests}
+                          </p>
                         </CardContent>
                       </Card>
                     </CarouselItem>
@@ -137,18 +156,29 @@ const Home = () => {
           {/* Groups Tab */}
           <TabsContent value="groups" className="mt-6 space-y-6">
             <section>
-              <h2 className="text-2xl font-bold mb-3">Communities you might like</h2>
+              <h2 className="text-2xl font-bold mb-3">
+                Communities you might like
+              </h2>
               <Carousel className="w-full">
                 <CarouselContent>
                   {communities.map((community, index) => (
-                    <CarouselItem key={index} className="basis-3/4 sm:basis-1/2 md:basis-1/3">
+                    <CarouselItem
+                      key={index}
+                      className="basis-3/4 sm:basis-1/2 md:basis-1/3"
+                    >
                       <Card className="border-border">
                         <CardContent className="p-4 flex items-center gap-4">
                           <div className="w-16 h-16 rounded-xl bg-muted flex-shrink-0" />
                           <div className="flex-1">
-                            <h3 className="font-semibold mb-1">{community.name}</h3>
-                            <p className="text-sm text-muted-foreground mb-1">{community.description}</p>
-                            <p className="text-xs text-muted-foreground">{community.members}</p>
+                            <h3 className="font-semibold mb-1">
+                              {community.name}
+                            </h3>
+                            <p className="text-sm text-muted-foreground mb-1">
+                              {community.description}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {community.members}
+                            </p>
                           </div>
                           <button className="w-10 h-10 rounded-full bg-[#E8B956] flex items-center justify-center flex-shrink-0">
                             <span className="text-xl text-charcoal">+</span>
@@ -171,14 +201,25 @@ const Home = () => {
               <Carousel className="w-full">
                 <CarouselContent>
                   {events.map((event, index) => (
-                    <CarouselItem key={index} className="basis-[85%] sm:basis-2/3 md:basis-1/2">
+                    <CarouselItem
+                      key={index}
+                      className="basis-[85%] sm:basis-2/3 md:basis-1/2"
+                    >
                       <Card className="border-border overflow-hidden">
                         <div className="h-40 bg-muted" />
                         <CardContent className="p-4">
-                          <h3 className="font-semibold text-lg mb-2">{event.title}</h3>
-                          <p className="text-sm text-muted-foreground mb-1">{event.date}</p>
-                          <p className="text-sm text-muted-foreground mb-4">{event.location}</p>
-                          <Button className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal">Join</Button>
+                          <h3 className="font-semibold text-lg mb-2">
+                            {event.title}
+                          </h3>
+                          <p className="text-sm text-muted-foreground mb-1">
+                            {event.date}
+                          </p>
+                          <p className="text-sm text-muted-foreground mb-4">
+                            {event.location}
+                          </p>
+                          <Button className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal">
+                            Join
+                          </Button>
                         </CardContent>
                       </Card>
                     </CarouselItem>
@@ -207,15 +248,31 @@ const Home = () => {
           <HomeIcon size={24} />
           <span className="text-xs font-medium">Home</span>
         </button>
-        <button className="flex flex-col items-center gap-1 text-muted-foreground" onClick={() => navigate("/messages")}>
+        <button
+          className="flex flex-col items-center gap-1 text-muted-foreground"
+          onClick={() => navigate("/events")}
+        >
+          <CalendarIcon size={24} />
+          <span className="text-xs">Events</span>
+        </button>
+        <button
+          className="flex flex-col items-center gap-1 text-muted-foreground"
+          onClick={() => navigate("/messages")}
+        >
           <MessageSquare size={24} />
           <span className="text-xs">Messages</span>
         </button>
-        <button className="flex flex-col items-center gap-1 text-muted-foreground" onClick={() => navigate("/matches")}>
+        <button
+          className="flex flex-col items-center gap-1 text-muted-foreground"
+          onClick={() => navigate("/matches")}
+        >
           <Search size={24} />
           <span className="text-xs">Search</span>
         </button>
-        <button className="flex flex-col items-center gap-1 text-muted-foreground" onClick={() => navigate("/profile")}>
+        <button
+          className="flex flex-col items-center gap-1 text-muted-foreground"
+          onClick={() => navigate("/profile")}
+        >
           <User size={24} />
           <span className="text-xs">Profile</span>
         </button>
