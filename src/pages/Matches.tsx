@@ -26,7 +26,7 @@ const profiles: Profile[] = [
     bio: "Love exploring new coffee shops and finding hidden gems in the city. Always up for a good conversation over a cup of coffee!",
     trustBadge: true,
     availability: "Available now",
-    distance: "2 miles away"
+    distance: "2 miles away",
   },
   {
     id: "2",
@@ -37,7 +37,7 @@ const profiles: Profile[] = [
     bio: "Recently moved to the city and looking to make new friends. Love outdoor activities and discovering local bookstores.",
     trustBadge: false,
     availability: "Usually available evenings",
-    distance: "1.5 miles away"
+    distance: "1.5 miles away",
   },
   {
     id: "3",
@@ -48,7 +48,7 @@ const profiles: Profile[] = [
     bio: "Passionate about food photography and trying new restaurants. Always looking for someone to share a meal with!",
     trustBadge: true,
     availability: "Weekends",
-    distance: "3 miles away"
+    distance: "3 miles away",
   },
   {
     id: "4",
@@ -59,8 +59,8 @@ const profiles: Profile[] = [
     bio: "Fitness enthusiast who loves cooking healthy meals and tending to my garden. Looking for like-minded friends!",
     trustBadge: false,
     availability: "Mornings",
-    distance: "4 miles away"
-  }
+    distance: "4 miles away",
+  },
 ];
 
 const Matches = () => {
@@ -69,33 +69,28 @@ const Matches = () => {
   const [likedProfiles, setLikedProfiles] = useState<string[]>([]);
   const [showMatchModal, setShowMatchModal] = useState(false);
 
-  const handleSwipe = (direction: 'left' | 'right') => {
-    if (direction === 'right') {
+  const handleSwipe = (direction: "left" | "right") => {
+    if (direction === "right") {
       const currentProfile = profiles[currentIndex];
-      setLikedProfiles(prev => [...prev, currentProfile.id]);
-      
-      // Check if it's a mutual match (simplified for demo)
+      setLikedProfiles((prev) => [...prev, currentProfile.id]);
+
+      // Simulated mutual match (randomized for demo)
       if (Math.random() > 0.7) {
         setShowMatchModal(true);
       }
     }
-    
+
     if (currentIndex < profiles.length - 1) {
       setCurrentIndex(currentIndex + 1);
     }
   };
 
-  const handleConnect = () => {
-    handleSwipe('right');
-  };
-
-  const handleSkip = () => {
-    handleSwipe('left');
-  };
+  const handleConnect = () => handleSwipe("right");
+  const handleSkip = () => handleSwipe("left");
 
   const handleStartChat = () => {
     setShowMatchModal(false);
-    navigate('/messages');
+    navigate("/messages");
   };
 
   const currentProfile = profiles[currentIndex];
@@ -103,6 +98,7 @@ const Matches = () => {
 
   return (
     <div className="min-h-screen bg-background px-6 py-8">
+      {/* Back Arrow */}
       <button
         onClick={() => navigate(-1)}
         className="mb-6 p-2 hover:bg-muted rounded-full transition-colors"
@@ -133,7 +129,7 @@ const Matches = () => {
           >
             <X className="w-6 h-6 text-red-500" />
           </Button>
-          
+
           <Button
             onClick={handleConnect}
             className="h-14 w-14 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal"
@@ -157,7 +153,7 @@ const Matches = () => {
         {/* Match Modal */}
         {showMatchModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-card rounded-2xl p-8 text-center max-w-sm w-full">
+            <div className="bg-card rounded-2xl p-8 text-center max-w-sm w-full shadow-xl">
               <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Heart className="w-10 h-10 text-white" />
               </div>

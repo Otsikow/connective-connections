@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { triggerHaptic } from "@/lib/haptics";
+import { ArrowLeft } from "lucide-react";
+
 import onboarding1 from "@/assets/onboarding-1.png";
 import onboarding2 from "@/assets/onboarding-2.png";
 import onboarding3 from "@/assets/onboarding-3.png";
@@ -33,40 +35,40 @@ const Onboarding = () => {
   }, []);
 
   const handleNext = () => {
-    triggerHaptic('light');
+    triggerHaptic("light");
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(currentSlide + 1);
     } else {
-      triggerHaptic('success');
+      triggerHaptic("success");
       navigate("/signup");
     }
   };
 
   const handleSkip = () => {
-    triggerHaptic('light');
+    triggerHaptic("light");
     navigate("/signup");
   };
 
   if (showSplash) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
-        <motion.div 
+        <motion.div
           className="flex flex-col items-center"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          <motion.div 
+          <motion.div
             className="w-20 h-20 rounded-2xl bg-[#E8B956] mb-6 shadow-md flex items-center justify-center text-charcoal text-2xl font-bold"
-            animate={{ 
+            animate={{
               rotate: [0, -10, 10, -10, 0],
-              scale: [1, 1.05, 1.05, 1.05, 1]
+              scale: [1, 1.05, 1.05, 1.05, 1],
             }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
           >
             C
           </motion.div>
-          <motion.h1 
+          <motion.h1
             className="text-3xl font-extrabold tracking-tight"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -74,7 +76,7 @@ const Onboarding = () => {
           >
             Connective
           </motion.h1>
-          <motion.p 
+          <motion.p
             className="mt-2 text-muted-foreground"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -89,14 +91,27 @@ const Onboarding = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 py-8">
-      <motion.div 
+      {/* Back Button */}
+      <div className="absolute top-6 left-6">
+        <button
+          onClick={() => {
+            triggerHaptic("light");
+            navigate(-1);
+          }}
+          className="p-2 hover:bg-muted rounded-full"
+        >
+          <ArrowLeft className="w-6 h-6" />
+        </button>
+      </div>
+
+      <motion.div
         className="w-full max-w-md flex flex-col items-center"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
         <AnimatePresence mode="wait">
-          <motion.div 
+          <motion.div
             key={currentSlide}
             className="w-full bg-card rounded-3xl shadow-lg p-8 mb-8"
             initial={{ opacity: 0, x: 100 }}
@@ -112,7 +127,7 @@ const Onboarding = () => {
               animate={{ scale: 1 }}
               transition={{ duration: 0.4 }}
             />
-            <motion.h1 
+            <motion.h1
               className="text-2xl font-bold text-foreground mb-2 text-center"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -151,9 +166,7 @@ const Onboarding = () => {
             <motion.div
               key={index}
               className={`h-2 rounded-full ${
-                index === currentSlide
-                  ? "bg-[#E8B956]"
-                  : "bg-muted"
+                index === currentSlide ? "bg-[#E8B956]" : "bg-muted"
               }`}
               animate={{
                 width: index === currentSlide ? 32 : 8,

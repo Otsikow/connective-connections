@@ -17,6 +17,7 @@ import {
   Search,
   User,
   Calendar as CalendarIcon,
+  ArrowLeft,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -37,13 +38,13 @@ const Home = () => {
       title: "Coffee & Chat",
       date: "Sat, Nov 25, 10:00 AM",
       location: "The Grind Café",
-      image: "/placeholder.svg",
+      image: "/event-placeholder.svg",
     },
     {
       title: "Book Club",
       date: "Sun, Nov 26, 3:00 PM",
       location: "Central Library",
-      image: "/placeholder.svg",
+      image: "/event-placeholder.svg",
     },
     {
       title: "Sunrise Hike",
@@ -64,19 +65,19 @@ const Home = () => {
       name: "Board Game Enthusiasts",
       description: "From Catan to modern classics.",
       members: "1.2k members",
-      image: "/placeholder.svg",
+      image: "/community-placeholder.svg",
     },
     {
       name: "Local Foodies",
       description: "Exploring the best eats in town.",
       members: "2.5k members",
-      image: "/placeholder.svg",
+      image: "/community-placeholder.svg",
     },
     {
       name: "Creative Writers Circle",
       description: "Share your stories and get feedback.",
       members: "850 members",
-      image: "/placeholder.svg",
+      image: "/community-placeholder.svg",
     },
     {
       name: "City Runners",
@@ -91,6 +92,9 @@ const Home = () => {
       {/* Header + Search */}
       <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4">
         <div className="flex items-center justify-between mb-3">
+          <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
+            <ArrowLeft className="w-6 h-6" />
+          </button>
           <h1 className="text-xl font-bold">Connective</h1>
           <Avatar
             className="w-10 h-10 cursor-pointer"
@@ -168,7 +172,13 @@ const Home = () => {
                     >
                       <Card className="border-border">
                         <CardContent className="p-4 flex items-center gap-4">
-                          <div className="w-16 h-16 rounded-xl bg-muted flex-shrink-0" />
+                          <div className="w-16 h-16 rounded-xl bg-muted flex-shrink-0 overflow-hidden ring-2 ring-[#E8B956]/10">
+                            <img
+                              src={community.image}
+                              alt={community.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
                           <div className="flex-1">
                             <h3 className="font-semibold mb-1">
                               {community.name}
@@ -180,8 +190,10 @@ const Home = () => {
                               {community.members}
                             </p>
                           </div>
-                          <button className="w-10 h-10 rounded-full bg-[#E8B956] flex items-center justify-center flex-shrink-0">
-                            <span className="text-xl text-charcoal">+</span>
+                          <button className="w-10 h-10 rounded-full bg-[#E8B956] hover:bg-[#d9a840] flex items-center justify-center flex-shrink-0 transition-colors">
+                            <span className="text-xl text-charcoal font-bold">
+                              +
+                            </span>
                           </button>
                         </CardContent>
                       </Card>
@@ -205,8 +217,15 @@ const Home = () => {
                       key={index}
                       className="basis-[85%] sm:basis-2/3 md:basis-1/2"
                     >
-                      <Card className="border-border overflow-hidden">
-                        <div className="h-40 bg-muted" />
+                      <Card className="border-border overflow-hidden hover:shadow-lg transition-all duration-200">
+                        <div className="h-40 bg-muted flex items-center justify-center relative overflow-hidden">
+                          <img
+                            src={event.image}
+                            alt={event.title}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                        </div>
                         <CardContent className="p-4">
                           <h3 className="font-semibold text-lg mb-2">
                             {event.title}
@@ -217,8 +236,8 @@ const Home = () => {
                           <p className="text-sm text-muted-foreground mb-4">
                             {event.location}
                           </p>
-                          <Button className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal">
-                            Join
+                          <Button className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold">
+                            Join Event
                           </Button>
                         </CardContent>
                       </Card>
@@ -235,11 +254,11 @@ const Home = () => {
 
       {/* Floating Host Event Button */}
       <Button
-        className="fixed bottom-24 right-6 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal shadow-lg"
+        className="fixed bottom-24 right-6 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal shadow-lg flex items-center gap-2"
         onClick={() => navigate("/home")}
       >
         <Plus className="h-5 w-5" />
-        Host an Event
+        Host Event
       </Button>
 
       {/* Bottom Navigation */}
