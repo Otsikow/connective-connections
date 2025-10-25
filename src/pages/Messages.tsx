@@ -94,7 +94,7 @@ const Messages = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <div className="bg-card border-b border-border px-4 py-3 flex items-center gap-3">
+      <div className="bg-card border-b border-border px-3 sm:px-4 py-3 flex items-center gap-2 sm:gap-3">
         <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
@@ -110,9 +110,9 @@ const Messages = () => {
                   </Avatar>
                 ))}
               </div>
-              <div>
-                <h1 className="text-base font-semibold leading-tight">{groupEvent.title}</h1>
-                <p className="text-xs text-muted-foreground">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-sm sm:text-base font-semibold leading-tight truncate">{groupEvent.title}</h1>
+                <p className="text-xs text-muted-foreground truncate">
                   Event group chat · {groupEvent.participants.length + 1} members
                 </p>
               </div>
@@ -128,18 +128,18 @@ const Messages = () => {
               <AvatarFallback>AD</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg font-semibold truncate">Alex Doe</h1>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-base sm:text-lg font-semibold truncate">Alex Doe</h1>
                 <Badge className="bg-green-500 text-white gap-1 text-xs">
                   <Shield className="w-3 h-3" />
                   Verified
                 </Badge>
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground flex-wrap">
                 <div className={`w-2 h-2 rounded-full ${isOnline ? "bg-green-500" : "bg-gray-400"}`} />
-                <span>Available now</span>
-                <Clock className="w-3 h-3" />
-                <span>Usually responds within 5 minutes</span>
+                <span className="whitespace-nowrap">Available now</span>
+                <Clock className="w-3 h-3 hidden sm:inline" />
+                <span className="hidden sm:inline">Usually responds within 5 minutes</span>
               </div>
             </div>
             <div className="flex items-center gap-1">
@@ -158,7 +158,7 @@ const Messages = () => {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+      <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 space-y-4">
         {messages.map((msg) => (
           <div key={msg.id} className={`flex ${msg.isMine ? "justify-end" : "justify-start"}`}>
             <div className={`flex gap-3 max-w-[80%] ${msg.isMine ? "flex-row-reverse" : ""}`}>

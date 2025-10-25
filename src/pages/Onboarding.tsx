@@ -58,27 +58,27 @@ const Onboarding = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 py-8">
-      <div className="absolute top-6 left-6">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 sm:px-6 py-8">
+      <div className="absolute top-4 sm:top-6 left-4 sm:left-6">
         <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
           <ArrowLeft className="w-6 h-6" />
         </button>
       </div>
       <div className="w-full max-w-md flex flex-col items-center animate-fade-in">
-        <div className="w-full bg-card rounded-3xl shadow-lg p-8 mb-8">
+        <div className="w-full bg-card rounded-3xl shadow-lg p-6 sm:p-8 mb-8">
           <img
             src={slides[currentSlide].image}
             alt={slides[currentSlide].title}
             className="w-full h-auto mb-6 rounded-2xl"
           />
-          <h1 className="text-2xl font-bold text-foreground mb-2 text-center">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2 text-center">
             {slides[currentSlide].title}
           </h1>
         </div>
 
         <Button
           onClick={handleNext}
-          className="w-full max-w-md h-14 text-lg font-semibold rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal shadow-md transition-all"
+          className="w-full max-w-md h-12 sm:h-14 text-base sm:text-lg font-semibold rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal shadow-md transition-all"
         >
           Continue
         </Button>

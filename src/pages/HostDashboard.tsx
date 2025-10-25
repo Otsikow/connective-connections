@@ -76,7 +76,7 @@ const HostDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-6">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-card border-b border-border px-6 py-4">
+      <div className="sticky top-0 z-10 bg-card border-b border-border px-4 sm:px-6 py-4">
         <div className="flex items-center gap-4 mb-2">
           <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
             <ArrowLeft className="w-6 h-6" />
@@ -90,9 +90,9 @@ const HostDashboard = () => {
         </div>
       </div>
 
-      <div className="px-6 pt-6">
+      <div className="px-4 sm:px-6 pt-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="flex flex-wrap gap-2 mb-6">
+          <TabsList className="flex flex-wrap gap-2 mb-6 h-auto">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="attendees">Attendees</TabsTrigger>
@@ -102,7 +102,7 @@ const HostDashboard = () => {
 
           {/* Overview Section */}
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
               <Card>
                 <CardHeader className="flex items-center justify-between pb-2">
                   <CardTitle className="text-sm font-medium">Total Events</CardTitle>
@@ -153,7 +153,7 @@ const HostDashboard = () => {
                 <CardTitle>Quick Actions</CardTitle>
                 <CardDescription>Manage your most common host tasks</CardDescription>
               </CardHeader>
-              <CardContent className="grid gap-4 md:grid-cols-2">
+              <CardContent className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                 <button
                   onClick={() => setActiveTab("events")}
                   className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent transition-colors"
@@ -195,7 +195,7 @@ const HostDashboard = () => {
           {/* Analytics Section */}
           <TabsContent value="analytics">
             <Analytics />
-            <div className="grid gap-6 lg:grid-cols-2 mt-6">
+            <div className="grid gap-6 grid-cols-1 lg:grid-cols-2 mt-6">
               <Card>
                 <CardContent className="p-6">
                   <h2 className="text-lg font-semibold mb-2">Attendance Rate</h2>

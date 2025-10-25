@@ -130,7 +130,7 @@ const DepositManagement = () => {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Received</CardTitle>
@@ -175,7 +175,7 @@ const DepositManagement = () => {
           <CardDescription>Track and manage deposits for your events</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -186,7 +186,7 @@ const DepositManagement = () => {
               />
             </div>
             <Select value={selectedEvent} onValueChange={setSelectedEvent}>
-              <SelectTrigger className="w-[250px]">
+              <SelectTrigger className="w-full sm:w-[250px]">
                 <SelectValue placeholder="Filter by event" />
               </SelectTrigger>
               <SelectContent>
@@ -220,8 +220,8 @@ const DepositManagement = () => {
 
             {["all", "received", "pending", "refunded"].map((status) => (
               <TabsContent key={status} value={status}>
-                <div className="rounded-md border">
-                  <Table>
+                <div className="rounded-md border overflow-x-auto">
+                  <Table className="min-w-[700px]">
                     <TableHeader>
                       <TableRow>
                         <TableHead>Transaction ID</TableHead>

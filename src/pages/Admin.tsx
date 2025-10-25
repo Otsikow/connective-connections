@@ -239,7 +239,7 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <div className="bg-card border-b border-border px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+      <div className="bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between sticky top-0 z-10">
         <button
           onClick={() => navigate(-1)}
           className="p-2 hover:bg-muted rounded-full"
@@ -252,9 +252,9 @@ const Admin = () => {
         <Badge variant="secondary">Admin Access</Badge>
       </div>
 
-      <div className="p-6 space-y-6">
+      <div className="p-4 sm:p-6 space-y-6">
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -337,7 +337,7 @@ const Admin = () => {
           </CardHeader>
           <CardContent>
             <div className="rounded-md border overflow-x-auto">
-              <Table>
+              <Table className="min-w-[600px]">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Name</TableHead>

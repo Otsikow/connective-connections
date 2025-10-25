@@ -14,7 +14,7 @@ import { format } from "date-fns";
 const MapEmbed = ({ lat, lng, title }: { lat: number; lng: number; title: string }) => {
   const src = `https://www.google.com/maps?q=${lat},${lng}&z=14&output=embed`;
   return (
-    <div className="w-full h-64 rounded-lg overflow-hidden border border-border">
+    <div className="w-full h-48 sm:h-64 rounded-lg overflow-hidden border border-border">
       <iframe title={`Map: ${title}`} src={src} className="w-full h-full" loading="lazy" />
     </div>
   );
@@ -52,7 +52,7 @@ const EventDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4 flex items-center gap-4">
+      <div className="sticky top-0 z-10 bg-background border-b border-border px-4 sm:px-6 py-4 flex items-center gap-4">
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
           <ArrowLeft size={20} />
         </Button>
@@ -63,9 +63,9 @@ const EventDetail = () => {
         </Avatar>
       </div>
 
-      <div className="px-6 py-6 space-y-6 max-w-4xl mx-auto">
+      <div className="px-4 sm:px-6 py-6 space-y-6 max-w-4xl mx-auto">
         {/* Event Banner */}
-        <div className="h-64 bg-muted rounded-lg relative overflow-hidden">
+        <div className="h-48 sm:h-64 bg-muted rounded-lg relative overflow-hidden">
           <img
             src={event.bannerUrl}
             alt={event.title}
@@ -80,7 +80,7 @@ const EventDetail = () => {
 
         {/* Event Info */}
         <div className="space-y-3">
-          <h2 className="text-2xl font-bold">{event.title}</h2>
+          <h2 className="text-xl sm:text-2xl font-bold">{event.title}</h2>
           <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-1">
               <CalendarClock className="w-4 h-4" /> {format(new Date(event.date), "EEEE, MMMM d, yyyy 'at' h:mm a")}
@@ -110,7 +110,7 @@ const EventDetail = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-3 h-auto">
             <TabsTrigger value="description">Description</TabsTrigger>
             <TabsTrigger value="location">Location</TabsTrigger>
             <TabsTrigger value="attendees">Attendees</TabsTrigger>
@@ -180,7 +180,7 @@ const EventDetail = () => {
                 <CardTitle>Attendees ({event.participants.length})</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                   {event.participants.map((p, index) => (
                     <div key={index} className="flex flex-col items-center text-center">
                       <Avatar className="w-12 h-12 mb-2">

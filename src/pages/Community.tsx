@@ -93,7 +93,7 @@ const Community = () => {
 
   const GroupCard = ({ group }: { group: typeof groups[0] }) => (
     <Card className="border-border overflow-hidden hover:shadow-lg transition-shadow">
-      <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 relative">
+      <div className="h-40 sm:h-48 bg-gradient-to-br from-blue-500 to-purple-600 relative">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute top-4 right-4">
           {group.isPremium && (
@@ -103,13 +103,13 @@ const Community = () => {
             </Badge>
           )}
         </div>
-        <div className="absolute bottom-4 left-4 text-white">
-          <h3 className="text-xl font-bold mb-1">{group.name}</h3>
-          <p className="text-sm opacity-90">{group.category}</p>
+        <div className="absolute bottom-4 left-4 right-4 text-white">
+          <h3 className="text-lg sm:text-xl font-bold mb-1 line-clamp-2">{group.name}</h3>
+          <p className="text-xs sm:text-sm opacity-90">{group.category}</p>
         </div>
       </div>
       
-      <CardContent className="p-6">
+      <CardContent className="p-4 sm:p-6">
         <p className="text-muted-foreground mb-4 overflow-hidden" style={{
           display: '-webkit-box',
           WebkitLineClamp: 3,
@@ -147,7 +147,7 @@ const Community = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4 flex items-center justify-between">
+      <div className="sticky top-0 z-10 bg-background border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between">
         <h1 className="text-xl font-bold">Community Groups</h1>
         <div className="flex items-center gap-3">
           {isPremiumUser && (
@@ -170,7 +170,7 @@ const Community = () => {
         </div>
       </div>
 
-      <div className="px-6 py-6">
+      <div className="px-4 sm:px-6 py-6">
         {/* Search and Filter Section */}
         <div className="mb-6">
           <div className="relative mb-4">
@@ -182,7 +182,7 @@ const Community = () => {
             />
           </div>
           
-          <div className="flex gap-2 overflow-x-auto pb-2">
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {["All", "Books & Literature", "Outdoor & Adventure", "Language & Culture", "Business & Networking", "Arts & Photography", "Food & Cooking"].map((category) => (
               <Badge 
                 key={category} 
@@ -197,12 +197,12 @@ const Community = () => {
 
         {/* Groups Grid */}
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold">Local Groups</h2>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <h2 className="text-xl sm:text-2xl font-bold">Local Groups</h2>
             <span className="text-sm text-muted-foreground">{groups.length} groups found</span>
           </div>
           
-          <div className="grid gap-6">
+          <div className="grid grid-cols-1 gap-6">
             {groups.map((group) => (
               <GroupCard key={group.id} group={group} />
             ))}
@@ -227,7 +227,7 @@ const Community = () => {
       </div>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-6 py-3 flex items-center justify-around">
+      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-2 sm:px-6 py-3 flex items-center justify-around">
         <button className="flex flex-col items-center gap-1 text-muted-foreground" onClick={() => navigate("/home")}>
           <HomeIcon size={24} />
           <span className="text-xs">Home</span>

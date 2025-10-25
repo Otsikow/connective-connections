@@ -247,7 +247,7 @@ const Signup = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background px-6 py-8">
+    <div className="min-h-screen bg-background px-4 sm:px-6 py-8">
       <div className="max-w-md mx-auto">
         <button
           onClick={() => (step === 1 ? navigate(-1) : back())}
@@ -256,7 +256,7 @@ const Signup = () => {
           <ArrowLeft className="w-6 h-6" />
         </button>
 
-        <h1 className="text-2xl font-bold text-center mb-2">
+        <h1 className="text-xl sm:text-2xl font-bold text-center mb-2">
           Let's Get You Set Up
         </h1>
 
@@ -333,20 +333,20 @@ const Signup = () => {
               <Button
                 disabled={!canContinueFromAuth || isSendingCode}
                 onClick={handleSendCode}
-                className="h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal"
+                className="h-11 sm:h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal text-sm sm:text-base"
               >
                 Continue
               </Button>
               <Button
                 variant="outline"
-                className="h-12 rounded-full"
+                className="h-11 sm:h-12 rounded-full text-sm sm:text-base"
                 onClick={() => handleOAuth("google")}
               >
                 Continue with Google
               </Button>
               <Button
                 variant="outline"
-                className="h-12 rounded-full"
+                className="h-11 sm:h-12 rounded-full text-sm sm:text-base"
                 onClick={() => handleOAuth("apple")}
               >
                 Continue with Apple

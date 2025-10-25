@@ -127,9 +127,9 @@ const AttendeeApproval = () => {
           <CardDescription>Review and approve attendees for your events</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <Select value={selectedEvent} onValueChange={setSelectedEvent}>
-              <SelectTrigger className="w-[250px]">
+              <SelectTrigger className="w-full sm:w-[250px]">
                 <SelectValue placeholder="Filter by event" />
               </SelectTrigger>
               <SelectContent>
@@ -150,8 +150,8 @@ const AttendeeApproval = () => {
 
             {["all", "pending", "approved", "rejected"].map((status) => (
               <TabsContent key={status} value={status}>
-                <div className="rounded-md border">
-                  <Table>
+                <div className="rounded-md border overflow-x-auto">
+                  <Table className="min-w-[700px]">
                     <TableHeader>
                       <TableRow>
                         <TableHead>Attendee</TableHead>

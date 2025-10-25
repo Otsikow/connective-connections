@@ -105,10 +105,10 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
     >
       <Card className="h-full border-border overflow-hidden shadow-2xl animate-fade-in">
         {/* Photo Section */}
-        <div className="relative h-96 bg-gradient-to-br from-blue-400 to-purple-500">
+        <div className="relative h-72 sm:h-96 bg-gradient-to-br from-blue-400 to-purple-500">
           <div className="absolute inset-0 bg-black/20" />
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-48 h-48 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white/30" />
+            <div className="w-32 h-32 sm:w-48 sm:h-48 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white/30" />
           </div>
           
           {/* Trust Badge */}
@@ -134,27 +134,27 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
           {/* Swipe Indicators */}
           <div className="absolute inset-0 pointer-events-none">
             {dragOffset.x > 50 && (
-              <div className="absolute top-1/2 left-8 transform -translate-y-1/2">
-                <div className="w-16 h-16 rounded-full bg-green-500/80 flex items-center justify-center">
-                  <Heart className="w-8 h-8 text-white" />
+              <div className="absolute top-1/2 left-4 sm:left-8 transform -translate-y-1/2">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-green-500/80 flex items-center justify-center">
+                  <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
               </div>
             )}
             {dragOffset.x < -50 && (
-              <div className="absolute top-1/2 right-8 transform -translate-y-1/2">
-                <div className="w-16 h-16 rounded-full bg-red-500/80 flex items-center justify-center">
-                  <X className="w-8 h-8 text-white" />
+              <div className="absolute top-1/2 right-4 sm:right-8 transform -translate-y-1/2">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-red-500/80 flex items-center justify-center">
+                  <X className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
               </div>
             )}
           </div>
         </div>
 
-        <CardContent className="p-6 text-center">
+        <CardContent className="p-4 sm:p-6 text-center">
           {/* Name and Age */}
           <div className="mb-4">
-            <h2 className="text-3xl font-bold mb-1">{profile.name}</h2>
-            <p className="text-lg text-muted-foreground">{profile.age} years old</p>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-1">{profile.name}</h2>
+            <p className="text-base sm:text-lg text-muted-foreground">{profile.age} years old</p>
             {profile.distance && (
               <p className="text-sm text-muted-foreground">{profile.distance} away</p>
             )}
@@ -181,9 +181,9 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
           {/* CTA Button */}
           <Button
             onClick={onConnect}
-            className="w-full h-14 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold gap-2 text-lg"
+            className="w-full h-12 sm:h-14 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold gap-2 text-base sm:text-lg"
           >
-            <Coffee className="w-5 h-5" />
+            <Coffee className="w-4 h-4 sm:w-5 sm:h-5" />
             Let's grab coffee!
           </Button>
         </CardContent>

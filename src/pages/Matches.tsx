@@ -97,7 +97,7 @@ const Matches = () => {
   const isLastProfile = currentIndex >= profiles.length - 1;
 
   return (
-    <div className="min-h-screen bg-background px-6 py-8">
+    <div className="min-h-screen bg-background px-4 sm:px-6 py-8">
       {/* Back Arrow */}
       <button
         onClick={() => navigate(-1)}
@@ -108,7 +108,7 @@ const Matches = () => {
 
       <div className="max-w-md mx-auto">
         {/* Card Stack Container */}
-        <div className="relative h-[600px] mb-6">
+        <div className="relative h-[500px] sm:h-[600px] mb-6">
           {profiles.slice(currentIndex, currentIndex + 3).map((profile, index) => (
             <SwipeCard
               key={profile.id}
@@ -140,12 +140,12 @@ const Matches = () => {
 
         {/* Status Message */}
         {isLastProfile ? (
-          <div className="text-center text-muted-foreground">
-            <p className="text-lg mb-2">No more profiles to show</p>
-            <p className="text-sm">Check back later for new matches!</p>
+          <div className="text-center text-muted-foreground px-4">
+            <p className="text-base sm:text-lg mb-2">No more profiles to show</p>
+            <p className="text-xs sm:text-sm">Check back later for new matches!</p>
           </div>
         ) : (
-          <div className="text-center text-muted-foreground text-sm">
+          <div className="text-center text-muted-foreground text-xs sm:text-sm px-4">
             Swipe right to connect, left to skip
           </div>
         )}
@@ -153,7 +153,7 @@ const Matches = () => {
         {/* Match Modal */}
         {showMatchModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-card rounded-2xl p-8 text-center max-w-sm w-full shadow-xl">
+            <div className="bg-card rounded-2xl p-6 sm:p-8 text-center max-w-sm w-full shadow-xl">
               <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Heart className="w-10 h-10 text-white" />
               </div>
