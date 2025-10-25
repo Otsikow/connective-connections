@@ -10,10 +10,10 @@ import Home from "./pages/Home";
 import Matches from "./pages/Matches";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import Events from "./pages/Events";
 import EventDetail from "./pages/EventDetail";
-import Admin from "./pages/Admin";
 import HostDashboard from "./pages/HostDashboard";
 
 const queryClient = new QueryClient();

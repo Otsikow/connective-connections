@@ -1,109 +1,112 @@
+// src/pages/Admin.tsx
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Send, Users } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  ArrowLeft,
+  Shield,
+  Mail,
+  Users,
+  Settings,
+  Send,
+} from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface Profile {
   id: string;
   full_name: string | null;
   created_at: string;
-}
-
-interface ProfileWithEmail extends Profile {
-  email: string | null;
-  loading: boolean;
+  email?: string | null;
+  loading?: boolean;
 }
 
 const Admin = () => {
-  const [profiles, setProfiles] = useState<ProfileWithEmail[]>([]);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [emailSubject, setEmailSubject] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
-  const { toast } = useToast();
-  const navigate = useNavigate();
 
+  // ✅ Verify current user is admin
   useEffect(() => {
-    checkAdminAccess();
+    const verifyAdmin = async () => {
+      try {
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+          setError("Not authenticated");
+          setLoading(false);
+          return;
+        }
+
+        const role =
+          user.user_metadata?.role ||
+          user.app_metadata?.role ||
+          (user.email?.endsWith("@admin.connective.com") ? "admin" : "user");
+
+        if (role !== "admin") {
+          setError("Access denied: admin only");
+          setLoading(false);
+          return;
+        }
+
+        setIsAdmin(true);
+        await loadProfiles();
+      } catch (err) {
+        console.error("Error verifying admin:", err);
+        setError("Failed to verify admin");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifyAdmin();
   }, []);
 
-  const checkAdminAccess = async () => {
-    try {
-      // First, verify the user is authenticated
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      
-      if (userError || !user) {
-        toast({
-          title: "Authentication required",
-          description: "Please log in to access this page",
-          variant: "destructive",
-        });
-        navigate("/");
-        return;
-      }
-
-      // Check if user has admin role
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-      if (profileError || !profile || profile.role !== 'admin') {
-        toast({
-          title: "Access Denied",
-          description: "You don't have permission to access this page",
-          variant: "destructive",
-        });
-        navigate("/");
-        return;
-      }
-
-      // If admin, load all profiles
-      await loadProfiles();
-    } catch (error) {
-      console.error('Error checking admin access:', error);
-      toast({
-        title: "Error",
-        description: "Failed to verify admin access",
-        variant: "destructive",
-      });
-      navigate("/");
-    }
-  };
-
+  // ✅ Load user profiles
   const loadProfiles = async () => {
     try {
       setLoading(true);
-      
-      // Fetch all profiles (regular query, no admin privileges needed)
-      const { data: profilesData, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, created_at')
-        .order('created_at', { ascending: false });
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, full_name, created_at")
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
-
-      // Initialize profiles with loading state for emails
-      setProfiles(
-        (profilesData || []).map(profile => ({
-          ...profile,
-          email: null,
-          loading: false,
-        }))
-      );
-    } catch (error) {
-      console.error('Error loading profiles:', error);
+      setProfiles(data || []);
+    } catch (err) {
+      console.error("Error loading profiles:", err);
       toast({
         title: "Error",
-        description: "Failed to load user profiles",
+        description: "Failed to load profiles",
         variant: "destructive",
       });
     } finally {
@@ -111,73 +114,47 @@ const Admin = () => {
     }
   };
 
-  /**
-   * SECURE: Fetch user email through a protected edge function
-   * This function calls a server-side edge function that:
-   * 1. Verifies the caller is authenticated
-   * 2. Verifies the caller has admin role
-   * 3. Uses service role key server-side to fetch the email
-   * 
-   * This is the CORRECT way to access admin APIs - never call auth.admin
-   * methods directly from the client as they require service role key.
-   */
+  // ✅ Securely fetch a user’s email through Edge Function
   const fetchUserEmail = async (userId: string, index: number) => {
     try {
-      // Update loading state for this specific profile
-      setProfiles(prev => 
-        prev.map((p, i) => i === index ? { ...p, loading: true } : p)
+      setProfiles((prev) =>
+        prev.map((p, i) => (i === index ? { ...p, loading: true } : p))
       );
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not logged in");
 
-      // Get the current session to include the auth token
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        throw new Error('No active session');
-      }
-
-      // Call the secure edge function with proper authorization
-      const response = await fetch(
+      const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-user-email?userId=${userId}`,
         {
-          method: 'GET',
           headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
           },
         }
       );
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to fetch email');
-      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to load email");
 
-      const data = await response.json();
-      
-      // Update the profile with the fetched email
-      setProfiles(prev => 
-        prev.map((p, i) => 
+      setProfiles((prev) =>
+        prev.map((p, i) =>
           i === index ? { ...p, email: data.email, loading: false } : p
         )
       );
-    } catch (error) {
-      console.error('Error fetching user email:', error);
-      setProfiles(prev => 
-        prev.map((p, i) => 
-          i === index ? { ...p, email: 'Error loading email', loading: false } : p
+    } catch (err) {
+      console.error("Error fetching email:", err);
+      setProfiles((prev) =>
+        prev.map((p, i) =>
+          i === index
+            ? { ...p, email: "Error loading email", loading: false }
+            : p
         )
       );
     }
   };
 
-  /**
-   * SECURE: Send bulk email through a protected edge function
-   * This function calls a server-side edge function that:
-   * 1. Verifies the caller is authenticated
-   * 2. Verifies the caller has admin role
-   * 3. Uses service role key server-side to query all profiles
-   * 4. Sends emails only after authorization checks pass
-   */
+  // ✅ Send bulk email through Edge Function
   const handleSendBulkEmail = async () => {
     if (!emailSubject.trim() || !emailMessage.trim()) {
       toast({
@@ -190,22 +167,18 @@ const Admin = () => {
 
     try {
       setSendingEmail(true);
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not logged in");
 
-      // Get the current session to include the auth token
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        throw new Error('No active session');
-      }
-
-      // Call the secure edge function with proper authorization
-      const response = await fetch(
+      const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-bulk-email`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
             subject: emailSubject,
@@ -214,26 +187,18 @@ const Admin = () => {
         }
       );
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to send bulk email');
-      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to send email");
 
-      const data = await response.json();
-
-      toast({
-        title: "Success",
-        description: data.message,
-      });
-
-      // Clear form
+      toast({ title: "Success", description: data.message || "Emails sent!" });
       setEmailSubject("");
       setEmailMessage("");
-    } catch (error) {
-      console.error('Error sending bulk email:', error);
+    } catch (err: any) {
+      console.error("Bulk email error:", err);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to send bulk email",
+        description:
+          err instanceof Error ? err.message : "Failed to send emails",
         variant: "destructive",
       });
     } finally {
@@ -241,35 +206,94 @@ const Admin = () => {
     }
   };
 
-  if (loading) {
+  // 🌀 Loading screen
+  if (loading)
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading admin panel...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Shield className="w-8 h-8 animate-spin text-primary" />
+        <p className="ml-2 text-muted-foreground">Verifying admin access…</p>
       </div>
     );
-  }
 
+  // 🚫 Access Denied
+  if (error || !isAdmin)
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Card className="w-full max-w-md text-center">
+          <CardHeader>
+            <CardTitle className="text-destructive">Access Denied</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">
+              {error || "You do not have admin privileges."}
+            </p>
+            <Button onClick={() => navigate("/home")} className="w-full">
+              Return Home
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+
+  // ✅ Main Admin Panel
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <div className="bg-card border-b border-border px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-        <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 hover:bg-muted rounded-full"
+        >
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-lg font-semibold">Admin Panel</h1>
-        <div className="w-10"></div>
+        <h1 className="text-lg font-semibold flex items-center gap-2">
+          <Shield className="w-5 h-5" /> Admin Dashboard
+        </h1>
+        <Badge variant="secondary">Admin Access</Badge>
       </div>
 
-      <div className="px-6 py-8 space-y-6">
-        {/* Bulk Email Section */}
+      <div className="p-6 space-y-6">
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="w-4 h-4" /> Total Users
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold">{profiles.length}</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Mail className="w-4 h-4" /> Email Campaigns
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold">—</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="w-4 h-4" /> System Status
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-green-600 font-bold">Online</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Bulk Email */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Send className="w-5 h-5" />
-              Send Bulk Email
+              <Send className="w-5 h-5" /> Send Bulk Email
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -277,48 +301,42 @@ const Admin = () => {
               <Label htmlFor="subject">Subject</Label>
               <Input
                 id="subject"
-                placeholder="Email subject"
                 value={emailSubject}
                 onChange={(e) => setEmailSubject(e.target.value)}
+                placeholder="Email subject"
               />
             </div>
             <div>
               <Label htmlFor="message">Message</Label>
               <Textarea
                 id="message"
-                placeholder="Email message"
-                rows={6}
                 value={emailMessage}
                 onChange={(e) => setEmailMessage(e.target.value)}
+                placeholder="Email message"
+                rows={6}
               />
             </div>
             <Button
               onClick={handleSendBulkEmail}
-              disabled={sendingEmail || !emailSubject.trim() || !emailMessage.trim()}
+              disabled={sendingEmail}
               className="w-full"
             >
-              {sendingEmail ? "Sending..." : `Send to ${profiles.length} users`}
+              {sendingEmail
+                ? "Sending..."
+                : `Send to ${profiles.length || 0} users`}
             </Button>
-            <p className="text-sm text-muted-foreground">
-              ✓ Secure: Requires admin authentication
-              <br />
-              ✓ Authorization checked server-side
-              <br />
-              ✓ Uses protected edge function
-            </p>
           </CardContent>
         </Card>
 
-        {/* User Management Section */}
+        {/* User Management */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Users className="w-5 h-5" />
-              User Management ({profiles.length} users)
+              <Users className="w-5 h-5" /> User Management
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="rounded-md border">
+            <div className="rounded-md border overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -330,18 +348,17 @@ const Admin = () => {
                 <TableBody>
                   {profiles.map((profile, index) => (
                     <TableRow key={profile.id}>
-                      <TableCell>{profile.full_name || 'N/A'}</TableCell>
+                      <TableCell>{profile.full_name || "N/A"}</TableCell>
                       <TableCell>
                         {profile.email ? (
                           profile.email
                         ) : profile.loading ? (
-                          <span className="text-muted-foreground">Loading...</span>
+                          <span className="text-muted-foreground">Loading…</span>
                         ) : (
                           <Button
                             variant="link"
                             size="sm"
                             onClick={() => fetchUserEmail(profile.id, index)}
-                            className="h-auto p-0"
                           >
                             Load Email
                           </Button>
@@ -355,13 +372,6 @@ const Admin = () => {
                 </TableBody>
               </Table>
             </div>
-            <p className="text-sm text-muted-foreground mt-4">
-              ✓ Secure: Email fetching uses protected edge function
-              <br />
-              ✓ Never calls auth.admin APIs from client
-              <br />
-              ✓ Authorization verified server-side
-            </p>
           </CardContent>
         </Card>
       </div>

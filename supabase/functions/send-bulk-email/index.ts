@@ -1,148 +1,179 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+// supabase/functions/send-bulk-email/index.ts
+import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.42.3";
 
+// --- CORS headers ---
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
+
+// --- Interfaces ---
+interface BulkEmailRequest {
+  subject: string;
+  message: string;
 }
 
-interface EmailPayload {
-  subject: string
+interface UserProfile {
+  id: string;
+  email: string;
+  full_name?: string;
+}
+
+// --- Verify admin role ---
+async function verifyAdminRole(authHeader: string): Promise<boolean> {
+  try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error || !user) {
+      console.error("Auth error:", error);
+      return false;
+    }
+
+    const role =
+      user.user_metadata?.role ||
+      user.app_metadata?.role ||
+      (user.email?.endsWith("@admin.connective.com") ? "admin" : "user");
+
+    return role === "admin";
+  } catch (err) {
+    console.error("Error verifying admin role:", err);
+    return false;
+  }
+}
+
+// --- Placeholder email sender (replace with Resend/SendGrid integration) ---
+async function sendEmail(
+  to: string,
+  subject: string,
   message: string
+): Promise<boolean> {
+  try {
+    console.log(`Queued email to ${to}: ${subject}`);
+    // Example integration:
+    // await fetch('https://api.resend.com/emails', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({
+    //     from: 'noreply@connective.com',
+    //     to: [to],
+    //     subject,
+    //     html: message,
+    //   }),
+    // });
+    return true;
+  } catch (err) {
+    console.error("Error sending email:", err);
+    return false;
+  }
 }
 
-serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+// --- Main handler ---
+serve(async (req: Request) => {
+  // Handle CORS
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    // CRITICAL: Verify the request has an authorization header
-    const authHeader = req.headers.get('Authorization')
+    const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(
-        JSON.stringify({ error: 'Missing authorization header' }),
-        { 
-          status: 401, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        JSON.stringify({ error: "Missing Authorization header" }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
-      )
+      );
     }
 
-    // Create a Supabase client with the auth header to verify the user
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: authHeader },
-        },
-      }
-    )
-
-    // CRITICAL: Verify the user is authenticated
-    const {
-      data: { user },
-      error: userError,
-    } = await supabaseClient.auth.getUser()
-
-    if (userError || !user) {
+    // Verify admin
+    const isAdmin = await verifyAdminRole(authHeader);
+    if (!isAdmin) {
       return new Response(
-        JSON.stringify({ error: 'Invalid authentication' }),
-        { 
-          status: 401, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        JSON.stringify({ error: "Forbidden: Admin access required" }),
+        {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
-      )
+      );
     }
 
-    // CRITICAL: Check if the user has admin role in the profiles table
-    const { data: profile, error: profileError } = await supabaseClient
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    if (profileError || !profile || profile.role !== 'admin') {
-      return new Response(
-        JSON.stringify({ 
-          error: 'Unauthorized: Admin privileges required',
-          details: 'Only administrators can send bulk emails'
-        }),
-        { 
-          status: 403, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      )
-    }
-
-    // Parse the request body
-    const { subject, message }: EmailPayload = await req.json()
-
+    // Parse request body
+    const { subject, message }: BulkEmailRequest = await req.json();
     if (!subject || !message) {
       return new Response(
-        JSON.stringify({ error: 'Subject and message are required' }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        JSON.stringify({ error: "Subject and message are required" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
-      )
+      );
     }
 
-    // Now that we've verified the user is an admin, we can use the service role
-    // client to query all profiles and send emails
+    // Create Supabase admin client
     const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    )
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
 
-    // Fetch all profiles with emails
+    // Fetch all user emails (excluding admins)
     const { data: profiles, error: fetchError } = await supabaseAdmin
-      .from('profiles')
-      .select('id, email')
-      .not('email', 'is', null)
+      .from("profiles")
+      .select("email")
+      .neq("role", "admin")
+      .not("email", "is", null);
 
     if (fetchError) {
-      throw fetchError
+      console.error("Error fetching profiles:", fetchError);
+      throw new Error("Failed to fetch user profiles");
     }
 
-    // In a real implementation, you would integrate with an email service here
-    // For now, we'll just log that we would send emails
-    console.log(`Admin ${user.email} initiated bulk email to ${profiles?.length || 0} users`)
-    console.log(`Subject: ${subject}`)
-    console.log(`Message preview: ${message.substring(0, 100)}...`)
+    // Send emails (parallel)
+    const emailResults = await Promise.allSettled(
+      (profiles || []).map((p: UserProfile) =>
+        sendEmail(p.email, subject, message)
+      )
+    );
 
-    // TODO: Integrate with Resend, SendGrid, AWS SES, or another email service
-    // Example:
-    // for (const profile of profiles || []) {
-    //   await sendEmail({
-    //     to: profile.email,
-    //     subject,
-    //     html: message,
-    //   })
-    // }
+    const successful = emailResults.filter(
+      (r) => r.status === "fulfilled" && r.value
+    ).length;
+
+    const failed = emailResults.length - successful;
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: `Bulk email queued for ${profiles?.length || 0} recipients`,
-        adminUser: user.email
+      JSON.stringify({
+        success: true,
+        message: "Bulk email operation completed",
+        total: profiles?.length || 0,
+        successful,
+        failed,
       }),
-      { 
-        status: 200, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
-    )
-
-  } catch (error) {
-    console.error('Error in send-bulk-email function:', error)
+    );
+  } catch (err) {
+    console.error("send-bulk-email error:", err);
     return new Response(
-      JSON.stringify({ error: error.message || 'Internal server error' }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      JSON.stringify({
+        error: err instanceof Error ? err.message : "Internal server error",
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
-    )
+    );
   }
-})
+});
