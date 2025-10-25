@@ -11,92 +11,119 @@ import {
   Users,
   MapPin,
   Calendar,
-  Crown
+  Crown,
+  Loader2
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { CreateGroupDialog } from "@/components/CreateGroupDialog";
+import { useToast } from "@/hooks/use-toast";
+
+interface Group {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  location: string;
+  image_url: string | null;
+  next_meeting: string | null;
+  is_premium: boolean;
+  created_at: string;
+  member_count?: number;
+}
 
 const Community = () => {
   const navigate = useNavigate();
-
-  // Mock data for groups
-  const groups = [
-    {
-      id: 1,
-      name: "Book Club Enthusiasts",
-      description: "Join us for monthly book discussions, author meetups, and literary adventures. We read everything from classics to contemporary fiction.",
-      image: "/placeholder.svg",
-      members: 156,
-      location: "Downtown Library",
-      category: "Books & Literature",
-      nextMeeting: "Dec 15, 2024",
-      isPremium: false
-    },
-    {
-      id: 2,
-      name: "Mountain Hiking Team",
-      description: "Explore local trails, national parks, and challenging peaks. All skill levels welcome! We organize weekly hikes and camping trips.",
-      image: "/placeholder.svg",
-      members: 89,
-      location: "Various Trails",
-      category: "Outdoor & Adventure",
-      nextMeeting: "Dec 8, 2024",
-      isPremium: false
-    },
-    {
-      id: 3,
-      name: "Spanish Language Exchange",
-      description: "Practice Spanish with native speakers and fellow learners. We meet weekly for conversations, games, and cultural activities.",
-      image: "/placeholder.svg",
-      members: 234,
-      location: "Community Center",
-      category: "Language & Culture",
-      nextMeeting: "Dec 12, 2024",
-      isPremium: false
-    },
-    {
-      id: 4,
-      name: "Tech Startup Founders",
-      description: "Exclusive networking group for startup founders and entrepreneurs. Share experiences, get advice, and build valuable connections.",
-      image: "/placeholder.svg",
-      members: 67,
-      location: "Co-working Space",
-      category: "Business & Networking",
-      nextMeeting: "Dec 20, 2024",
-      isPremium: true
-    },
-    {
-      id: 5,
-      name: "Photography Walkers",
-      description: "Capture the beauty of our city through photography. We explore different neighborhoods, parks, and landmarks every weekend.",
-      image: "/placeholder.svg",
-      members: 123,
-      location: "City Center",
-      category: "Arts & Photography",
-      nextMeeting: "Dec 14, 2024",
-      isPremium: false
-    },
-    {
-      id: 6,
-      name: "Cooking Masters Club",
-      description: "Learn new recipes, cooking techniques, and culinary skills. We host cooking classes, potlucks, and restaurant visits.",
-      image: "/placeholder.svg",
-      members: 178,
-      location: "Culinary School",
-      category: "Food & Cooking",
-      nextMeeting: "Dec 18, 2024",
-      isPremium: false
-    }
-  ];
-
-  // Mock user premium status
+  const { toast } = useToast();
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  // Mock user premium status - in real app, fetch from user profile
   const isPremiumUser = true;
 
-  const GroupCard = ({ group }: { group: typeof groups[0] }) => (
+  // Fetch groups from Supabase
+  const fetchGroups = async () => {
+    try {
+      setIsLoading(true);
+      
+      let query = supabase
+        .from("groups")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      const { data, error } = await query;
+
+      if (error) {
+        throw error;
+      }
+
+      // Fetch member counts for each group
+      const groupsWithCounts = await Promise.all(
+        (data || []).map(async (group) => {
+          const { count } = await supabase
+            .from("group_members")
+            .select("*", { count: "exact", head: true })
+            .eq("group_id", group.id);
+          
+          return {
+            ...group,
+            member_count: count || 0
+          };
+        })
+      );
+
+      setGroups(groupsWithCounts);
+    } catch (error: any) {
+      console.error("Error fetching groups:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load groups. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchGroups();
+  }, []);
+
+  // Filter groups based on search and category
+  const filteredGroups = groups.filter((group) => {
+    const matchesSearch = group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         group.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === "All" || group.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "TBA";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", { 
+      month: "short", 
+      day: "numeric", 
+      year: "numeric" 
+    });
+  };
+
+  const GroupCard = ({ group }: { group: Group }) => (
     <Card className="border-border overflow-hidden hover:shadow-lg transition-shadow">
-      <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 relative">
+      <div 
+        className="h-48 relative bg-cover bg-center"
+        style={{
+          backgroundImage: group.image_url 
+            ? `url(${group.image_url})` 
+            : "linear-gradient(to bottom right, rgb(59, 130, 246), rgb(147, 51, 234))"
+        }}
+      >
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute top-4 right-4">
-          {group.isPremium && (
+          {group.is_premium && (
             <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200">
               <Crown className="w-3 h-3 mr-1" />
               Premium
@@ -119,7 +146,7 @@ const Community = () => {
         <div className="space-y-2 mb-4">
           <div className="flex items-center text-sm text-muted-foreground">
             <Users className="w-4 h-4 mr-2" />
-            <span>{group.members} members</span>
+            <span>{group.member_count || 0} members</span>
           </div>
           <div className="flex items-center text-sm text-muted-foreground">
             <MapPin className="w-4 h-4 mr-2" />
@@ -127,7 +154,7 @@ const Community = () => {
           </div>
           <div className="flex items-center text-sm text-muted-foreground">
             <Calendar className="w-4 h-4 mr-2" />
-            <span>Next meeting: {group.nextMeeting}</span>
+            <span>Next meeting: {formatDate(group.next_meeting)}</span>
           </div>
         </div>
         
@@ -154,10 +181,7 @@ const Community = () => {
             <Button 
               size="sm" 
               className="bg-[#E8B956] hover:bg-[#d9a840] text-charcoal rounded-full"
-              onClick={() => {
-                // Handle create group functionality
-                console.log("Create new group");
-              }}
+              onClick={() => setIsCreateDialogOpen(true)}
             >
               <Plus className="w-4 h-4 mr-2" />
               Create Group
@@ -178,6 +202,8 @@ const Community = () => {
             <input
               type="text"
               placeholder="Search groups..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-border rounded-full bg-background focus:outline-none focus:ring-2 focus:ring-[#E8B956] focus:border-transparent"
             />
           </div>
@@ -186,8 +212,9 @@ const Community = () => {
             {["All", "Books & Literature", "Outdoor & Adventure", "Language & Culture", "Business & Networking", "Arts & Photography", "Food & Cooking"].map((category) => (
               <Badge 
                 key={category} 
-                variant={category === "All" ? "default" : "outline"}
+                variant={category === selectedCategory ? "default" : "outline"}
                 className="whitespace-nowrap cursor-pointer hover:bg-[#E8B956] hover:text-charcoal"
+                onClick={() => setSelectedCategory(category)}
               >
                 {category}
               </Badge>
@@ -199,14 +226,39 @@ const Community = () => {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold">Local Groups</h2>
-            <span className="text-sm text-muted-foreground">{groups.length} groups found</span>
+            <span className="text-sm text-muted-foreground">{filteredGroups.length} groups found</span>
           </div>
           
-          <div className="grid gap-6">
-            {groups.map((group) => (
-              <GroupCard key={group.id} group={group} />
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-[#E8B956]" />
+            </div>
+          ) : filteredGroups.length === 0 ? (
+            <Card className="p-12 text-center">
+              <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <h3 className="text-xl font-semibold mb-2">No groups found</h3>
+              <p className="text-muted-foreground mb-4">
+                {searchQuery || selectedCategory !== "All" 
+                  ? "Try adjusting your search or filters"
+                  : "Be the first to create a group!"}
+              </p>
+              {isPremiumUser && (
+                <Button 
+                  className="bg-[#E8B956] hover:bg-[#d9a840] text-charcoal rounded-full"
+                  onClick={() => setIsCreateDialogOpen(true)}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Group
+                </Button>
+              )}
+            </Card>
+          ) : (
+            <div className="grid gap-6">
+              {filteredGroups.map((group) => (
+                <GroupCard key={group.id} group={group} />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Premium CTA */}
@@ -225,6 +277,13 @@ const Community = () => {
           </Card>
         )}
       </div>
+
+      {/* Create Group Dialog */}
+      <CreateGroupDialog 
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+        onGroupCreated={fetchGroups}
+      />
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-6 py-3 flex items-center justify-around">
