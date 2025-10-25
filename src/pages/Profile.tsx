@@ -1,26 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  Button 
-} from "@/components/ui/button";
-import { 
-  Card, CardContent, CardHeader, CardTitle 
-} from "@/components/ui/card";
-import { 
-  Avatar, AvatarFallback, AvatarImage 
-} from "@/components/ui/avatar";
-import { 
-  Badge 
-} from "@/components/ui/badge";
-import { 
-  Tabs, TabsContent, TabsList, TabsTrigger 
-} from "@/components/ui/tabs";
-import { 
-  Switch 
-} from "@/components/ui/switch";
-import { 
-  Separator 
-} from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
 import {
   ArrowLeft,
   Settings,
@@ -38,14 +24,14 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  Plus
+  Plus,
 } from "lucide-react";
 
 const Profile = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("friends");
 
-  // Mock data
+  // Profile mock data
   const profile = {
     name: "Jane Doe",
     location: "San Francisco, CA",
@@ -114,19 +100,21 @@ const Profile = () => {
         </button>
       </div>
 
+      {/* Main Content */}
       <div className="px-6 py-6 space-y-6">
         {/* Profile Header */}
         <div className="flex flex-col items-center text-center">
           <div className="relative mb-2">
-            <Avatar className="w-32 h-32">
+            <Avatar className="w-32 h-32 ring-4 ring-[#E8B956]/20">
               <AvatarImage src="/placeholder.svg" />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
-            {profile.isPremium && (
-              <div className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full p-1">
-                <Crown className="w-6 h-6 text-white" />
-              </div>
-            )}
+
+            {/* Trust Score */}
+            <div className="absolute -bottom-2 -right-2 flex items-center gap-1 rounded-full bg-[#E8B956] px-3 py-1 text-xs font-bold text-black shadow-lg">
+              <Star className="w-3.5 h-3.5" />
+              <span>{profile.trustScore}</span>
+            </div>
           </div>
 
           <h2 className="text-2xl font-bold mb-2">{profile.name}</h2>
@@ -139,7 +127,6 @@ const Profile = () => {
             <span>Joined {profile.joinedDate}</span>
           </div>
 
-          {/* Trust Score */}
           <div className="flex items-center gap-2 px-4 py-2 bg-yellow-100 rounded-full mb-4">
             <Star className="w-5 h-5 text-yellow-500" fill="#E8B956" />
             <span className="font-semibold">Trust Score: {profile.trustScore}</span>
@@ -150,9 +137,7 @@ const Profile = () => {
         <Card className="border-border">
           <CardContent className="p-6">
             <h3 className="font-semibold text-lg mb-3">About Me</h3>
-            <p className="text-muted-foreground leading-relaxed mb-4">
-              {profile.bio}
-            </p>
+            <p className="text-muted-foreground leading-relaxed mb-4">{profile.bio}</p>
             <div className="flex flex-wrap gap-2">
               {profile.interests.map((interest, i) => (
                 <Badge key={i} variant="secondary" className="text-sm">
@@ -179,13 +164,21 @@ const Profile = () => {
           </Card>
         )}
 
-        {/* Tabs */}
+        {/* Tabs Section */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="friends"><Users className="w-4 h-4 mr-2" />Friends</TabsTrigger>
-            <TabsTrigger value="events"><Calendar className="w-4 h-4 mr-2" />Events</TabsTrigger>
-            <TabsTrigger value="badges"><Award className="w-4 h-4 mr-2" />Badges</TabsTrigger>
-            <TabsTrigger value="settings"><Settings className="w-4 h-4 mr-2" />Settings</TabsTrigger>
+            <TabsTrigger value="friends">
+              <Users className="w-4 h-4 mr-2" /> Friends
+            </TabsTrigger>
+            <TabsTrigger value="events">
+              <Calendar className="w-4 h-4 mr-2" /> Events
+            </TabsTrigger>
+            <TabsTrigger value="badges">
+              <Award className="w-4 h-4 mr-2" /> Badges
+            </TabsTrigger>
+            <TabsTrigger value="settings">
+              <Settings className="w-4 h-4 mr-2" /> Settings
+            </TabsTrigger>
           </TabsList>
 
           {/* Friends */}
@@ -193,16 +186,16 @@ const Profile = () => {
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Friends ({friends.length})</h3>
               <Button size="sm" variant="outline">
-                <Plus className="w-4 h-4 mr-2" />Add Friend
+                <Plus className="w-4 h-4 mr-2" /> Add Friend
               </Button>
             </div>
-            {friends.map(friend => (
+            {friends.map((friend) => (
               <Card key={friend.id}>
                 <CardContent className="p-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Avatar className="w-12 h-12">
                       <AvatarImage src={friend.avatar} />
-                      <AvatarFallback>{friend.name.split(" ").map(n => n[0]).join("")}</AvatarFallback>
+                      <AvatarFallback>{friend.name.split(" ").map((n) => n[0]).join("")}</AvatarFallback>
                     </Avatar>
                     <div>
                       <h4 className="font-semibold">{friend.name}</h4>
@@ -212,8 +205,12 @@ const Profile = () => {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline"><MessageCircle className="w-4 h-4" /></Button>
-                    <Button size="sm" variant="outline"><Heart className="w-4 h-4" /></Button>
+                    <Button size="sm" variant="outline">
+                      <MessageCircle className="w-4 h-4" />
+                    </Button>
+                    <Button size="sm" variant="outline">
+                      <Heart className="w-4 h-4" />
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -230,7 +227,7 @@ const Profile = () => {
                   {key === "hosted" && <Crown className="w-5 h-5" />}
                   {key} ({list.length})
                 </h3>
-                {list.map(event => (
+                {list.map((event) => (
                   <Card key={event.id}>
                     <CardContent className="p-4 flex items-center justify-between">
                       <div>
@@ -239,7 +236,9 @@ const Profile = () => {
                           {event.date} at {event.time} • {event.location}
                         </p>
                       </div>
-                      <Button size="sm" variant="outline">View</Button>
+                      <Button size="sm" variant="outline">
+                        View
+                      </Button>
                     </CardContent>
                   </Card>
                 ))}
@@ -252,11 +251,11 @@ const Profile = () => {
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Achievements</h3>
               <Badge variant="outline">
-                {badges.filter(b => b.earned).length} / {badges.length} earned
+                {badges.filter((b) => b.earned).length} / {badges.length} earned
               </Badge>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {badges.map(badge => (
+              {badges.map((badge) => (
                 <Card key={badge.id} className={badge.earned ? "bg-green-50 border-green-200" : "opacity-70"}>
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
@@ -270,7 +269,10 @@ const Profile = () => {
                         {!badge.earned && (
                           <div className="mt-2">
                             <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${badge.progress}%` }} />
+                              <div
+                                className="bg-blue-600 h-2 rounded-full"
+                                style={{ width: `${badge.progress}%` }}
+                              />
                             </div>
                           </div>
                         )}
@@ -284,10 +286,11 @@ const Profile = () => {
 
           {/* Settings */}
           <TabsContent value="settings" className="space-y-6">
-            {/* Privacy */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Shield className="w-5 h-5" />Privacy</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="w-5 h-5" /> Privacy
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -310,10 +313,11 @@ const Profile = () => {
               </CardContent>
             </Card>
 
-            {/* Notifications */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Bell className="w-5 h-5" />Notifications</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Bell className="w-5 h-5" /> Notifications
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {Object.entries(settings.notifications).map(([key, value]) => (
@@ -325,10 +329,11 @@ const Profile = () => {
               </CardContent>
             </Card>
 
-            {/* Subscription */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2"><CreditCard className="w-5 h-5" />Subscription</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <CreditCard className="w-5 h-5" /> Subscription
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">

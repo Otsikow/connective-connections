@@ -12,7 +12,8 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
-import { Calendar, Users, DollarSign, BarChart3 } from "lucide-react";
+import { Calendar, Users, DollarSign, BarChart3, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import EventManagement from "@/components/host/EventManagement";
 import AttendeeApproval from "@/components/host/AttendeeApproval";
 import DepositManagement from "@/components/host/DepositManagement";
@@ -37,7 +38,9 @@ const mockEarnings = [
 ];
 
 const HostDashboard = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
+
   const [eventForm, setEventForm] = useState({
     title: "",
     date: "",
@@ -48,6 +51,7 @@ const HostDashboard = () => {
   });
 
   const queryClient = useQueryClient();
+
   const { data: pendingApprovals = [
     { id: 1, user: "User #1", event: "Coffee & Chat" },
     { id: 2, user: "User #2", event: "Coffee & Chat" },
@@ -71,11 +75,19 @@ const HostDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-6">
+      {/* Header */}
       <div className="sticky top-0 z-10 bg-card border-b border-border px-6 py-4">
-        <h1 className="text-2xl font-bold">Host Dashboard</h1>
-        <p className="text-sm text-muted-foreground">
-          Manage events, attendees, deposits, and performance analytics.
-        </p>
+        <div className="flex items-center gap-4 mb-2">
+          <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
+            <ArrowLeft className="w-6 h-6" />
+          </button>
+          <div>
+            <h1 className="text-xl font-bold">Host Dashboard</h1>
+            <p className="text-sm text-muted-foreground">
+              Manage events, approve attendees, deposits, and analytics.
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="px-6 pt-6">

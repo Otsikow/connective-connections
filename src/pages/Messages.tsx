@@ -26,14 +26,14 @@ const Messages = () => {
   const groupId = searchParams.get("group");
   const groupEvent = useMemo(() => sampleEvents.find((e) => e.id === groupId), [groupId]);
 
-  // Default sample messages
+  // Default 1-on-1 chat messages
   const defaultMessages: Message[] = [
     { id: 1, sender: "Alex Doe", content: "Hey! How's it going? 👋", time: "10:00 AM", isMine: false },
     { id: 2, sender: "You", content: "I'm doing great, thanks for asking!", time: "10:01 AM", isMine: true },
     { id: 3, sender: "Alex Doe", content: "Want to grab coffee later?", time: "10:02 AM", isMine: false },
   ];
 
-  // Group messages for event chats
+  // Group event messages
   const groupMessages: Message[] = groupEvent
     ? [
         {
@@ -54,7 +54,6 @@ const Messages = () => {
       ]
     : [];
 
-  // Select which message set to use
   useEffect(() => {
     setMessages(groupEvent ? groupMessages : defaultMessages);
   }, [groupEvent]);
@@ -85,12 +84,10 @@ const Messages = () => {
   const handleSelectIcebreaker = (text: string) => handleSendMessage(text);
 
   const handleCall = () => {
-    // TODO: integrate call feature
     console.log("Initiate voice call...");
   };
 
   const handleVideoCall = () => {
-    // TODO: integrate video feature
     console.log("Initiate video call...");
   };
 
@@ -108,7 +105,7 @@ const Messages = () => {
               <div className="flex -space-x-3">
                 {[groupEvent.host, ...groupEvent.participants].slice(0, 4).map((p, idx) => (
                   <Avatar key={idx} className="w-8 h-8 ring-2 ring-background">
-                    <AvatarImage src={(p as any).avatarUrl} />
+                    <AvatarImage src={(p as any).avatarUrl || "/placeholder.svg"} />
                     <AvatarFallback>{(p as any).name.slice(0, 2).toUpperCase()}</AvatarFallback>
                   </Avatar>
                 ))}
@@ -146,20 +143,10 @@ const Messages = () => {
               </div>
             </div>
             <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCall}
-                className="h-8 w-8 p-0 hover:bg-green-100"
-              >
+              <Button variant="ghost" size="sm" onClick={handleCall} className="h-8 w-8 p-0 hover:bg-green-100">
                 <Phone className="w-4 h-4 text-green-600" />
               </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleVideoCall}
-                className="h-8 w-8 p-0 hover:bg-blue-100"
-              >
+              <Button variant="ghost" size="sm" onClick={handleVideoCall} className="h-8 w-8 p-0 hover:bg-blue-100">
                 <Video className="w-4 h-4 text-blue-600" />
               </Button>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -173,7 +160,7 @@ const Messages = () => {
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
         {messages.map((msg) => (
-          <div key={msg.id} className={`flex ${msg.isMine ? "justify-end" : "justify-start"} message-enter`}>
+          <div key={msg.id} className={`flex ${msg.isMine ? "justify-end" : "justify-start"}`}>
             <div className={`flex gap-3 max-w-[80%] ${msg.isMine ? "flex-row-reverse" : ""}`}>
               {!msg.isMine && (
                 <Avatar className="w-8 h-8 flex-shrink-0">
@@ -208,8 +195,12 @@ const Messages = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <MessageInput onSendMessage={handleSendMessage} onSelectIcebreaker={handleSelectIcebreaker} quickReplies={quickReplies} />
+      {/* Input Field */}
+      <MessageInput
+        onSendMessage={handleSendMessage}
+        onSelectIcebreaker={handleSelectIcebreaker}
+        quickReplies={quickReplies}
+      />
     </div>
   );
 };
