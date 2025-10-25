@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowLeft, Settings, MapPin, Calendar, Star } from "lucide-react";
+import { ArrowLeft, Settings, MapPin, Calendar, Star, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
@@ -97,9 +97,18 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        <Button className="w-full h-12 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground">
-          Edit Profile
-        </Button>
+        <div className="grid grid-cols-2 gap-3">
+          <Button className="h-12 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground">
+            Edit Profile
+          </Button>
+          <Button
+            variant="outline"
+            className="h-12 rounded-full"
+            onClick={() => navigate("/host")}
+          >
+            <Shield className="mr-2 h-4 w-4" /> Host Dashboard
+          </Button>
+        </div>
       </div>
     </div>
   );
