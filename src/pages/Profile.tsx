@@ -23,9 +23,9 @@ const Profile = () => {
   const badges = ["First Connection", "Event Attendee", "Community Builder"];
 
   const friends = [
-    { name: "Jane D.", subtitle: "3 mutual interests", image: "/placeholder.svg" },
-    { name: "Sarah M.", subtitle: "Met at Coffee Club", image: "/placeholder.svg" },
-    { name: "Alex P.", subtitle: "Hiking group", image: "/placeholder.svg" },
+    { name: "Jane D.", subtitle: "3 mutual interests", image: "/avatar-placeholder.svg" },
+    { name: "Sarah M.", subtitle: "Met at Coffee Club", image: "/avatar-placeholder.svg" },
+    { name: "Alex P.", subtitle: "Hiking group", image: "/avatar-placeholder.svg" },
   ];
 
   const eventsAttending = [
@@ -58,11 +58,11 @@ const Profile = () => {
         {/* Profile Header with trust badge */}
         <div className="flex flex-col items-center text-center">
           <div className="relative mb-2">
-            <Avatar className="w-32 h-32">
-              <AvatarImage src="/placeholder.svg" />
+            <Avatar className="w-32 h-32 ring-4 ring-[#E8B956]/20">
+              <AvatarImage src="/avatar-placeholder.svg" />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
-            <div className="absolute -bottom-2 -right-2 flex items-center gap-1 rounded-full bg-[#E8B956] px-2 py-1 text-xs font-bold text-black shadow">
+            <div className="absolute -bottom-2 -right-2 flex items-center gap-1 rounded-full bg-[#E8B956] px-3 py-1 text-xs font-bold text-black shadow-lg">
               <Star className="w-3.5 h-3.5" />
               <span>85</span>
             </div>

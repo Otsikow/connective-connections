@@ -1,15 +1,15 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Home as HomeIcon, MessageSquare, Search, User } from "lucide-react";
+import { Home as HomeIcon, MessageSquare, Search, User, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const navigate = useNavigate();
 
   const matches = [
-    { name: "Jessica", interests: "Hiking, Painting", avatar: "/placeholder.svg" },
-    { name: "Alex", interests: "Music, Traveling", avatar: "/placeholder.svg" },
+    { name: "Jessica", interests: "Hiking, Painting", avatar: "/avatar-placeholder.svg" },
+    { name: "Alex", interests: "Music, Traveling", avatar: "/avatar-placeholder.svg" },
   ];
 
   const events = [
@@ -17,13 +17,13 @@ const Home = () => {
       title: "Coffee & Chat",
       date: "Sat, Nov 25, 10:00 AM",
       location: "The Grind Café",
-      image: "/placeholder.svg",
+      image: "/event-placeholder.svg",
     },
     {
       title: "Book Club",
       date: "Sun, Nov 26, 3:00 PM",
       location: "Central Library",
-      image: "/placeholder.svg",
+      image: "/event-placeholder.svg",
     },
   ];
 
@@ -32,19 +32,19 @@ const Home = () => {
       name: "Board Game Enthusiasts",
       description: "From Catan to modern classics.",
       members: "1.2k members",
-      image: "/placeholder.svg",
+      image: "/community-placeholder.svg",
     },
     {
       name: "Local Foodies",
       description: "Exploring the best eats in town.",
       members: "2.5k members",
-      image: "/placeholder.svg",
+      image: "/community-placeholder.svg",
     },
     {
       name: "Creative Writers Circle",
       description: "Share your stories and get feedback.",
       members: "850 members",
-      image: "/placeholder.svg",
+      image: "/community-placeholder.svg",
     },
   ];
 
@@ -52,9 +52,12 @@ const Home = () => {
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4 flex items-center justify-between">
+        <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
+          <ArrowLeft className="w-6 h-6" />
+        </button>
         <h1 className="text-xl font-bold">Connective</h1>
         <Avatar className="w-10 h-10 cursor-pointer" onClick={() => navigate("/profile")}>
-          <AvatarImage src="/placeholder.svg" />
+          <AvatarImage src="/avatar-placeholder.svg" />
           <AvatarFallback>JD</AvatarFallback>
         </Avatar>
       </div>
@@ -65,9 +68,9 @@ const Home = () => {
           <h2 className="text-2xl font-bold mb-4">Your Matches</h2>
           <div className="grid grid-cols-2 gap-4">
             {matches.map((match, index) => (
-              <Card key={index} className="border-border cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/matches")}>
+              <Card key={index} className="border-border cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105" onClick={() => navigate("/matches")}>
                 <CardContent className="p-4 flex flex-col items-center text-center">
-                  <Avatar className="w-24 h-24 mb-3">
+                  <Avatar className="w-24 h-24 mb-3 ring-2 ring-[#E8B956]/20">
                     <AvatarImage src={match.avatar} />
                     <AvatarFallback>{match.name[0]}</AvatarFallback>
                   </Avatar>
@@ -84,14 +87,17 @@ const Home = () => {
           <h2 className="text-2xl font-bold mb-4">Upcoming Events</h2>
           <div className="space-y-4">
             {events.map((event, index) => (
-              <Card key={index} className="border-border overflow-hidden">
-                <div className="h-40 bg-muted"></div>
+              <Card key={index} className="border-border overflow-hidden hover:shadow-lg transition-all duration-200">
+                <div className="h-40 bg-muted flex items-center justify-center relative overflow-hidden">
+                  <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                </div>
                 <CardContent className="p-4">
                   <h3 className="font-semibold text-lg mb-2">{event.title}</h3>
                   <p className="text-sm text-muted-foreground mb-1">{event.date}</p>
                   <p className="text-sm text-muted-foreground mb-4">{event.location}</p>
-                  <Button className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal">
-                    Join
+                  <Button className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold">
+                    Join Event
                   </Button>
                 </CardContent>
               </Card>
@@ -104,9 +110,11 @@ const Home = () => {
           <h2 className="text-2xl font-bold mb-4">Discover Communities</h2>
           <div className="space-y-3">
             {communities.map((community, index) => (
-              <Card key={index} className="border-border">
+              <Card key={index} className="border-border hover:shadow-md transition-all duration-200">
                 <CardContent className="p-4 flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-xl bg-muted flex-shrink-0"></div>
+                  <div className="w-16 h-16 rounded-xl bg-muted flex-shrink-0 flex items-center justify-center overflow-hidden ring-2 ring-[#E8B956]/10">
+                    <img src={community.image} alt={community.name} className="w-full h-full object-cover" />
+                  </div>
                   <div className="flex-1">
                     <h3 className="font-semibold mb-1">{community.name}</h3>
                     <p className="text-sm text-muted-foreground mb-1">
@@ -114,8 +122,8 @@ const Home = () => {
                     </p>
                     <p className="text-xs text-muted-foreground">{community.members}</p>
                   </div>
-                  <button className="w-10 h-10 rounded-full bg-[#E8B956] flex items-center justify-center flex-shrink-0">
-                    <span className="text-xl text-charcoal">+</span>
+                  <button className="w-10 h-10 rounded-full bg-[#E8B956] hover:bg-[#d9a840] flex items-center justify-center flex-shrink-0 transition-colors">
+                    <span className="text-xl text-charcoal font-bold">+</span>
                   </button>
                 </CardContent>
               </Card>

@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const mockAttendance = [
   { month: "Jan", attendance: 42 },
@@ -28,6 +30,7 @@ const mockEarnings = [
 ];
 
 const HostDashboard = () => {
+  const navigate = useNavigate();
   const [eventForm, setEventForm] = useState({
     title: "",
     date: "",
@@ -72,8 +75,15 @@ const HostDashboard = () => {
   return (
     <div className="min-h-screen bg-background pb-6">
       <div className="sticky top-0 z-10 bg-card border-b border-border px-6 py-4">
-        <h1 className="text-xl font-bold">Host Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Create events, approve attendees, manage deposits, and view analytics.</p>
+        <div className="flex items-center gap-4 mb-2">
+          <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
+            <ArrowLeft className="w-6 h-6" />
+          </button>
+          <div>
+            <h1 className="text-xl font-bold">Host Dashboard</h1>
+            <p className="text-sm text-muted-foreground">Create events, approve attendees, manage deposits, and view analytics.</p>
+          </div>
+        </div>
       </div>
 
       <div className="px-6 pt-6">

@@ -8,12 +8,12 @@ const profiles = [
   {
     name: "Jane D.",
     tags: ["Bookworm", "Hiking Enthusiast", "Dog Lover", "New in Town"],
-    image: "/placeholder.svg",
+    image: "/avatar-placeholder.svg",
   },
   {
     name: "Sarah M.",
     tags: ["Coffee Addict", "Yoga Lover", "Plant Parent", "Art Enthusiast"],
-    image: "/placeholder.svg",
+    image: "/avatar-placeholder.svg",
   },
 ];
 
@@ -45,10 +45,19 @@ const Matches = () => {
       </button>
 
       <div className="max-w-md mx-auto">
-        <Card className="border-border overflow-hidden shadow-lg animate-fade-in">
-          <div className="h-96 bg-muted relative">
+        <Card className="border-border overflow-hidden shadow-xl animate-fade-in">
+          <div className="h-96 bg-gradient-to-br from-[#E8B956]/10 to-[#FF8663]/10 relative">
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-48 h-48 rounded-full bg-card"></div>
+              <div className="relative">
+                <img 
+                  src={currentProfile.image} 
+                  alt={currentProfile.name}
+                  className="w-48 h-48 rounded-full object-cover ring-4 ring-white/50 shadow-2xl"
+                />
+                <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white flex items-center justify-center">
+                  <div className="w-3 h-3 bg-white rounded-full"></div>
+                </div>
+              </div>
             </div>
           </div>
           <CardContent className="p-6 text-center">
@@ -57,7 +66,7 @@ const Matches = () => {
               {currentProfile.tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="px-4 py-2 bg-[#FFF7ED] text-foreground rounded-full text-sm"
+                  className="px-4 py-2 bg-gradient-to-r from-[#E8B956]/20 to-[#FF8663]/20 text-foreground rounded-full text-sm font-medium border border-[#E8B956]/30"
                 >
                   {tag}
                 </span>
