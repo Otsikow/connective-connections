@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import Matches from "./pages/Matches";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
+import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/matches" element={<Matches />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
