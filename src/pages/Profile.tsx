@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -15,7 +16,6 @@ import {
   Shield,
   Crown,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -32,9 +32,11 @@ const Profile = () => {
     { title: "City Sunset Hike", date: "Nov 28, 6:00 PM", location: "Twin Peaks" },
     { title: "Latte Art Workshop", date: "Dec 2, 10:00 AM", location: "Downtown Cafe" },
   ];
+
   const eventsPast = [
     { title: "Book Club Night", date: "Nov 10, 7:00 PM", location: "Mission Library" },
   ];
+
   const eventsHosted = [
     { title: "Weekend Trail Run", date: "Oct 19, 8:00 AM", location: "Presidio" },
   ];
@@ -81,7 +83,8 @@ const Profile = () => {
           <CardContent className="p-6">
             <h3 className="font-semibold text-lg mb-3">About Me</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Love exploring new coffee shops and hiking trails. Always up for a good book discussion or planning the next adventure. New to the city and excited to meet genuine people!
+              Love exploring new coffee shops and hiking trails. Always up for a good book discussion
+              or planning the next adventure. New to the city and excited to meet genuine people!
             </p>
           </CardContent>
         </Card>
@@ -117,8 +120,12 @@ const Profile = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button size="sm" className="rounded-full">Message</Button>
-                      <Button size="sm" variant="outline" className="rounded-full">View</Button>
+                      <Button size="sm" className="rounded-full">
+                        Message
+                      </Button>
+                      <Button size="sm" variant="outline" className="rounded-full">
+                        View
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -146,9 +153,13 @@ const Profile = () => {
                         <CardContent className="p-4 flex items-center justify-between">
                           <div>
                             <p className="font-medium">{e.title}</p>
-                            <p className="text-sm text-muted-foreground">{e.date} • {e.location}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {e.date} • {e.location}
+                            </p>
                           </div>
-                          <Button size="sm" variant="outline" className="rounded-full">View</Button>
+                          <Button size="sm" variant="outline" className="rounded-full">
+                            View
+                          </Button>
                         </CardContent>
                       </Card>
                     ))}
@@ -160,9 +171,13 @@ const Profile = () => {
                         <CardContent className="p-4 flex items-center justify-between">
                           <div>
                             <p className="font-medium">{e.title}</p>
-                            <p className="text-sm text-muted-foreground">{e.date} • {e.location}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {e.date} • {e.location}
+                            </p>
                           </div>
-                          <Button size="sm" variant="outline" className="rounded-full">Details</Button>
+                          <Button size="sm" variant="outline" className="rounded-full">
+                            Details
+                          </Button>
                         </CardContent>
                       </Card>
                     ))}
@@ -174,9 +189,13 @@ const Profile = () => {
                         <CardContent className="p-4 flex items-center justify-between">
                           <div>
                             <p className="font-medium">{e.title}</p>
-                            <p className="text-sm text-muted-foreground">{e.date} • {e.location}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {e.date} • {e.location}
+                            </p>
                           </div>
-                          <Button size="sm" className="rounded-full">Manage</Button>
+                          <Button size="sm" className="rounded-full">
+                            Manage
+                          </Button>
                         </CardContent>
                       </Card>
                     ))}
@@ -194,7 +213,10 @@ const Profile = () => {
               </CardHeader>
               <CardContent className="flex flex-wrap gap-3">
                 {badges.map((badge, index) => (
-                  <div key={index} className="flex items-center gap-2 px-4 py-2 bg-[#E8B956]/10 rounded-full">
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 px-4 py-2 bg-[#E8B956]/10 rounded-full"
+                  >
                     <Star size={16} className="text-[#E8B956]" />
                     <span className="text-sm font-medium">{badge}</span>
                   </div>
@@ -207,13 +229,17 @@ const Profile = () => {
           <TabsContent value="settings">
             <Card className="border-border">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Shield className="w-4 h-4" /> Privacy</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="w-4 h-4" /> Privacy
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">Hide profile from search</p>
-                    <p className="text-sm text-muted-foreground">Your profile won’t appear in discovery</p>
+                    <p className="text-sm text-muted-foreground">
+                      Your profile won’t appear in discovery
+                    </p>
                   </div>
                   <Switch />
                 </div>
@@ -229,19 +255,27 @@ const Profile = () => {
 
             <Card className="border-border">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Bell className="w-4 h-4" /> Notifications</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Bell className="w-4 h-4" /> Notifications
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="msg-notifs" className="font-medium">Message notifications</Label>
+                  <Label htmlFor="msg-notifs" className="font-medium">
+                    Message notifications
+                  </Label>
                   <Switch id="msg-notifs" defaultChecked />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="event-reminders" className="font-medium">Event reminders</Label>
+                  <Label htmlFor="event-reminders" className="font-medium">
+                    Event reminders
+                  </Label>
                   <Switch id="event-reminders" defaultChecked />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="email-updates" className="font-medium">Email updates</Label>
+                  <Label htmlFor="email-updates" className="font-medium">
+                    Email updates
+                  </Label>
                   <Switch id="email-updates" />
                 </div>
               </CardContent>
@@ -254,7 +288,9 @@ const Profile = () => {
               <CardContent className="flex items-center justify-between">
                 <div>
                   <p className="font-medium">Current plan: Free</p>
-                  <p className="text-sm text-muted-foreground">Upgrade for unlimited events and boosts</p>
+                  <p className="text-sm text-muted-foreground">
+                    Upgrade for unlimited events and boosts
+                  </p>
                 </div>
                 <Button className="rounded-full">Manage</Button>
               </CardContent>
@@ -271,16 +307,28 @@ const Profile = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-lg">Upgrade to Premium</h3>
-                <p className="text-sm text-muted-foreground">Unlock unlimited matches, priority boosts, and exclusive events.</p>
+                <p className="text-sm text-muted-foreground">
+                  Unlock unlimited matches, priority boosts, and exclusive events.
+                </p>
               </div>
             </div>
             <Button className="rounded-full">Go Premium</Button>
           </CardContent>
         </Card>
 
-        <Button className="w-full h-12 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground">
-          Edit Profile
-        </Button>
+        {/* Footer Buttons */}
+        <div className="grid grid-cols-2 gap-3">
+          <Button className="h-12 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground">
+            Edit Profile
+          </Button>
+          <Button
+            variant="outline"
+            className="h-12 rounded-full"
+            onClick={() => navigate("/host")}
+          >
+            <Shield className="mr-2 h-4 w-4" /> Host Dashboard
+          </Button>
+        </div>
       </div>
     </div>
   );
