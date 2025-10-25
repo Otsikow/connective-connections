@@ -104,7 +104,7 @@ const Home = () => {
           <h2 className="text-2xl font-bold mb-4">Discover Communities</h2>
           <div className="space-y-3">
             {communities.map((community, index) => (
-              <Card key={index} className="border-border">
+              <Card key={index} className="border-border cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/community")}>
                 <CardContent className="p-4 flex items-center gap-4">
                   <div className="w-16 h-16 rounded-xl bg-muted flex-shrink-0"></div>
                   <div className="flex-1">
