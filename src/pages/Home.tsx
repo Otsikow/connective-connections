@@ -134,6 +134,10 @@ const Home = () => {
           <MessageSquare size={24} />
           <span className="text-xs">Messages</span>
         </button>
+        <button className="flex flex-col items-center gap-1 text-muted-foreground" onClick={() => navigate("/community")}>
+          <Search size={24} />
+          <span className="text-xs">Community</span>
+        </button>
         <button className="flex flex-col items-center gap-1 text-muted-foreground" onClick={() => navigate("/matches")}>
           <Search size={24} />
           <span className="text-xs">Search</span>
