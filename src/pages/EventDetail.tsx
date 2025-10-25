@@ -103,7 +103,7 @@ const EventDetail = () => {
             </Avatar>
             <div className="flex-1">
               <h3 className="font-semibold">Hosted by {event.host.name}</h3>
-              <div className="text-sm text-muted-foreground">{event.host.eventsHosted} events hosted</div>
+              <div className="text-sm text-muted-foreground">Event host</div>
             </div>
           </CardContent>
         </Card>
@@ -162,7 +162,7 @@ const EventDetail = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <h4 className="font-semibold mb-1">{event.location.name}</h4>
+                  <h4 className="font-semibold mb-1">Event Location</h4>
                   <p className="text-muted-foreground">{event.location.address}</p>
                 </div>
                 <MapEmbed lat={event.location.lat} lng={event.location.lng} title={event.title} />

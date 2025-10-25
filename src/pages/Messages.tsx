@@ -199,7 +199,6 @@ const Messages = () => {
       <MessageInput
         onSendMessage={handleSendMessage}
         onSelectIcebreaker={handleSelectIcebreaker}
-        quickReplies={quickReplies}
       />
     </div>
   );

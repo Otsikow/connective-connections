@@ -95,13 +95,9 @@ const Admin = () => {
   const loadProfiles = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, full_name, created_at")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setProfiles(data || []);
+      // Note: profiles table doesn't exist yet - using placeholder data
+      // TODO: Create profiles table in database
+      setProfiles([]);
     } catch (err) {
       console.error("Error loading profiles:", err);
       toast({
