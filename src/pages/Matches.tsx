@@ -1,42 +1,104 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Heart, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { SwipeCard } from "@/components/SwipeCard";
 
-const profiles = [
+interface Profile {
+  id: string;
+  name: string;
+  age: number;
+  photo: string;
+  interests: string[];
+  bio: string;
+  trustBadge?: boolean;
+  availability?: string;
+  distance?: string;
+}
+
+const profiles: Profile[] = [
   {
-    name: "Jane D.",
-    tags: ["Bookworm", "Hiking Enthusiast", "Dog Lover", "New in Town"],
-    image: "/placeholder.svg",
+    id: "1",
+    name: "Sarah M.",
+    age: 28,
+    photo: "/placeholder.svg",
+    interests: ["Coffee Addict", "Yoga Lover", "Plant Parent", "Art Enthusiast"],
+    bio: "Love exploring new coffee shops and finding hidden gems in the city. Always up for a good conversation over a cup of coffee!",
+    trustBadge: true,
+    availability: "Available now",
+    distance: "2 miles away",
   },
   {
-    name: "Sarah M.",
-    tags: ["Coffee Addict", "Yoga Lover", "Plant Parent", "Art Enthusiast"],
-    image: "/placeholder.svg",
+    id: "2",
+    name: "Alex K.",
+    age: 31,
+    photo: "/placeholder.svg",
+    interests: ["Bookworm", "Hiking Enthusiast", "Dog Lover", "New in Town"],
+    bio: "Recently moved to the city and looking to make new friends. Love outdoor activities and discovering local bookstores.",
+    trustBadge: false,
+    availability: "Usually available evenings",
+    distance: "1.5 miles away",
+  },
+  {
+    id: "3",
+    name: "Jordan L.",
+    age: 26,
+    photo: "/placeholder.svg",
+    interests: ["Foodie", "Photography", "Travel", "Music"],
+    bio: "Passionate about food photography and trying new restaurants. Always looking for someone to share a meal with!",
+    trustBadge: true,
+    availability: "Weekends",
+    distance: "3 miles away",
+  },
+  {
+    id: "4",
+    name: "Casey R.",
+    age: 29,
+    photo: "/placeholder.svg",
+    interests: ["Fitness", "Cooking", "Gardening", "Volunteering"],
+    bio: "Fitness enthusiast who loves cooking healthy meals and tending to my garden. Looking for like-minded friends!",
+    trustBadge: false,
+    availability: "Mornings",
+    distance: "4 miles away",
   },
 ];
 
 const Matches = () => {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [likedProfiles, setLikedProfiles] = useState<string[]>([]);
+  const [showMatchModal, setShowMatchModal] = useState(false);
 
-  const handleSkip = () => {
+  const handleSwipe = (direction: "left" | "right") => {
+    if (direction === "right") {
+      const currentProfile = profiles[currentIndex];
+      setLikedProfiles((prev) => [...prev, currentProfile.id]);
+
+      // Simulated mutual match (randomized for demo)
+      if (Math.random() > 0.7) {
+        setShowMatchModal(true);
+      }
+    }
+
     if (currentIndex < profiles.length - 1) {
       setCurrentIndex(currentIndex + 1);
     }
   };
 
-  const handleConnect = () => {
-    if (currentIndex < profiles.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    }
+  const handleConnect = () => handleSwipe("right");
+  const handleSkip = () => handleSwipe("left");
+
+  const handleStartChat = () => {
+    setShowMatchModal(false);
+    navigate("/messages");
   };
 
   const currentProfile = profiles[currentIndex];
+  const isLastProfile = currentIndex >= profiles.length - 1;
 
   return (
     <div className="min-h-screen bg-background px-6 py-8">
+      {/* Back Arrow */}
       <button
         onClick={() => navigate(-1)}
         className="mb-6 p-2 hover:bg-muted rounded-full transition-colors"
@@ -45,47 +107,78 @@ const Matches = () => {
       </button>
 
       <div className="max-w-md mx-auto">
-        <Card className="border-border overflow-hidden shadow-lg animate-fade-in">
-          <div className="h-96 bg-muted relative">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-48 h-48 rounded-full bg-card"></div>
+        {/* Card Stack Container */}
+        <div className="relative h-[600px] mb-6">
+          {profiles.slice(currentIndex, currentIndex + 3).map((profile, index) => (
+            <SwipeCard
+              key={profile.id}
+              profile={profile}
+              onSwipe={handleSwipe}
+              onConnect={handleConnect}
+              isActive={index === 0}
+            />
+          ))}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-4 justify-center mb-4">
+          <Button
+            onClick={handleSkip}
+            variant="outline"
+            className="h-14 w-14 rounded-full border-2 hover:bg-red-50 hover:border-red-300"
+          >
+            <X className="w-6 h-6 text-red-500" />
+          </Button>
+
+          <Button
+            onClick={handleConnect}
+            className="h-14 w-14 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal"
+          >
+            <Heart className="w-6 h-6" />
+          </Button>
+        </div>
+
+        {/* Status Message */}
+        {isLastProfile ? (
+          <div className="text-center text-muted-foreground">
+            <p className="text-lg mb-2">No more profiles to show</p>
+            <p className="text-sm">Check back later for new matches!</p>
+          </div>
+        ) : (
+          <div className="text-center text-muted-foreground text-sm">
+            Swipe right to connect, left to skip
+          </div>
+        )}
+
+        {/* Match Modal */}
+        {showMatchModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-card rounded-2xl p-8 text-center max-w-sm w-full shadow-xl">
+              <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Heart className="w-10 h-10 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold mb-2">It's a Match!</h2>
+              <p className="text-muted-foreground mb-6">
+                You and {currentProfile.name} both liked each other. Start a conversation!
+              </p>
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => setShowMatchModal(false)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Keep Swiping
+                </Button>
+                <Button
+                  onClick={handleStartChat}
+                  className="flex-1 bg-[#E8B956] hover:bg-[#d9a840] text-charcoal"
+                >
+                  Start Chat
+                </Button>
+              </div>
             </div>
           </div>
-          <CardContent className="p-6 text-center">
-            <h2 className="text-3xl font-bold mb-4">{currentProfile.name}</h2>
-            <div className="flex flex-wrap gap-2 justify-center mb-6">
-              {currentProfile.tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="px-4 py-2 bg-[#FFF7ED] text-foreground rounded-full text-sm"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-
-            <div className="flex gap-4 justify-center mb-4">
-              <Button
-                onClick={handleConnect}
-                className="flex-1 h-14 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold gap-2"
-              >
-                <Heart className="w-5 h-5" />
-                Let's Connect
-              </Button>
-              <Button
-                onClick={handleSkip}
-                variant="outline"
-                className="h-14 w-14 rounded-full border-2"
-              >
-                Skip
-              </Button>
-            </div>
-
-            <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Report or block this profile
-            </button>
-          </CardContent>
-        </Card>
+        )}
       </div>
     </div>
   );
