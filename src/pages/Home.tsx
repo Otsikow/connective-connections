@@ -264,10 +264,10 @@ const Home = () => {
         </button>
         <button
           className="flex flex-col items-center gap-1 text-muted-foreground"
-          onClick={() => navigate("/matches")}
+          onClick={() => navigate("/community")}
         >
           <Search size={24} />
-          <span className="text-xs">Search</span>
+          <span className="text-xs">Community</span>
         </button>
         <button
           className="flex flex-col items-center gap-1 text-muted-foreground"
