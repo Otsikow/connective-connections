@@ -43,7 +43,7 @@ const Messages = () => {
           <ArrowLeft className="w-6 h-6" />
         </button>
         <Avatar className="w-10 h-10">
-          <AvatarImage src="/placeholder.svg" />
+          <AvatarImage src="/avatar-placeholder.svg" />
           <AvatarFallback>AD</AvatarFallback>
         </Avatar>
         <h1 className="text-lg font-semibold flex-1">Alex Doe</h1>
@@ -59,7 +59,7 @@ const Messages = () => {
             <div className={`flex gap-3 max-w-[80%] ${msg.isMine ? "flex-row-reverse" : ""}`}>
               {!msg.isMine && (
                 <Avatar className="w-10 h-10 flex-shrink-0">
-                  <AvatarImage src="/placeholder.svg" />
+                  <AvatarImage src="/avatar-placeholder.svg" />
                   <AvatarFallback>AD</AvatarFallback>
                 </Avatar>
               )}

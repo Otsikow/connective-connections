@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" fill="none">
+  <defs>
+    <linearGradient id="communityGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF8663;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#E8B956;stop-opacity:0.2" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" rx="24" fill="url(#communityGrad)"/>
+  
+  <!-- Group of people icons -->
+  <circle cx="160" cy="180" r="35" fill="#E8B956" opacity="0.3"/>
+  <circle cx="240" cy="180" r="35" fill="#FF8663" opacity="0.3"/>
+  <circle cx="200" cy="150" r="35" fill="#E8B956" opacity="0.4"/>
+  
+  <circle cx="160" cy="180" r="32" fill="none" stroke="#E8B956" stroke-width="3"/>
+  <circle cx="240" cy="180" r="32" fill="none" stroke="#FF8663" stroke-width="3"/>
+  <circle cx="200" cy="150" r="32" fill="none" stroke="#E8B956" stroke-width="3"/>
+  
+  <!-- Bodies -->
+  <path d="M160 210 C140 210 125 220 120 240 L200 240 C195 220 180 210 160 210 Z" fill="#E8B956" opacity="0.3"/>
+  <path d="M240 210 C220 210 205 220 200 240 L280 240 C275 220 260 210 240 210 Z" fill="#FF8663" opacity="0.3"/>
+  <path d="M200 180 C180 180 165 190 160 210 L240 210 C235 190 220 180 200 180 Z" fill="#E8B956" opacity="0.4"/>
+  
+  <path d="M160 210 C142 210 127 220 122 238 L198 238 C193 220 178 210 160 210 Z" fill="none" stroke="#E8B956" stroke-width="2.5"/>
+  <path d="M240 210 C222 210 207 220 202 238 L278 238 C273 220 258 210 240 210 Z" fill="none" stroke="#FF8663" stroke-width="2.5"/>
+  <path d="M200 180 C182 180 167 190 162 208 L238 208 C233 190 218 180 200 180 Z" fill="none" stroke="#E8B956" stroke-width="2.5"/>
+</svg>

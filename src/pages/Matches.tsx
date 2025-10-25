@@ -8,12 +8,12 @@ const profiles = [
   {
     name: "Jane D.",
     tags: ["Bookworm", "Hiking Enthusiast", "Dog Lover", "New in Town"],
-    image: "/placeholder.svg",
+    image: "/avatar-placeholder.svg",
   },
   {
     name: "Sarah M.",
     tags: ["Coffee Addict", "Yoga Lover", "Plant Parent", "Art Enthusiast"],
-    image: "/placeholder.svg",
+    image: "/avatar-placeholder.svg",
   },
 ];
 
@@ -46,10 +46,9 @@ const Matches = () => {
 
       <div className="max-w-md mx-auto">
         <Card className="border-border overflow-hidden shadow-lg animate-fade-in">
-          <div className="h-96 bg-muted relative">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-48 h-48 rounded-full bg-card"></div>
-            </div>
+          <div className="h-96 bg-muted relative overflow-hidden">
+            <img src={currentProfile.image} alt={currentProfile.name} className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
           </div>
           <CardContent className="p-6 text-center">
             <h2 className="text-3xl font-bold mb-4">{currentProfile.name}</h2>
