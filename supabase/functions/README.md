@@ -1,0 +1,126 @@
+# Supabase Edge Functions
+
+This directory contains secure edge functions for admin operations.
+
+## Functions
+
+### send-bulk-email
+Sends bulk emails to all users. Requires admin authentication.
+
+**Endpoint:** `POST /functions/v1/send-bulk-email`
+
+**Headers:**
+- `Authorization: Bearer <user-access-token>` (required)
+- `Content-Type: application/json`
+
+**Request Body:**
+```json
+{
+  "subject": "Email subject",
+  "message": "Email message content"
+}
+```
+
+**Security:**
+- Verifies JWT authentication
+- Checks user has admin role in profiles table
+- Only uses service role key after authorization passes
+- Returns 401 for authentication errors
+- Returns 403 for authorization errors
+
+### get-user-email
+Fetches a user's email address from auth. Requires admin authentication.
+
+**Endpoint:** `GET /functions/v1/get-user-email?userId=<user-id>`
+
+**Headers:**
+- `Authorization: Bearer <user-access-token>` (required)
+
+**Query Parameters:**
+- `userId` (required) - The user ID to fetch email for
+
+**Response:**
+```json
+{
+  "userId": "uuid",
+  "email": "user@example.com",
+  "emailConfirmed": true
+}
+```
+
+**Security:**
+- Verifies JWT authentication
+- Checks user has admin role in profiles table
+- Only uses service role key after authorization passes
+- Returns 401 for authentication errors
+- Returns 403 for authorization errors
+- Returns 404 if user not found
+
+## Deployment
+
+```bash
+# Deploy both functions
+supabase functions deploy send-bulk-email
+supabase functions deploy get-user-email
+
+# Or deploy all functions
+supabase functions deploy
+```
+
+## Environment Variables
+
+The edge functions require these environment variables (automatically available in Supabase):
+- `SUPABASE_URL` - Your Supabase project URL
+- `SUPABASE_ANON_KEY` - Public anon key
+- `SUPABASE_SERVICE_ROLE_KEY` - Service role key (never expose to client)
+
+## Testing
+
+```bash
+# Get your access token from browser (after logging in)
+# In browser console: (await supabase.auth.getSession()).data.session.access_token
+
+# Test send-bulk-email (replace with your token and URL)
+curl https://your-project.supabase.co/functions/v1/send-bulk-email \
+  -X POST \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"subject":"Test","message":"Test message"}'
+
+# Test get-user-email
+curl "https://your-project.supabase.co/functions/v1/get-user-email?userId=USER_UUID" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+## Security Notes
+
+1. **Never call auth.admin APIs from client code**
+   - These require service role key which must never be exposed to clients
+   - Always use edge functions as shown here
+
+2. **Always verify authorization server-side**
+   - Client-side checks can be bypassed
+   - Edge functions must check both authentication and role
+
+3. **Service role key usage**
+   - Only use after verifying admin role
+   - Never pass to client
+   - Only use in edge functions or server environments
+
+4. **Rate limiting**
+   - Consider adding rate limits for production
+   - Prevent abuse by authenticated users
+
+## Development
+
+To run functions locally:
+
+```bash
+# Start local Supabase
+supabase start
+
+# Serve functions locally
+supabase functions serve
+
+# Test locally (use http://localhost:54321 instead of production URL)
+```
