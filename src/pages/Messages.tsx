@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MoreVertical, Shield, Clock, Phone, Video } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { MessageInput } from "@/components/MessageInput";
+import { sampleEvents } from "@/lib/events";
 
 interface Message {
   id: number;
@@ -12,51 +13,55 @@ interface Message {
   content: string;
   time: string;
   isMine: boolean;
-  type?: 'text' | 'image' | 'voice' | 'location';
+  type?: "text" | "image" | "voice" | "location";
 }
 
 const Messages = () => {
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      sender: "Sarah M.",
-      content: "Hey! How's it going? 👋",
-      time: "10:00 AM",
-      isMine: false,
-    },
-    {
-      id: 2,
-      sender: "You",
-      content: "I'm doing great, thanks for asking! Just enjoying a quiet morning. How about you?",
-      time: "10:01 AM",
-      isMine: true,
-    },
-    {
-      id: 3,
-      sender: "Sarah M.",
-      content: "Same here! I was thinking of grabbing coffee later, are you free?",
-      time: "10:02 AM",
-      isMine: false,
-    },
-    {
-      id: 4,
-      sender: "You",
-      content: "That sounds perfect! I know a great little coffee shop downtown. What time were you thinking?",
-      time: "10:03 AM",
-      isMine: true,
-    },
-    {
-      id: 5,
-      sender: "Sarah M.",
-      content: "How about 2 PM? I'm flexible though!",
-      time: "10:04 AM",
-      isMine: false,
-    }
-  ]);
-
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [searchParams] = useSearchParams();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isOnline, setIsOnline] = useState(true);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const groupId = searchParams.get("group");
+  const groupEvent = useMemo(() => sampleEvents.find((e) => e.id === groupId), [groupId]);
+
+  // Default sample messages
+  const defaultMessages: Message[] = [
+    { id: 1, sender: "Alex Doe", content: "Hey! How's it going? 👋", time: "10:00 AM", isMine: false },
+    { id: 2, sender: "You", content: "I'm doing great, thanks for asking!", time: "10:01 AM", isMine: true },
+    { id: 3, sender: "Alex Doe", content: "Want to grab coffee later?", time: "10:02 AM", isMine: false },
+  ];
+
+  // Group messages for event chats
+  const groupMessages: Message[] = groupEvent
+    ? [
+        {
+          id: 1,
+          sender: groupEvent.host.name,
+          content: `Welcome to ${groupEvent.title} group chat!`,
+          time: "9:00 AM",
+          isMine: false,
+        },
+        { id: 2, sender: "You", content: "Hi everyone! Excited to join 👋", time: "9:01 AM", isMine: true },
+        {
+          id: 3,
+          sender: groupEvent.participants[0]?.name || "Member",
+          content: "See you all there!",
+          time: "9:05 AM",
+          isMine: false,
+        },
+      ]
+    : [];
+
+  // Select which message set to use
+  useEffect(() => {
+    setMessages(groupEvent ? groupMessages : defaultMessages);
+  }, [groupEvent]);
+
+  const quickReplies = groupEvent
+    ? ["Where's the meetup point?", "Any parking tips?", "Can I bring a friend?"]
+    : ["Sounds good! ☕", "What time were you thinking?"];
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -71,79 +76,98 @@ const Messages = () => {
       id: messages.length + 1,
       sender: "You",
       content: message,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       isMine: true,
     };
-    setMessages(prev => [...prev, newMessage]);
+    setMessages((prev) => [...prev, newMessage]);
   };
 
-  const handleSelectIcebreaker = (icebreaker: string) => {
-    handleSendMessage(icebreaker);
-  };
+  const handleSelectIcebreaker = (text: string) => handleSendMessage(text);
 
   const handleCall = () => {
-    // TODO: Implement voice call
-    // Placeholder: Could integrate with WebRTC or third-party calling service
+    // TODO: integrate call feature
+    console.log("Initiate voice call...");
   };
 
   const handleVideoCall = () => {
-    // TODO: Implement video call
-    // Placeholder: Could integrate with WebRTC or third-party video service
+    // TODO: integrate video feature
+    console.log("Initiate video call...");
   };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <div className="bg-card border-b border-border px-4 py-3 flex items-center gap-3">
-        <button 
-          onClick={() => navigate(-1)} 
-          className="p-2 hover:bg-muted rounded-full transition-colors"
-        >
+        <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
-        
-        <Avatar className="w-10 h-10">
-          <AvatarImage src="/placeholder.svg" />
-          <AvatarFallback>SM</AvatarFallback>
-        </Avatar>
-        
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold truncate">Sarah M.</h1>
-            <Badge className="bg-green-500 text-white gap-1 text-xs trust-badge">
-              <Shield className="w-3 h-3" />
-              Verified
-            </Badge>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-gray-400'}`} />
-            <span>Available now</span>
-            <Clock className="w-3 h-3" />
-            <span>Usually responds within 5 minutes</span>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleCall}
-            className="h-8 w-8 p-0 hover:bg-green-100"
-          >
-            <Phone className="w-4 h-4 text-green-600" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleVideoCall}
-            className="h-8 w-8 p-0 hover:bg-blue-100"
-          >
-            <Video className="w-4 h-4 text-blue-600" />
-          </Button>
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-            <MoreVertical className="w-4 h-4" />
-          </Button>
-        </div>
+
+        {groupEvent ? (
+          <>
+            <div className="flex items-center gap-3 flex-1">
+              <div className="flex -space-x-3">
+                {[groupEvent.host, ...groupEvent.participants].slice(0, 4).map((p, idx) => (
+                  <Avatar key={idx} className="w-8 h-8 ring-2 ring-background">
+                    <AvatarImage src={(p as any).avatarUrl} />
+                    <AvatarFallback>{(p as any).name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                ))}
+              </div>
+              <div>
+                <h1 className="text-base font-semibold leading-tight">{groupEvent.title}</h1>
+                <p className="text-xs text-muted-foreground">
+                  Event group chat · {groupEvent.participants.length + 1} members
+                </p>
+              </div>
+            </div>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <MoreVertical className="w-4 h-4" />
+            </Button>
+          </>
+        ) : (
+          <>
+            <Avatar className="w-10 h-10">
+              <AvatarImage src="/placeholder.svg" />
+              <AvatarFallback>AD</AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg font-semibold truncate">Alex Doe</h1>
+                <Badge className="bg-green-500 text-white gap-1 text-xs">
+                  <Shield className="w-3 h-3" />
+                  Verified
+                </Badge>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className={`w-2 h-2 rounded-full ${isOnline ? "bg-green-500" : "bg-gray-400"}`} />
+                <span>Available now</span>
+                <Clock className="w-3 h-3" />
+                <span>Usually responds within 5 minutes</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCall}
+                className="h-8 w-8 p-0 hover:bg-green-100"
+              >
+                <Phone className="w-4 h-4 text-green-600" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleVideoCall}
+                className="h-8 w-8 p-0 hover:bg-blue-100"
+              >
+                <Video className="w-4 h-4 text-blue-600" />
+              </Button>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <MoreVertical className="w-4 h-4" />
+              </Button>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Messages */}
@@ -154,7 +178,7 @@ const Messages = () => {
               {!msg.isMine && (
                 <Avatar className="w-8 h-8 flex-shrink-0">
                   <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback>SM</AvatarFallback>
+                  <AvatarFallback>AD</AvatarFallback>
                 </Avatar>
               )}
               <div>
@@ -170,7 +194,11 @@ const Messages = () => {
                 >
                   <p className="text-sm leading-relaxed">{msg.content}</p>
                 </div>
-                <p className={`text-xs text-muted-foreground mt-1 ${msg.isMine ? "text-right" : ""}`}>
+                <p
+                  className={`text-xs text-muted-foreground mt-1 ${
+                    msg.isMine ? "text-right" : ""
+                  }`}
+                >
                   {msg.time}
                 </p>
               </div>
@@ -180,11 +208,8 @@ const Messages = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Message Input */}
-      <MessageInput 
-        onSendMessage={handleSendMessage}
-        onSelectIcebreaker={handleSelectIcebreaker}
-      />
+      {/* Input */}
+      <MessageInput onSendMessage={handleSendMessage} onSelectIcebreaker={handleSelectIcebreaker} quickReplies={quickReplies} />
     </div>
   );
 };
