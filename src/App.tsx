@@ -8,6 +8,7 @@ import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import Matches from "./pages/Matches";
 import Messages from "./pages/Messages";
+import ChatList from "./pages/ChatList";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
@@ -24,6 +25,8 @@ const App = () => (
           <Route path="/signup" element={<Signup />} />
           <Route path="/home" element={<Home />} />
           <Route path="/matches" element={<Matches />} />
+          <Route path="/chats" element={<ChatList />} />
+          <Route path="/messages/:id" element={<Messages />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />

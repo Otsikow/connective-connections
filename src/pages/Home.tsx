@@ -130,7 +130,7 @@ const Home = () => {
           <HomeIcon size={24} />
           <span className="text-xs font-medium">Home</span>
         </button>
-        <button className="flex flex-col items-center gap-1 text-muted-foreground" onClick={() => navigate("/messages")}>
+        <button className="flex flex-col items-center gap-1 text-muted-foreground" onClick={() => navigate("/chats")}>
           <MessageSquare size={24} />
           <span className="text-xs">Messages</span>
         </button>
