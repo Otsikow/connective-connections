@@ -12,15 +12,21 @@ import onboarding3 from "@/assets/onboarding-3.png";
 const slides = [
   {
     image: onboarding1,
-    title: "Find genuine friends nearby.",
+    title: "Find genuine friends nearby",
+    description:
+      "Connect with real people in your area who share your interests and values. Build authentic friendships that matter.",
   },
   {
     image: onboarding2,
-    title: "Join groups that match your vibe.",
+    title: "Join groups that match your vibe",
+    description:
+      "Discover communities and groups that align with your passions. Find your tribe and make lasting connections.",
   },
   {
     image: onboarding3,
-    title: "Attend events safely & easily.",
+    title: "Attend events safely & easily",
+    description:
+      "Join verified events with confidence. Meet new friends in person through safe, organized gatherings in your area.",
   },
 ];
 
@@ -30,8 +36,8 @@ const Onboarding = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const t = setTimeout(() => setShowSplash(false), 1500);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setShowSplash(false), 1500);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleNext = () => {
@@ -90,7 +96,7 @@ const Onboarding = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 py-8">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 py-8 relative">
       {/* Back Button */}
       <div className="absolute top-6 left-6">
         <button
@@ -135,6 +141,14 @@ const Onboarding = () => {
             >
               {slides[currentSlide].title}
             </motion.h1>
+            <motion.p
+              className="text-muted-foreground text-center leading-relaxed"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.3 }}
+            >
+              {slides[currentSlide].description}
+            </motion.p>
           </motion.div>
         </AnimatePresence>
 

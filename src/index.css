@@ -87,7 +87,10 @@ All colors MUST be HSL.
   }
 }
 
+/* ========================= */
 /* Animation Utilities */
+/* ========================= */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
