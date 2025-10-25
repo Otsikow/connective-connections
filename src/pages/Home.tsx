@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Home as HomeIcon, MessageSquare, Search, User } from "lucide-react";
+import { Home as HomeIcon, MessageSquare, Search, User, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
@@ -133,6 +133,10 @@ const Home = () => {
         <button className="flex flex-col items-center gap-1 text-muted-foreground" onClick={() => navigate("/messages")}>
           <MessageSquare size={24} />
           <span className="text-xs">Messages</span>
+        </button>
+        <button className="flex flex-col items-center gap-1 text-muted-foreground" onClick={() => navigate("/community")}>
+          <Users size={24} />
+          <span className="text-xs">Community</span>
         </button>
         <button className="flex flex-col items-center gap-1 text-muted-foreground" onClick={() => navigate("/matches")}>
           <Search size={24} />
