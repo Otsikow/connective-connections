@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { ArrowLeft, Image as ImageIcon, Mail, Phone as PhoneIcon } from "lucide-react";
+import { Image as ImageIcon, Mail, Phone as PhoneIcon } from "lucide-react";
+import BackButton from "@/components/BackButton";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -206,9 +207,7 @@ const Signup = () => {
   return (
     <div className="min-h-screen bg-background px-6 py-8">
       <div className="max-w-md mx-auto">
-        <button onClick={() => (step === 1 ? navigate(-1) : back())} className="mb-6 p-2 hover:bg-muted rounded-full transition-colors">
-          <ArrowLeft className="w-6 h-6" />
-        </button>
+        <BackButton onBack={() => (step === 1 ? navigate(-1) : back())} className="mb-6" />
 
         <h1 className="text-2xl font-bold text-center mb-2">Let's Get You Set Up</h1>
 
