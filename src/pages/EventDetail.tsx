@@ -1,33 +1,25 @@
-import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState, useMemo } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ArrowLeft,
-  Calendar,
+  CalendarClock,
   MapPin,
   Users,
-  DollarSign,
-  MessageCircle,
-  Share2,
-  AlertCircle,
+  MessageSquare,
   Shield,
-  Clock,
+  RefreshCw,
+  Share2,
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/use-toast";
+import { format } from "date-fns";
 
-// Mock event data - in production, fetch from API based on eventId
+// Mock event data (for development/demo)
 const mockEventDetail = {
   id: "1",
   title: "Morning Yoga & Meditation Session",
@@ -38,75 +30,99 @@ What to expect:
 • 20 minutes of guided meditation
 • 10 minutes for questions and community connection
 
-Please bring your own yoga mat and water bottle. We'll provide additional props like blocks and straps if needed.
-
-This is more than just a yoga class - it's an opportunity to connect with like-minded individuals who value wellness and mindfulness. After class, we often grab coffee together at the nearby cafe!`,
-  bannerImage: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1200&h=600&fit=crop",
-  hostName: "Sarah Johnson",
-  hostAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
-  hostBio: "Certified yoga instructor with 10+ years of experience. Passionate about helping others find peace through movement.",
-  date: "Nov 15, 2025",
-  time: "7:00 AM - 8:30 AM",
-  location: "Central Park, Sheep Meadow, New York, NY 10024",
-  coordinates: { lat: 40.7711, lng: -73.9758 },
-  fee: 15,
-  deposit: 5,
-  isFree: false,
+Please bring your own yoga mat and water bottle. We'll provide additional props like blocks and straps if needed.`,
+  bannerUrl:
+    "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1200&h=600&fit=crop",
+  host: {
+    name: "Sarah Johnson",
+    avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
+  },
+  date: "2025-11-15T07:00:00Z",
+  location: {
+    address: "Central Park, Sheep Meadow, New York, NY 10024",
+    lat: 40.7711,
+    lng: -73.9758,
+  },
   category: "Wellness",
-  participantsCount: 12,
-  maxParticipants: 20,
-  participants: [
-    { id: "1", name: "John Doe", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=John" },
-    { id: "2", name: "Jane Smith", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jane" },
-    { id: "3", name: "Bob Wilson", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Bob" },
-    { id: "4", name: "Alice Brown", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alice" },
-    { id: "5", name: "Charlie Davis", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie" },
-    { id: "6", name: "Diana Miller", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Diana" },
-    { id: "7", name: "Ethan Taylor", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ethan" },
-    { id: "8", name: "Fiona Garcia", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Fiona" },
-  ],
+  fee: 15,
+  refundPolicy:
+    "Full refund available if canceled 24 hours before the event. Cancellations within 24 hours receive a 50% refund. Deposit refunded upon attendance.",
   rules: [
-    "Please arrive 10 minutes early to set up your space",
-    "Silence your phone during the session",
-    "Respect others' personal space and boundaries",
-    "No photography during class without permission",
-    "If you need to leave early, please inform the instructor beforehand",
+    "Please arrive 10 minutes early to set up your space.",
+    "Silence your phone during the session.",
+    "Respect others' personal space and boundaries.",
+    "No photography during class without permission.",
   ],
-  refundPolicy: `Full refund available if canceled 24 hours before the event. Cancellations within 24 hours will receive a 50% refund. No refunds for no-shows.
+  participants: [
+    { name: "John Doe", avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=John" },
+    { name: "Jane Smith", avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jane" },
+    { name: "Alice Brown", avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alice" },
+  ],
+};
 
-The deposit is fully refundable upon attendance. If you don't show up without prior notice, the deposit will be forfeited.
-
-In case of severe weather or emergencies, the event may be rescheduled or canceled with full refunds issued.`,
+const MapEmbed = ({
+  lat,
+  lng,
+  title,
+}: {
+  lat: number;
+  lng: number;
+  title: string;
+}) => {
+  const src = `https://www.google.com/maps?q=${lat},${lng}&z=14&output=embed`;
+  return (
+    <div className="w-full h-64 rounded-lg overflow-hidden border border-border">
+      <iframe
+        title={`Map: ${title}`}
+        src={src}
+        className="w-full h-full"
+        loading="lazy"
+      />
+    </div>
+  );
 };
 
 const EventDetail = () => {
-  const { eventId } = useParams();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState("description");
   const [hasJoined, setHasJoined] = useState(false);
 
-  // In production, fetch event details based on eventId
-  const event = mockEventDetail;
+  // In production, fetch event data by ID
+  const event = useMemo(() => mockEventDetail, [id]);
 
-  const handleJoin = () => {
+  if (!event) {
+    return (
+      <div className="min-h-screen bg-background px-6 py-8">
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-6 p-2 hover:bg-muted rounded-full"
+        >
+          <ArrowLeft className="w-6 h-6" />
+        </button>
+        <div className="max-w-3xl mx-auto text-center text-muted-foreground">
+          Event not found.
+        </div>
+      </div>
+    );
+  }
+
+  const handleJoinEvent = () => {
     setHasJoined(true);
-    toast({
-      title: "Successfully joined!",
-      description: "You've been added to the event. Check your messages for the group chat.",
-    });
+    toast({ description: `You're in for ${event.title}!` });
   };
 
   const handleChatWithAttendees = () => {
     if (!hasJoined) {
       toast({
-        title: "Join the event first",
-        description: "You need to join the event to access the group chat.",
+        description: "Join the event first to access the group chat.",
         variant: "destructive",
       });
       return;
     }
-    // Navigate to group chat
-    navigate(`/messages/event/${eventId}`);
+    const ref = searchParams.get("ref") || "detail";
+    navigate(`/messages?group=${event.id}&ref=${ref}`);
   };
 
   const handleShare = () => {
@@ -117,341 +133,186 @@ const EventDetail = () => {
         url: window.location.href,
       });
     } else {
-      // Fallback: copy to clipboard
       navigator.clipboard.writeText(window.location.href);
-      toast({
-        title: "Link copied!",
-        description: "Event link copied to clipboard.",
-      });
+      toast({ description: "Event link copied to clipboard!" });
     }
   };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header with Banner */}
-      <div className="relative h-80 overflow-hidden">
-        <img
-          src={event.bannerImage}
-          alt={event.title}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        
-        {/* Back Button */}
-        <Button
-          variant="secondary"
-          size="icon"
-          className="absolute top-4 left-4"
-          onClick={() => navigate("/events")}
-        >
-          <ArrowLeft className="h-4 w-4" />
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4 flex items-center gap-4">
+        <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+          <ArrowLeft size={20} />
         </Button>
-
-        {/* Share Button */}
-        <Button
-          variant="secondary"
-          size="icon"
-          className="absolute top-4 right-4"
-          onClick={handleShare}
-        >
-          <Share2 className="h-4 w-4" />
+        <h1 className="text-xl font-bold flex-1">Event Details</h1>
+        <Button variant="ghost" size="sm" onClick={handleShare}>
+          <Share2 className="w-4 h-4" />
         </Button>
-
-        {/* Title and Category */}
-        <div className="absolute bottom-4 left-4 right-4">
-          <Badge className="mb-2">{event.category}</Badge>
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-            {event.title}
-          </h1>
-        </div>
+        <Avatar className="w-10 h-10 cursor-pointer" onClick={() => navigate("/profile")}>
+          <AvatarImage src={event.host.avatarUrl} />
+          <AvatarFallback>{event.host.name[0]}</AvatarFallback>
+        </Avatar>
       </div>
 
-      <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Event Details Card */}
-            <Card>
-              <CardContent className="pt-6 space-y-4">
-                <div className="flex items-start gap-3">
-                  <Calendar className="h-5 w-5 text-muted-foreground mt-1" />
-                  <div>
-                    <p className="font-medium">{event.date}</p>
-                    <p className="text-sm text-muted-foreground">{event.time}</p>
-                  </div>
-                </div>
+      {/* Content */}
+      <div className="px-6 py-6 space-y-6 max-w-4xl mx-auto">
+        {/* Event Banner */}
+        <div className="h-64 bg-muted rounded-lg relative overflow-hidden">
+          <img
+            src={event.bannerUrl}
+            alt={event.title}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute top-4 right-4">
+            <Badge variant="default" className="text-sm">
+              {event.category}
+            </Badge>
+          </div>
+        </div>
 
-                <Separator />
+        {/* Event Info */}
+        <div className="space-y-3">
+          <h2 className="text-2xl font-bold">{event.title}</h2>
+          <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+            <span className="inline-flex items-center gap-1">
+              <CalendarClock className="w-4 h-4" />{" "}
+              {format(new Date(event.date), "EEEE, MMMM d, yyyy 'at' h:mm a")}
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <MapPin className="w-4 h-4" /> {event.location.address}
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <Users className="w-4 h-4" /> {event.participants.length} attending
+            </span>
+          </div>
+        </div>
 
-                <div className="flex items-start gap-3">
-                  <MapPin className="h-5 w-5 text-muted-foreground mt-1" />
-                  <div className="flex-1">
-                    <p className="font-medium">Location</p>
-                    <p className="text-sm text-muted-foreground">{event.location}</p>
-                  </div>
-                </div>
+        {/* Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="description">Description</TabsTrigger>
+            <TabsTrigger value="location">Location</TabsTrigger>
+            <TabsTrigger value="attendees">Attendees</TabsTrigger>
+          </TabsList>
 
-                <Separator />
-
-                <div className="flex items-start gap-3">
-                  <DollarSign className="h-5 w-5 text-muted-foreground mt-1" />
-                  <div>
-                    <p className="font-medium">
-                      {event.isFree ? "Free" : `$${event.fee}`}
-                    </p>
-                    {event.deposit && (
-                      <p className="text-sm text-muted-foreground">
-                        ${event.deposit} refundable deposit required
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="flex items-start gap-3">
-                  <Users className="h-5 w-5 text-muted-foreground mt-1" />
-                  <div>
-                    <p className="font-medium">
-                      {event.participantsCount} / {event.maxParticipants} attendees
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {event.maxParticipants - event.participantsCount} spots left
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Description */}
+          {/* Description Tab */}
+          <TabsContent value="description" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>About this event</CardTitle>
+                <CardTitle>About this Event</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="whitespace-pre-line text-muted-foreground">
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
                   {event.description}
                 </p>
               </CardContent>
             </Card>
 
-            {/* Location Map */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5" />
-                  Location
+                  <Shield size={20} /> Rules
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="aspect-video rounded-lg overflow-hidden bg-muted">
-                  {/* Google Maps Embed */}
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    loading="lazy"
-                    allowFullScreen
-                    src={`https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q=${event.coordinates.lat},${event.coordinates.lng}`}
-                    title="Event Location"
-                  ></iframe>
-                  {/* Fallback: Show static image if API key not configured */}
-                  <div className="flex items-center justify-center h-full text-muted-foreground">
-                    <div className="text-center">
-                      <MapPin className="h-12 w-12 mx-auto mb-2" />
-                      <p className="text-sm">{event.location}</p>
-                      <p className="text-xs mt-1">
-                        <a 
-                          href={`https://www.google.com/maps/search/?api=1&query=${event.coordinates.lat},${event.coordinates.lng}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary hover:underline"
-                        >
-                          Open in Google Maps
-                        </a>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Rules */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5" />
-                  Event Rules
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {event.rules.map((rule, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span className="text-muted-foreground">{rule}</span>
-                    </li>
+                <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+                  {event.rules.map((r, i) => (
+                    <li key={i}>{r}</li>
                   ))}
                 </ul>
               </CardContent>
             </Card>
 
-            {/* Refund Policy */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-5 w-5" />
-                  Refund Policy
+                  <RefreshCw size={20} /> Refund Policy
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="whitespace-pre-line text-muted-foreground">
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
                   {event.refundPolicy}
                 </p>
               </CardContent>
             </Card>
-          </div>
+          </TabsContent>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Host Card */}
+          {/* Location Tab */}
+          <TabsContent value="location">
             <Card>
               <CardHeader>
-                <CardTitle>Hosted by</CardTitle>
+                <CardTitle>Location & Map</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="flex items-start gap-3">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={event.hostAvatar} alt={event.hostName} />
-                    <AvatarFallback>{event.hostName[0]}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <p className="font-medium">{event.hostName}</p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {event.hostBio}
-                    </p>
-                    <Button variant="outline" size="sm" className="mt-3 w-full">
-                      View Profile
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Participants */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Attendees ({event.participantsCount})</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {event.participants.map((participant) => (
-                    <Dialog key={participant.id}>
-                      <DialogTrigger asChild>
-                        <Avatar className="h-10 w-10 cursor-pointer hover:ring-2 ring-primary transition-all">
-                          <AvatarImage src={participant.avatar} alt={participant.name} />
-                          <AvatarFallback>{participant.name[0]}</AvatarFallback>
-                        </Avatar>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>{participant.name}</DialogTitle>
-                          <DialogDescription>Event attendee</DialogDescription>
-                        </DialogHeader>
-                        <div className="flex items-center gap-3 py-4">
-                          <Avatar className="h-16 w-16">
-                            <AvatarImage src={participant.avatar} alt={participant.name} />
-                            <AvatarFallback>{participant.name[0]}</AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium">{participant.name}</p>
-                            <p className="text-sm text-muted-foreground">Attending this event</p>
-                          </div>
-                        </div>
-                        <Button variant="outline" className="w-full">
-                          View Profile
-                        </Button>
-                      </DialogContent>
-                    </Dialog>
-                  ))}
-                  {event.participantsCount > event.participants.length && (
-                    <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-sm font-medium">
-                      +{event.participantsCount - event.participants.length}
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Action Buttons */}
-            <div className="space-y-3 sticky top-4">
-              {!hasJoined ? (
-                <Button size="lg" className="w-full" onClick={handleJoin}>
-                  Join Event - {event.isFree ? "Free" : `$${event.fee}`}
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground">{event.location.address}</p>
+                <MapEmbed
+                  lat={event.location.lat}
+                  lng={event.location.lng}
+                  title={event.title}
+                />
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() =>
+                    window.open(
+                      `https://www.google.com/maps/search/?api=1&query=${event.location.lat},${event.location.lng}`,
+                      "_blank"
+                    )
+                  }
+                >
+                  <MapPin size={16} className="mr-2" /> Get Directions
                 </Button>
-              ) : (
-                <div className="space-y-2">
-                  <Button size="lg" className="w-full" disabled>
-                    <Clock className="h-4 w-4 mr-2" />
-                    Joined
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="w-full"
-                    onClick={handleChatWithAttendees}
-                  >
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    Chat with Attendees
-                  </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Attendees Tab */}
+          <TabsContent value="attendees">
+            <Card>
+              <CardHeader>
+                <CardTitle>Attendees ({event.participants.length})</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-4 gap-4">
+                  {event.participants.map((p, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col items-center text-center"
+                    >
+                      <Avatar className="w-12 h-12 mb-2">
+                        <AvatarImage src={p.avatarUrl} />
+                        <AvatarFallback>{p.name[0]}</AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm font-medium">{p.name}</span>
+                    </div>
+                  ))}
                 </div>
-              )}
-              
-              {hasJoined && (
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="ghost" size="sm" className="w-full text-destructive">
-                      Cancel Registration
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Cancel Registration</DialogTitle>
-                      <DialogDescription>
-                        Are you sure you want to cancel your registration for this event?
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="bg-muted p-4 rounded-lg mb-4">
-                      <p className="text-sm">
-                        <strong>Refund Policy:</strong> Cancellations made 24 hours before
-                        the event will receive a full refund.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" className="flex-1">
-                        Keep Registration
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        className="flex-1"
-                        onClick={() => {
-                          setHasJoined(false);
-                          toast({
-                            title: "Registration canceled",
-                            description: "Your registration has been canceled.",
-                          });
-                        }}
-                      >
-                        Cancel Registration
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              )}
-            </div>
-          </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        <Separator className="my-6" />
+
+        {/* Action Buttons */}
+        <div className="space-y-3 pb-6">
+          {!hasJoined ? (
+            <Button
+              className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal h-12 text-lg font-semibold"
+              onClick={handleJoinEvent}
+            >
+              Join Event
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              className="w-full rounded-full h-12 text-lg font-semibold"
+              onClick={handleChatWithAttendees}
+            >
+              <MessageSquare size={20} className="mr-2" /> Chat with Attendees
+            </Button>
+          )}
         </div>
       </div>
     </div>
