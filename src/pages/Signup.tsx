@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 
 const Signup = () => {
@@ -17,12 +18,25 @@ const Signup = () => {
     dateOfBirth: "",
     location: "",
   });
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!agreedToTerms) {
+      alert("Please agree to the Terms of Service and Privacy Policy to continue.");
+      return;
+    }
     // Navigate to home after signup
     navigate("/home");
   };
+
+  const canContinueFromAuth = agreedToTerms && 
+    formData.fullName.trim() !== "" && 
+    formData.email.trim() !== "" && 
+    formData.password.trim() !== "" && 
+    formData.confirmPassword.trim() !== "" && 
+    formData.dateOfBirth.trim() !== "" && 
+    formData.location.trim() !== "";
 
   return (
     <div className="min-h-screen bg-background px-6 py-8">
@@ -135,18 +149,26 @@ const Signup = () => {
             </div>
           </div>
 
+          <div className="flex items-center space-x-2 mb-6">
+            <Checkbox 
+              id="terms" 
+              checked={agreedToTerms}
+              onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
+            />
+            <Label htmlFor="terms" className="text-sm text-muted-foreground">
+              I agree to the{" "}
+              <a href="#" className="text-[#E8B956] underline">Terms of Service</a> and{" "}
+              <a href="#" className="text-[#E8B956] underline">Privacy Policy</a>
+            </Label>
+          </div>
+
           <Button
             type="submit"
-            className="w-full h-14 text-lg font-semibold rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal shadow-md"
+            disabled={!canContinueFromAuth}
+            className="w-full h-14 text-lg font-semibold rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Continue
           </Button>
-
-          <p className="text-xs text-center text-muted-foreground">
-            By continuing, you agree to our{" "}
-            <a href="#" className="text-[#E8B956] underline">Terms of Service</a> and{" "}
-            <a href="#" className="text-[#E8B956] underline">Privacy Policy</a>.
-          </p>
         </form>
       </div>
     </div>
