@@ -8,18 +8,18 @@ import onboarding3 from "@/assets/onboarding-3.png";
 const slides = [
   {
     image: onboarding1,
-    title: "Welcome to Connective",
-    description: "Find meaningful friendships in a safe and inclusive environment designed for adults like you.",
+    title: "Find genuine friends nearby",
+    description: "Connect with real people in your area who share your interests and values. Build authentic friendships that matter.",
   },
   {
     image: onboarding2,
-    title: "Find Your People",
-    description: "Connective helps you find meaningful connections in a safe and supportive environment. With features like verified profiles and community guidelines, you can be sure that you're connecting with real people who share your interests and values.",
+    title: "Join groups that match your vibe",
+    description: "Discover communities and groups that align with your passions. Find your tribe and make lasting connections.",
   },
   {
     image: onboarding3,
-    title: "Discover Meaningful Connections",
-    description: "Find your people, your way. Connective helps you build genuine friendships based on shared interests and values in a safe and inclusive environment.",
+    title: "Attend events safely & easily",
+    description: "Join verified events with confidence. Meet new friends in person through safe, organized gatherings in your area.",
   },
 ];
 
