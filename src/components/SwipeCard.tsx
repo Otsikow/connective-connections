@@ -1,8 +1,10 @@
 import { useState, useRef } from "react";
+import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, X, Coffee, Shield, Clock } from "lucide-react";
+import { triggerHaptic } from "@/lib/haptics";
 
 interface Profile {
   id: string;
@@ -48,7 +50,12 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
     
     const threshold = 100;
     if (Math.abs(dragOffset.x) > threshold) {
+      // Trigger haptic feedback based on swipe direction
+      triggerHaptic(dragOffset.x > 0 ? 'success' : 'warning');
       onSwipe(dragOffset.x > 0 ? 'right' : 'left');
+    } else {
+      // Light haptic feedback for cancelled swipe
+      triggerHaptic('light');
     }
     
     setDragOffset({ x: 0, y: 0 });
@@ -85,15 +92,25 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
   const opacity = Math.max(0.3, 1 - Math.abs(dragOffset.x) / 300);
 
   return (
-    <div
+    <motion.div
       ref={cardRef}
-      className={`absolute inset-0 transition-all duration-200 swipe-card ${
+      className={`absolute inset-0 swipe-card ${
         isActive ? 'cursor-grab active:cursor-grabbing' : 'pointer-events-none'
       }`}
       style={{
         transform: `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${rotation}deg)`,
         opacity,
         zIndex: isActive ? 10 : 1,
+      }}
+      initial={{ scale: 0.95, opacity: 0 }}
+      animate={{ 
+        scale: 1, 
+        opacity: isActive ? 1 : 0.3,
+        transition: { 
+          type: "spring", 
+          stiffness: 260, 
+          damping: 20 
+        }
       }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
@@ -103,7 +120,7 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      <Card className="h-full border-border overflow-hidden shadow-2xl animate-fade-in">
+      <Card animated={false} className="h-full border-border overflow-hidden shadow-2xl">
         {/* Photo Section */}
         <div className="relative h-96 bg-gradient-to-br from-blue-400 to-purple-500">
           <div className="absolute inset-0 bg-black/20" />
@@ -134,18 +151,28 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
           {/* Swipe Indicators */}
           <div className="absolute inset-0 pointer-events-none">
             {dragOffset.x > 50 && (
-              <div className="absolute top-1/2 left-8 transform -translate-y-1/2">
-                <div className="w-16 h-16 rounded-full bg-green-500/80 flex items-center justify-center">
+              <motion.div 
+                className="absolute top-1/2 left-8 transform -translate-y-1/2"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+              >
+                <div className="w-16 h-16 rounded-full bg-green-500/80 flex items-center justify-center shadow-lg">
                   <Heart className="w-8 h-8 text-white" />
                 </div>
-              </div>
+              </motion.div>
             )}
             {dragOffset.x < -50 && (
-              <div className="absolute top-1/2 right-8 transform -translate-y-1/2">
-                <div className="w-16 h-16 rounded-full bg-red-500/80 flex items-center justify-center">
+              <motion.div 
+                className="absolute top-1/2 right-8 transform -translate-y-1/2"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+              >
+                <div className="w-16 h-16 rounded-full bg-red-500/80 flex items-center justify-center shadow-lg">
                   <X className="w-8 h-8 text-white" />
                 </div>
-              </div>
+              </motion.div>
             )}
           </div>
         </div>
@@ -188,6 +215,6 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
           </Button>
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   );
 };
