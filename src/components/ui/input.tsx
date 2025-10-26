@@ -22,7 +22,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
         onFocus={handleFocus}
         whileFocus={{ scale: 1.01 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        {...props}
+        {...(props as any)}
       />
     );
   },

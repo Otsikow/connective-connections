@@ -1,98 +1,50 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Eye, EyeOff, ArrowLeft, UserPlus } from "lucide-react";
 import { triggerHaptic } from "@/lib/haptics";
-import { ArrowLeft } from "lucide-react";
 
-import onboarding1 from "@/assets/onboarding-1.png";
-import onboarding2 from "@/assets/onboarding-2.png";
-import onboarding3 from "@/assets/onboarding-3.png";
-
-const slides = [
-  {
-    image: onboarding1,
-    title: "Find genuine friends nearby.",
-  },
-  {
-    image: onboarding2,
-    title: "Join groups that match your vibe.",
-  },
-  {
-    image: onboarding3,
-    title: "Attend events safely & easily.",
-  },
-];
-
-const Onboarding = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [showSplash, setShowSplash] = useState(true);
+const Signup = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const t = setTimeout(() => setShowSplash(false), 1500);
-    return () => clearTimeout(t);
-  }, []);
-
-  const handleNext = () => {
-    triggerHaptic("light");
-    if (currentSlide < slides.length - 1) {
-      setCurrentSlide(currentSlide + 1);
-    } else {
-      triggerHaptic("success");
-      navigate("/signup");
+  const handleSignup = async () => {
+    if (!email || !password || !fullName) {
+      triggerHaptic("warning");
+      alert("Please complete all fields before signing up.");
+      return;
     }
-  };
+    if (!acceptTerms) {
+      triggerHaptic("warning");
+      alert("Please accept the terms and conditions to continue.");
+      return;
+    }
 
-  const handleSkip = () => {
     triggerHaptic("light");
-    navigate("/signup");
+    setLoading(true);
+    setTimeout(() => {
+      triggerHaptic("success");
+      navigate("/onboarding");
+    }, 1500);
   };
-
-  if (showSplash) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
-        <motion.div
-          className="flex flex-col items-center"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-        >
-          <motion.div
-            className="w-20 h-20 rounded-2xl bg-[#E8B956] mb-6 shadow-md flex items-center justify-center text-charcoal text-2xl font-bold"
-            animate={{
-              rotate: [0, -10, 10, -10, 0],
-              scale: [1, 1.05, 1.05, 1.05, 1],
-            }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-          >
-            C
-          </motion.div>
-          <motion.h1
-            className="text-3xl font-extrabold tracking-tight"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.4 }}
-          >
-            Connective
-          </motion.h1>
-          <motion.p
-            className="mt-2 text-muted-foreground"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.4 }}
-          >
-            Real Friends. Real Connection.
-          </motion.p>
-        </motion.div>
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 py-8">
+    <motion.div
+      className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 px-4 sm:px-6 py-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
       {/* Back Button */}
-      <div className="absolute top-6 left-6">
+      <div className="absolute top-4 sm:top-6 left-4 sm:left-6">
         <button
           onClick={() => {
             triggerHaptic("light");
@@ -100,84 +52,110 @@ const Onboarding = () => {
           }}
           className="p-2 hover:bg-muted rounded-full"
         >
-          <ArrowLeft className="w-6 h-6" />
+          <ArrowLeft className="w-6 h-6 text-foreground" />
         </button>
       </div>
 
       <motion.div
-        className="w-full max-w-md flex flex-col items-center"
+        className="w-full max-w-md bg-card border border-border/50 rounded-3xl shadow-lg p-6 sm:p-8"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentSlide}
-            className="w-full bg-card rounded-3xl shadow-lg p-8 mb-8"
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            transition={{ duration: 0.3 }}
-          >
-            <motion.img
-              src={slides[currentSlide].image}
-              alt={slides[currentSlide].title}
-              className="w-full h-auto mb-6 rounded-2xl"
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.4 }}
+        <div className="flex flex-col items-center text-center mb-6">
+          <div className="p-3 bg-primary/10 rounded-full mb-3">
+            <UserPlus className="w-6 h-6 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold mb-1">Create Your Account</h1>
+          <p className="text-muted-foreground text-sm">
+            Join Connective and start building real connections today.
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="fullName">Full Name</Label>
+            <Input
+              id="fullName"
+              placeholder="Enter your full name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="mt-1"
             />
-            <motion.h1
-              className="text-2xl font-bold text-foreground mb-2 text-center"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.3 }}
-            >
-              {slides[currentSlide].title}
-            </motion.h1>
-          </motion.div>
-        </AnimatePresence>
+          </div>
 
-        <Button
-          onClick={handleNext}
-          className="w-full max-w-md h-14 text-lg font-semibold rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal shadow-md"
-        >
-          {currentSlide === slides.length - 1 ? "Get Started" : "Continue"}
-        </Button>
-
-        {currentSlide === slides.length - 1 && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <Button
-              onClick={handleSkip}
-              variant="ghost"
-              className="mt-4 text-foreground"
-            >
-              Skip
-            </Button>
-          </motion.div>
-        )}
-
-        <div className="flex gap-2 mt-6">
-          {slides.map((_, index) => (
-            <motion.div
-              key={index}
-              className={`h-2 rounded-full ${
-                index === currentSlide ? "bg-[#E8B956]" : "bg-muted"
-              }`}
-              animate={{
-                width: index === currentSlide ? 32 : 8,
-              }}
-              transition={{ duration: 0.3 }}
+          <div>
+            <Label htmlFor="email">Email Address</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1"
             />
-          ))}
+          </div>
+
+          <div>
+            <Label htmlFor="password">Password</Label>
+            <div className="relative mt-1">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pr-10"
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="terms"
+              checked={acceptTerms}
+              onCheckedChange={(checked) => setAcceptTerms(!!checked)}
+            />
+            <Label htmlFor="terms" className="text-sm text-muted-foreground">
+              I agree to the{" "}
+              <span className="text-primary cursor-pointer hover:underline">
+                Terms & Conditions
+              </span>
+            </Label>
+          </div>
+
+          <Button
+            onClick={handleSignup}
+            disabled={loading}
+            className="w-full h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold shadow-md mt-4 transition-all"
+          >
+            {loading ? "Creating account..." : "Sign Up"}
+          </Button>
+
+          <p className="text-center text-sm text-muted-foreground mt-4">
+            Already have an account?{" "}
+            <button
+              onClick={() => navigate("/login")}
+              className="text-primary hover:underline font-medium"
+            >
+              Log in
+            </button>
+          </p>
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 
-export default Onboarding;
+export default Signup;

@@ -22,9 +22,9 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
         className={cn("rounded-lg border bg-card text-card-foreground shadow-sm", className)}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
+        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
         whileHover={hoverScale ? { scale: 1.02, y: -4 } : undefined}
-        {...props}
+        {...(props as any)}
       />
     );
   }

@@ -88,9 +88,9 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-28">
+    <div className="min-h-screen bg-background pb-24 sm:pb-28">
       {/* Header + Search */}
-      <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4">
+      <div className="sticky top-0 z-10 bg-background border-b border-border px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between mb-3">
           <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
             <ArrowLeft className="w-6 h-6" />
@@ -114,9 +114,9 @@ const Home = () => {
       </div>
 
       {/* Tabs Section */}
-      <div className="px-6 py-6 space-y-8">
+      <div className="px-4 sm:px-6 py-6 space-y-8">
         <Tabs defaultValue="matches" className="w-full">
-          <TabsList className="w-full grid grid-cols-3">
+          <TabsList className="w-full grid grid-cols-3 h-auto">
             <TabsTrigger value="matches">Matches</TabsTrigger>
             <TabsTrigger value="groups">Groups</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
@@ -125,7 +125,7 @@ const Home = () => {
           {/* Matches Tab */}
           <TabsContent value="matches" className="mt-6 space-y-6">
             <section>
-              <h2 className="text-2xl font-bold mb-3">New people near you</h2>
+              <h2 className="text-xl sm:text-2xl font-bold mb-3">New people near you</h2>
               <Carousel className="w-full">
                 <CarouselContent>
                   {matches.map((match, index) => (
@@ -160,7 +160,7 @@ const Home = () => {
           {/* Groups Tab */}
           <TabsContent value="groups" className="mt-6 space-y-6">
             <section>
-              <h2 className="text-2xl font-bold mb-3">
+              <h2 className="text-xl sm:text-2xl font-bold mb-3">
                 Communities you might like
               </h2>
               <Carousel className="w-full">
@@ -209,7 +209,7 @@ const Home = () => {
           {/* Events Tab */}
           <TabsContent value="events" className="mt-6 space-y-6">
             <section>
-              <h2 className="text-2xl font-bold mb-3">Upcoming events</h2>
+              <h2 className="text-xl sm:text-2xl font-bold mb-3">Upcoming events</h2>
               <Carousel className="w-full">
                 <CarouselContent>
                   {events.map((event, index) => (
@@ -254,15 +254,16 @@ const Home = () => {
 
       {/* Floating Host Event Button */}
       <Button
-        className="fixed bottom-24 right-6 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal shadow-lg flex items-center gap-2"
+        className="fixed bottom-20 sm:bottom-24 right-4 sm:right-6 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal shadow-lg flex items-center gap-2 h-12 sm:h-auto px-4 sm:px-6 text-sm sm:text-base"
         onClick={() => navigate("/home")}
       >
-        <Plus className="h-5 w-5" />
-        Host Event
+        <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
+        <span className="hidden xs:inline">Host Event</span>
+        <span className="xs:hidden">Host</span>
       </Button>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-6 py-3 flex items-center justify-around">
+      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-2 sm:px-6 py-3 flex items-center justify-around">
         <button className="flex flex-col items-center gap-1 text-[#E8B956]">
           <HomeIcon size={24} />
           <span className="text-xs font-medium">Home</span>

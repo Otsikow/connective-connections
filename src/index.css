@@ -2,20 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* ===============================
+   CONNECTIVE DESIGN SYSTEM
+   =============================== */
+
+/* All colors use HSL format for easier theming.
+   Dark mode uses a sleek professional palette.
 */
 
 @layer base {
   :root {
-    /* Connective Brand Colors */
+    /* Brand Colors */
     --ocean-teal: 174 65% 48%;
     --warm-coral: 14 100% 70%;
     --soft-cream: 30 100% 97%;
     --charcoal: 0 0% 17%;
     --cream-bg: 30 100% 97%;
-    
-    /* Core Design System */
+
+    /* Core Palette */
     --background: 30 100% 97%;
     --foreground: 0 0% 17%;
 
@@ -49,11 +53,11 @@ All colors MUST be HSL.
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(174 65% 48%), hsl(174 70% 58%));
     --gradient-warm: linear-gradient(135deg, hsl(14 100% 70%), hsl(25 100% 75%));
-    
+
     /* Shadows */
     --shadow-soft: 0 4px 20px -2px hsl(174 65% 48% / 0.15);
     --shadow-card: 0 2px 12px -2px hsl(0 0% 0% / 0.08);
-    
+
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -62,32 +66,32 @@ All colors MUST be HSL.
     /* Professional Dark Mode Palette */
     --background: 222 47% 11%;
     --foreground: 210 40% 98%;
-    
+
     --card: 222 47% 14%;
     --card-foreground: 210 40% 98%;
-    
+
     --popover: 222 47% 14%;
     --popover-foreground: 210 40% 98%;
-    
+
     --primary: 174 65% 48%;
     --primary-foreground: 0 0% 100%;
-    
+
     --secondary: 14 100% 70%;
     --secondary-foreground: 222 47% 11%;
-    
+
     --muted: 217 33% 17%;
     --muted-foreground: 215 20% 65%;
-    
+
     --accent: 174 60% 50%;
     --accent-foreground: 0 0% 100%;
-    
+
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    
+
     --border: 217 33% 22%;
     --input: 217 33% 22%;
     --ring: 174 65% 48%;
-    
+
     /* Dark Mode Shadows */
     --shadow-soft: 0 4px 20px -2px hsl(174 65% 48% / 0.25);
     --shadow-card: 0 2px 16px -2px hsl(0 0% 0% / 0.4);
@@ -103,27 +107,26 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
-  
-  /* Dark Mode Specific Enhancements */
+
+  /* Subtle glow effects for dark mode */
   .dark {
-    /* Subtle glow effects for cards in dark mode */
     --glow-primary: 0 0 20px hsl(174 65% 48% / 0.15);
     --glow-secondary: 0 0 20px hsl(14 100% 70% / 0.15);
   }
-  
-  /* Enhanced card appearance in dark mode */
+
+  /* Enhanced card appearance */
   .dark .card,
   .dark [class*="card"] {
     background: linear-gradient(135deg, hsl(222 47% 14%) 0%, hsl(222 47% 12%) 100%);
     border-color: hsl(217 33% 25%);
   }
-  
-  /* Subtle backdrop blur for modals in dark mode */
+
+  /* Subtle backdrop blur for modals */
   .dark .backdrop-blur {
     backdrop-filter: blur(20px) saturate(180%);
   }
-  
-  /* Enhanced input fields in dark mode */
+
+  /* Inputs and selects */
   .dark input:not([type="checkbox"]):not([type="radio"]),
   .dark textarea,
   .dark select {
@@ -131,7 +134,7 @@ All colors MUST be HSL.
     border-color: hsl(217 33% 25%);
     transition: all 0.2s ease;
   }
-  
+
   .dark input:focus:not([type="checkbox"]):not([type="radio"]),
   .dark textarea:focus,
   .dark select:focus {
@@ -139,18 +142,21 @@ All colors MUST be HSL.
     border-color: hsl(174 65% 48%);
     box-shadow: 0 0 0 3px hsl(174 65% 48% / 0.15);
   }
-  
-  /* Enhanced button styles in dark mode */
+
+  /* Buttons */
   .dark button:not(.ghost):not(.outline) {
     box-shadow: 0 2px 8px -2px hsl(0 0% 0% / 0.3);
   }
-  
+
   .dark button:hover:not(.ghost):not(.outline) {
     box-shadow: 0 4px 12px -2px hsl(0 0% 0% / 0.4);
   }
 }
 
-/* Animation Utilities */
+/* ===============================
+   ANIMATION UTILITIES
+   =============================== */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -218,6 +224,7 @@ All colors MUST be HSL.
   }
 }
 
+/* Animation Classes */
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out;
 }
@@ -252,82 +259,3 @@ All colors MUST be HSL.
   );
   background-size: 200% 100%;
 }
-
-/* Swipe Card Effects */
-.swipe-card {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
-              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Message Animation */
-@keyframes messageSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.message-enter {
-  animation: messageSlideIn 0.2s ease-out;
-}
-
-/* Trust Badge Pulse */
-@keyframes trustPulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.05);
-  }
-}
-
-.trust-badge {
-  animation: trustPulse 2s ease-in-out infinite;
-}
-
-/* Smooth Transitions */
-* {
-  -webkit-tap-highlight-color: transparent;
-}
-
-.smooth-transition {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Interactive Element Feedback */
-.interactive-scale {
-  transition: transform 0.2s ease-out;
-}
-
-.interactive-scale:active {
-  transform: scale(0.97);
-}
-
-/* Stagger Animation Helper */
-@keyframes staggerIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.stagger-item {
-  animation: staggerIn 0.4s ease-out backwards;
-}
-
-.stagger-item:nth-child(1) { animation-delay: 0.05s; }
-.stagger-item:nth-child(2) { animation-delay: 0.1s; }
-.stagger-item:nth-child(3) { animation-delay: 0.15s; }
-.stagger-item:nth-child(4) { animation-delay: 0.2s; }
-.stagger-item:nth-child(5) { animation-delay: 0.25s; }
-.stagger-item:nth-child(6) { animation-delay: 0.3s; }

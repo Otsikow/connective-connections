@@ -8,25 +8,27 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header with Back Arrow */}
-      <div className="px-6 py-4">
+      <div className="px-4 sm:px-6 py-4">
         <button
           onClick={() => navigate(-1)}
-          className="p-2 hover:bg-muted rounded-full"
+          className="p-2 hover:bg-muted rounded-full transition-colors"
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
       </div>
 
       {/* Welcome Section */}
-      <div className="flex flex-1 items-center justify-center">
-        <div className="text-center">
-          <h1 className="mb-4 text-4xl font-bold">Welcome to Connective</h1>
-          <p className="text-xl text-muted-foreground mb-8">
+      <div className="flex flex-1 items-center justify-center px-4">
+        <div className="text-center max-w-2xl mx-auto">
+          <h1 className="mb-4 text-3xl sm:text-4xl lg:text-5xl font-bold">
+            Welcome to Connective
+          </h1>
+          <p className="text-lg sm:text-xl text-muted-foreground mb-8 px-4">
             Real Friends. Real Connection.
           </p>
           <Button
             onClick={() => navigate("/onboarding")}
-            className="bg-[#E8B956] hover:bg-[#d9a840] text-charcoal rounded-full px-8"
+            className="bg-[#E8B956] hover:bg-[#d9a840] text-charcoal rounded-full px-8 h-12 text-base sm:text-lg font-semibold transition-all"
           >
             Get Started
           </Button>

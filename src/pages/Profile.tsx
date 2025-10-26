@@ -94,7 +94,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <div className="bg-card border-b border-border px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+      <div className="bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between sticky top-0 z-10">
         <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
           <ArrowLeft className="w-6 h-6" />
         </button>
@@ -103,7 +103,7 @@ const Profile = () => {
       </div>
 
       {/* Main Content */}
-      <div className="px-6 py-6 space-y-6">
+      <div className="px-4 sm:px-6 py-6 space-y-6">
         {/* Profile Header */}
         <div className="flex flex-col items-center text-center">
           <div className="relative mb-2">
@@ -117,13 +117,13 @@ const Profile = () => {
             </div>
           </div>
 
-          <h2 className="text-2xl font-bold mb-2">{profile.name}</h2>
-          <div className="flex items-center gap-2 text-muted-foreground mb-1">
-            <MapPin size={16} />
-            <span>{profile.location}</span>
+          <h2 className="text-xl sm:text-2xl font-bold mb-2">{profile.name}</h2>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+            <MapPin size={14} className="flex-shrink-0" />
+            <span className="truncate">{profile.location}</span>
           </div>
-          <div className="flex items-center gap-2 text-muted-foreground mb-4">
-            <Calendar size={16} />
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+            <Calendar size={14} className="flex-shrink-0" />
             <span>Joined {profile.joinedDate}</span>
           </div>
         </div>
@@ -162,18 +162,18 @@ const Profile = () => {
 
         {/* Tabs Section */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="friends">
-              <Users className="w-4 h-4 mr-2" /> Friends
+          <TabsList className="grid w-full grid-cols-4 h-auto">
+            <TabsTrigger value="friends" className="text-xs sm:text-sm">
+              <Users className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Friends</span>
             </TabsTrigger>
-            <TabsTrigger value="events">
-              <Calendar className="w-4 h-4 mr-2" /> Events
+            <TabsTrigger value="events" className="text-xs sm:text-sm">
+              <Calendar className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Events</span>
             </TabsTrigger>
-            <TabsTrigger value="badges">
-              <Award className="w-4 h-4 mr-2" /> Badges
+            <TabsTrigger value="badges" className="text-xs sm:text-sm">
+              <Award className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Badges</span>
             </TabsTrigger>
-            <TabsTrigger value="settings">
-              <Settings className="w-4 h-4 mr-2" /> Settings
+            <TabsTrigger value="settings" className="text-xs sm:text-sm">
+              <Settings className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Settings</span>
             </TabsTrigger>
           </TabsList>
 
@@ -248,7 +248,7 @@ const Profile = () => {
                 {badges.filter((b) => b.earned).length} / {badges.length} earned
               </Badge>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {badges.map((badge) => (
                 <Card key={badge.id} className={badge.earned ? "bg-green-50 border-green-200" : "opacity-70"}>
                   <CardContent className="p-4">
