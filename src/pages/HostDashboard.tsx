@@ -1,252 +1,196 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
-import { Calendar, Users, DollarSign, BarChart3, ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import EventManagement from "@/components/host/EventManagement";
-import AttendeeApproval from "@/components/host/AttendeeApproval";
-import DepositManagement from "@/components/host/DepositManagement";
-import Analytics from "@/components/host/Analytics";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Users, Sparkles, CheckCircle, ArrowLeft } from "lucide-react";
 
-const mockAttendance = [
-  { month: "Jan", attendance: 42 },
-  { month: "Feb", attendance: 48 },
-  { month: "Mar", attendance: 51 },
-  { month: "Apr", attendance: 62 },
-  { month: "May", attendance: 58 },
-  { month: "Jun", attendance: 70 },
+const interestOptions = [
+  "Food & Cooking",
+  "Music & Art",
+  "Networking",
+  "Fitness & Wellness",
+  "Travel & Culture",
+  "Tech & Innovation",
+  "Outdoor Adventures",
+  "Faith & Inspiration",
 ];
 
-const mockEarnings = [
-  { month: "Jan", earnings: 320 },
-  { month: "Feb", earnings: 480 },
-  { month: "Mar", earnings: 520 },
-  { month: "Apr", earnings: 740 },
-  { month: "May", earnings: 680 },
-  { month: "Jun", earnings: 910 },
-];
-
-const HostDashboard = () => {
+const Onboarding = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("overview");
+  const [step, setStep] = useState(1);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [fullName, setFullName] = useState("");
+  const [city, setCity] = useState("");
 
-  const [eventForm, setEventForm] = useState({
-    title: "",
-    date: "",
-    location: "",
-    capacity: "",
-    deposit: "",
-    type: "in_person",
-  });
+  const totalSteps = 3;
+  const progress = (step / totalSteps) * 100;
 
-  const queryClient = useQueryClient();
+  const handleInterestToggle = (interest: string) => {
+    setSelectedInterests((prev) =>
+      prev.includes(interest)
+        ? prev.filter((i) => i !== interest)
+        : [...prev, interest]
+    );
+  };
 
-  const { data: pendingApprovals = [
-    { id: 1, user: "User #1", event: "Coffee & Chat" },
-    { id: 2, user: "User #2", event: "Coffee & Chat" },
-  ] } = useQuery({
-    queryKey: ["host", "approvals"],
-    queryFn: async () => [
-      { id: 1, user: "User #1", event: "Coffee & Chat" },
-      { id: 2, user: "User #2", event: "Coffee & Chat" },
-    ],
-  });
+  const handleNext = () => {
+    if (step < totalSteps) setStep(step + 1);
+    else navigate("/dashboard");
+  };
 
-  const approveMutation = useMutation({
-    mutationFn: async (id: number) => id,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["host", "approvals"] }),
-  });
-
-  const rejectMutation = useMutation({
-    mutationFn: async (id: number) => id,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["host", "approvals"] }),
-  });
+  const handleBack = () => {
+    if (step > 1) setStep(step - 1);
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-6">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-card border-b border-border px-4 sm:px-6 py-4">
-        <div className="flex items-center gap-4 mb-2">
-          <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
-            <ArrowLeft className="w-6 h-6" />
-          </button>
-          <div>
-            <h1 className="text-xl font-bold">Host Dashboard</h1>
-            <p className="text-sm text-muted-foreground">
-              Manage events, approve attendees, deposits, and analytics.
-            </p>
+    <motion.div
+      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4 sm:p-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
+      <Card className="w-full max-w-lg border-border/50 shadow-lg">
+        <CardHeader className="text-center space-y-2">
+          <div className="flex justify-center mb-3">
+            <Users className="w-10 h-10 text-primary" />
           </div>
-        </div>
-      </div>
+          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            Welcome to Connective
+          </CardTitle>
+          <CardDescription>
+            Let’s personalize your experience in just a few quick steps.
+          </CardDescription>
+        </CardHeader>
 
-      <div className="px-4 sm:px-6 pt-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="flex flex-wrap gap-2 mb-6 h-auto">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="events">Events</TabsTrigger>
-            <TabsTrigger value="attendees">Attendees</TabsTrigger>
-            <TabsTrigger value="deposits">Deposits</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          </TabsList>
+        <CardContent className="space-y-6 p-6">
+          <Progress value={progress} className="h-2 bg-muted" />
 
-          {/* Overview Section */}
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-              <Card>
-                <CardHeader className="flex items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Total Events</CardTitle>
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">12</div>
-                  <p className="text-xs text-muted-foreground">+2 from last month</p>
-                </CardContent>
-              </Card>
+          {step === 1 && (
+            <motion.div
+              key="step1"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-4"
+            >
+              <h3 className="text-lg font-semibold">Tell us about yourself</h3>
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="fullName">Full Name</Label>
+                  <Input
+                    id="fullName"
+                    placeholder="Enter your full name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="city">City / Location</Label>
+                  <Input
+                    id="city"
+                    placeholder="Where are you based?"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+            </motion.div>
+          )}
 
-              <Card>
-                <CardHeader className="flex items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Total Attendees</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">248</div>
-                  <p className="text-xs text-muted-foreground">+18% from last month</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">$4,850</div>
-                  <p className="text-xs text-muted-foreground">+12% from last month</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Avg Rating</CardTitle>
-                  <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">4.8</div>
-                  <p className="text-xs text-muted-foreground">+0.2 from last month</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>Manage your most common host tasks</CardDescription>
-              </CardHeader>
-              <CardContent className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-                <button
-                  onClick={() => setActiveTab("events")}
-                  className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5" />
-                    <span className="font-medium">Create New Event</span>
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => setActiveTab("attendees")}
-                  className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <Users className="h-5 w-5" />
-                    <span className="font-medium">Review Attendees</span>
-                  </div>
-                </button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Events Section */}
-          <TabsContent value="events">
-            <EventManagement />
-          </TabsContent>
-
-          {/* Attendees Section */}
-          <TabsContent value="attendees">
-            <AttendeeApproval />
-          </TabsContent>
-
-          {/* Deposits Section */}
-          <TabsContent value="deposits">
-            <DepositManagement />
-          </TabsContent>
-
-          {/* Analytics Section */}
-          <TabsContent value="analytics">
-            <Analytics />
-            <div className="grid gap-6 grid-cols-1 lg:grid-cols-2 mt-6">
-              <Card>
-                <CardContent className="p-6">
-                  <h2 className="text-lg font-semibold mb-2">Attendance Rate</h2>
-                  <ChartContainer
-                    config={{ attendance: { label: "Attendance", color: "hsl(var(--primary))" } }}
-                    className="h-64"
+          {step === 2 && (
+            <motion.div
+              key="step2"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-4"
+            >
+              <h3 className="text-lg font-semibold">Select your interests</h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                Choose what you love. This helps us suggest better events.
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {interestOptions.map((interest) => (
+                  <Badge
+                    key={interest}
+                    variant={
+                      selectedInterests.includes(interest)
+                        ? "default"
+                        : "outline"
+                    }
+                    onClick={() => handleInterestToggle(interest)}
+                    className={`cursor-pointer px-3 py-2 text-center transition-all ${
+                      selectedInterests.includes(interest)
+                        ? "bg-primary text-white shadow-md"
+                        : "hover:bg-muted"
+                    }`}
                   >
-                    <AreaChart data={mockAttendance}>
-                      <CartesianGrid vertical={false} />
-                      <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} />
-                      <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-                      <Area
-                        dataKey="attendance"
-                        type="natural"
-                        fill="var(--color-attendance)"
-                        stroke="var(--color-attendance)"
-                        fillOpacity={0.2}
-                      />
-                    </AreaChart>
-                  </ChartContainer>
-                </CardContent>
-              </Card>
+                    {interest}
+                  </Badge>
+                ))}
+              </div>
+            </motion.div>
+          )}
 
-              <Card>
-                <CardContent className="p-6">
-                  <h2 className="text-lg font-semibold mb-2">Earnings</h2>
-                  <ChartContainer
-                    config={{ earnings: { label: "Earnings", color: "hsl(var(--primary))" } }}
-                    className="h-64"
-                  >
-                    <AreaChart data={mockEarnings}>
-                      <CartesianGrid vertical={false} />
-                      <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} />
-                      <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-                      <Area
-                        dataKey="earnings"
-                        type="natural"
-                        fill="var(--color-earnings)"
-                        stroke="var(--color-earnings)"
-                        fillOpacity={0.2}
-                      />
-                    </AreaChart>
-                  </ChartContainer>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
+          {step === 3 && (
+            <motion.div
+              key="step3"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-4 text-center"
+            >
+              <div className="flex justify-center">
+                <CheckCircle className="h-16 w-16 text-green-500 mb-3" />
+              </div>
+              <h3 className="text-lg font-semibold">
+                You're all set, {fullName || "Friend"}!
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                You’re ready to explore events, meet people, and grow your
+                network.
+              </p>
+            </motion.div>
+          )}
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between items-center pt-4">
+            {step > 1 ? (
+              <Button
+                variant="outline"
+                onClick={handleBack}
+                className="gap-2 rounded-full"
+              >
+                <ArrowLeft className="h-4 w-4" /> Back
+              </Button>
+            ) : (
+              <div />
+            )}
+
+            <Button
+              className="rounded-full gap-2 bg-primary text-white hover:bg-primary/80"
+              onClick={handleNext}
+            >
+              {step === totalSteps ? (
+                <>
+                  <Sparkles className="h-4 w-4" /> Finish
+                </>
+              ) : (
+                "Next"
+              )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 
-export default HostDashboard;
+export default Onboarding;

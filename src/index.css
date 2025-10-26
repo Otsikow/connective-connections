@@ -1,255 +1,157 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Users, MapPin, MessageCircle, Search, Heart } from "lucide-react";
+import { motion } from "framer-motion";
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
-@layer base {
-  :root {
-    /* Connective Brand Colors */
-    --ocean-teal: 174 65% 48%;
-    --warm-coral: 14 100% 70%;
-    --soft-cream: 30 100% 97%;
-    --charcoal: 0 0% 17%;
-    --cream-bg: 30 100% 97%;
-    
-    /* Core Design System */
-    --background: 30 100% 97%;
-    --foreground: 0 0% 17%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 17%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 17%;
-
-    --primary: 174 65% 48%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 14 100% 70%;
-    --secondary-foreground: 0 0% 17%;
-
-    --muted: 30 20% 90%;
-    --muted-foreground: 0 0% 45%;
-
-    --accent: 174 65% 48%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 30 30% 88%;
-    --input: 30 30% 88%;
-    --ring: 174 65% 48%;
-
-    --radius: 1rem;
-
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(174 65% 48%), hsl(174 70% 58%));
-    --gradient-warm: linear-gradient(135deg, hsl(14 100% 70%), hsl(25 100% 75%));
-    
-    /* Shadows */
-    --shadow-soft: 0 4px 20px -2px hsl(174 65% 48% / 0.15);
-    --shadow-card: 0 2px 12px -2px hsl(0 0% 0% / 0.08);
-    
-    /* Transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .dark {
-    --background: 0 0% 10%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 14%;
-    --card-foreground: 0 0% 98%;
-    --primary: 174 65% 48%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 14 100% 70%;
-    --secondary-foreground: 0 0% 17%;
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 174 65% 48%;
-    --accent-foreground: 0 0% 100%;
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 174 65% 48%;
-  }
+interface Member {
+  id: string;
+  name: string;
+  location: string;
+  interests: string[];
+  bio: string;
+  avatar: string;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
+const Community = () => {
+  const [search, setSearch] = useState("");
 
-  body {
-    @apply bg-background text-foreground;
-  }
-}
+  const members: Member[] = [
+    {
+      id: "1",
+      name: "Sarah Johnson",
+      location: "London, UK",
+      interests: ["Food", "Music", "Art"],
+      bio: "Event host and creative designer who loves connecting people.",
+      avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+    },
+    {
+      id: "2",
+      name: "Michael Chen",
+      location: "Toronto, Canada",
+      interests: ["Tech", "Travel", "Cooking"],
+      bio: "Foodie and traveller, organizing city tasting tours.",
+      avatar: "https://randomuser.me/api/portraits/men/35.jpg",
+    },
+    {
+      id: "3",
+      name: "Lisa Anderson",
+      location: "Berlin, Germany",
+      interests: ["Photography", "Hiking", "Culture"],
+      bio: "Photographer capturing authentic human connections.",
+      avatar: "https://randomuser.me/api/portraits/women/47.jpg",
+    },
+    {
+      id: "4",
+      name: "James Wilson",
+      location: "New York, USA",
+      interests: ["Fitness", "Networking", "Events"],
+      bio: "Community builder who enjoys hosting social meetups.",
+      avatar: "https://randomuser.me/api/portraits/men/40.jpg",
+    },
+  ];
 
-/* Swipe Card Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+  const filteredMembers = members.filter((member) =>
+    member.name.toLowerCase().includes(search.toLowerCase())
+  );
 
-@keyframes slideOutLeft {
-  to {
-    transform: translateX(-100%) rotate(-30deg);
-    opacity: 0;
-  }
-}
+  return (
+    <div className="space-y-6 animate-fade-in-up">
+      {/* Header Section */}
+      <Card className="border-border/50 shadow-sm">
+        <CardContent className="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-bold flex items-center gap-2">
+              <Users className="h-6 w-6 text-primary" />
+              Connective Community
+            </h2>
+            <p className="text-muted-foreground text-sm sm:text-base mt-1">
+              Discover amazing people, events, and shared passions around you.
+            </p>
+          </div>
 
-@keyframes slideOutRight {
-  to {
-    transform: translateX(100%) rotate(30deg);
-    opacity: 0;
-  }
-}
+          <div className="relative w-full sm:w-[300px]">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search members..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
-}
+      {/* Member Grid */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {filteredMembers.map((member, index) => (
+          <motion.div
+            key={member.id}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+          >
+            <Card className="overflow-hidden border-border/50 shadow-sm hover:shadow-md transition-all duration-200">
+              <CardHeader className="flex flex-col sm:flex-row items-center gap-4">
+                <img
+                  src={member.avatar}
+                  alt={member.name}
+                  className="w-20 h-20 rounded-full object-cover border-2 border-primary/20"
+                />
+                <div className="text-center sm:text-left">
+                  <CardTitle className="text-xl">{member.name}</CardTitle>
+                  <p className="flex items-center justify-center sm:justify-start gap-1 text-sm text-muted-foreground">
+                    <MapPin className="h-4 w-4 text-primary" />
+                    {member.location}
+                  </p>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground text-center sm:text-left">
+                  {member.bio}
+                </p>
+                <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+                  {member.interests.map((interest) => (
+                    <Badge
+                      key={interest}
+                      variant="secondary"
+                      className="px-3 py-1 text-xs"
+                    >
+                      {interest}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex justify-center sm:justify-between mt-4 gap-2">
+                  <Button className="w-full sm:w-auto bg-primary text-white hover:bg-primary/80 gap-2">
+                    <MessageCircle className="h-4 w-4" /> Message
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full sm:w-auto gap-2 border-border"
+                  >
+                    <Heart className="h-4 w-4 text-red-500" /> Follow
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
 
-.animate-slide-out-left {
-  animation: slideOutLeft 0.3s ease-in forwards;
-}
+      {/* Empty State */}
+      {filteredMembers.length === 0 && (
+        <div className="text-center py-20 text-muted-foreground">
+          <p className="text-lg font-medium mb-2">No members found</p>
+          <p className="text-sm">
+            Try adjusting your search or check back later for more connections.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
 
-.animate-slide-out-right {
-  animation: slideOutRight 0.3s ease-in forwards;
-}
-
-/* Swipe Card Hover Effects */
-.swipe-card {
-  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-}
-
-.swipe-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
-}
-
-/* Message Animation */
-@keyframes messageSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.message-enter {
-  animation: messageSlideIn 0.2s ease-out;
-}
-
-/* Trust Badge Pulse */
-@keyframes trustPulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-.trust-badge {
-  animation: trustPulse 2s ease-in-out infinite;
-}
-
-/* Performance Optimizations */
-@layer utilities {
-  /* Hide scrollbar for cleaner mobile UI */
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Smooth scrolling */
-  .scroll-smooth {
-    scroll-behavior: smooth;
-  }
-
-  /* Line clamping for text truncation */
-  .line-clamp-1 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
-  }
-
-  .line-clamp-2 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-  }
-
-  .line-clamp-3 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-  }
-
-  /* Touch-friendly tap targets */
-  .tap-target {
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  /* Prevent text selection on interactive elements */
-  .no-select {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
-
-  /* GPU acceleration for smooth animations */
-  .gpu-accelerated {
-    transform: translateZ(0);
-    will-change: transform;
-  }
-}
-
-/* Mobile-first responsive utilities */
-@media (max-width: 640px) {
-  /* Ensure touch targets are accessible */
-  button, a, input, select, textarea {
-    min-height: 44px;
-  }
-
-  /* Improve readability on small screens */
-  body {
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-  }
-}
-
-/* Optimize images for performance */
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-/* Prevent layout shift */
-.aspect-video {
-  aspect-ratio: 16 / 9;
-}
-
-.aspect-square {
-  aspect-ratio: 1 / 1;
-}
+export default Community;

@@ -14,13 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      groups: {
+        Row: {
+          id: string
+          name: string
+          description: string
+          category: string
+          location: string
+          image_url: string | null
+          next_meeting: string | null
+          is_premium: boolean
+          creator_id: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description: string
+          category: string
+          location: string
+          image_url?: string | null
+          next_meeting?: string | null
+          is_premium?: boolean
+          creator_id: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string
+          category?: string
+          location?: string
+          image_url?: string | null
+          next_meeting?: string | null
+          is_premium?: boolean
+          creator_id?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      group_members: {
+        Row: {
+          id: string
+          group_id: string
+          user_id: string
+          role: string
+          joined_at: string
+        }
+        Insert: {
+          id?: string
+          group_id: string
+          user_id: string
+          role?: string
+          joined_at?: string
+        }
+        Update: {
+          id?: string
+          group_id?: string
+          user_id?: string
+          role?: string
+          joined_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_group_member_count: {
+        Args: {
+          group_id: string
+        }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
