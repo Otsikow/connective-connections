@@ -1,384 +1,195 @@
-import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { EventCard, Event } from "@/components/EventCard";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Slider } from "@/components/ui/slider";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import {
-  Calendar as CalendarIcon,
-  Grid3x3,
-  List,
-  Search,
-  SlidersHorizontal,
-  X,
-  Home as HomeIcon,
-  MessageSquare,
-  User,
-  MapPin,
-} from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { Users, Calendar, DollarSign, Star, Plus, BarChart3 } from "lucide-react";
+import { motion } from "framer-motion";
 
-// Mock data - replace with real API later
-const mockEvents: Event[] = [
-  {
-    id: "1",
-    title: "Morning Yoga & Meditation Session",
-    description:
-      "Join us for a relaxing morning yoga session followed by guided meditation.",
-    bannerImage:
-      "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&h=400&fit=crop",
-    hostName: "Sarah Johnson",
-    hostAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
-    date: "Nov 15, 2025",
-    time: "7:00 AM",
-    location: "Central Park, New York",
-    fee: 15,
-    deposit: 5,
-    isFree: false,
-    category: "Wellness",
-    distance: "2.3 mi",
-    participantsCount: 12,
-    maxParticipants: 20,
-  },
-  {
-    id: "2",
-    title: "Tech Startup Networking Mixer",
-    description:
-      "Connect with fellow entrepreneurs and tech enthusiasts at our monthly networking event.",
-    bannerImage:
-      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop",
-    hostName: "Mike Chen",
-    hostAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Mike",
-    date: "Nov 18, 2025",
-    time: "6:00 PM",
-    location: "Innovation Hub, San Francisco",
-    fee: 0,
-    isFree: true,
-    category: "Networking",
-    distance: "5.1 mi",
-    participantsCount: 45,
-    maxParticipants: 100,
-  },
-  {
-    id: "3",
-    title: "Photography Walk: Golden Hour",
-    description:
-      "Explore the city during golden hour and improve your photography skills.",
-    bannerImage:
-      "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=800&h=400&fit=crop",
-    hostName: "Emma Davis",
-    hostAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emma",
-    date: "Nov 20, 2025",
-    time: "5:30 PM",
-    location: "Brooklyn Bridge, Brooklyn",
-    fee: 25,
-    deposit: 10,
-    isFree: false,
-    category: "Arts & Culture",
-    distance: "3.7 mi",
-    participantsCount: 8,
-    maxParticipants: 15,
-  },
-];
-
-const categories = [
-  "All",
-  "Wellness",
-  "Networking",
-  "Arts & Culture",
-  "Social",
-  "Outdoors",
-  "Food & Drink",
-  "Sports",
-  "Learning",
-];
-
-const Events = () => {
+const HostDashboard = () => {
   const navigate = useNavigate();
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [showFilters, setShowFilters] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [priceRange, setPriceRange] = useState<"all" | "free" | "paid">("all");
-  const [maxDistance, setMaxDistance] = useState([20]);
-  const [maxPrice, setMaxPrice] = useState([100]);
 
-  // Filter events
-  const filteredEvents = useMemo(
-    () =>
-      mockEvents.filter((event) => {
-        if (
-          searchQuery &&
-          !event.title.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-          return false;
-        if (selectedCategory !== "All" && event.category !== selectedCategory)
-          return false;
-        if (priceRange === "free" && !event.isFree) return false;
-        if (priceRange === "paid" && event.isFree) return false;
-        if (!event.isFree && event.fee > maxPrice[0]) return false;
-        if (event.distance) {
-          const distance = parseFloat(event.distance);
-          if (distance > maxDistance[0]) return false;
-        }
-        return true;
-      }),
-    [searchQuery, selectedCategory, priceRange, maxDistance, maxPrice]
-  );
+  const stats = [
+    {
+      title: "Total Events",
+      value: 14,
+      icon: Calendar,
+      color: "from-blue-500 to-cyan-500",
+      change: "+2 this month",
+    },
+    {
+      title: "Total Attendees",
+      value: 238,
+      icon: Users,
+      color: "from-green-500 to-emerald-500",
+      change: "+18 new signups",
+    },
+    {
+      title: "Total Earnings",
+      value: "$4,820",
+      icon: DollarSign,
+      color: "from-yellow-500 to-orange-500",
+      change: "+12% vs last month",
+    },
+    {
+      title: "Average Rating",
+      value: "4.7 / 5",
+      icon: Star,
+      color: "from-purple-500 to-pink-500",
+      change: "Based on 124 reviews",
+    },
+  ];
 
-  const clearFilters = () => {
-    setSelectedDate(undefined);
-    setSelectedCategory("All");
-    setPriceRange("all");
-    setMaxDistance([20]);
-    setMaxPrice([100]);
-    setSearchQuery("");
-  };
-
-  const activeFiltersCount = [
-    selectedDate,
-    selectedCategory !== "All",
-    priceRange !== "all",
-    maxDistance[0] < 20,
-    maxPrice[0] < 100,
-  ].filter(Boolean).length;
+  const recentEvents = [
+    {
+      id: 1,
+      title: "Wine Tasting Evening",
+      date: "Oct 18, 2025",
+      attendees: 24,
+      earnings: "$580",
+      status: "Completed",
+    },
+    {
+      id: 2,
+      title: "Cooking Class: Italian Cuisine",
+      date: "Oct 21, 2025",
+      attendees: 16,
+      earnings: "$400",
+      status: "Upcoming",
+    },
+    {
+      id: 3,
+      title: "Morning Yoga & Meditation",
+      date: "Nov 3, 2025",
+      attendees: 12,
+      earnings: "$250",
+      status: "Upcoming",
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="space-y-6 animate-fadeInUp">
       {/* Header */}
-      <div className="border-b bg-white sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Events</h1>
-          <div className="flex items-center gap-2">
-            <Button
-              variant={viewMode === "grid" ? "default" : "outline"}
-              size="icon"
-              onClick={() => setViewMode("grid")}
-            >
-              <Grid3x3 className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewMode === "list" ? "default" : "outline"}
-              size="icon"
-              onClick={() => setViewMode("list")}
-            >
-              <List className="h-4 w-4" />
-            </Button>
-          </div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <BarChart3 className="h-6 w-6 text-primary" />
+            Host Dashboard
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Overview of your events, performance, and earnings
+          </p>
         </div>
+        <Button
+          className="rounded-full bg-primary text-white hover:bg-primary/80 gap-2"
+          onClick={() => navigate("/host/create-event")}
+        >
+          <Plus className="h-4 w-4" /> Create Event
+        </Button>
       </div>
 
-      {/* Search and Filter Bar */}
-      <div className="px-4 mt-4">
-        <div className="flex gap-2">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search events..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-          <Button
-            variant="outline"
-            onClick={() => setShowFilters(!showFilters)}
-            className="gap-2"
+      {/* Stats Grid */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat, index) => (
+          <motion.div
+            key={stat.title}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05 }}
           >
-            <SlidersHorizontal className="h-4 w-4" />
-            Filters
-            {activeFiltersCount > 0 && (
-              <Badge variant="secondary" className="ml-1">
-                {activeFiltersCount}
-              </Badge>
-            )}
-          </Button>
-        </div>
-      </div>
-
-      {/* Filters Panel */}
-      {showFilters && (
-        <div className="border-b bg-muted/30 px-4 py-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Date */}
-            <div>
-              <label className="text-sm font-medium mb-2 block">Date</label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !selectedDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            {/* Category */}
-            <div>
-              <label className="text-sm font-medium mb-2 block">Interest</label>
-              <Select
-                value={selectedCategory}
-                onValueChange={setSelectedCategory}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Distance */}
-            <div>
-              <label className="text-sm font-medium mb-2 block">
-                Distance: Up to {maxDistance[0]} mi
-              </label>
-              <Slider
-                value={maxDistance}
-                onValueChange={setMaxDistance}
-                max={50}
-                step={1}
-                className="mt-2"
-              />
-            </div>
-
-            {/* Price */}
-            <div>
-              <label className="text-sm font-medium mb-2 block">Price</label>
-              <Tabs
-                value={priceRange}
-                onValueChange={(v) => setPriceRange(v as any)}
-              >
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="all">All</TabsTrigger>
-                  <TabsTrigger value="free">Free</TabsTrigger>
-                  <TabsTrigger value="paid">Paid</TabsTrigger>
-                </TabsList>
-              </Tabs>
-              {priceRange !== "free" && (
-                <div className="mt-2">
-                  <label className="text-xs text-muted-foreground">
-                    Max: ${maxPrice[0]}
-                  </label>
-                  <Slider
-                    value={maxPrice}
-                    onValueChange={setMaxPrice}
-                    max={200}
-                    step={5}
-                    className="mt-1"
-                  />
+            <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+              <div className={`h-1 bg-gradient-to-r ${stat.color}`} />
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {stat.title}
+                </CardTitle>
+                <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                  <stat.icon className="h-5 w-5 text-primary" />
                 </div>
-              )}
-            </div>
-          </div>
-
-          {activeFiltersCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={clearFilters}
-              className="mt-3 gap-2"
-            >
-              <X className="h-3 w-3" />
-              Clear all filters
-            </Button>
-          )}
-        </div>
-      )}
-
-      {/* Events List */}
-      <div className="container mx-auto px-4 py-6">
-        {filteredEvents.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">
-              No events found matching your criteria.
-            </p>
-            <Button variant="link" onClick={clearFilters} className="mt-2">
-              Clear filters
-            </Button>
-          </div>
-        ) : (
-          <div
-            className={cn(
-              "grid gap-6",
-              viewMode === "grid"
-                ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-                : "grid-cols-1"
-            )}
-          >
-            {filteredEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
-        )}
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{stat.value}</div>
+                <p className="text-xs text-muted-foreground mt-2">{stat.change}</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
       </div>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-6 py-3 flex items-center justify-around">
-        <button
-          className="flex flex-col items-center gap-1 text-muted-foreground"
-          onClick={() => navigate("/home")}
-        >
-          <HomeIcon size={24} />
-          <span className="text-xs">Home</span>
-        </button>
-        <button className="flex flex-col items-center gap-1 text-[#E8B956]">
-          <CalendarIcon size={24} />
-          <span className="text-xs font-medium">Events</span>
-        </button>
-        <button
-          className="flex flex-col items-center gap-1 text-muted-foreground"
-          onClick={() => navigate("/messages")}
-        >
-          <MessageSquare size={24} />
-          <span className="text-xs">Messages</span>
-        </button>
-        <button
-          className="flex flex-col items-center gap-1 text-muted-foreground"
-          onClick={() => navigate("/profile")}
-        >
-          <User size={24} />
-          <span className="text-xs">Profile</span>
-        </button>
-      </nav>
+      {/* Recent Events */}
+      <Card className="border-border/50 shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Calendar className="h-5 w-5 text-primary" />
+            Recent Events
+          </CardTitle>
+          <CardDescription>Manage your latest hosted events</CardDescription>
+        </CardHeader>
+        <CardContent className="overflow-x-auto">
+          <table className="w-full text-sm text-left border-t border-border/50">
+            <thead className="bg-muted/30">
+              <tr className="text-muted-foreground">
+                <th className="px-4 py-3 font-medium">Event</th>
+                <th className="px-4 py-3 font-medium">Date</th>
+                <th className="px-4 py-3 font-medium">Attendees</th>
+                <th className="px-4 py-3 font-medium">Earnings</th>
+                <th className="px-4 py-3 font-medium">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentEvents.map((event, i) => (
+                <motion.tr
+                  key={event.id}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="border-b border-border/50 hover:bg-muted/10"
+                >
+                  <td className="px-4 py-3 font-semibold">{event.title}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{event.date}</td>
+                  <td className="px-4 py-3">{event.attendees}</td>
+                  <td className="px-4 py-3 font-medium text-green-600">
+                    {event.earnings}
+                  </td>
+                  <td className="px-4 py-3">
+                    <Badge
+                      variant={
+                        event.status === "Upcoming"
+                          ? "secondary"
+                          : "outline"
+                      }
+                      className={
+                        event.status === "Completed"
+                          ? "text-green-600 bg-green-500/10"
+                          : "text-yellow-600 bg-yellow-500/10"
+                      }
+                    >
+                      {event.status}
+                    </Badge>
+                  </td>
+                </motion.tr>
+              ))}
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
+
+      {/* Call to Action */}
+      <Card className="border-border/50 bg-gradient-to-br from-primary/5 to-background shadow-sm">
+        <CardContent className="p-6 text-center space-y-4">
+          <h3 className="text-xl font-semibold">Ready to Host Your Next Event?</h3>
+          <p className="text-muted-foreground text-sm">
+            Create an event and start earning today — share your passion with others.
+          </p>
+          <Button
+            className="rounded-full bg-primary text-white hover:bg-primary/80"
+            onClick={() => navigate("/host/create-event")}
+          >
+            Create New Event
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 };
 
-export default Events;
+export default HostDashboard;

@@ -1,322 +1,214 @@
-import { useState, useMemo } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  ArrowLeft,
-  CalendarClock,
-  MapPin,
-  Users,
-  MessageSquare,
-  Shield,
-  RefreshCw,
-  Share2,
-} from "lucide-react";
-import { toast } from "@/components/ui/use-toast";
-import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search, Calendar, MapPin, Users } from "lucide-react";
+import { motion } from "framer-motion";
 
-// Mock event data (for development/demo)
-const mockEventDetail = {
-  id: "1",
-  title: "Morning Yoga & Meditation Session",
-  description: `Join us for a rejuvenating morning yoga and meditation session in the heart of Central Park. This 90-minute class is designed for all skill levels, from complete beginners to experienced practitioners.
-
-What to expect:
-• 60 minutes of guided Vinyasa yoga flow
-• 20 minutes of guided meditation
-• 10 minutes for questions and community connection
-
-Please bring your own yoga mat and water bottle. We'll provide additional props like blocks and straps if needed.`,
-  bannerUrl:
-    "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1200&h=600&fit=crop",
-  host: {
-    name: "Sarah Johnson",
-    avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
-  },
-  date: "2025-11-15T07:00:00Z",
-  location: {
-    address: "Central Park, Sheep Meadow, New York, NY 10024",
-    lat: 40.7711,
-    lng: -73.9758,
-  },
-  category: "Wellness",
-  fee: 15,
-  refundPolicy:
-    "Full refund available if canceled 24 hours before the event. Cancellations within 24 hours receive a 50% refund. Deposit refunded upon attendance.",
-  rules: [
-    "Please arrive 10 minutes early to set up your space.",
-    "Silence your phone during the session.",
-    "Respect others' personal space and boundaries.",
-    "No photography during class without permission.",
-  ],
-  participants: [
-    { name: "John Doe", avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=John" },
-    { name: "Jane Smith", avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jane" },
-    { name: "Alice Brown", avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alice" },
-  ],
-};
-
-const MapEmbed = ({
-  lat,
-  lng,
-  title,
-}: {
-  lat: number;
-  lng: number;
+interface Event {
+  id: string;
   title: string;
-}) => {
-  const src = `https://www.google.com/maps?q=${lat},${lng}&z=14&output=embed`;
-  return (
-    <div className="w-full h-64 rounded-lg overflow-hidden border border-border">
-      <iframe
-        title={`Map: ${title}`}
-        src={src}
-        className="w-full h-full"
-        loading="lazy"
-      />
-    </div>
-  );
-};
+  date: string;
+  location: string;
+  category: string;
+  attendees: number;
+  image: string;
+  description: string;
+}
 
-const EventDetail = () => {
+const Events = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const [searchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState("description");
-  const [hasJoined, setHasJoined] = useState(false);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("All");
 
-  // In production, fetch event data by ID
-  const event = useMemo(() => mockEventDetail, [id]);
+  const events: Event[] = [
+    {
+      id: "1",
+      title: "Morning Yoga & Meditation",
+      date: "Sat, Nov 15 • 7:00 AM",
+      location: "Central Park, New York",
+      category: "Wellness",
+      attendees: 18,
+      image:
+        "https://images.unsplash.com/photo-1552196563-55cd4e45efb3?w=1200&h=800&fit=crop",
+      description:
+        "Start your day with a calm, energizing yoga flow and guided meditation session led by Sarah Johnson.",
+    },
+    {
+      id: "2",
+      title: "Cooking Class: Italian Cuisine",
+      date: "Sun, Nov 16 • 3:00 PM",
+      location: "Downtown Toronto",
+      category: "Food",
+      attendees: 22,
+      image:
+        "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=800&fit=crop",
+      description:
+        "Learn authentic Italian cooking techniques with Chef Marco. Includes a 3-course meal tasting.",
+    },
+    {
+      id: "3",
+      title: "Tech Networking Night",
+      date: "Tue, Nov 18 • 6:30 PM",
+      location: "London Tech Hub",
+      category: "Networking",
+      attendees: 40,
+      image:
+        "https://images.unsplash.com/photo-1551836022-4c4c79ecde51?w=1200&h=800&fit=crop",
+      description:
+        "Meet founders, investors, and developers at this monthly networking event for tech professionals.",
+    },
+    {
+      id: "4",
+      title: "Photography Walk: City Lights",
+      date: "Fri, Nov 21 • 8:00 PM",
+      location: "Berlin City Center",
+      category: "Art",
+      attendees: 15,
+      image:
+        "https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=1200&h=800&fit=crop",
+      description:
+        "Join a group of photographers to explore city nightlife scenes and capture stunning long-exposure shots.",
+    },
+  ];
 
-  if (!event) {
-    return (
-      <div className="min-h-screen bg-background px-6 py-8">
-        <button
-          onClick={() => navigate(-1)}
-          className="mb-6 p-2 hover:bg-muted rounded-full"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </button>
-        <div className="max-w-3xl mx-auto text-center text-muted-foreground">
-          Event not found.
-        </div>
-      </div>
-    );
-  }
+  const categories = ["All", "Wellness", "Food", "Networking", "Art"];
 
-  const handleJoinEvent = () => {
-    setHasJoined(true);
-    toast({ description: `You're in for ${event.title}!` });
-  };
-
-  const handleChatWithAttendees = () => {
-    if (!hasJoined) {
-      toast({
-        description: "Join the event first to access the group chat.",
-        variant: "destructive",
-      });
-      return;
-    }
-    const ref = searchParams.get("ref") || "detail";
-    navigate(`/messages?group=${event.id}&ref=${ref}`);
-  };
-
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: event.title,
-        text: `Check out this event: ${event.title}`,
-        url: window.location.href,
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast({ description: "Event link copied to clipboard!" });
-    }
-  };
+  const filteredEvents = events.filter(
+    (event) =>
+      (filter === "All" || event.category === filter) &&
+      event.title.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4 flex items-center gap-4">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
-          <ArrowLeft size={20} />
-        </Button>
-        <h1 className="text-xl font-bold flex-1">Event Details</h1>
-        <Button variant="ghost" size="sm" onClick={handleShare}>
-          <Share2 className="w-4 h-4" />
-        </Button>
-        <Avatar className="w-10 h-10 cursor-pointer" onClick={() => navigate("/profile")}>
-          <AvatarImage src={event.host.avatarUrl} />
-          <AvatarFallback>{event.host.name[0]}</AvatarFallback>
-        </Avatar>
+    <div className="space-y-6 animate-fadeInUp">
+      {/* Header Section */}
+      <Card className="border-border/50 shadow-sm">
+        <CardContent className="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-bold flex items-center gap-2">
+              <Calendar className="h-6 w-6 text-primary" />
+              Upcoming Events
+            </h2>
+            <p className="text-muted-foreground text-sm sm:text-base mt-1">
+              Discover, connect, and experience exciting community activities.
+            </p>
+          </div>
+
+          <div className="relative w-full sm:w-[300px]">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search events..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Category Filters */}
+      <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
+        {categories.map((cat) => (
+          <Button
+            key={cat}
+            variant={filter === cat ? "default" : "outline"}
+            onClick={() => setFilter(cat)}
+            className={`rounded-full text-sm px-4 py-2 ${
+              filter === cat
+                ? "bg-primary text-white"
+                : "border-border hover:bg-muted/50"
+            }`}
+          >
+            {cat}
+          </Button>
+        ))}
       </div>
 
-      {/* Content */}
-      <div className="px-6 py-6 space-y-6 max-w-4xl mx-auto">
-        {/* Event Banner */}
-        <div className="h-64 bg-muted rounded-lg relative overflow-hidden">
-          <img
-            src={event.bannerUrl}
-            alt={event.title}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="absolute top-4 right-4">
-            <Badge variant="default" className="text-sm">
-              {event.category}
-            </Badge>
+      {/* Events Grid */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {filteredEvents.length === 0 ? (
+          <div className="text-center py-16 col-span-full text-muted-foreground">
+            <p className="text-lg font-medium mb-2">No events found</p>
+            <p className="text-sm">
+              Try adjusting your search or filters to find more events.
+            </p>
           </div>
-        </div>
-
-        {/* Event Info */}
-        <div className="space-y-3">
-          <h2 className="text-2xl font-bold">{event.title}</h2>
-          <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-1">
-              <CalendarClock className="w-4 h-4" />{" "}
-              {format(new Date(event.date), "EEEE, MMMM d, yyyy 'at' h:mm a")}
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <MapPin className="w-4 h-4" /> {event.location.address}
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <Users className="w-4 h-4" /> {event.participants.length} attending
-            </span>
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="description">Description</TabsTrigger>
-            <TabsTrigger value="location">Location</TabsTrigger>
-            <TabsTrigger value="attendees">Attendees</TabsTrigger>
-          </TabsList>
-
-          {/* Description Tab */}
-          <TabsContent value="description" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>About this Event</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                  {event.description}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield size={20} /> Rules
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
-                  {event.rules.map((r, i) => (
-                    <li key={i}>{r}</li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <RefreshCw size={20} /> Refund Policy
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                  {event.refundPolicy}
-                </p>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Location Tab */}
-          <TabsContent value="location">
-            <Card>
-              <CardHeader>
-                <CardTitle>Location & Map</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-muted-foreground">{event.location.address}</p>
-                <MapEmbed
-                  lat={event.location.lat}
-                  lng={event.location.lng}
-                  title={event.title}
-                />
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() =>
-                    window.open(
-                      `https://www.google.com/maps/search/?api=1&query=${event.location.lat},${event.location.lng}`,
-                      "_blank"
-                    )
-                  }
-                >
-                  <MapPin size={16} className="mr-2" /> Get Directions
-                </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Attendees Tab */}
-          <TabsContent value="attendees">
-            <Card>
-              <CardHeader>
-                <CardTitle>Attendees ({event.participants.length})</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-4 gap-4">
-                  {event.participants.map((p, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-col items-center text-center"
-                    >
-                      <Avatar className="w-12 h-12 mb-2">
-                        <AvatarImage src={p.avatarUrl} />
-                        <AvatarFallback>{p.name[0]}</AvatarFallback>
-                      </Avatar>
-                      <span className="text-sm font-medium">{p.name}</span>
-                    </div>
-                  ))}
+        ) : (
+          filteredEvents.map((event, index) => (
+            <motion.div
+              key={event.id}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+            >
+              <Card
+                className="overflow-hidden border-border/50 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
+                onClick={() => navigate(`/events/${event.id}`)}
+              >
+                <div className="relative h-48 sm:h-56 bg-muted">
+                  <img
+                    src={event.image}
+                    alt={event.title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  <div className="absolute top-4 left-4">
+                    <Badge className="bg-white/80 text-primary shadow-sm">
+                      {event.category}
+                    </Badge>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
 
-        <Separator className="my-6" />
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold">
+                    {event.title}
+                  </CardTitle>
+                </CardHeader>
 
-        {/* Action Buttons */}
-        <div className="space-y-3 pb-6">
-          {!hasJoined ? (
-            <Button
-              className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal h-12 text-lg font-semibold"
-              onClick={handleJoinEvent}
-            >
-              Join Event
-            </Button>
-          ) : (
-            <Button
-              variant="secondary"
-              className="w-full rounded-full h-12 text-lg font-semibold"
-              onClick={handleChatWithAttendees}
-            >
-              <MessageSquare size={20} className="mr-2" /> Chat with Attendees
-            </Button>
-          )}
-        </div>
+                <CardContent className="space-y-3">
+                  <div className="text-sm text-muted-foreground line-clamp-2">
+                    {event.description}
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4 text-primary" />
+                      {event.date}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4 text-primary" />
+                      {event.location}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <Users className="w-4 h-4 text-primary" />
+                      {event.attendees} joined
+                    </div>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="rounded-full text-sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/events/${event.id}`);
+                      }}
+                    >
+                      View Details
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))
+        )}
       </div>
     </div>
   );
 };
 
-export default EventDetail;
+export default Events;

@@ -1,392 +1,214 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableCell,
+  TableBody,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DollarSign, TrendingUp, TrendingDown, Calendar, Clock } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Check, X, Clock, User, Mail, Phone, DollarSign } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-interface Attendee {
+interface Deposit {
   id: string;
-  name: string;
-  email: string;
-  phone: string;
-  avatar?: string;
   event: string;
-  eventDate: string;
-  depositPaid: boolean;
-  depositAmount: number;
-  status: "pending" | "approved" | "rejected";
-  appliedDate: string;
+  host: string;
+  date: string;
+  amount: number;
+  status: "paid" | "pending" | "refunded";
 }
 
-const AttendeeApproval = () => {
-  const [selectedEvent, setSelectedEvent] = useState<string>("all");
-  const [selectedAttendee, setSelectedAttendee] = useState<Attendee | null>(null);
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+const DepositManagement = () => {
+  const [filter, setFilter] = useState("all");
 
-  // Mock data - in a real app, this would come from Supabase
-  const [attendees, setAttendees] = useState<Attendee[]>([
+  const deposits: Deposit[] = [
     {
       id: "1",
-      name: "Sarah Johnson",
-      email: "sarah.j@email.com",
-      phone: "+1 555-0123",
       event: "Wine Tasting Evening",
-      eventDate: "Oct 28, 2025",
-      depositPaid: true,
-      depositAmount: 25,
-      status: "pending",
-      appliedDate: "Oct 20, 2025",
+      host: "Sarah Johnson",
+      date: "Oct 20, 2025",
+      amount: 250,
+      status: "paid",
     },
     {
       id: "2",
-      name: "Michael Chen",
-      email: "m.chen@email.com",
-      phone: "+1 555-0124",
-      event: "Wine Tasting Evening",
-      eventDate: "Oct 28, 2025",
-      depositPaid: false,
-      depositAmount: 25,
+      event: "Cooking Class: Italian Cuisine",
+      host: "Michael Chen",
+      date: "Oct 21, 2025",
+      amount: 350,
       status: "pending",
-      appliedDate: "Oct 21, 2025",
     },
     {
       id: "3",
-      name: "Emily Davis",
-      email: "emily.d@email.com",
-      phone: "+1 555-0125",
-      event: "Cooking Class: Italian Cuisine",
-      eventDate: "Oct 30, 2025",
-      depositPaid: true,
-      depositAmount: 35,
-      status: "approved",
-      appliedDate: "Oct 18, 2025",
+      event: "Hiking Trip",
+      host: "James Wilson",
+      date: "Oct 22, 2025",
+      amount: 150,
+      status: "refunded",
     },
-    {
-      id: "4",
-      name: "James Wilson",
-      email: "james.w@email.com",
-      phone: "+1 555-0126",
-      event: "Cooking Class: Italian Cuisine",
-      eventDate: "Oct 30, 2025",
-      depositPaid: true,
-      depositAmount: 35,
-      status: "pending",
-      appliedDate: "Oct 22, 2025",
-    },
-  ]);
+  ];
 
-  const handleApprove = (attendeeId: string) => {
-    setAttendees(attendees.map(a => 
-      a.id === attendeeId ? { ...a, status: "approved" as const } : a
-    ));
-  };
-
-  const handleReject = (attendeeId: string) => {
-    setAttendees(attendees.map(a => 
-      a.id === attendeeId ? { ...a, status: "rejected" as const } : a
-    ));
-  };
-
-  const viewDetails = (attendee: Attendee) => {
-    setSelectedAttendee(attendee);
-    setIsDetailsOpen(true);
-  };
-
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: Deposit["status"]) => {
     switch (status) {
+      case "paid":
+        return (
+          <Badge className="bg-green-500/10 text-green-600 hover:bg-green-500/20">
+            <DollarSign className="mr-1 h-3 w-3" />
+            Paid
+          </Badge>
+        );
       case "pending":
-        return <Badge className="bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20"><Clock className="mr-1 h-3 w-3" />Pending</Badge>;
-      case "approved":
-        return <Badge className="bg-green-500/10 text-green-500 hover:bg-green-500/20"><Check className="mr-1 h-3 w-3" />Approved</Badge>;
-      case "rejected":
-        return <Badge className="bg-red-500/10 text-red-500 hover:bg-red-500/20"><X className="mr-1 h-3 w-3" />Rejected</Badge>;
+        return (
+          <Badge className="bg-yellow-500/10 text-yellow-600 hover:bg-yellow-500/20">
+            <Clock className="mr-1 h-3 w-3" />
+            Pending
+          </Badge>
+        );
+      case "refunded":
+        return (
+          <Badge className="bg-red-500/10 text-red-600 hover:bg-red-500/20">
+            <TrendingDown className="mr-1 h-3 w-3" />
+            Refunded
+          </Badge>
+        );
       default:
         return null;
     }
   };
 
-  const filterByStatus = (status: string) => {
-    if (status === "all") return attendees;
-    return attendees.filter(a => a.status === status);
-  };
+  const filteredDeposits =
+    filter === "all"
+      ? deposits
+      : deposits.filter((d) => d.status === filter);
 
-  const getInitials = (name: string) => {
-    return name.split(" ").map(n => n[0]).join("");
-  };
+  const totalEarnings = deposits
+    .filter((d) => d.status === "paid")
+    .reduce((sum, d) => sum + d.amount, 0);
+
+  const pendingTotal = deposits
+    .filter((d) => d.status === "pending")
+    .reduce((sum, d) => sum + d.amount, 0);
+
+  const refundedTotal = deposits
+    .filter((d) => d.status === "refunded")
+    .reduce((sum, d) => sum + d.amount, 0);
 
   return (
     <div className="space-y-6">
       <Card className="border-border/50 shadow-sm">
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <CardTitle className="flex items-center gap-2 text-2xl">
-                <User className="h-6 w-6 text-primary" />
-                Attendee Approval
+                <DollarSign className="h-6 w-6 text-primary" />
+                Deposit Management
               </CardTitle>
-              <CardDescription className="mt-2">Review and approve attendees for your events</CardDescription>
+              <CardDescription className="mt-2">
+                Manage deposits, payouts, and refunds
+              </CardDescription>
             </div>
-            <Badge variant="outline" className="text-base px-4 py-2">
-              {attendees.filter(a => a.status === "pending").length} Pending
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex gap-4">
-            <Select value={selectedEvent} onValueChange={setSelectedEvent}>
-              <SelectTrigger className="w-[280px] h-11">
-                <SelectValue placeholder="Filter by event" />
+
+            <Select value={filter} onValueChange={setFilter}>
+              <SelectTrigger className="w-full sm:w-[220px] h-11">
+                <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Events</SelectItem>
-                <SelectItem value="wine">Wine Tasting Evening</SelectItem>
-                <SelectItem value="cooking">Cooking Class: Italian Cuisine</SelectItem>
+                <SelectItem value="all">All Deposits</SelectItem>
+                <SelectItem value="paid">Paid</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="refunded">Refunded</SelectItem>
               </SelectContent>
             </Select>
           </div>
+        </CardHeader>
 
-          <Tabs defaultValue="all" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-muted/50">
-              <TabsTrigger value="all" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all py-2.5">
-                <div className="flex items-center gap-2">
-                  <span>All</span>
-                  <Badge variant="secondary" className="ml-1">{attendees.length}</Badge>
-                </div>
-              </TabsTrigger>
-              <TabsTrigger value="pending" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all py-2.5">
-                <div className="flex items-center gap-2">
-                  <Clock className="h-3 w-3" />
-                  <span>Pending</span>
-                  <Badge variant="secondary" className="ml-1 bg-yellow-500/10 text-yellow-600">
-                    {attendees.filter(a => a.status === "pending").length}
-                  </Badge>
-                </div>
-              </TabsTrigger>
-              <TabsTrigger value="approved" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all py-2.5">
-                <div className="flex items-center gap-2">
-                  <Check className="h-3 w-3" />
-                  <span>Approved</span>
-                  <Badge variant="secondary" className="ml-1 bg-green-500/10 text-green-600">
-                    {attendees.filter(a => a.status === "approved").length}
-                  </Badge>
-                </div>
-              </TabsTrigger>
-              <TabsTrigger value="rejected" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all py-2.5">
-                <div className="flex items-center gap-2">
-                  <X className="h-3 w-3" />
-                  <span>Rejected</span>
-                  <Badge variant="secondary" className="ml-1 bg-red-500/10 text-red-600">
-                    {attendees.filter(a => a.status === "rejected").length}
-                  </Badge>
-                </div>
-              </TabsTrigger>
-            </TabsList>
+        <CardContent className="space-y-6">
+          {/* Summary Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <Card className="bg-green-500/5 border border-green-500/20 shadow-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-green-700 text-sm">Total Paid</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-green-700">${totalEarnings}</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-yellow-500/5 border border-yellow-500/20 shadow-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-yellow-700 text-sm">Pending</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-yellow-700">${pendingTotal}</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-red-500/5 border border-red-500/20 shadow-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-red-700 text-sm">Refunded</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-red-700">${refundedTotal}</p>
+              </CardContent>
+            </Card>
+          </div>
 
-            {["all", "pending", "approved", "rejected"].map((status) => (
-              <TabsContent key={status} value={status} className="mt-4">
-                <div className="rounded-lg border border-border/50 overflow-hidden shadow-sm">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Attendee</TableHead>
-                        <TableHead>Event</TableHead>
-                        <TableHead>Applied</TableHead>
-                        <TableHead>Deposit</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filterByStatus(status).length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                            No attendees found
-                          </TableCell>
-                        </TableRow>
-                      ) : (
-                        filterByStatus(status).map((attendee) => (
-                          <TableRow key={attendee.id}>
-                            <TableCell>
-                              <div className="flex items-center gap-3">
-                                <Avatar className="h-10 w-10">
-                                  <AvatarImage src={attendee.avatar} />
-                                  <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                                    {getInitials(attendee.name)}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <div className="font-semibold">{attendee.name}</div>
-                                  <div className="text-sm text-muted-foreground">{attendee.email}</div>
-                                </div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div>
-                                <div className="font-semibold">{attendee.event}</div>
-                                <div className="text-sm text-muted-foreground mt-1">{attendee.eventDate}</div>
-                              </div>
-                            </TableCell>
-                            <TableCell>{attendee.appliedDate}</TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                {attendee.depositPaid ? (
-                                  <Badge className="bg-green-500/10 text-green-500 hover:bg-green-500/20">
-                                    <DollarSign className="mr-1 h-3 w-3" />
-                                    ${attendee.depositAmount} Paid
-                                  </Badge>
-                                ) : (
-                                  <Badge className="bg-red-500/10 text-red-500 hover:bg-red-500/20">
-                                    <DollarSign className="mr-1 h-3 w-3" />
-                                    ${attendee.depositAmount} Pending
-                                  </Badge>
-                                )}
-                              </div>
-                            </TableCell>
-                            <TableCell>{getStatusBadge(attendee.status)}</TableCell>
-                            <TableCell className="text-right">
-                              <div className="flex justify-end gap-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => viewDetails(attendee)}
-                                  className="hover:bg-primary/10"
-                                >
-                                  View Details
-                                </Button>
-                                {attendee.status === "pending" && (
-                                  <>
-                                    <Button
-                                      size="sm"
-                                      className="bg-green-600 hover:bg-green-700 text-white"
-                                      onClick={() => handleApprove(attendee.id)}
-                                    >
-                                      <Check className="h-4 w-4 mr-1" />
-                                      Approve
-                                    </Button>
-                                    <Button
-                                      size="sm"
-                                      variant="destructive"
-                                      onClick={() => handleReject(attendee.id)}
-                                    >
-                                      <X className="h-4 w-4 mr-1" />
-                                      Reject
-                                    </Button>
-                                  </>
-                                )}
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-              </TabsContent>
-            ))}
-          </Tabs>
+          {/* Deposits Table */}
+          <div className="rounded-lg border border-border/50 overflow-hidden shadow-sm">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Event</TableHead>
+                  <TableHead>Host</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredDeposits.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center text-muted-foreground py-6">
+                      No deposits found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredDeposits.map((deposit) => (
+                    <TableRow key={deposit.id}>
+                      <TableCell>{deposit.event}</TableCell>
+                      <TableCell>{deposit.host}</TableCell>
+                      <TableCell>{deposit.date}</TableCell>
+                      <TableCell>${deposit.amount}</TableCell>
+                      <TableCell>{getStatusBadge(deposit.status)}</TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="hover:bg-primary/10"
+                        >
+                          <Calendar className="mr-1 h-4 w-4" />
+                          View Details
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
-
-      <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">Attendee Details</DialogTitle>
-            <DialogDescription>Complete information about the applicant</DialogDescription>
-          </DialogHeader>
-          {selectedAttendee && (
-            <div className="space-y-4 py-4">
-              <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={selectedAttendee.avatar} />
-                  <AvatarFallback className="text-lg">{getInitials(selectedAttendee.name)}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="text-lg font-semibold">{selectedAttendee.name}</h3>
-                  {getStatusBadge(selectedAttendee.status)}
-                </div>
-              </div>
-
-              <div className="space-y-3 border-t pt-4">
-                <div className="flex items-center gap-3">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">{selectedAttendee.email}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">{selectedAttendee.phone}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">Applied on {selectedAttendee.appliedDate}</span>
-                </div>
-              </div>
-
-              <div className="border-t pt-4">
-                <h4 className="font-semibold mb-2">Event Details</h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Event:</span>
-                    <span className="font-medium">{selectedAttendee.event}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Date:</span>
-                    <span className="font-medium">{selectedAttendee.eventDate}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Deposit:</span>
-                    <span className="font-medium">${selectedAttendee.depositAmount}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Payment Status:</span>
-                    <span className="font-medium">
-                      {selectedAttendee.depositPaid ? (
-                        <span className="text-green-600">Paid</span>
-                      ) : (
-                        <span className="text-red-600">Pending</span>
-                      )}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {selectedAttendee.status === "pending" && (
-                <div className="flex gap-3 border-t pt-4">
-                  <Button
-                    className="flex-1 bg-green-600 hover:bg-green-700"
-                    size="lg"
-                    onClick={() => {
-                      handleApprove(selectedAttendee.id);
-                      setIsDetailsOpen(false);
-                    }}
-                  >
-                    <Check className="mr-2 h-5 w-5" />
-                    Approve Attendee
-                  </Button>
-                  <Button
-                    className="flex-1"
-                    variant="destructive"
-                    size="lg"
-                    onClick={() => {
-                      handleReject(selectedAttendee.id);
-                      setIsDetailsOpen(false);
-                    }}
-                  >
-                    <X className="mr-2 h-5 w-5" />
-                    Reject
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
 
-export default AttendeeApproval;
+export default DepositManagement;

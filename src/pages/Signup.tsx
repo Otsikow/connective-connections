@@ -6,28 +6,12 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import {
-  ArrowLeft,
-  Eye,
-  EyeOff,
-  Mail,
-  Phone as PhoneIcon,
-  Image as ImageIcon,
-  Apple,
-} from "lucide-react";
+import { Mail, Phone as PhoneIcon, Eye, EyeOff, Apple, ArrowLeft, Image as ImageIcon } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -61,17 +45,7 @@ async function autoSquareCropToDataUrl(file: File): Promise<string> {
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas not supported");
   ctx.imageSmoothingQuality = "high";
-  ctx.drawImage(
-    img,
-    offsetX,
-    offsetY,
-    dimension,
-    dimension,
-    0,
-    0,
-    OUTPUT_SIZE,
-    OUTPUT_SIZE
-  );
+  ctx.drawImage(img, offsetX, offsetY, dimension, dimension, 0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
   return canvas.toDataURL("image/jpeg", 0.9);
 }
 
@@ -92,31 +66,6 @@ function StepHeader({ step }: { step: number }) {
   );
 }
 
-function Chip({
-  selected,
-  children,
-  onClick,
-}: {
-  selected: boolean;
-  children: React.ReactNode;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "px-4 py-2 rounded-full text-sm font-medium border transition-colors",
-        selected
-          ? "bg-[#E8B956]/20 border-[#E8B956] text-foreground"
-          : "bg-card border-border text-muted-foreground hover:bg-muted"
-      )}
-    >
-      {children}
-    </button>
-  );
-}
-
 const Signup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -129,22 +78,15 @@ const Signup = () => {
     email: "",
     phone: "",
     password: "",
-    consentOver18: false,
     agreedToTerms: false,
     name: "",
-    age: "",
-    gender: "",
-    location: "",
-    interests: [] as string[],
-    photoDataUrl: "",
     bio: "",
+    photoDataUrl: "",
   });
 
   const canContinue =
-    data.consentOver18 &&
     data.agreedToTerms &&
-    ((authTab === "email" && data.email) ||
-      (authTab === "phone" && data.phone));
+    ((authTab === "email" && data.email) || (authTab === "phone" && data.phone));
 
   const handleSendCode = async () => {
     if (!canContinue) return;
@@ -155,23 +97,14 @@ const Signup = () => {
           email: data.email,
           options: { emailRedirectTo: window.location.origin },
         });
-        toast({
-          title: "Email sent",
-          description: "Check your inbox for a verification link.",
-        });
+        toast({ title: "Email sent", description: "Check your inbox for verification link." });
       } else {
         await supabase.auth.signInWithOtp({ phone: data.phone });
-        toast({
-          title: "SMS sent",
-          description: "Check your phone for the verification code.",
-        });
+        toast({ title: "SMS sent", description: "Check your phone for the verification code." });
       }
       setStep(2);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to send verification. Try again.",
-      });
+      toast({ title: "Error", description: "Failed to send verification. Try again." });
     } finally {
       setIsSendingCode(false);
     }
@@ -182,10 +115,7 @@ const Signup = () => {
       await supabase.auth.signInWithOAuth({ provider });
       navigate("/profile-setup");
     } catch {
-      toast({
-        title: "OAuth Error",
-        description: "Please try again later.",
-      });
+      toast({ title: "OAuth Error", description: "Please try again later." });
     }
   };
 
@@ -197,10 +127,7 @@ const Signup = () => {
       const cropped = await autoSquareCropToDataUrl(file);
       setData((prev) => ({ ...prev, photoDataUrl: cropped }));
     } catch {
-      toast({
-        title: "Photo upload failed",
-        description: "Try a different image.",
-      });
+      toast({ title: "Photo upload failed", description: "Try a different image." });
     } finally {
       setIsUploading(false);
     }
@@ -214,7 +141,7 @@ const Signup = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background px-6 py-8">
+    <div className="min-h-screen bg-background px-4 sm:px-6 py-8">
       <div className="max-w-md mx-auto">
         <button
           onClick={() => (step === 1 ? navigate(-1) : back())}
@@ -232,10 +159,7 @@ const Signup = () => {
 
         {step === 1 && (
           <>
-            <Tabs
-              value={authTab}
-              onValueChange={(v) => setAuthTab(v as typeof authTab)}
-            >
+            <Tabs value={authTab} onValueChange={(v) => setAuthTab(v as typeof authTab)}>
               <TabsList className="grid grid-cols-2 w-full mb-4">
                 <TabsTrigger value="email">
                   <Mail size={16} className="mr-2" /> Email
@@ -252,9 +176,7 @@ const Signup = () => {
                   type="email"
                   placeholder="you@example.com"
                   value={data.email}
-                  onChange={(e) =>
-                    setData({ ...data, email: e.target.value })
-                  }
+                  onChange={(e) => setData({ ...data, email: e.target.value })}
                   className="h-12 rounded-xl"
                 />
               </TabsContent>
@@ -266,9 +188,7 @@ const Signup = () => {
                   type="tel"
                   placeholder="+1 555 123 4567"
                   value={data.phone}
-                  onChange={(e) =>
-                    setData({ ...data, phone: e.target.value })
-                  }
+                  onChange={(e) => setData({ ...data, phone: e.target.value })}
                   className="h-12 rounded-xl"
                 />
               </TabsContent>
@@ -282,9 +202,7 @@ const Signup = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder="Create a strong password"
                   value={data.password}
-                  onChange={(e) =>
-                    setData({ ...data, password: e.target.value })
-                  }
+                  onChange={(e) => setData({ ...data, password: e.target.value })}
                   className="h-12 pr-10 rounded-xl"
                 />
                 <button
@@ -300,9 +218,7 @@ const Signup = () => {
                 <Checkbox
                   id="terms"
                   checked={data.agreedToTerms}
-                  onCheckedChange={(v) =>
-                    setData({ ...data, agreedToTerms: Boolean(v) })
-                  }
+                  onCheckedChange={(v) => setData({ ...data, agreedToTerms: Boolean(v) })}
                 />
                 <Label htmlFor="terms" className="text-sm">
                   I agree to the{" "}
@@ -378,9 +294,7 @@ const Signup = () => {
               )}
               <Button
                 type="button"
-                onClick={() =>
-                  document.getElementById("photo-upload")?.click()
-                }
+                onClick={() => document.getElementById("photo-upload")?.click()}
                 variant="outline"
                 className="rounded-full"
                 disabled={isUploading}

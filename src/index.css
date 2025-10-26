@@ -1,273 +1,157 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Users, MapPin, MessageCircle, Search, Heart } from "lucide-react";
+import { motion } from "framer-motion";
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
-@layer base {
-  :root {
-    /* Connective Brand Colors */
-    --ocean-teal: 174 65% 48%;
-    --warm-coral: 14 100% 70%;
-    --soft-cream: 30 100% 97%;
-    --charcoal: 0 0% 17%;
-    --cream-bg: 30 100% 97%;
-    
-    /* Core Design System */
-    --background: 30 100% 97%;
-    --foreground: 0 0% 17%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 17%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 17%;
-
-    --primary: 174 65% 48%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 14 100% 70%;
-    --secondary-foreground: 0 0% 17%;
-
-    --muted: 30 20% 90%;
-    --muted-foreground: 0 0% 45%;
-
-    --accent: 174 65% 48%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 30 30% 88%;
-    --input: 30 30% 88%;
-    --ring: 174 65% 48%;
-
-    --radius: 1rem;
-
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(174 65% 48%), hsl(174 70% 58%));
-    --gradient-warm: linear-gradient(135deg, hsl(14 100% 70%), hsl(25 100% 75%));
-    
-    /* Shadows */
-    --shadow-soft: 0 4px 20px -2px hsl(174 65% 48% / 0.15);
-    --shadow-card: 0 2px 12px -2px hsl(0 0% 0% / 0.08);
-    
-    /* Transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .dark {
-    --background: 0 0% 10%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 14%;
-    --card-foreground: 0 0% 98%;
-    --primary: 174 65% 48%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 14 100% 70%;
-    --secondary-foreground: 0 0% 17%;
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 174 65% 48%;
-    --accent-foreground: 0 0% 100%;
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 174 65% 48%;
-  }
+interface Member {
+  id: string;
+  name: string;
+  location: string;
+  interests: string[];
+  bio: string;
+  avatar: string;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
+const Community = () => {
+  const [search, setSearch] = useState("");
 
-  body {
-    @apply bg-background text-foreground;
-  }
-}
+  const members: Member[] = [
+    {
+      id: "1",
+      name: "Sarah Johnson",
+      location: "London, UK",
+      interests: ["Food", "Music", "Art"],
+      bio: "Event host and creative designer who loves connecting people.",
+      avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+    },
+    {
+      id: "2",
+      name: "Michael Chen",
+      location: "Toronto, Canada",
+      interests: ["Tech", "Travel", "Cooking"],
+      bio: "Foodie and traveller, organizing city tasting tours.",
+      avatar: "https://randomuser.me/api/portraits/men/35.jpg",
+    },
+    {
+      id: "3",
+      name: "Lisa Anderson",
+      location: "Berlin, Germany",
+      interests: ["Photography", "Hiking", "Culture"],
+      bio: "Photographer capturing authentic human connections.",
+      avatar: "https://randomuser.me/api/portraits/women/47.jpg",
+    },
+    {
+      id: "4",
+      name: "James Wilson",
+      location: "New York, USA",
+      interests: ["Fitness", "Networking", "Events"],
+      bio: "Community builder who enjoys hosting social meetups.",
+      avatar: "https://randomuser.me/api/portraits/men/40.jpg",
+    },
+  ];
 
-/* ========================= */
-/* Animation Utilities */
-/* ========================= */
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes slideOutLeft {
-  to {
-    transform: translateX(-100%) rotate(-30deg);
-    opacity: 0;
-  }
-}
-
-@keyframes slideOutRight {
-  to {
-    transform: translateX(100%) rotate(30deg);
-    opacity: 0;
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.4s ease-out;
-}
-
-.animate-fade-in-down {
-  animation: fadeInDown 0.3s ease-out;
-}
-
-.animate-scale-in {
-  animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.animate-slide-out-left {
-  animation: slideOutLeft 0.3s ease-in forwards;
-}
-
-.animate-slide-out-right {
-  animation: slideOutRight 0.3s ease-in forwards;
-}
-
-.animate-shimmer {
-  animation: shimmer 2s linear infinite;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    transparent 100%
+  const filteredMembers = members.filter((member) =>
+    member.name.toLowerCase().includes(search.toLowerCase())
   );
-  background-size: 200% 100%;
-}
 
-/* Swipe Card Effects */
-.swipe-card {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
-              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+  return (
+    <div className="space-y-6 animate-fade-in-up">
+      {/* Header Section */}
+      <Card className="border-border/50 shadow-sm">
+        <CardContent className="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-bold flex items-center gap-2">
+              <Users className="h-6 w-6 text-primary" />
+              Connective Community
+            </h2>
+            <p className="text-muted-foreground text-sm sm:text-base mt-1">
+              Discover amazing people, events, and shared passions around you.
+            </p>
+          </div>
 
-/* Message Animation */
-@keyframes messageSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+          <div className="relative w-full sm:w-[300px]">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search members..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-.message-enter {
-  animation: messageSlideIn 0.2s ease-out;
-}
+      {/* Member Grid */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {filteredMembers.map((member, index) => (
+          <motion.div
+            key={member.id}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+          >
+            <Card className="overflow-hidden border-border/50 shadow-sm hover:shadow-md transition-all duration-200">
+              <CardHeader className="flex flex-col sm:flex-row items-center gap-4">
+                <img
+                  src={member.avatar}
+                  alt={member.name}
+                  className="w-20 h-20 rounded-full object-cover border-2 border-primary/20"
+                />
+                <div className="text-center sm:text-left">
+                  <CardTitle className="text-xl">{member.name}</CardTitle>
+                  <p className="flex items-center justify-center sm:justify-start gap-1 text-sm text-muted-foreground">
+                    <MapPin className="h-4 w-4 text-primary" />
+                    {member.location}
+                  </p>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground text-center sm:text-left">
+                  {member.bio}
+                </p>
+                <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+                  {member.interests.map((interest) => (
+                    <Badge
+                      key={interest}
+                      variant="secondary"
+                      className="px-3 py-1 text-xs"
+                    >
+                      {interest}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex justify-center sm:justify-between mt-4 gap-2">
+                  <Button className="w-full sm:w-auto bg-primary text-white hover:bg-primary/80 gap-2">
+                    <MessageCircle className="h-4 w-4" /> Message
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full sm:w-auto gap-2 border-border"
+                  >
+                    <Heart className="h-4 w-4 text-red-500" /> Follow
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
 
-/* Trust Badge Pulse */
-@keyframes trustPulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.05);
-  }
-}
+      {/* Empty State */}
+      {filteredMembers.length === 0 && (
+        <div className="text-center py-20 text-muted-foreground">
+          <p className="text-lg font-medium mb-2">No members found</p>
+          <p className="text-sm">
+            Try adjusting your search or check back later for more connections.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
 
-.trust-badge {
-  animation: trustPulse 2s ease-in-out infinite;
-}
-
-/* Smooth Transitions */
-* {
-  -webkit-tap-highlight-color: transparent;
-}
-
-.smooth-transition {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Interactive Element Feedback */
-.interactive-scale {
-  transition: transform 0.2s ease-out;
-}
-
-.interactive-scale:active {
-  transform: scale(0.97);
-}
-
-/* Stagger Animation Helper */
-@keyframes staggerIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.stagger-item {
-  animation: staggerIn 0.4s ease-out backwards;
-}
-
-.stagger-item:nth-child(1) { animation-delay: 0.05s; }
-.stagger-item:nth-child(2) { animation-delay: 0.1s; }
-.stagger-item:nth-child(3) { animation-delay: 0.15s; }
-.stagger-item:nth-child(4) { animation-delay: 0.2s; }
-.stagger-item:nth-child(5) { animation-delay: 0.25s; }
-.stagger-item:nth-child(6) { animation-delay: 0.3s; }
+export default Community;
