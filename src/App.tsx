@@ -12,6 +12,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Splash from "./pages/Splash";
 import Onboarding from "./pages/Onboarding";
 import Signup from "./pages/Signup";
+import Login from "./pages/Login";
 import ProfileSetup from "./pages/ProfileSetup";
 import Home from "./pages/Home";
 import Matches from "./pages/Matches";
@@ -56,6 +57,14 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <Signup />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <PageTransition>
+              <Login />
             </PageTransition>
           }
         />
