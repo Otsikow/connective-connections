@@ -9,7 +9,15 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, Calendar, DollarSign, Plus, Star, Users } from "lucide-react";
+import {
+  ArrowLeft,
+  BarChart3,
+  Calendar,
+  DollarSign,
+  Plus,
+  Star,
+  Users,
+} from "lucide-react";
 
 const HostDashboard = () => {
   const navigate = useNavigate();
@@ -76,10 +84,20 @@ const HostDashboard = () => {
     <div className="space-y-6 animate-fadeInUp">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <BarChart3 className="h-6 w-6 text-primary" />
-            Host Dashboard
-          </h1>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate(-1)}
+              className="p-2 rounded-full hover:bg-muted transition-colors"
+              aria-label="Go back"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              <span className="sr-only">Back</span>
+            </button>
+            <h1 className="text-2xl font-bold flex items-center gap-2">
+              <BarChart3 className="h-6 w-6 text-primary" />
+              Host Dashboard
+            </h1>
+          </div>
           <p className="text-muted-foreground mt-1">
             Overview of your events, performance, and earnings
           </p>
