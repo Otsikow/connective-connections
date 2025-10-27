@@ -16,6 +16,7 @@ interface Profile {
   trustBadge?: boolean;
   availability?: string;
   distance?: string;
+  gallery?: string[];
 }
 
 interface SwipeCardProps {
@@ -114,13 +115,18 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      <Card animated={false} className="h-full border-border overflow-hidden shadow-2xl">
+      <Card
+        animated={false}
+        className="h-full flex flex-col border-border overflow-hidden shadow-2xl bg-card"
+      >
         {/* Photo Section */}
-        <div className="relative h-72 sm:h-96 bg-gradient-to-br from-blue-400 to-purple-500">
-          <div className="absolute inset-0 bg-black/20" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-32 h-32 sm:w-48 sm:h-48 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white/30" />
-          </div>
+        <div className="relative flex-shrink-0 min-h-[260px] sm:min-h-[300px] overflow-hidden">
+          <img
+            src={profile.photo}
+            alt={`${profile.name}'s profile photo`}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/40" />
 
           {/* Trust Badge */}
           {profile.trustBadge && (
@@ -171,30 +177,55 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
           </div>
         </div>
 
-        <CardContent className="p-4 sm:p-6 text-center">
-          {/* Name and Age */}
-          <div className="mb-4">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-1">{profile.name}</h2>
-            <p className="text-base sm:text-lg text-muted-foreground">
-              {profile.age} years old
+        <CardContent className="flex-1 p-5 sm:p-6 text-center flex flex-col gap-6">
+          <div className="space-y-4">
+            {/* Name and Age */}
+            <div className="space-y-1">
+              <h2 className="text-2xl sm:text-3xl font-bold">{profile.name}</h2>
+              <p className="text-base sm:text-lg text-muted-foreground">
+                {profile.age} years old
+              </p>
+              {profile.distance && (
+                <p className="text-sm text-muted-foreground">{profile.distance} away</p>
+              )}
+            </div>
+
+            {/* Bio */}
+            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+              {profile.bio}
             </p>
-            {profile.distance && (
-              <p className="text-sm text-muted-foreground">{profile.distance} away</p>
-            )}
           </div>
 
-          {/* Bio */}
-          <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
-            {profile.bio}
-          </p>
+          {profile.gallery && profile.gallery.length > 0 && (
+            <div className="space-y-3 text-left w-full">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Photo Highlights
+              </h3>
+              <div className="grid grid-cols-3 gap-2">
+                {profile.gallery.slice(0, 3).map((image, index) => (
+                  <div
+                    key={index}
+                    className="relative h-20 rounded-xl overflow-hidden border border-white/10 shadow-sm"
+                  >
+                    <img src={image} alt={`${profile.name} gallery ${index + 1}`} className="h-full w-full object-cover" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Interests */}
-          <div className="flex flex-wrap gap-2 justify-center mb-6">
-            {profile.interests.map((interest, index) => (
-              <Badge key={index} variant="secondary" className="px-3 py-1 text-xs">
-                {interest}
-              </Badge>
-            ))}
+          <div className="flex-1 w-full">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+              Interests
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {profile.interests.map((interest, index) => (
+                <Badge key={index} variant="secondary" className="px-3 py-1 text-xs">
+                  {interest}
+                </Badge>
+              ))}
+            </div>
           </div>
 
           {/* CTA Button */}
