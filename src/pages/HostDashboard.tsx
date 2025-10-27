@@ -19,6 +19,16 @@ const interestOptions = [
   "Tech & Innovation",
   "Outdoor Adventures",
   "Faith & Inspiration",
+  "Sports & Recreation",
+  "Film & Media",
+  "Literature & Writing",
+  "Gaming & Esports",
+  "Science & Research",
+  "Entrepreneurship",
+  "Finance & Investing",
+  "Volunteering & Causes",
+  "Parenting & Family",
+  "Sustainability & Environment",
 ];
 
 const Onboarding = () => {
