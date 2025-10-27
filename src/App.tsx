@@ -22,6 +22,7 @@ import EventDetail from "./pages/EventDetail";
 import Community from "./pages/Community";
 import Admin from "./pages/Admin";
 import HostDashboard from "./pages/HostDashboard";
+import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -133,6 +134,14 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <HostDashboard />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <PageTransition>
+              <Dashboard />
             </PageTransition>
           }
         />
