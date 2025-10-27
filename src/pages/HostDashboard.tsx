@@ -1,206 +1,195 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Users, Sparkles, CheckCircle, ArrowLeft } from "lucide-react";
+import { BarChart3, Calendar, DollarSign, Plus, Star, Users } from "lucide-react";
 
-const interestOptions = [
-  "Food & Cooking",
-  "Music & Art",
-  "Networking",
-  "Fitness & Wellness",
-  "Travel & Culture",
-  "Tech & Innovation",
-  "Outdoor Adventures",
-  "Faith & Inspiration",
-  "Sports & Recreation",
-  "Film & Media",
-  "Literature & Writing",
-  "Gaming & Esports",
-  "Science & Research",
-  "Entrepreneurship",
-  "Finance & Investing",
-  "Volunteering & Causes",
-  "Parenting & Family",
-  "Sustainability & Environment",
-];
-
-const Onboarding = () => {
+const HostDashboard = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
-  const [fullName, setFullName] = useState("");
-  const [city, setCity] = useState("");
 
-  const totalSteps = 3;
-  const progress = (step / totalSteps) * 100;
+  const stats = [
+    {
+      title: "Total Events",
+      value: 14,
+      icon: Calendar,
+      color: "from-blue-500 to-cyan-500",
+      change: "+2 this month",
+    },
+    {
+      title: "Total Attendees",
+      value: 238,
+      icon: Users,
+      color: "from-green-500 to-emerald-500",
+      change: "+18 new signups",
+    },
+    {
+      title: "Total Earnings",
+      value: "$4,820",
+      icon: DollarSign,
+      color: "from-yellow-500 to-orange-500",
+      change: "+12% vs last month",
+    },
+    {
+      title: "Average Rating",
+      value: "4.7 / 5",
+      icon: Star,
+      color: "from-purple-500 to-pink-500",
+      change: "Based on 124 reviews",
+    },
+  ];
 
-  const handleInterestToggle = (interest: string) => {
-    setSelectedInterests((prev) =>
-      prev.includes(interest)
-        ? prev.filter((i) => i !== interest)
-        : [...prev, interest]
-    );
-  };
-
-  const handleNext = () => {
-    if (step < totalSteps) setStep(step + 1);
-    else navigate("/dashboard");
-  };
-
-  const handleBack = () => {
-    if (step > 1) setStep(step - 1);
-  };
+  const recentEvents = [
+    {
+      id: 1,
+      title: "Wine Tasting Evening",
+      date: "Oct 18, 2025",
+      attendees: 24,
+      earnings: "$580",
+      status: "Completed",
+    },
+    {
+      id: 2,
+      title: "Cooking Class: Italian Cuisine",
+      date: "Oct 21, 2025",
+      attendees: 16,
+      earnings: "$400",
+      status: "Upcoming",
+    },
+    {
+      id: 3,
+      title: "Morning Yoga & Meditation",
+      date: "Nov 3, 2025",
+      attendees: 12,
+      earnings: "$250",
+      status: "Upcoming",
+    },
+  ];
 
   return (
-    <motion.div
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4 sm:p-6"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-    >
-      <Card className="w-full max-w-lg border-border/50 shadow-lg">
-        <CardHeader className="text-center space-y-2">
-          <div className="flex justify-center mb-3">
-            <Users className="w-10 h-10 text-primary" />
-          </div>
-          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            Welcome to Connective
+    <div className="space-y-6 animate-fadeInUp">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <BarChart3 className="h-6 w-6 text-primary" />
+            Host Dashboard
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Overview of your events, performance, and earnings
+          </p>
+        </div>
+        <Button
+          className="rounded-full bg-primary text-white hover:bg-primary/80 gap-2"
+          onClick={() => navigate("/host/create-event")}
+        >
+          <Plus className="h-4 w-4" /> Create Event
+        </Button>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat, index) => (
+          <motion.div
+            key={stat.title}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05 }}
+          >
+            <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+              <div className={`h-1 bg-gradient-to-r ${stat.color}`} />
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {stat.title}
+                </CardTitle>
+                <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                  <stat.icon className="h-5 w-5 text-primary" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{stat.value}</div>
+                <p className="text-xs text-muted-foreground mt-2">{stat.change}</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+
+      <Card className="border-border/50 shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Calendar className="h-5 w-5 text-primary" />
+            Recent Events
           </CardTitle>
-          <CardDescription>
-            Let’s personalize your experience in just a few quick steps.
-          </CardDescription>
+          <CardDescription>Manage your latest hosted events</CardDescription>
         </CardHeader>
-
-        <CardContent className="space-y-6 p-6">
-          <Progress value={progress} className="h-2 bg-muted" />
-
-          {step === 1 && (
-            <motion.div
-              key="step1"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-4"
-            >
-              <h3 className="text-lg font-semibold">Tell us about yourself</h3>
-              <div className="space-y-3">
-                <div>
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input
-                    id="fullName"
-                    placeholder="Enter your full name"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="city">City / Location</Label>
-                  <Input
-                    id="city"
-                    placeholder="Where are you based?"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {step === 2 && (
-            <motion.div
-              key="step2"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-4"
-            >
-              <h3 className="text-lg font-semibold">Select your interests</h3>
-              <p className="text-sm text-muted-foreground mb-3">
-                Choose what you love. This helps us suggest better events.
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {interestOptions.map((interest) => (
-                  <Badge
-                    key={interest}
-                    variant={
-                      selectedInterests.includes(interest)
-                        ? "default"
-                        : "outline"
-                    }
-                    onClick={() => handleInterestToggle(interest)}
-                    className={`cursor-pointer px-3 py-2 text-center transition-all ${
-                      selectedInterests.includes(interest)
-                        ? "bg-primary text-white shadow-md"
-                        : "hover:bg-muted"
-                    }`}
-                  >
-                    {interest}
-                  </Badge>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {step === 3 && (
-            <motion.div
-              key="step3"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-4 text-center"
-            >
-              <div className="flex justify-center">
-                <CheckCircle className="h-16 w-16 text-green-500 mb-3" />
-              </div>
-              <h3 className="text-lg font-semibold">
-                You're all set, {fullName || "Friend"}!
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                You’re ready to explore events, meet people, and grow your
-                network.
-              </p>
-            </motion.div>
-          )}
-
-          {/* Navigation Buttons */}
-          <div className="flex justify-between items-center pt-4">
-            {step > 1 ? (
-              <Button
-                variant="outline"
-                onClick={handleBack}
-                className="gap-2 rounded-full"
-              >
-                <ArrowLeft className="h-4 w-4" /> Back
-              </Button>
-            ) : (
-              <div />
-            )}
-
-            <Button
-              className="rounded-full gap-2 bg-primary text-white hover:bg-primary/80"
-              onClick={handleNext}
-            >
-              {step === totalSteps ? (
-                <>
-                  <Sparkles className="h-4 w-4" /> Finish
-                </>
-              ) : (
-                "Next"
-              )}
-            </Button>
-          </div>
+        <CardContent className="overflow-x-auto">
+          <table className="w-full text-sm text-left border-t border-border/50">
+            <thead className="bg-muted/30">
+              <tr className="text-muted-foreground">
+                <th className="px-4 py-3 font-medium">Event</th>
+                <th className="px-4 py-3 font-medium">Date</th>
+                <th className="px-4 py-3 font-medium">Attendees</th>
+                <th className="px-4 py-3 font-medium">Earnings</th>
+                <th className="px-4 py-3 font-medium">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentEvents.map((event, i) => (
+                <motion.tr
+                  key={event.id}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="border-b border-border/50 hover:bg-muted/10"
+                >
+                  <td className="px-4 py-3 font-semibold">{event.title}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{event.date}</td>
+                  <td className="px-4 py-3">{event.attendees}</td>
+                  <td className="px-4 py-3 font-medium text-green-600">
+                    {event.earnings}
+                  </td>
+                  <td className="px-4 py-3">
+                    <Badge
+                      variant={
+                        event.status === "Upcoming" ? "secondary" : "outline"
+                      }
+                      className={
+                        event.status === "Completed"
+                          ? "text-green-600 bg-green-500/10"
+                          : "text-yellow-600 bg-yellow-500/10"
+                      }
+                    >
+                      {event.status}
+                    </Badge>
+                  </td>
+                </motion.tr>
+              ))}
+            </tbody>
+          </table>
         </CardContent>
       </Card>
-    </motion.div>
+
+      <Card className="border-border/50 bg-gradient-to-br from-primary/5 to-background shadow-sm">
+        <CardContent className="p-6 text-center space-y-4">
+          <h3 className="text-xl font-semibold">Ready to Host Your Next Event?</h3>
+          <p className="text-muted-foreground text-sm">
+            Create an event and start earning today — share your passion with others.
+          </p>
+          <Button
+            className="rounded-full bg-primary text-white hover:bg-primary/80"
+            onClick={() => navigate("/host/create-event")}
+          >
+            Create New Event
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
-export default Onboarding;
+export default HostDashboard;

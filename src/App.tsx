@@ -22,6 +22,7 @@ import EventDetail from "./pages/EventDetail";
 import Community from "./pages/Community";
 import Admin from "./pages/Admin";
 import HostDashboard from "./pages/HostDashboard";
+import HostEvent from "./pages/HostEvent";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
@@ -134,6 +135,14 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <HostDashboard />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/host/create-event"
+          element={
+            <PageTransition>
+              <HostEvent />
             </PageTransition>
           }
         />
