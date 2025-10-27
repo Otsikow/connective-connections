@@ -35,24 +35,28 @@ const Home = () => {
 
   const events = [
     {
+      id: "1",
       title: "Coffee & Chat",
       date: "Sat, Nov 25, 10:00 AM",
       location: "The Grind Café",
       image: "/event-placeholder.svg",
     },
     {
+      id: "2",
       title: "Book Club",
       date: "Sun, Nov 26, 3:00 PM",
       location: "Central Library",
       image: "/event-placeholder.svg",
     },
     {
+      id: "3",
       title: "Sunrise Hike",
       date: "Mon, Nov 27, 6:00 AM",
       location: "Ridge Trailhead",
       image: "/placeholder.svg",
     },
     {
+      id: "4",
       title: "Art Walk",
       date: "Tue, Nov 28, 5:30 PM",
       location: "Downtown",
@@ -236,9 +240,18 @@ const Home = () => {
                           <p className="text-sm text-muted-foreground mb-4">
                             {event.location}
                           </p>
-                          <Button className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold">
-                            Join Event
-                          </Button>
+                          <div className="flex flex-col sm:flex-row gap-2">
+                            <Button
+                              variant="outline"
+                              className="w-full sm:flex-1 rounded-full border-[#E8B956]/60 text-[#8c6a17] hover:bg-[#E8B956]/10 hover:text-[#8c6a17]"
+                              onClick={() => navigate(`/events/${event.id}`)}
+                            >
+                              View Details
+                            </Button>
+                            <Button className="w-full sm:flex-1 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold">
+                              Join Event
+                            </Button>
+                          </div>
                         </CardContent>
                       </Card>
                     </CarouselItem>
