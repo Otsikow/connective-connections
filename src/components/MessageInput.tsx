@@ -22,10 +22,22 @@ import {
 interface MessageInputProps {
   onSendMessage: (message: string) => void;
   onSelectIcebreaker: (icebreaker: string) => void;
+  suggestions?: string[];
   className?: string;
 }
 
-export const MessageInput = ({ onSendMessage, onSelectIcebreaker, className = "" }: MessageInputProps) => {
+const FALLBACK_SUGGESTIONS = [
+  "Ask about their hobbies",
+  "What's your favorite coffee spot?",
+  "Tell me about your weekend plans",
+];
+
+export const MessageInput = ({
+  onSendMessage,
+  onSelectIcebreaker,
+  suggestions,
+  className = "",
+}: MessageInputProps) => {
   const [message, setMessage] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -79,15 +91,11 @@ export const MessageInput = ({ onSendMessage, onSelectIcebreaker, className = ""
       {/* AI Icebreakers */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <span>💡</span>
-        <span>AI Icebreaker Suggestions</span>
+        <span>{suggestions?.length ? "Smart suggestions for this chat" : "AI Icebreaker Suggestions"}</span>
       </div>
       
       <div className="flex flex-wrap gap-2">
-        {[
-          "Ask about their hobbies",
-          "What's your favorite coffee spot?",
-          "Tell me about your weekend plans"
-        ].map((suggestion, index) => (
+        {(suggestions?.length ? suggestions : FALLBACK_SUGGESTIONS).map((suggestion, index) => (
           <Button
             key={index}
             variant="outline"
