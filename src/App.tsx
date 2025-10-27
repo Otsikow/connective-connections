@@ -149,15 +149,26 @@ const AnimatedRoutes = () => {
   );
 };
 
+const AppContent = () => {
+  const location = useLocation();
+  const showThemeToggle = location.pathname === "/";
+
+  return (
+    <>
+      {showThemeToggle && <ThemeToggle />}
+      <AnimatedRoutes />
+    </>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="light">
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <ThemeToggle />
         <BrowserRouter>
-          <AnimatedRoutes />
+          <AppContent />
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
