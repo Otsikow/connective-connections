@@ -4,7 +4,7 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Calendar, MapPin, Users } from "lucide-react";
+import { Search, Calendar, MapPin, Users, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Event {
@@ -22,6 +22,14 @@ const Events = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/home");
+    }
+  };
 
   const events: Event[] = [
     {
@@ -72,9 +80,60 @@ const Events = () => {
       description:
         "Join a group of photographers to explore city nightlife scenes and capture stunning long-exposure shots.",
     },
+    {
+      id: "5",
+      title: "Sunset Paddleboarding Meetup",
+      date: "Sat, Nov 22 • 5:30 PM",
+      location: "Lake Union, Seattle",
+      category: "Wellness",
+      attendees: 20,
+      image:
+        "https://images.unsplash.com/photo-1515894203077-9cd1060f29e0?w=1200&h=800&fit=crop",
+      description:
+        "Unwind on the water with a relaxed paddle followed by a lakeside mindfulness cool-down session.",
+    },
+    {
+      id: "6",
+      title: "Community Brunch & Networking",
+      date: "Sun, Nov 23 • 11:00 AM",
+      location: "Market Square, Austin",
+      category: "Networking",
+      attendees: 34,
+      image:
+        "https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=1200&h=800&fit=crop",
+      description:
+        "Connect with local creators and entrepreneurs over a curated brunch experience and facilitated conversations.",
+    },
+    {
+      id: "7",
+      title: "Mindful Painting Workshop",
+      date: "Wed, Nov 26 • 6:00 PM",
+      location: "Creative Loft, Chicago",
+      category: "Art",
+      attendees: 18,
+      image:
+        "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=1200&h=800&fit=crop",
+      description:
+        "Explore color therapy techniques while creating a calming abstract piece guided by a local artist.",
+    },
+    {
+      id: "8",
+      title: "Global Bites Potluck",
+      date: "Thu, Nov 27 • 7:00 PM",
+      location: "Community Hall, Vancouver",
+      category: "Food",
+      attendees: 28,
+      image:
+        "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=800&fit=crop",
+      description:
+        "Share your favorite family recipes and discover new flavors during an evening of storytelling and cultural exchange.",
+    },
   ];
 
-  const categories = ["All", "Wellness", "Food", "Networking", "Art"];
+  const categories = [
+    "All",
+    ...Array.from(new Set(events.map((event) => event.category))),
+  ];
 
   const filteredEvents = events.filter(
     (event) =>
@@ -84,6 +143,18 @@ const Events = () => {
 
   return (
     <div className="space-y-6 animate-fadeInUp">
+      <div className="flex items-center gap-3">
+        <Button
+          variant="outline"
+          size="icon"
+          className="rounded-full border-border/60"
+          onClick={handleBack}
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <h1 className="text-xl font-semibold">Events</h1>
+      </div>
+
       {/* Header Section */}
       <Card className="border-border/50 shadow-sm">
         <CardContent className="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
