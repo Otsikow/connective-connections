@@ -255,7 +255,7 @@ const Home = () => {
       {/* Floating Host Event Button */}
       <Button
         className="fixed bottom-20 sm:bottom-24 right-4 sm:right-6 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal shadow-lg flex items-center gap-2 h-12 sm:h-auto px-4 sm:px-6 text-sm sm:text-base"
-        onClick={() => navigate("/home")}
+        onClick={() => navigate("/host/create-event")}
       >
         <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
         <span className="hidden xs:inline">Host Event</span>
