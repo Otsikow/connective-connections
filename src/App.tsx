@@ -19,6 +19,7 @@ import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
 import Events from "./pages/Events";
 import EventDetail from "./pages/EventDetail";
+import CreateEvent from "./pages/CreateEvent";
 import Community from "./pages/Community";
 import Admin from "./pages/Admin";
 import HostDashboard from "./pages/HostDashboard";
@@ -87,6 +88,14 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <EventDetail />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/host/create-event"
+          element={
+            <PageTransition>
+              <CreateEvent />
             </PageTransition>
           }
         />
