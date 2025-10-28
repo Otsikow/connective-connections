@@ -17,9 +17,9 @@ import {
   Search,
   User,
   Calendar as CalendarIcon,
-  ArrowLeft,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import BackButton from "@/components/BackButton";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -96,9 +96,11 @@ const Home = () => {
       {/* Header + Search */}
       <div className="sticky top-0 z-10 bg-background border-b border-border px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between mb-3">
-          <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
-            <ArrowLeft className="w-6 h-6" />
-          </button>
+          <BackButton
+            fallbackPath="/"
+            size="icon"
+            className="h-10 w-10"
+          />
           <h1 className="text-xl font-bold">Connective</h1>
           <Avatar
             className="w-10 h-10 cursor-pointer"

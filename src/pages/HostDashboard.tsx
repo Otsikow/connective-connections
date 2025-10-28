@@ -10,7 +10,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  ArrowLeft,
   BarChart3,
   Calendar,
   DollarSign,
@@ -18,6 +17,7 @@ import {
   Star,
   Users,
 } from "lucide-react";
+import BackButton from "@/components/BackButton";
 
 const HostDashboard = () => {
   const navigate = useNavigate();
@@ -85,14 +85,12 @@ const HostDashboard = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => navigate(-1)}
-              className="p-2 rounded-full hover:bg-muted transition-colors"
-              aria-label="Go back"
-            >
-              <ArrowLeft className="h-5 w-5" />
-              <span className="sr-only">Back</span>
-            </button>
+            <BackButton
+              fallbackPath="/home"
+              size="icon"
+              className="h-10 w-10"
+              ariaLabel="Go back"
+            />
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <BarChart3 className="h-6 w-6 text-primary" />
               Host Dashboard

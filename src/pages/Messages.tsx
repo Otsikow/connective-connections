@@ -2,10 +2,11 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MoreVertical, Shield, Clock, Phone, Video } from "lucide-react";
+import { MoreVertical, Shield, Clock, Phone, Video } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { MessageInput } from "@/components/MessageInput";
 import { sampleEvents } from "@/lib/events";
+import BackButton from "@/components/BackButton";
 
 interface Message {
   id: number;
@@ -175,9 +176,12 @@ const Messages = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <div className="bg-card border-b border-border px-3 sm:px-4 py-3 flex items-center gap-2 sm:gap-3">
-        <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full transition-colors">
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+        <BackButton
+          fallbackPath="/home"
+          size="icon"
+          className="h-10 w-10 rounded-full"
+          ariaLabel="Back to previous page"
+        />
 
         {groupEvent ? (
           <>

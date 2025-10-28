@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, ArrowLeft, UserPlus } from "lucide-react";
+import { Eye, EyeOff, UserPlus } from "lucide-react";
 import { triggerHaptic } from "@/lib/haptics";
+import BackButton from "@/components/BackButton";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -45,15 +46,11 @@ const Signup = () => {
     >
       {/* Back Button */}
       <div className="absolute top-4 sm:top-6 left-4 sm:left-6">
-        <button
-          onClick={() => {
-            triggerHaptic("light");
-            navigate(-1);
-          }}
-          className="p-2 hover:bg-muted rounded-full"
-        >
-          <ArrowLeft className="w-6 h-6 text-foreground" />
-        </button>
+        <BackButton
+          fallbackPath="/"
+          size="icon"
+          className="h-10 w-10"
+        />
       </div>
 
       <motion.div

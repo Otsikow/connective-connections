@@ -4,8 +4,9 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Calendar, MapPin, Users, ArrowLeft } from "lucide-react";
+import { Search, Calendar, MapPin, Users } from "lucide-react";
 import { motion } from "framer-motion";
+import BackButton from "@/components/BackButton";
 
 interface Event {
   id: string;
@@ -22,14 +23,6 @@ const Events = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
-
-  const handleBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate("/home");
-    }
-  };
 
   const events: Event[] = [
     {
@@ -144,14 +137,12 @@ const Events = () => {
   return (
     <div className="space-y-6 animate-fadeInUp">
       <div className="flex items-center gap-3">
-        <Button
+        <BackButton
+          fallbackPath="/events"
           variant="outline"
           size="icon"
           className="rounded-full border-border/60"
-          onClick={handleBack}
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
+        />
         <h1 className="text-xl font-semibold">Events</h1>
       </div>
 

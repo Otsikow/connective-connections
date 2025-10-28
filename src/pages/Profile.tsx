@@ -30,7 +30,6 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import {
-  ArrowLeft,
   Settings,
   MapPin,
   Calendar,
@@ -53,6 +52,7 @@ import {
   UserPlus,
   Bookmark,
 } from "lucide-react";
+import BackButton from "@/components/BackButton";
 
 type Friend = {
   id: number;
@@ -460,9 +460,11 @@ const Profile = () => {
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <div className="bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-        <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
-          <ArrowLeft className="w-6 h-6" />
-        </button>
+        <BackButton
+          fallbackPath="/home"
+          size="icon"
+          className="h-10 w-10"
+        />
         <h1 className="text-lg font-semibold">Profile</h1>
         <div className="w-10" />
       </div>
