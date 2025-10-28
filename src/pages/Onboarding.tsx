@@ -1,93 +1,158 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import onboarding1 from "@/assets/onboarding-1.png";
-import onboarding2 from "@/assets/onboarding-2.png";
-import onboarding3 from "@/assets/onboarding-3.png";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Eye, EyeOff, UserPlus } from "lucide-react";
+import { triggerHaptic } from "@/lib/haptics";
+import BackButton from "@/components/BackButton";
 
-const slides = [
-  {
-    image: onboarding1,
-    title: "Welcome to Connective",
-    description: "Find meaningful friendships in a safe and inclusive environment designed for adults like you.",
-  },
-  {
-    image: onboarding2,
-    title: "Find Your People",
-    description: "Connective helps you find meaningful connections in a safe and supportive environment. With features like verified profiles and community guidelines, you can be sure that you're connecting with real people who share your interests and values.",
-  },
-  {
-    image: onboarding3,
-    title: "Discover Meaningful Connections",
-    description: "Find your people, your way. Connective helps you build genuine friendships based on shared interests and values in a safe and inclusive environment.",
-  },
-];
-
-const Onboarding = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+const Signup = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleNext = () => {
-    if (currentSlide < slides.length - 1) {
-      setCurrentSlide(currentSlide + 1);
-    } else {
-      navigate("/signup");
+  const handleSignup = async () => {
+    if (!email || !password || !fullName) {
+      triggerHaptic("warning");
+      alert("Please complete all fields before signing up.");
+      return;
     }
-  };
+    if (!acceptTerms) {
+      triggerHaptic("warning");
+      alert("Please accept the terms and conditions to continue.");
+      return;
+    }
 
-  const handleSkip = () => {
-    navigate("/signup");
+    triggerHaptic("light");
+    setLoading(true);
+    setTimeout(() => {
+      triggerHaptic("success");
+      navigate("/onboarding");
+    }, 1500);
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 py-8">
-      <div className="w-full max-w-md flex flex-col items-center animate-fade-in">
-        <div className="w-full bg-card rounded-3xl shadow-lg p-8 mb-8">
-          <img
-            src={slides[currentSlide].image}
-            alt={slides[currentSlide].title}
-            className="w-full h-auto mb-6 rounded-2xl"
-          />
-          <h1 className="text-2xl font-bold text-foreground mb-4 text-center">
-            {slides[currentSlide].title}
-          </h1>
-          <p className="text-muted-foreground text-center leading-relaxed">
-            {slides[currentSlide].description}
+    <motion.div
+      className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 px-4 sm:px-6 py-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
+      {/* Back Button */}
+      <div className="absolute top-4 sm:top-6 left-4 sm:left-6">
+        <BackButton
+          fallbackPath="/"
+          size="icon"
+          className="h-10 w-10"
+        />
+      </div>
+
+      <motion.div
+        className="w-full max-w-md bg-card border border-border/50 rounded-3xl shadow-lg p-6 sm:p-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <div className="flex flex-col items-center text-center mb-6">
+          <div className="p-3 bg-primary/10 rounded-full mb-3">
+            <UserPlus className="w-6 h-6 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold mb-1">Create Your Account</h1>
+          <p className="text-muted-foreground text-sm">
+            Join Connective and start building real connections today.
           </p>
         </div>
 
-        <Button
-          onClick={handleNext}
-          className="w-full max-w-md h-14 text-lg font-semibold rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal shadow-md transition-all"
-        >
-          Continue
-        </Button>
-
-        {currentSlide === slides.length - 1 && (
-          <Button
-            onClick={handleSkip}
-            variant="ghost"
-            className="mt-4 text-foreground"
-          >
-            Skip
-          </Button>
-        )}
-
-        <div className="flex gap-2 mt-6">
-          {slides.map((_, index) => (
-            <div
-              key={index}
-              className={`h-2 rounded-full transition-all ${
-                index === currentSlide
-                  ? "w-8 bg-[#E8B956]"
-                  : "w-2 bg-muted"
-              }`}
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="fullName">Full Name</Label>
+            <Input
+              id="fullName"
+              placeholder="Enter your full name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="mt-1"
             />
-          ))}
+          </div>
+
+          <div>
+            <Label htmlFor="email">Email Address</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="password">Password</Label>
+            <div className="relative mt-1">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pr-10"
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="terms"
+              checked={acceptTerms}
+              onCheckedChange={(checked) => setAcceptTerms(!!checked)}
+            />
+            <Label htmlFor="terms" className="text-sm text-muted-foreground">
+              I agree to the{" "}
+              <span className="text-primary cursor-pointer hover:underline">
+                Terms & Conditions
+              </span>
+            </Label>
+          </div>
+
+          <Button
+            onClick={handleSignup}
+            disabled={loading}
+            className="w-full h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold shadow-md mt-4 transition-all"
+          >
+            {loading ? "Creating account..." : "Sign Up"}
+          </Button>
+
+          <p className="text-center text-sm text-muted-foreground mt-4">
+            Already have an account?{" "}
+            <button
+              onClick={() => navigate("/login")}
+              className="text-primary hover:underline font-medium"
+            >
+              Log in
+            </button>
+          </p>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
-export default Onboarding;
+export default Signup;
