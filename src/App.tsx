@@ -25,6 +25,7 @@ import CreateEvent from "./pages/CreateEvent";
 import Admin from "./pages/Admin";
 import HostDashboard from "./pages/HostDashboard";
 import HostEvent from "./pages/HostEvent";
+import HostCreateExperience from "./pages/HostCreateExperience";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
@@ -153,6 +154,14 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <HostDashboard />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/host/create-experience"
+          element={
+            <PageTransition>
+              <HostCreateExperience />
             </PageTransition>
           }
         />

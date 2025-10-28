@@ -102,7 +102,7 @@ const HostDashboard = () => {
         </div>
         <Button
           className="rounded-full bg-primary text-white hover:bg-primary/80 gap-2"
-          onClick={() => navigate("/host/create-event")}
+          onClick={() => navigate("/host/create-experience")}
         >
           <Plus className="h-4 w-4" /> Create Event
         </Button>
