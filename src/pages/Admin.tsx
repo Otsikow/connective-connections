@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,15 +31,43 @@ const Admin = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    checkAdminAccess();
-  }, []);
+  const loadProfiles = useCallback(async () => {
+    try {
+      setLoading(true);
 
-  const checkAdminAccess = async () => {
+      // Fetch all profiles (regular query, no admin privileges needed)
+      const { data: profilesData, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, created_at')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Initialize profiles with loading state for emails
+      setProfiles(
+        (profilesData || []).map(profile => ({
+          ...profile,
+          email: null,
+          loading: false,
+        }))
+      );
+    } catch (error) {
+      console.error('Error loading profiles:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load user profiles",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [toast]);
+
+  const checkAdminAccess = useCallback(async () => {
     try {
       // First, verify the user is authenticated
       const { data: { user }, error: userError } = await supabase.auth.getUser();
-      
+
       if (userError || !user) {
         toast({
           title: "Authentication required",
@@ -78,39 +106,11 @@ const Admin = () => {
       });
       navigate("/");
     }
-  };
+  }, [loadProfiles, navigate, toast]);
 
-  const loadProfiles = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch all profiles (regular query, no admin privileges needed)
-      const { data: profilesData, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, created_at')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      // Initialize profiles with loading state for emails
-      setProfiles(
-        (profilesData || []).map(profile => ({
-          ...profile,
-          email: null,
-          loading: false,
-        }))
-      );
-    } catch (error) {
-      console.error('Error loading profiles:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load user profiles",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    void checkAdminAccess();
+  }, [checkAdminAccess]);
 
   /**
    * SECURE: Fetch user email through a protected edge function
