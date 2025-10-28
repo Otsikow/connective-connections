@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import BackButton from "@/components/BackButton";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -9,12 +9,11 @@ const Index = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header with Back Arrow */}
       <div className="px-4 sm:px-6 py-4">
-        <button
-          onClick={() => navigate(-1)}
-          className="p-2 hover:bg-muted rounded-full transition-colors"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </button>
+        <BackButton
+          fallbackPath="/"
+          size="icon"
+          className="h-10 w-10"
+        />
       </div>
 
       {/* Welcome Section */}

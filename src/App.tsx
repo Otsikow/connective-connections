@@ -12,6 +12,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Splash from "./pages/Splash";
 import Onboarding from "./pages/Onboarding";
 import Signup from "./pages/Signup";
+import Login from "./pages/Login";
 import ProfileSetup from "./pages/ProfileSetup";
 import Home from "./pages/Home";
 import Matches from "./pages/Matches";
@@ -23,6 +24,8 @@ import CreateEvent from "./pages/CreateEvent";
 import Community from "./pages/Community";
 import Admin from "./pages/Admin";
 import HostDashboard from "./pages/HostDashboard";
+import HostEvent from "./pages/HostEvent";
+import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -54,6 +57,14 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <Signup />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <PageTransition>
+              <Login />
             </PageTransition>
           }
         />
@@ -146,6 +157,22 @@ const AnimatedRoutes = () => {
           }
         />
         <Route
+          path="/host/create-event"
+          element={
+            <PageTransition>
+              <HostEvent />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <PageTransition>
+              <Dashboard />
+            </PageTransition>
+          }
+        />
+        <Route
           path="*"
           element={
             <PageTransition>
@@ -158,15 +185,26 @@ const AnimatedRoutes = () => {
   );
 };
 
+const AppContent = () => {
+  const location = useLocation();
+  const showThemeToggle = location.pathname === "/";
+
+  return (
+    <>
+      {showThemeToggle && <ThemeToggle />}
+      <AnimatedRoutes />
+    </>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="light">
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <ThemeToggle />
         <BrowserRouter>
-          <AnimatedRoutes />
+          <AppContent />
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>

@@ -11,11 +11,12 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { Mail, Phone as PhoneIcon, Eye, EyeOff, Apple, ArrowLeft, Image as ImageIcon } from "lucide-react";
+import { Mail, Phone as PhoneIcon, Eye, EyeOff, Apple, Image as ImageIcon } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import BackButton from "@/components/BackButton";
 
 const TOTAL_STEPS = 5;
 
@@ -143,12 +144,17 @@ const Signup = () => {
   return (
     <div className="min-h-screen bg-background px-4 sm:px-6 py-8">
       <div className="max-w-md mx-auto">
-        <button
-          onClick={() => (step === 1 ? navigate(-1) : back())}
-          className="mb-6 p-2 hover:bg-muted rounded-full transition-colors"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </button>
+        <BackButton
+          fallbackPath="/"
+          size="icon"
+          className="mb-6 h-10 w-10"
+          onClick={(event) => {
+            if (step > 1) {
+              event.preventDefault();
+              back();
+            }
+          }}
+        />
 
         <h1 className="text-3xl font-bold text-center mb-2">Create Account</h1>
         <p className="text-center text-muted-foreground mb-6">

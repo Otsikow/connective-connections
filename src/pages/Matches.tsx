@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Heart, X } from "lucide-react";
+import { Heart, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SwipeCard } from "@/components/SwipeCard";
+import BackButton from "@/components/BackButton";
 
 interface Profile {
   id: string;
@@ -14,6 +15,7 @@ interface Profile {
   trustBadge?: boolean;
   availability?: string;
   distance?: string;
+  gallery?: string[];
 }
 
 const profiles: Profile[] = [
@@ -21,7 +23,13 @@ const profiles: Profile[] = [
     id: "1",
     name: "Sarah M.",
     age: 28,
-    photo: "/placeholder.svg",
+    photo:
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1470707592410-7d79450eaf42?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=400&q=80",
+    ],
     interests: ["Coffee Addict", "Yoga Lover", "Plant Parent", "Art Enthusiast"],
     bio: "Love exploring new coffee shops and finding hidden gems in the city. Always up for a good conversation over a cup of coffee!",
     trustBadge: true,
@@ -32,7 +40,13 @@ const profiles: Profile[] = [
     id: "2",
     name: "Alex K.",
     age: 31,
-    photo: "/placeholder.svg",
+    photo:
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=900&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1456327102063-fb5054efe647?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1519340333755-56e9c77f5a47?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=400&q=80",
+    ],
     interests: ["Bookworm", "Hiking Enthusiast", "Dog Lover", "New in Town"],
     bio: "Recently moved to the city and looking to make new friends. Love outdoor activities and discovering local bookstores.",
     trustBadge: false,
@@ -43,7 +57,13 @@ const profiles: Profile[] = [
     id: "3",
     name: "Jordan L.",
     age: 26,
-    photo: "/placeholder.svg",
+    photo:
+      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1506086679525-9fdbfc0b81e5?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=400&q=80",
+    ],
     interests: ["Foodie", "Photography", "Travel", "Music"],
     bio: "Passionate about food photography and trying new restaurants. Always looking for someone to share a meal with!",
     trustBadge: true,
@@ -54,7 +74,13 @@ const profiles: Profile[] = [
     id: "4",
     name: "Casey R.",
     age: 29,
-    photo: "/placeholder.svg",
+    photo:
+      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=900&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=400&q=80",
+    ],
     interests: ["Fitness", "Cooking", "Gardening", "Volunteering"],
     bio: "Fitness enthusiast who loves cooking healthy meals and tending to my garden. Looking for like-minded friends!",
     trustBadge: false,
@@ -99,16 +125,18 @@ const Matches = () => {
   return (
     <div className="min-h-screen bg-background px-4 sm:px-6 py-8">
       {/* Back Arrow */}
-      <button
-        onClick={() => navigate(-1)}
-        className="mb-6 p-2 hover:bg-muted rounded-full transition-colors"
-      >
-        <ArrowLeft className="w-6 h-6" />
-      </button>
+      <BackButton
+        fallbackPath="/home"
+        size="icon"
+        className="mb-6 h-10 w-10"
+      />
 
       <div className="max-w-md mx-auto">
         {/* Card Stack Container */}
-        <div className="relative h-[500px] sm:h-[600px] mb-6">
+        <div
+          className="relative mb-6"
+          style={{ minHeight: "clamp(540px, 75vh, 680px)" }}
+        >
           {profiles.slice(currentIndex, currentIndex + 3).map((profile, index) => (
             <SwipeCard
               key={profile.id}

@@ -17,9 +17,9 @@ import {
   Search,
   User,
   Calendar as CalendarIcon,
-  ArrowLeft,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import BackButton from "@/components/BackButton";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -35,24 +35,28 @@ const Home = () => {
 
   const events = [
     {
+      id: "1",
       title: "Coffee & Chat",
       date: "Sat, Nov 25, 10:00 AM",
       location: "The Grind Café",
       image: "/event-placeholder.svg",
     },
     {
+      id: "2",
       title: "Book Club",
       date: "Sun, Nov 26, 3:00 PM",
       location: "Central Library",
       image: "/event-placeholder.svg",
     },
     {
+      id: "3",
       title: "Sunrise Hike",
       date: "Mon, Nov 27, 6:00 AM",
       location: "Ridge Trailhead",
       image: "/placeholder.svg",
     },
     {
+      id: "4",
       title: "Art Walk",
       date: "Tue, Nov 28, 5:30 PM",
       location: "Downtown",
@@ -92,9 +96,11 @@ const Home = () => {
       {/* Header + Search */}
       <div className="sticky top-0 z-10 bg-background border-b border-border px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between mb-3">
-          <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
-            <ArrowLeft className="w-6 h-6" />
-          </button>
+          <BackButton
+            fallbackPath="/"
+            size="icon"
+            className="h-10 w-10"
+          />
           <h1 className="text-xl font-bold">Connective</h1>
           <Avatar
             className="w-10 h-10 cursor-pointer"
@@ -236,9 +242,18 @@ const Home = () => {
                           <p className="text-sm text-muted-foreground mb-4">
                             {event.location}
                           </p>
-                          <Button className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold">
-                            Join Event
-                          </Button>
+                          <div className="flex flex-col sm:flex-row gap-2">
+                            <Button
+                              variant="outline"
+                              className="w-full sm:flex-1 rounded-full border-[#E8B956]/60 text-[#8c6a17] hover:bg-[#E8B956]/10 hover:text-[#8c6a17]"
+                              onClick={() => navigate(`/events/${event.id}`)}
+                            >
+                              View Details
+                            </Button>
+                            <Button className="w-full sm:flex-1 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold">
+                              Join Event
+                            </Button>
+                          </div>
                         </CardContent>
                       </Card>
                     </CarouselItem>
@@ -255,7 +270,7 @@ const Home = () => {
       {/* Floating Host Event Button */}
       <Button
         className="fixed bottom-20 sm:bottom-24 right-4 sm:right-6 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal shadow-lg flex items-center gap-2 h-12 sm:h-auto px-4 sm:px-6 text-sm sm:text-base"
-        onClick={() => navigate("/home")}
+        onClick={() => navigate("/host/create-event")}
       >
         <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
         <span className="hidden xs:inline">Host Event</span>

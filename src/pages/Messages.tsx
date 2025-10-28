@@ -2,10 +2,11 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MoreVertical, Shield, Clock, Phone, Video } from "lucide-react";
+import { MoreVertical, Shield, Clock, Phone, Video } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { MessageInput } from "@/components/MessageInput";
 import { sampleEvents, type EventItem } from "@/lib/events";
+import BackButton from "@/components/BackButton";
 
 interface Message {
   id: number;
@@ -32,7 +33,6 @@ const Messages = () => {
     if (!groupEvent) {
       return [];
     }
-
     return [groupEvent.host, ...groupEvent.participants];
   }, [groupEvent]);
 
@@ -80,6 +80,86 @@ const Messages = () => {
     scrollToBottom();
   }, [messages]);
 
+  const dynamicSuggestions = useMemo(() => {
+    const suggestions: string[] = [];
+    const baseSuggestions = groupEvent
+      ? [
+          `Ask if anyone wants to coordinate rides for ${groupEvent.title}`,
+          `Share what you're most excited about for ${groupEvent.title}`,
+          "Check if there are any last-minute updates for the event",
+        ]
+      : [
+          "Ask about their day to keep things friendly",
+          "Suggest a time that works for you",
+          "Share something personal to build rapport",
+        ];
+
+    const addUnique = (items: string[]) => {
+      items.forEach((item) => {
+        if (item && !suggestions.includes(item)) {
+          suggestions.push(item);
+        }
+      });
+    };
+
+    const lastIncomingMessage = [...messages].reverse().find((msg) => !msg.isMine);
+
+    if (groupEvent) {
+      addUnique([
+        `Ask who else is bringing friends to ${groupEvent.title}`,
+        `Coordinate arrival times for ${groupEvent.title}`,
+      ]);
+    }
+
+    if (lastIncomingMessage) {
+      const content = lastIncomingMessage.content.toLowerCase();
+
+      if (content.includes("coffee")) {
+        addUnique([
+          "That sounds great! What time works best for you?",
+          "Do you have a favorite coffee spot in mind?",
+          "Should we invite anyone else to join us?",
+        ]);
+      }
+
+      if (content.includes("weekend")) {
+        addUnique([
+          "Any fun plans lined up for the weekend?",
+          "Maybe we could plan something together this weekend!",
+        ]);
+      }
+
+      if (content.includes("meet") || content.includes("hang")) {
+        addUnique([
+          "I'm free this evening—does that work for you?",
+          "Want to pick a spot together?",
+        ]);
+      }
+
+      if (content.includes("plan") || content.includes("schedule")) {
+        addUnique([
+          "Let's set a time that works for both of us.",
+          "I can send over a quick calendar invite if that's easier.",
+        ]);
+      }
+
+      if (lastIncomingMessage.content.includes("?")) {
+        addUnique([
+          "Here's what works best for me...",
+          "Great question! Here's my thoughts...",
+        ]);
+      }
+    }
+
+    if (!suggestions.length) {
+      addUnique(baseSuggestions);
+    }
+
+    addUnique(baseSuggestions);
+
+    return suggestions.slice(0, 5);
+  }, [messages, groupEvent]);
+
   const handleSendMessage = (message: string) => {
     const newMessage: Message = {
       id: messages.length + 1,
@@ -105,9 +185,12 @@ const Messages = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <div className="bg-card border-b border-border px-3 sm:px-4 py-3 flex items-center gap-2 sm:gap-3">
-        <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full transition-colors">
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+        <BackButton
+          fallbackPath="/home"
+          size="icon"
+          className="h-10 w-10 rounded-full"
+          ariaLabel="Back to previous page"
+        />
 
         {groupEvent ? (
           <>
@@ -123,7 +206,9 @@ const Messages = () => {
                 ))}
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-sm sm:text-base font-semibold leading-tight truncate">{groupEvent.title}</h1>
+                <h1 className="text-sm sm:text-base font-semibold leading-tight truncate">
+                  {groupEvent.title}
+                </h1>
                 <p className="text-xs text-muted-foreground truncate">
                   Event group chat · {groupEvent.participants.length + 1} members
                 </p>
@@ -211,6 +296,7 @@ const Messages = () => {
       <MessageInput
         onSendMessage={handleSendMessage}
         onSelectIcebreaker={handleSelectIcebreaker}
+        suggestions={dynamicSuggestions}
       />
     </div>
   );

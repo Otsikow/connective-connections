@@ -16,13 +16,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  ArrowLeft,
   Shield,
   Mail,
   Users,
   Settings,
   Send,
 } from "lucide-react";
+import BackButton from "@/components/BackButton";
 import {
   Table,
   TableBody,
@@ -237,12 +237,11 @@ const Admin = () => {
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <div className="bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-        <button
-          onClick={() => navigate(-1)}
-          className="p-2 hover:bg-muted rounded-full"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </button>
+        <BackButton
+          fallbackPath="/home"
+          size="icon"
+          className="h-10 w-10"
+        />
         <h1 className="text-lg font-semibold flex items-center gap-2">
           <Shield className="w-5 h-5" /> Admin Dashboard
         </h1>
