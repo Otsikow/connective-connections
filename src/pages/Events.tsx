@@ -1,3 +1,4 @@
+import { ChangeEvent, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -95,16 +96,46 @@ const upcomingEvents = [
 
 const Events = () => {
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredEvents = useMemo(() => {
+    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+
+    if (!normalizedSearchTerm) {
+      return upcomingEvents;
+    }
+
+    return upcomingEvents.filter((event) => {
+      const searchableContent = [
+        event.title,
+        event.location,
+        event.date,
+        event.tags.join(" "),
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return searchableContent.includes(normalizedSearchTerm);
+    });
+  }, [searchTerm]);
+
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const handleClearSearch = () => {
+    setSearchTerm("");
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-br from-primary/5 via-background to-background">
-        <BackButton
-          fallbackPath="/home"
-          size="icon"
-          className="absolute left-4 top-4 bg-background/80 border border-border/60 text-foreground shadow-sm backdrop-blur-sm hover:bg-muted"
-          ariaLabel="Go back"
-        />
+        <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-br from-primary/5 via-background to-background">
+          <BackButton
+            fallbackPath="/home"
+            size="icon"
+            className="absolute left-4 top-4 z-10 bg-background/80 border border-border/60 text-foreground shadow-sm backdrop-blur-sm hover:bg-muted"
+            ariaLabel="Go back"
+          />
         <div className="absolute inset-y-0 -right-32 hidden md:block opacity-20 pointer-events-none">
           <div className="h-full w-72 rounded-full bg-primary blur-3xl" />
         </div>
@@ -126,10 +157,20 @@ const Events = () => {
                 Explore gatherings hosted by community builders, tastemakers, and leaders near you. Search by vibe, interest, or neighborhood to discover your next great connection.
               </p>
               <div className="flex flex-col gap-4 sm:flex-row">
-                <div className="relative flex-1">
+                <form
+                  className="relative flex-1"
+                  role="search"
+                  onSubmit={(event) => event.preventDefault()}
+                >
                   <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                  <Input className="pl-10" placeholder="Search for coffee, yoga, tech…" />
-                </div>
+                  <Input
+                    className="pl-10"
+                    placeholder="Search for coffee, yoga, tech…"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    aria-label="Search experiences"
+                  />
+                </form>
                 <Button variant="outline" className="gap-2 rounded-full">
                   <Filter className="h-4 w-4" />
                   Filters
@@ -233,17 +274,32 @@ const Events = () => {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {upcomingEvents.map((event, index) => (
-            <motion.div
-              key={event.id}
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.35, delay: index * 0.05 }}
-            >
-              <Card
-                className="group h-full border-border/60 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
-                onClick={() => navigate(`/events/${event.id}`)}
+          {filteredEvents.length === 0 ? (
+            <Card className="md:col-span-2 xl:col-span-3 border-dashed border-border/70">
+              <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold text-foreground">No experiences match your search</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Try a different keyword or adjust your filters to discover more curated connections.
+                  </p>
+                </div>
+                <Button variant="secondary" className="rounded-full" onClick={handleClearSearch}>
+                  Clear search
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            filteredEvents.map((event, index) => (
+              <motion.div
+                key={event.id}
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.35, delay: index * 0.05 }}
+              >
+                <Card
+                  className="group h-full border-border/60 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
+                  onClick={() => navigate(`/events/${event.id}`)}
               >
                 <div className="h-40 overflow-hidden rounded-t-xl bg-muted">
                   <img
@@ -284,7 +340,8 @@ const Events = () => {
                 </CardContent>
               </Card>
             </motion.div>
-          ))}
+            ))
+          )}
         </div>
       </section>
 
