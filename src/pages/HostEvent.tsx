@@ -25,6 +25,7 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
+import BackButton from "@/components/BackButton";
 
 const vibeTags = [
   "Cozy", "High-Energy", "Thoughtful", "Hands-on", "Outdoors", "Wellness",
@@ -82,6 +83,8 @@ const HostEvent = () => {
   const handleBack = () => {
     if (step > 1) {
       setStep((prev) => prev - 1);
+    } else {
+      navigate(-1);
     }
   };
 
@@ -102,14 +105,18 @@ const HostEvent = () => {
         className="mx-auto flex w-full max-w-4xl flex-col gap-6"
       >
         <div className="flex items-center justify-between">
-          <Button
-            variant="ghost"
+          <BackButton
+            fallbackPath="/host-dashboard"
             className="gap-2 text-muted-foreground"
-            onClick={() => navigate(-1)}
+            onClick={(event) => {
+              if (step > 1) {
+                event.preventDefault();
+                handleBack();
+              }
+            }}
           >
-            <ArrowLeft className="h-4 w-4" />
             Back
-          </Button>
+          </BackButton>
           <Badge className="rounded-full bg-primary/10 text-primary">
             Host flow
           </Badge>

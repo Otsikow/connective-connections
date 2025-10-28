@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Mail, Lock, ArrowLeft, Sparkles } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Sparkles } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Separator } from "@/components/ui/separator";
+import BackButton from "@/components/BackButton";
 
 const featureHighlights = [
   "Curated in-person events",
@@ -107,13 +108,13 @@ const Login = () => {
         >
           <div className="mx-auto w-full max-w-md rounded-3xl border border-black/5 bg-white/90 p-8 shadow-xl backdrop-blur">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <button
-                onClick={() => navigate(-1)}
-                className="flex items-center gap-1 rounded-full px-3 py-1 transition-colors hover:bg-muted"
+              <BackButton
+                fallbackPath="/"
+                size="sm"
+                className="gap-1 rounded-full px-3"
               >
-                <ArrowLeft className="h-4 w-4" />
                 Back
-              </button>
+              </BackButton>
             </div>
 
             <div className="mt-4">

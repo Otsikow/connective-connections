@@ -34,11 +34,11 @@ import {
   TrendingUp,
   Users,
   MessageSquare,
-  ArrowLeft,
   Clock,
   MapPin,
   Star,
 } from "lucide-react";
+import BackButton from "@/components/BackButton";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -169,12 +169,11 @@ const Dashboard = () => {
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-10">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-3">
-            <button
-              onClick={() => navigate(-1)}
-              className="rounded-full border border-border/60 p-2 text-muted-foreground transition-colors hover:bg-muted"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
+            <BackButton
+              fallbackPath="/host-dashboard"
+              size="icon"
+              className="h-10 w-10 border border-border/60 text-muted-foreground hover:bg-muted"
+            />
             <div>
               <p className="text-sm font-medium text-muted-foreground">Host Dashboard</p>
               <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">

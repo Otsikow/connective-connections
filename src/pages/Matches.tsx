@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Heart, X } from "lucide-react";
+import { Heart, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SwipeCard } from "@/components/SwipeCard";
+import BackButton from "@/components/BackButton";
 
 interface Profile {
   id: string;
@@ -124,12 +125,11 @@ const Matches = () => {
   return (
     <div className="min-h-screen bg-background px-4 sm:px-6 py-8">
       {/* Back Arrow */}
-      <button
-        onClick={() => navigate(-1)}
-        className="mb-6 p-2 hover:bg-muted rounded-full transition-colors"
-      >
-        <ArrowLeft className="w-6 h-6" />
-      </button>
+      <BackButton
+        fallbackPath="/home"
+        size="icon"
+        className="mb-6 h-10 w-10"
+      />
 
       <div className="max-w-md mx-auto">
         {/* Card Stack Container */}

@@ -10,11 +10,11 @@ import {
   Users,
   Star,
   MessageCircle,
-  ArrowLeft,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import BackButton from "@/components/BackButton";
 
 interface Event {
   id: string;
@@ -89,14 +89,13 @@ const EventDetail = () => {
     >
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background border-b border-border px-4 sm:px-6 py-3 flex items-center justify-between">
-        <Button
-          variant="ghost"
+        <BackButton
+          fallbackPath="/events"
           size="sm"
           className="flex items-center gap-2 text-muted-foreground"
-          onClick={() => navigate(-1)}
         >
-          <ArrowLeft className="h-4 w-4" /> Back
-        </Button>
+          Back
+        </BackButton>
         <h1 className="text-lg sm:text-xl font-bold">Event Details</h1>
         <div />
       </div>

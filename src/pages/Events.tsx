@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, Filter, MapPin, Search, Users } from "lucide-react";
+import BackButton from "@/components/BackButton";
 
 const eventCategories = [
   { label: "Social Mixers", count: 18 },
@@ -98,6 +99,12 @@ const Events = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-br from-primary/5 via-background to-background">
+        <BackButton
+          fallbackPath="/home"
+          size="icon"
+          className="absolute left-4 top-4 bg-background/80 border border-border/60 text-foreground shadow-sm backdrop-blur-sm hover:bg-muted"
+          ariaLabel="Go back"
+        />
         <div className="absolute inset-y-0 -right-32 hidden md:block opacity-20 pointer-events-none">
           <div className="h-full w-72 rounded-full bg-primary blur-3xl" />
         </div>

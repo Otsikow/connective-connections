@@ -8,11 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import { 
-  ArrowLeft, 
-  Camera, 
-  Upload, 
-  X, 
+import {
+  Camera,
+  Upload,
+  X,
   Check,
   User,
   MapPin,
@@ -25,6 +24,7 @@ import {
   Mail
 } from "lucide-react";
 import { toast } from "sonner";
+import BackButton from "@/components/BackButton";
 
 const INTEREST_OPTIONS = [
   "Sports", "Music", "Art", "Books", "Movies", "Gaming", 
@@ -161,14 +161,6 @@ const ProfileSetup = () => {
     }
   };
 
-  const handleBack = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    } else {
-      navigate(-1);
-    }
-  };
-
   const sendVerificationEmail = () => {
     // Simulate email verification
     toast.success("Verification email sent! Check your inbox.");
@@ -184,12 +176,18 @@ const ProfileSetup = () => {
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
-          <button
-            onClick={handleBack}
-            className="p-2 hover:bg-muted rounded-full transition-colors"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </button>
+          <BackButton
+            fallbackPath="/onboarding"
+            size="icon"
+            className="h-10 w-10"
+            ariaLabel="Go back"
+            onClick={(event) => {
+              if (currentStep > 1) {
+                event.preventDefault();
+                setCurrentStep((step) => Math.max(1, step - 1));
+              }
+            }}
+          />
           <span className="text-sm font-medium text-muted-foreground">
             Step {currentStep} of {totalSteps}
           </span>
