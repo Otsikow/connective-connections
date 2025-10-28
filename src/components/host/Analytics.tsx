@@ -38,11 +38,37 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+type TrendDatum = Record<string, number | string>;
+
+interface EarningsDatum extends TrendDatum {
+  month: string;
+  earnings: number;
+  events: number;
+}
+
+interface AttendanceDatum extends TrendDatum {
+  event: string;
+  attended: number;
+  registered: number;
+  rate: number;
+}
+
+interface RatingDatum extends TrendDatum {
+  rating: string;
+  count: number;
+  percentage: number;
+}
+
+interface EventTypeDatum extends TrendDatum {
+  name: string;
+  value: number;
+}
+
 const Analytics = () => {
   const [timeRange, setTimeRange] = useState("month");
 
   // Mock data for earnings over time
-  const earningsData = [
+  const earningsData: EarningsDatum[] = [
     { month: "May", earnings: 3200, events: 8 },
     { month: "Jun", earnings: 3800, events: 10 },
     { month: "Jul", earnings: 4200, events: 11 },
@@ -52,7 +78,7 @@ const Analytics = () => {
   ];
 
   // Mock data for attendance rate
-  const attendanceData = [
+  const attendanceData: AttendanceDatum[] = [
     { event: "Wine Tasting", attended: 22, registered: 25, rate: 88 },
     { event: "Cooking Class", attended: 18, registered: 20, rate: 90 },
     { event: "Yacht Party", attended: 45, registered: 50, rate: 90 },
@@ -61,7 +87,7 @@ const Analytics = () => {
   ];
 
   // Mock data for ratings distribution
-  const ratingsData = [
+  const ratingsData: RatingDatum[] = [
     { rating: "5 Stars", count: 145, percentage: 58 },
     { rating: "4 Stars", count: 75, percentage: 30 },
     { rating: "3 Stars", count: 20, percentage: 8 },
@@ -70,19 +96,32 @@ const Analytics = () => {
   ];
 
   // Mock data for event type distribution
-  const eventTypeData = [
+  const eventTypeData: EventTypeDatum[] = [
     { name: "Social", value: 35 },
     { name: "Learning", value: 25 },
     { name: "Outdoor", value: 20 },
     { name: "Entertainment", value: 20 },
   ];
 
-  const COLORS = ["#8b5cf6", "#06b6d4", "#10b981", "#f59e0b"];
+  const COLORS = ["#8b5cf6", "#06b6d4", "#10b981", "#f59e0b"] as const;
 
-  const calculateTrend = (data: any[], key: string) => {
-    const current = data[data.length - 1][key];
-    const previous = data[data.length - 2][key];
-    const change = ((current - previous) / previous) * 100;
+  const calculateTrend = <K extends string>(data: TrendDatum[], key: K) => {
+    if (data.length < 2) {
+      return 0;
+    }
+
+    const currentValue = data[data.length - 1][key];
+    const previousValue = data[data.length - 2][key];
+
+    if (
+      typeof currentValue !== "number" ||
+      typeof previousValue !== "number" ||
+      previousValue === 0
+    ) {
+      return 0;
+    }
+
+    const change = ((currentValue - previousValue) / previousValue) * 100;
     return change;
   };
 
@@ -276,7 +315,7 @@ const Analytics = () => {
                     border: "1px solid hsl(var(--border))",
                     borderRadius: "6px",
                   }}
-                  formatter={(value: any, name: string) =>
+                  formatter={(value: number | string, name: string) =>
                     name === "rate"
                       ? [`${value}%`, "Attendance Rate"]
                       : [value, name]

@@ -152,11 +152,15 @@ export const CreateGroupDialog = ({ open, onOpenChange, onGroupCreated }: Create
       if (onGroupCreated) {
         onGroupCreated();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error creating group:", error);
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to create group. Please try again.";
       toast({
         title: "Error",
-        description: error.message || "Failed to create group. Please try again.",
+        description: message,
         variant: "destructive"
       });
     } finally {

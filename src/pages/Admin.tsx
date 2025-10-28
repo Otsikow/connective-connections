@@ -189,12 +189,13 @@ const Admin = () => {
       toast({ title: "Success", description: data.message || "Emails sent!" });
       setEmailSubject("");
       setEmailMessage("");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Bulk email error:", err);
+      const description =
+        err instanceof Error ? err.message : "Failed to send emails";
       toast({
         title: "Error",
-        description:
-          err instanceof Error ? err.message : "Failed to send emails",
+        description,
         variant: "destructive",
       });
     } finally {

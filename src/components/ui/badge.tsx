@@ -36,7 +36,7 @@ function Badge({ className, variant, animated = false, ...props }: BadgeProps) {
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       transition={{ type: "spring", stiffness: 500, damping: 25 }}
-      {...(props as any)}
+      {...(props as React.ComponentProps<typeof motion.div>)}
     />
   );
 }

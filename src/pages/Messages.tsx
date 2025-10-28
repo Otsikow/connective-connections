@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MoreVertical, Shield, Clock, Phone, Video } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { MessageInput } from "@/components/MessageInput";
-import { sampleEvents } from "@/lib/events";
+import { sampleEvents, type EventItem } from "@/lib/events";
 
 interface Message {
   id: number;
@@ -25,6 +25,16 @@ const Messages = () => {
 
   const groupId = searchParams.get("group");
   const groupEvent = useMemo(() => sampleEvents.find((e) => e.id === groupId), [groupId]);
+
+  type ParticipantInfo = EventItem["participants"][number] | EventItem["host"];
+
+  const displayedParticipants = useMemo<ParticipantInfo[]>(() => {
+    if (!groupEvent) {
+      return [];
+    }
+
+    return [groupEvent.host, ...groupEvent.participants];
+  }, [groupEvent]);
 
   // Default 1-on-1 chat messages
   const defaultMessages: Message[] = [
@@ -103,10 +113,12 @@ const Messages = () => {
           <>
             <div className="flex items-center gap-3 flex-1">
               <div className="flex -space-x-3">
-                {[groupEvent.host, ...groupEvent.participants].slice(0, 4).map((p, idx) => (
-                  <Avatar key={idx} className="w-8 h-8 ring-2 ring-background">
-                    <AvatarImage src={(p as any).avatarUrl || "/placeholder.svg"} />
-                    <AvatarFallback>{(p as any).name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                {displayedParticipants.slice(0, 4).map((participant, idx) => (
+                  <Avatar key={participant.id ?? idx} className="w-8 h-8 ring-2 ring-background">
+                    <AvatarImage src={participant.avatarUrl || "/placeholder.svg"} />
+                    <AvatarFallback>
+                      {participant.name.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
                 ))}
               </div>
