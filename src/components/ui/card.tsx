@@ -24,7 +24,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
         whileHover={hoverScale ? { scale: 1.02, y: -4 } : undefined}
-        {...(props as any)}
+        {...(props as React.ComponentProps<typeof motion.div>)}
       />
     );
   }
