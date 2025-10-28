@@ -25,7 +25,6 @@ import {
   Calendar as CalendarIcon,
   MapPin,
   Users,
-  Calendar,
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
 
@@ -258,7 +257,9 @@ const Home = () => {
         {/* Events Tab */}
         <TabsContent value="events" className="mt-6 space-y-6">
           <section>
-            <h2 className="text-xl sm:text-2xl font-bold mb-3">Upcoming Events</h2>
+            <h2 className="text-xl sm:text-2xl font-bold mb-3">
+              Upcoming Events
+            </h2>
             <Carousel className="w-full">
               <CarouselContent>
                 {events.map((event, index) => (
@@ -273,7 +274,7 @@ const Home = () => {
                           alt={event.title}
                           className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                       </div>
                       <CardContent className="p-4">
                         <h3 className="font-semibold text-lg mb-2">
@@ -343,7 +344,7 @@ const Home = () => {
           className="flex flex-col items-center gap-1 text-muted-foreground"
           onClick={() => navigate("/community")}
         >
-          <Search size={24} />
+          <Users size={24} />
           <span className="text-xs">Community</span>
         </button>
         <button

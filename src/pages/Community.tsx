@@ -1,191 +1,223 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  Users,
-  Star,
-  MessageCircle,
-} from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
-import BackButton from "@/components/BackButton";
+import { Home, MessageSquare, Search, User, Users, Crown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
-interface Event {
-  id: string;
-  title: string;
-  description: string;
-  location: string;
-  date: string;
-  time: string;
-  image_url: string | null;
-  host_name: string;
-  attendees_count?: number;
-  rating?: number;
-  category?: string;
-}
-
-const EventDetail = () => {
-  const { id } = useParams();
+const Community = () => {
   const navigate = useNavigate();
-  const [event, setEvent] = useState<Event | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isPremium] = useState(true); // Enables Create Group button for premium users
 
-  const fetchEvent = async () => {
-    try {
-      setIsLoading(true);
-      const { data, error } = await supabase
-        .from("events")
-        .select("*")
-        .eq("id", id)
-        .single();
+  const groups = [
+    {
+      id: 1,
+      name: "Downtown Book Club",
+      category: "Book Club",
+      description:
+        "Monthly discussions on contemporary fiction. Currently reading 'The Midnight Library'. Join us for coffee and conversation!",
+      members: 124,
+      image: "/placeholder.svg",
+      meetingTime: "Every 2nd Saturday, 3:00 PM",
+    },
+    {
+      id: 2,
+      name: "Summit Seekers Hiking",
+      category: "Hiking Team",
+      description:
+        "Weekend warriors exploring local trails. All fitness levels welcome. We provide carpools and gear advice for beginners.",
+      members: 89,
+      image: "/placeholder.svg",
+      meetingTime: "Sundays, 7:00 AM",
+    },
+    {
+      id: 3,
+      name: "Spanish Language Exchange",
+      category: "Language Swap",
+      description:
+        "Practice español in a friendly environment. Native speakers and learners meet for conversational practice over tapas.",
+      members: 156,
+      image: "/placeholder.svg",
+      meetingTime: "Wednesdays, 6:30 PM",
+    },
+    {
+      id: 4,
+      name: "French Conversation Circle",
+      category: "Language Swap",
+      description:
+        "Bonjour! Improve your French through casual conversation. All levels welcome, from beginners to advanced speakers.",
+      members: 92,
+      image: "/placeholder.svg",
+      meetingTime: "Thursdays, 7:00 PM",
+    },
+    {
+      id: 5,
+      name: "Mystery & Thriller Readers",
+      category: "Book Club",
+      description:
+        "For fans of suspense, crime novels, and psychological thrillers. Share theories and recommendations with fellow sleuths.",
+      members: 78,
+      image: "/placeholder.svg",
+      meetingTime: "Every 3rd Sunday, 4:00 PM",
+    },
+    {
+      id: 6,
+      name: "Sunrise Trail Runners",
+      category: "Hiking Team",
+      description:
+        "Early morning trail running group. We focus on building endurance and exploring scenic routes. Coffee stop included!",
+      members: 65,
+      image: "/placeholder.svg",
+      meetingTime: "Tuesdays & Saturdays, 6:00 AM",
+    },
+    {
+      id: 7,
+      name: "Italian Culture & Conversation",
+      category: "Language Swap",
+      description:
+        "Parliamo italiano! Learn Italian while discovering Italian culture, cuisine, and traditions. Beginner-friendly sessions.",
+      members: 103,
+      image: "/placeholder.svg",
+      meetingTime: "Mondays, 7:30 PM",
+    },
+    {
+      id: 8,
+      name: "Women's Mountain Hiking",
+      category: "Hiking Team",
+      description:
+        "Empowering women through mountain adventures. Build confidence, fitness, and lasting friendships on challenging trails.",
+      members: 141,
+      image: "/placeholder.svg",
+      meetingTime: "1st & 3rd Sunday, 8:00 AM",
+    },
+  ];
 
-      if (error) throw error;
-      setEvent(data);
-    } catch (error) {
-      console.error("Error loading event details:", error);
-    } finally {
-      setIsLoading(false);
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case "Book Club":
+        return "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300";
+      case "Hiking Team":
+        return "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300";
+      case "Language Swap":
+        return "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300";
+      default:
+        return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
     }
   };
 
-  useEffect(() => {
-    if (id) fetchEvent();
-  }, [id]);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (!event) {
-    return (
-      <div className="text-center py-20 text-muted-foreground">
-        <h2 className="text-xl font-semibold mb-2">Event not found</h2>
-        <p className="text-sm mb-6">
-          The event you’re looking for might have been removed or is unavailable.
-        </p>
-        <Button onClick={() => navigate("/events")} className="rounded-full">
-          Go Back
-        </Button>
-      </div>
-    );
-  }
-
   return (
-    <motion.div
-      className="min-h-screen bg-background text-foreground pb-20"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-    >
+    <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-background border-b border-border px-4 sm:px-6 py-3 flex items-center justify-between">
-        <BackButton
-          fallbackPath="/events"
-          size="sm"
-          className="flex items-center gap-2 text-muted-foreground"
+      <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Users className="text-[#E8B956]" size={24} />
+          <h1 className="text-xl font-bold">Community Groups</h1>
+        </div>
+        <Avatar className="w-10 h-10 cursor-pointer" onClick={() => navigate("/profile")}>
+          <AvatarImage src="/placeholder.svg" />
+          <AvatarFallback>JD</AvatarFallback>
+        </Avatar>
+      </div>
+
+      <div className="px-6 py-6 space-y-6">
+        {/* Premium Create Group Button */}
+        {isPremium && (
+          <Button className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold h-12 flex items-center justify-center gap-2">
+            <Crown size={20} />
+            Create a Group
+          </Button>
+        )}
+
+        {/* Groups Info */}
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            {groups.length} local groups near you
+          </p>
+        </div>
+
+        {/* Groups List */}
+        <div className="space-y-4">
+          {groups.map((group) => (
+            <Card key={group.id} className="border-border overflow-hidden">
+              {/* Group Image */}
+              <div className="h-48 bg-gradient-to-br from-[#E8B956]/20 to-[#E8B956]/5 relative flex items-center justify-center">
+                <Users size={64} className="text-[#E8B956]/30" />
+              </div>
+
+              <CardContent className="p-4 space-y-3">
+                {/* Group Header */}
+                <div className="space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-bold text-lg leading-tight">{group.name}</h3>
+                    <Badge className={getCategoryColor(group.category)} variant="secondary">
+                      {group.category}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Users size={16} />
+                    <span>{group.members} members</span>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {group.description}
+                </p>
+
+                {/* Meeting Info */}
+                <div className="text-sm font-medium text-foreground">
+                  📅 {group.meetingTime}
+                </div>
+
+                {/* Join Chat Button */}
+                <Button className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold">
+                  <MessageSquare size={18} className="mr-2" />
+                  Join Chat
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-6 py-3 flex items-center justify-around z-10">
+        <button
+          className="flex flex-col items-center gap-1 text-muted-foreground"
+          onClick={() => navigate("/home")}
         >
-          Back
-        </BackButton>
-        <h1 className="text-lg sm:text-xl font-bold">Event Details</h1>
-        <div />
-      </div>
-
-      {/* Hero Image */}
-      <div
-        className="relative h-60 sm:h-80 bg-cover bg-center"
-        style={{
-          backgroundImage: event.image_url
-            ? `url(${event.image_url})`
-            : "linear-gradient(to bottom right, #6366f1, #8b5cf6)",
-        }}
-      >
-        <div className="absolute inset-0 bg-black/30" />
-        <div className="absolute bottom-4 left-4 right-4 text-white">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-2">{event.title}</h2>
-          {event.category && (
-            <Badge variant="secondary" className="bg-white/20 text-white">
-              {event.category}
-            </Badge>
-          )}
-        </div>
-      </div>
-
-      <div className="px-4 sm:px-6 py-6 space-y-6">
-        {/* Event Info */}
-        <Card className="border-border shadow-sm">
-          <CardContent className="p-6 space-y-4">
-            <p className="text-muted-foreground leading-relaxed">
-              {event.description}
-            </p>
-            <div className="grid sm:grid-cols-2 gap-4 mt-4">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Calendar className="w-4 h-4 text-primary" />
-                <span>{new Date(event.date).toDateString()}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="w-4 h-4 text-primary" />
-                <span>{event.time}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <MapPin className="w-4 h-4 text-primary" />
-                <span>{event.location}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Users className="w-4 h-4 text-primary" />
-                <span>{event.attendees_count || 0} attending</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Host & Ratings */}
-        <Card className="border-border shadow-sm">
-          <CardContent className="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Hosted by</p>
-              <h3 className="text-lg font-semibold">{event.host_name}</h3>
-            </div>
-            <div className="flex items-center gap-1 text-yellow-500">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`h-5 w-5 ${
-                    i < (event.rating || 0)
-                      ? "fill-yellow-400"
-                      : "fill-muted text-muted"
-                  }`}
-                />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Button className="flex-1 bg-primary text-white rounded-full">
-            Join Event
-          </Button>
-          <Button
-            variant="outline"
-            className="flex-1 rounded-full gap-2 border-border"
-          >
-            <MessageCircle className="h-4 w-4" />
-            Message Host
-          </Button>
-        </div>
-      </div>
-    </motion.div>
+          <Home size={24} />
+          <span className="text-xs">Home</span>
+        </button>
+        <button
+          className="flex flex-col items-center gap-1 text-muted-foreground"
+          onClick={() => navigate("/messages")}
+        >
+          <MessageSquare size={24} />
+          <span className="text-xs">Messages</span>
+        </button>
+        <button className="flex flex-col items-center gap-1 text-[#E8B956]">
+          <Users size={24} />
+          <span className="text-xs font-medium">Community</span>
+        </button>
+        <button
+          className="flex flex-col items-center gap-1 text-muted-foreground"
+          onClick={() => navigate("/matches")}
+        >
+          <Search size={24} />
+          <span className="text-xs">Search</span>
+        </button>
+        <button
+          className="flex flex-col items-center gap-1 text-muted-foreground"
+          onClick={() => navigate("/profile")}
+        >
+          <User size={24} />
+          <span className="text-xs">Profile</span>
+        </button>
+      </nav>
+    </div>
   );
 };
 
-export default EventDetail;
+export default Community;
