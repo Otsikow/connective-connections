@@ -4,6 +4,7 @@ import type { Database } from "./types";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const SUPABASE_SITE_URL = import.meta.env.VITE_SUPABASE_SITE_URL;
 
 export const isSupabaseConfigured = Boolean(
   SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY,
@@ -36,6 +37,32 @@ const createStubQueryBuilder = () => {
   return builder;
 };
 
+const resolveSiteUrl = () => {
+  if (SUPABASE_SITE_URL) {
+    try {
+      return new URL(SUPABASE_SITE_URL).toString();
+    } catch (error) {
+      console.warn("supabase:invalid-site-url", error);
+    }
+  }
+
+  if (typeof window !== "undefined" && window.location?.origin) {
+    return window.location.origin;
+  }
+
+  return "http://localhost";
+};
+
+export const getSupabaseRedirectUrl = (path: string) => {
+  const base = resolveSiteUrl();
+  try {
+    return new URL(path, `${base.replace(/\/$/, "")}/`).toString();
+  } catch (error) {
+    console.warn("supabase:invalid-redirect-path", error);
+    return `${base.replace(/\/$/, "")}/${path.replace(/^\//, "")}`;
+  }
+};
+
 const createStubClient = (): SupabaseClient<Database> => {
   const error = createNotConfiguredError();
   const subscription = { unsubscribe: () => {} };
@@ -56,6 +83,10 @@ const createStubClient = (): SupabaseClient<Database> => {
       signInWithOAuth: async () => {
         throw error;
       },
+      exchangeCodeForSession: async () => ({
+        data: { session: null, user: null },
+        error,
+      }),
       signOut: async () => ({ error }),
     },
     from: () => builder,
