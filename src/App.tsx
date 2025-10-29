@@ -167,7 +167,7 @@ const AnimatedRoutes = () => {
           }
         />
         <Route
-          path="/host/create-event"
+          path="/host/event"
           element={
             <PageTransition>
               <HostEvent />

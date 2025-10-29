@@ -36,8 +36,7 @@ const Community = () => {
   const [groups, setGroups] = useState<GroupWithMembers[]>([]);
 
   const isSupabaseConfigured = Boolean(
-    import.meta.env.VITE_SUPABASE_URL &&
-      import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+    import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
   );
 
   const fetchGroups = useCallback(async () => {
@@ -48,7 +47,7 @@ const Community = () => {
       setGroups(fallbackGroups);
       toast({
         title: "Offline preview",
-        description: "Showing featured community groups while we finish setup.",
+        description: "Showing featured community groups while setup completes.",
       });
       setIsLoading(false);
       return;
@@ -76,7 +75,7 @@ const Community = () => {
       toast({
         title: "Offline preview",
         description:
-          "We couldn't load live groups, so we're showing featured communities instead.",
+          "We couldn't load live groups, showing featured communities instead.",
       });
     } finally {
       setIsLoading(false);
@@ -89,7 +88,6 @@ const Community = () => {
 
   const nextMeetingLabel = useCallback((nextMeeting: string | null) => {
     if (!nextMeeting) return "Next meeting to be announced";
-
     const date = new Date(nextMeeting);
     if (Number.isNaN(date.getTime())) return "Next meeting to be announced";
 
@@ -111,20 +109,12 @@ const Community = () => {
     const categoryStyles: Record<string, string> = {
       "Book Club":
         "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
-      "Books & Literature":
-        "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
       "Hiking Team":
-        "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-      "Outdoor & Adventure":
         "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
       "Language Swap":
         "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
-      "Language & Culture":
-        "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
       "Business & Networking":
         "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300",
-      "Arts & Photography":
-        "bg-rose-100 text-rose-700 dark:bg-rose-900 dark:text-rose-300",
       "Food & Cooking":
         "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300",
       "Sports & Fitness":
@@ -133,10 +123,6 @@ const Community = () => {
         "bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300",
       Music:
         "bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300",
-      Gaming:
-        "bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900 dark:text-fuchsia-300",
-      "Health & Wellness":
-        "bg-teal-100 text-teal-700 dark:bg-teal-900 dark:text-teal-300",
       Other:
         "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
     };
@@ -185,12 +171,9 @@ const Community = () => {
                 <Card key={`skeleton-${index}`} className="border-border overflow-hidden">
                   <Skeleton className="h-48 w-full" />
                   <CardContent className="p-4 space-y-3">
-                    <div className="space-y-2">
-                      <Skeleton className="h-6 w-3/4" />
-                      <Skeleton className="h-4 w-1/3" />
-                    </div>
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-4 w-1/3" />
                     <Skeleton className="h-20 w-full" />
-                    <Skeleton className="h-4 w-1/2" />
                     <Skeleton className="h-10 w-full rounded-full" />
                   </CardContent>
                 </Card>
@@ -200,7 +183,9 @@ const Community = () => {
 
           {!isLoading && errorMessage && (
             <Card className="border-destructive/20 bg-destructive/5">
-              <CardContent className="p-4 text-sm text-destructive">{errorMessage}</CardContent>
+              <CardContent className="p-4 text-sm text-destructive">
+                {errorMessage}
+              </CardContent>
             </Card>
           )}
 
@@ -231,44 +216,38 @@ const Community = () => {
                     />
                   </div>
                 ) : (
-                  <div className="h-48 bg-gradient-to-br from-[#E8B956]/20 to-[#E8B956]/5 relative flex items-center justify-center">
+                  <div className="h-48 bg-gradient-to-br from-[#E8B956]/20 to-[#E8B956]/5 flex items-center justify-center">
                     <Users size={64} className="text-[#E8B956]/30" />
                   </div>
                 )}
 
                 <CardContent className="p-4 space-y-4">
-                  {/* Group Header */}
-                  <div className="space-y-3">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="space-y-1">
-                        <h3 className="font-bold text-lg leading-tight">{group.name}</h3>
-                        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Users size={16} />
-                            {group.memberCount} member{group.memberCount === 1 ? "" : "s"}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <MapPin size={16} />
-                            {group.location}
-                          </span>
-                        </div>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="space-y-1">
+                      <h3 className="font-bold text-lg leading-tight">{group.name}</h3>
+                      <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Users size={16} />
+                          {group.memberCount} member{group.memberCount === 1 ? "" : "s"}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MapPin size={16} />
+                          {group.location}
+                        </span>
                       </div>
-                      <Badge className={getCategoryColor(group.category)} variant="secondary">
-                        {group.category}
-                      </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {group.description}
-                    </p>
+                    <Badge className={getCategoryColor(group.category)} variant="secondary">
+                      {group.category}
+                    </Badge>
                   </div>
 
-                  {/* Meeting Info */}
+                  <p className="text-sm text-muted-foreground">{group.description}</p>
+
                   <div className="flex items-center gap-2 text-sm font-medium text-foreground">
                     <Calendar size={16} />
                     {nextMeetingLabel(group.next_meeting)}
                   </div>
 
-                  {/* Join Chat Button */}
                   <Button
                     className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black font-semibold"
                     onClick={() => navigate(`/messages?community=${group.id}`)}
@@ -284,17 +263,11 @@ const Community = () => {
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-6 py-3 flex items-center justify-around z-10">
-        <button
-          className="flex flex-col items-center gap-1 text-muted-foreground"
-          onClick={() => navigate("/home")}
-        >
+        <button onClick={() => navigate("/home")} className="flex flex-col items-center gap-1 text-muted-foreground">
           <Home size={24} />
           <span className="text-xs">Home</span>
         </button>
-        <button
-          className="flex flex-col items-center gap-1 text-muted-foreground"
-          onClick={() => navigate("/messages")}
-        >
+        <button onClick={() => navigate("/messages")} className="flex flex-col items-center gap-1 text-muted-foreground">
           <MessageSquare size={24} />
           <span className="text-xs">Messages</span>
         </button>
@@ -302,17 +275,11 @@ const Community = () => {
           <Users size={24} />
           <span className="text-xs font-medium">Community</span>
         </button>
-        <button
-          className="flex flex-col items-center gap-1 text-muted-foreground"
-          onClick={() => navigate("/matches")}
-        >
+        <button onClick={() => navigate("/matches")} className="flex flex-col items-center gap-1 text-muted-foreground">
           <Search size={24} />
           <span className="text-xs">Search</span>
         </button>
-        <button
-          className="flex flex-col items-center gap-1 text-muted-foreground"
-          onClick={() => navigate("/profile")}
-        >
+        <button onClick={() => navigate("/profile")} className="flex flex-col items-center gap-1 text-muted-foreground">
           <User size={24} />
           <span className="text-xs">Profile</span>
         </button>
