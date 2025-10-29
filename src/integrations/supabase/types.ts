@@ -14,13 +14,134 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          id: string
+          created_at: string | null
+          updated_at: string | null
+          full_name: string | null
+          avatar_url: string | null
+          username: string | null
+          website: string | null
+          role: string | null
+          stripe_customer_id: string | null
+          subscription_tier: "basic" | "standard" | "pro"
+          monthly_connections: number
+          monthly_event_joins: number
+          subscription_expires: string | null
+        }
+        Insert: {
+          id: string
+          created_at?: string | null
+          updated_at?: string | null
+          full_name?: string | null
+          avatar_url?: string | null
+          username?: string | null
+          website?: string | null
+          role?: string | null
+          stripe_customer_id?: string | null
+          subscription_tier?: "basic" | "standard" | "pro"
+          monthly_connections?: number
+          monthly_event_joins?: number
+          subscription_expires?: string | null
+        }
+        Update: {
+          id?: string
+          created_at?: string | null
+          updated_at?: string | null
+          full_name?: string | null
+          avatar_url?: string | null
+          username?: string | null
+          website?: string | null
+          role?: string | null
+          stripe_customer_id?: string | null
+          subscription_tier?: "basic" | "standard" | "pro"
+          monthly_connections?: number
+          monthly_event_joins?: number
+          subscription_expires?: string | null
+        }
+      }
+      groups: {
+        Row: {
+          id: string
+          name: string
+          description: string
+          category: string
+          location: string
+          image_url: string | null
+          next_meeting: string | null
+          is_premium: boolean
+          creator_id: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description: string
+          category: string
+          location: string
+          image_url?: string | null
+          next_meeting?: string | null
+          is_premium?: boolean
+          creator_id: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string
+          category?: string
+          location?: string
+          image_url?: string | null
+          next_meeting?: string | null
+          is_premium?: boolean
+          creator_id?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      group_members: {
+        Row: {
+          id: string
+          group_id: string
+          user_id: string
+          role: string
+          joined_at: string
+        }
+        Insert: {
+          id?: string
+          group_id: string
+          user_id: string
+          role?: string
+          joined_at?: string
+        }
+        Update: {
+          id?: string
+          group_id?: string
+          user_id?: string
+          role?: string
+          joined_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_group_member_count: {
+        Args: {
+          group_id: string
+        }
+        Returns: number
+      }
+      is_admin: {
+        Args: {
+          user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
