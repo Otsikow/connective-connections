@@ -120,52 +120,52 @@ const Splash = () => {
   usePageTitle("Welcome to Connective Connections");
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-950 text-slate-100">
-      {/* Background gradients */}
-      <div className="absolute inset-0 -z-10 opacity-70">
-        <div className="absolute inset-y-0 left-1/2 h-[140%] w-[120%] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,_rgba(232,185,86,0.45),_transparent_65%)] blur-3xl" />
-        <div className="absolute top-0 right-0 h-72 w-72 rounded-full bg-[radial-gradient(circle,_rgba(89,55,209,0.55)_0%,_transparent_70%)] blur-3xl" />
-        <div className="absolute bottom-0 left-0 h-60 w-60 rounded-full bg-[radial-gradient(circle,_rgba(255,163,102,0.4)_0%,_transparent_70%)] blur-3xl" />
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-200 text-slate-900">
+      {/* Background accents */}
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -left-24 top-32 h-72 w-72 rounded-full bg-gradient-to-br from-indigo-200/70 via-sky-100 to-transparent blur-3xl" />
+        <div className="absolute right-24 top-16 h-80 w-80 rounded-full bg-gradient-to-br from-amber-200/80 via-orange-100 to-transparent blur-3xl" />
+        <div className="absolute bottom-[-6rem] right-[-4rem] h-[22rem] w-[22rem] rounded-full bg-gradient-to-br from-rose-200/60 via-pink-100 to-transparent blur-3xl" />
       </div>
 
       {/* Content wrapper */}
-      <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col px-6 pb-16 pt-8 sm:px-10 lg:px-16">
+      <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col px-6 pb-20 pt-10 sm:px-10 lg:px-16">
         {/* Header */}
         <header className="flex items-center justify-between">
           <Logo
             size="md"
             tagline="WHERE THE RIGHT PEOPLE MEET"
-            taglineClassName="text-[0.6rem] tracking-[0.5em] text-slate-200/80"
+            taglineClassName="text-[0.6rem] tracking-[0.5em] text-slate-500"
             className="scale-[0.92] sm:scale-100"
           />
-          <nav className="hidden items-center gap-8 text-sm font-medium text-slate-300 lg:flex">
+          <nav className="hidden items-center gap-8 text-sm font-medium text-slate-600 lg:flex">
             <button
-              className="transition hover:text-white"
+              className="transition hover:text-slate-900"
               onClick={() => navigate("/events")}
             >
               Events
             </button>
             <button
-              className="transition hover:text-white"
+              className="transition hover:text-slate-900"
               onClick={() => navigate("/community")}
             >
               Community
             </button>
             <button
-              className="transition hover:text-white"
+              className="transition hover:text-slate-900"
               onClick={() => navigate("/matches")}
             >
               Matching
             </button>
             <button
-              className="transition hover:text-white"
+              className="transition hover:text-slate-900"
               onClick={() => navigate("/login")}
             >
               Sign in
             </button>
             <button
               onClick={() => navigate("/signup")}
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 px-5 py-2 text-slate-900 shadow-lg shadow-amber-500/40 transition hover:shadow-xl hover:shadow-amber-400/50"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 px-5 py-2 text-slate-900 shadow-lg shadow-amber-300/60 transition hover:shadow-xl hover:shadow-amber-300"
             >
               Join Connective
               <ArrowRight className="h-4 w-4" />
@@ -173,36 +173,32 @@ const Splash = () => {
           </nav>
         </header>
 
-        {/* Main Hero */}
+        {/* Hero Section */}
         <main className="grid flex-1 gap-16 pt-20 lg:grid-cols-[minmax(0,1fr)_480px] lg:pt-28">
           <section className="max-w-2xl space-y-10">
             <div className="space-y-6">
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-amber-200/90">
+              <span className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-amber-700">
                 <Crown className="h-3.5 w-3.5" /> Pro perks unlocked
               </span>
-              <h1 className="text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
-                Elevate your connections experience with curated communities,
-                unforgettable events, and friends who get you.
+              <h1 className="text-4xl font-bold leading-tight text-slate-900 sm:text-5xl lg:text-6xl">
+                Elevate your connections experience with curated communities and unforgettable events.
               </h1>
-              <p className="text-lg text-slate-300 sm:text-xl">
-                Connective is the members-only platform designed to help leaders, creators, and connectors build meaningful
-                relationships in real life. Discover experiences tailored to your ambitions, then keep the momentum going with
-                dynamic chats and private groups.
+              <p className="text-lg text-slate-600 sm:text-xl">
+                Connective is the members-only platform designed to help leaders, creators, and connectors build meaningful relationships in real life. Discover experiences tailored to your ambitions and passions.
               </p>
             </div>
 
-            {/* CTA buttons */}
             <div className="flex flex-col gap-4 sm:flex-row">
               <button
                 onClick={() => navigate("/signup")}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 px-8 py-3 text-base font-semibold text-slate-900 shadow-lg shadow-amber-500/40 transition hover:scale-[1.02] hover:shadow-xl hover:shadow-amber-400/50"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 px-8 py-3 text-base font-semibold text-white shadow-lg shadow-indigo-200 transition hover:scale-[1.02] hover:shadow-xl hover:shadow-indigo-300"
               >
                 Start your membership
                 <ArrowRight className="h-5 w-5" />
               </button>
               <button
                 onClick={() => navigate("/host-dashboard")}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 px-8 py-3 text-base font-semibold text-white transition hover:border-white hover:bg-white/5"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 px-8 py-3 text-base font-semibold text-slate-800 transition hover:border-slate-400 hover:bg-slate-100"
               >
                 Host an experience
               </button>
@@ -212,202 +208,139 @@ const Splash = () => {
               {heroHighlights.map((item) => (
                 <div
                   key={item.title}
-                  className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-lg shadow-black/10 backdrop-blur"
+                  className="rounded-2xl border border-slate-200 bg-white/90 p-5 shadow-lg shadow-slate-100"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-300/20 text-amber-200">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
                       <item.icon className="h-5 w-5" />
                     </div>
-                    <p className="text-base font-semibold text-white">{item.title}</p>
+                    <p className="text-base font-semibold text-slate-900">
+                      {item.title}
+                    </p>
                   </div>
-                  <p className="mt-3 text-sm text-slate-300">{item.description}</p>
+                  <p className="mt-3 text-sm text-slate-600">
+                    {item.description}
+                  </p>
                 </div>
               ))}
             </div>
           </section>
 
-          {/* Visualized experience highlights */}
-          <section className="relative">
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/20 via-white/10 to-transparent blur-2xl" />
-            <div className="relative grid gap-5 rounded-3xl border border-white/10 bg-slate-900/60 p-6 shadow-2xl shadow-black/30 backdrop-blur-xl">
-              <div className="group relative overflow-hidden rounded-3xl border border-white/10 bg-slate-950/60 sm:col-span-2">
-                <img
-                  src={eventsImage}
-                  alt="Members gathered at an immersive Connective rooftop event"
-                  className="h-64 w-full object-cover transition duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
-                <div className="absolute inset-x-6 bottom-6 space-y-2 text-left">
-                  <span className="inline-flex items-center rounded-full bg-amber-400/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-slate-900">
-                    Events
-                  </span>
-                  <p className="text-xl font-semibold text-white">Immersive rooftop salons every week</p>
-                  <p className="text-sm text-slate-200">
-                    Secure your spot at curated gatherings that pair bold ideas with unforgettable venues.
-                  </p>
-                </div>
-              </div>
-
-              <div className="group relative overflow-hidden rounded-3xl border border-white/10 bg-slate-950/60 p-6">
-                <img
-                  src={connectionsImage}
-                  alt="Two new friends connecting through the Connective app"
-                  className="absolute inset-0 h-full w-full object-cover opacity-50 transition duration-700 group-hover:scale-110 group-hover:opacity-60"
-                />
-                <div className="relative space-y-3">
-                  <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-amber-200/90">
-                    Find friends
-                  </span>
-                  <p className="text-lg font-semibold text-white">Chemistry scores that match your vibe</p>
-                  <p className="text-sm text-slate-200">
-                    Swipe less, connect faster with intros curated around what matters to you.
-                  </p>
-                </div>
-              </div>
-
-              <div className="group relative overflow-hidden rounded-3xl border border-white/10 bg-slate-950/60 p-6">
-                <img
-                  src={connectionsImage}
-                  alt="Connective members chatting in a group thread"
-                  className="absolute inset-0 h-full w-full object-cover opacity-40 transition duration-700 group-hover:scale-110 group-hover:opacity-55"
-                />
-                <div className="relative space-y-3">
-                  <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-amber-200/90">
-                    Chats
-                  </span>
-                  <p className="text-lg font-semibold text-white">Keep the conversation flowing</p>
-                  <p className="text-sm text-slate-200">
-                    Drop into curated channels for travel hacks, deal flow, wellness rituals, and more.
-                  </p>
-                </div>
-              </div>
-
-              <div className="group relative overflow-hidden rounded-3xl border border-white/10 bg-slate-950/60 p-6 sm:col-span-2">
-                <img
-                  src={groupsImage}
-                  alt="A host facilitating a private Connective mastermind"
-                  className="absolute inset-0 h-full w-full object-cover opacity-50 transition duration-700 group-hover:scale-110 group-hover:opacity-60"
-                />
-                <div className="relative space-y-3">
-                  <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-amber-200/90">
-                    Groups
-                  </span>
-                  <p className="text-lg font-semibold text-white">Launch a space that feels like yours</p>
-                  <p className="text-sm text-slate-200">
-                    Host masterminds, creator labs, or neighborhood crews with tools that make moderating effortless.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-        </main>
-
-        <section className="mt-24 space-y-12">
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {capabilityCards.map((card) => (
-              <div
-                key={card.title}
-                className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/20 backdrop-blur"
-              >
-                <img
-                  src={card.image}
-                  alt={card.title}
-                  className="absolute inset-0 h-full w-full object-cover opacity-40 transition duration-700 group-hover:scale-110 group-hover:opacity-55"
-                />
-                <div className="relative flex h-full flex-col justify-between gap-6">
-                  <span className="inline-flex w-fit items-center rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-amber-200/90">
-                    {card.badge}
-                  </span>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-300/20 text-amber-200">
-                        <card.icon className="h-5 w-5" />
-                      </div>
-                      <h3 className="text-lg font-semibold text-white">{card.title}</h3>
-                    </div>
-                    <p className="text-sm text-slate-200">{card.description}</p>
+          {/* Sidebar */}
+          <aside className="relative">
+            <div className="absolute inset-0 rounded-3xl bg-white/80 shadow-2xl shadow-slate-200" />
+            <div className="relative space-y-6 rounded-3xl border border-slate-100 bg-white/90 p-8 shadow-lg">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.35em] text-indigo-500">
+                      Pro perks
+                    </p>
+                    <h2 className="mt-2 text-2xl font-semibold text-slate-900">
+                      Unlock the full experience
+                    </h2>
+                  </div>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 text-white shadow-lg shadow-indigo-200">
+                    <Crown className="h-6 w-6" />
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
 
-          <div className="grid gap-8 lg:grid-cols-[1.4fr_minmax(0,1fr)]">
-            <div className="space-y-6 rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/20 backdrop-blur">
-              <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-amber-200/80">Membership designed for momentum</p>
-                <h2 className="mt-3 text-3xl font-semibold text-white">Everything you need to build deeper connections</h2>
-                <p className="mt-3 text-sm text-slate-200">
-                  From the first hello to your next big collaboration, Connective gives you the structure, support, and
-                  storytelling to grow relationships that matter.
-                </p>
-              </div>
-              <div className="grid gap-5 sm:grid-cols-2">
-                {premiumHighlights.map((item) => (
-                  <div key={item.title} className="rounded-2xl border border-white/10 bg-slate-950/60 p-5">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-300/20 text-amber-200">
-                      <item.icon className="h-5 w-5" />
+                <div className="grid grid-cols-2 gap-3">
+                  {[eventsImage, connectionsImage, groupsImage].map((image, index) => (
+                    <div
+                      key={index}
+                      className={`overflow-hidden rounded-2xl border border-slate-100 ${
+                        index === 0 ? "col-span-2" : ""
+                      }`}
+                    >
+                      <img
+                        src={image}
+                        alt="Connective experience"
+                        className="h-full w-full object-cover"
+                      />
                     </div>
-                    <p className="mt-4 text-base font-semibold text-white">{item.title}</p>
-                    <p className="mt-2 text-sm text-slate-300">{item.description}</p>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {premiumHighlights.map((item) => (
+                  <div
+                    key={item.title}
+                    className="flex gap-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4"
+                  >
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 text-indigo-500">
+                      <item.icon className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <p className="text-base font-semibold text-slate-900">
+                        {item.title}
+                      </p>
+                      <p className="text-sm text-slate-600">
+                        {item.description}
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
+          </aside>
+        </main>
 
-            <div className="flex flex-col justify-between gap-6 rounded-3xl border border-white/10 bg-gradient-to-br from-amber-400/20 via-orange-400/10 to-yellow-300/20 p-8 text-slate-900 shadow-2xl shadow-amber-200/20">
-              <div>
-                <p className="text-xs uppercase tracking-[0.4em] text-slate-900/70">Built with trust</p>
-                <h3 className="mt-3 text-2xl font-semibold text-slate-900">Safety and belonging on every level</h3>
-                <p className="mt-3 text-sm text-slate-800">
-                  Verified hosts, moderation tools, and real human support ensure that every introduction feels intentional and
-                  safe.
-                </p>
-              </div>
-              <div className="flex items-center gap-3 rounded-2xl bg-white/80 px-5 py-4 text-slate-900 shadow-lg shadow-amber-200/40">
-                <ShieldCheck className="h-8 w-8 text-amber-500" />
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.3em]">Verified &amp; curated</p>
-                  <p className="text-xs text-slate-700">Background checks • Code of conduct • Dedicated community team</p>
-                </div>
-              </div>
-            </div>
+        {/* Safety section */}
+        <section className="mt-24">
+          <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-indigo-50 via-white to-amber-50 p-6 text-sm text-slate-600">
+            <p className="font-semibold text-slate-900">
+              Trust & safety comes first
+            </p>
+            <p className="mt-2 flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-indigo-500">
+              <ShieldCheck className="h-4 w-4" /> Verified hosts • Moderated communities
+            </p>
           </div>
         </section>
 
-        {/* Testimonials + Why Choose */}
+        {/* Testimonials */}
         <section className="mt-24 grid gap-8 lg:grid-cols-[1.6fr_1fr]">
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/30 backdrop-blur">
-            <h3 className="text-2xl font-semibold text-white">
+          <div className="rounded-3xl border border-slate-200 bg-white/90 p-8 shadow-xl shadow-slate-200">
+            <h3 className="text-2xl font-semibold text-slate-900">
               Why leaders choose Connective
             </h3>
             <div className="mt-6 grid gap-6 sm:grid-cols-2">
-              <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-6">
-                <CalendarDays className="h-6 w-6 text-amber-200" />
-                <h4 className="mt-4 text-lg font-semibold text-white">Curated event programming</h4>
-                <p className="mt-2 text-sm text-slate-300">
-                  From supper clubs to venture salons, every experience is intentionally crafted to spark meaningful collisions.
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-6">
+                <CalendarDays className="h-6 w-6 text-indigo-500" />
+                <h4 className="mt-4 text-lg font-semibold text-slate-900">
+                  Curated calendar
+                </h4>
+                <p className="mt-2 text-sm text-slate-600">
+                  Attend premium salons, masterminds, and adventures
+                  tailored to your ambitions.
                 </p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-6">
-                <Users className="h-6 w-6 text-amber-200" />
-                <h4 className="mt-4 text-lg font-semibold text-white">Find aligned friends faster</h4>
-                <p className="mt-2 text-sm text-slate-300">
-                  Priority introductions and shared affinities help you build a circle that feels like home.
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-6">
+                <MessageCircle className="h-6 w-6 text-indigo-500" />
+                <h4 className="mt-4 text-lg font-semibold text-slate-900">
+                  Real relationships
+                </h4>
+                <p className="mt-2 text-sm text-slate-600">
+                  Spark deeper conversations with immersive prompts and shared passions.
                 </p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-6">
-                <MessagesSquare className="h-6 w-6 text-amber-200" />
-                <h4 className="mt-4 text-lg font-semibold text-white">Chats with real momentum</h4>
-                <p className="mt-2 text-sm text-slate-300">
-                  Curated channels and guided prompts keep conversations rich long after the night ends.
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-6">
+                <HeartHandshake className="h-6 w-6 text-indigo-500" />
+                <h4 className="mt-4 text-lg font-semibold text-slate-900">
+                  Global host network
+                </h4>
+                <p className="mt-2 text-sm text-slate-600">
+                  Access vetted hosts and members across hubs worldwide.
                 </p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-6">
-                <UserPlus className="h-6 w-6 text-amber-200" />
-                <h4 className="mt-4 text-lg font-semibold text-white">Create bespoke groups</h4>
-                <p className="mt-2 text-sm text-slate-300">
-                  Launch masterminds, studios, or neighborhood collectives with tools built for intentional hosts.
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-6">
+                <Sparkles className="h-6 w-6 text-indigo-500" />
+                <h4 className="mt-4 text-lg font-semibold text-slate-900">
+                  Moments that stay with you
+                </h4>
+                <p className="mt-2 text-sm text-slate-600">
+                  From rooftop tastings to retreats, every event builds lasting memories.
                 </p>
               </div>
             </div>
@@ -417,15 +350,15 @@ const Splash = () => {
             {testimonials.map((testimonial) => (
               <div
                 key={testimonial.name}
-                className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl shadow-black/20 backdrop-blur"
+                className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-lg shadow-slate-200"
               >
-                <p className="text-sm uppercase tracking-[0.3em] text-amber-200/80">
+                <p className="text-sm uppercase tracking-[0.3em] text-indigo-500">
                   Member story
                 </p>
-                <p className="mt-4 text-lg font-semibold text-white">
+                <p className="mt-4 text-lg font-semibold text-slate-900">
                   “{testimonial.quote}”
                 </p>
-                <p className="mt-6 text-sm font-medium text-amber-100">
+                <p className="mt-6 text-sm font-medium text-slate-600">
                   {testimonial.name} · {testimonial.title}
                 </p>
               </div>
@@ -434,30 +367,30 @@ const Splash = () => {
         </section>
 
         {/* Final CTA */}
-        <section className="mt-20 rounded-3xl border border-white/10 bg-gradient-to-r from-amber-400/20 via-orange-400/10 to-yellow-300/20 p-10 text-slate-900 shadow-2xl shadow-amber-300/20 backdrop-blur">
-          <div className="flex flex-col items-start gap-6 text-left sm:flex-row sm:items-center sm:justify-between sm:text-left">
-            <div className="max-w-2xl space-y-3">
-              <p className="text-xs uppercase tracking-[0.4em] text-slate-900/70">
-                Ready to unlock your next chapter?
+        <section className="mt-20 overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-r from-indigo-500 via-purple-500 to-rose-500 p-[1px] shadow-2xl shadow-slate-300">
+          <div className="flex h-full w-full flex-col items-start gap-8 rounded-[calc(theme(borderRadius.3xl)-1px)] bg-white/95 p-10 text-left sm:flex-row sm:items-center sm:justify-between">
+            <div className="max-w-2xl space-y-4">
+              <p className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-indigo-500">
+                <Users className="h-3.5 w-3.5" /> Ready to unlock your next chapter?
               </p>
               <h3 className="text-3xl font-semibold text-slate-900 sm:text-4xl">
                 Join the most intentional community of leaders, innovators, and connectors.
               </h3>
-              <p className="text-base text-slate-800">
+              <p className="text-base text-slate-600">
                 Claim your invite today and get instant access to exclusive introductions, curated events, and a network that accelerates your growth.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
               <button
                 onClick={() => navigate("/signup")}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-base font-semibold text-amber-200 shadow-lg shadow-slate-900/30 transition hover:scale-105"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-indigo-600 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-indigo-300 transition hover:scale-105 hover:bg-indigo-500"
               >
                 Become a member
                 <ArrowRight className="h-5 w-5" />
               </button>
               <button
                 onClick={() => navigate("/login")}
-                className="inline-flex items-center justify-center rounded-full border border-slate-900/40 px-6 py-3 text-base font-semibold text-slate-900 transition hover:border-slate-900"
+                className="inline-flex items-center justify-center rounded-full border border-indigo-200 px-6 py-3 text-base font-semibold text-indigo-600 transition hover:border-indigo-400 hover:bg-indigo-50"
               >
                 I already have an account
               </button>
