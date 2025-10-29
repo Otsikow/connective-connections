@@ -15,84 +15,33 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, Filter, MapPin, Search, Users } from "lucide-react";
 import BackButton from "@/components/BackButton";
 
-const eventCategories = [
-  { label: "Social Mixers", count: 18 },
-  { label: "Food & Drink", count: 12 },
-  { label: "Wellness", count: 9 },
-  { label: "Creative", count: 7 },
-  { label: "Outdoors", count: 11 },
-  { label: "Professional", count: 6 },
-];
+import {
+  featuredEvent,
+  upcomingEvents,
+  events as allEvents,
+} from "@/data/events";
 
-const featuredEvent = {
-  id: 101,
-  title: "Sunset Rooftop Social",
-  description:
-    "Unwind with curated connections, live acoustic music, and locally sourced bites as the sun sets over the skyline.",
-  date: "Sat, Nov 30 • 6:00 PM",
-  location: "Skyline Loft, Downtown",
-  host: "Alicia Gomez",
-  hostAvatar: "/placeholder.svg",
-  attendees: 36,
-  tags: ["Premium", "Social", "Live Music"],
-};
+const formatEventDateTime = (isoDate: string) =>
+  new Intl.DateTimeFormat("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(isoDate));
 
-const upcomingEvents = [
-  {
-    id: 1,
-    title: "Neighborhood Coffee Crawl",
-    date: "Fri, Nov 29 • 9:00 AM",
-    location: "Riverfront District",
-    attendees: 18,
-    image: "/event-coffee.svg",
-    tags: ["Casual", "Coffee Lovers"],
-  },
-  {
-    id: 2,
-    title: "Mindful Morning Yoga",
-    date: "Sat, Nov 30 • 8:30 AM",
-    location: "Harbor Park",
-    attendees: 24,
-    image: "/event-yoga.svg",
-    tags: ["Wellness", "Outdoors"],
-  },
-  {
-    id: 3,
-    title: "Creative Coding Jam",
-    date: "Sun, Dec 1 • 4:00 PM",
-    location: "Makerspace Studio",
-    attendees: 14,
-    image: "/event-code.svg",
-    tags: ["Tech", "Collaboration"],
-  },
-  {
-    id: 4,
-    title: "Friendsgiving Potluck",
-    date: "Sun, Dec 1 • 6:30 PM",
-    location: "The Collective Kitchen",
-    attendees: 28,
-    image: "/event-potluck.svg",
-    tags: ["Food", "Community"],
-  },
-  {
-    id: 5,
-    title: "Trailblazers Hiking Crew",
-    date: "Mon, Dec 2 • 7:00 AM",
-    location: "Pine Ridge Trailhead",
-    attendees: 22,
-    image: "/event-hike.svg",
-    tags: ["Adventure", "Outdoors"],
-  },
-  {
-    id: 6,
-    title: "Pitch & Pint Night",
-    date: "Tue, Dec 3 • 5:30 PM",
-    location: "Founders Hub",
-    attendees: 31,
-    image: "/event-pitch.svg",
-    tags: ["Networking", "Startups"],
-  },
-];
+const categorySummaries = (() => {
+  const counts = new Map<string, number>();
+
+  allEvents.forEach((event) => {
+    counts.set(event.category, (counts.get(event.category) ?? 0) + 1);
+  });
+
+  return Array.from(counts.entries()).map(([label, count]) => ({
+    label,
+    count,
+  }));
+})();
 
 const Events = () => {
   const navigate = useNavigate();
@@ -109,7 +58,8 @@ const Events = () => {
       const searchableContent = [
         event.title,
         event.location,
-        event.date,
+        event.category,
+        formatEventDateTime(event.startDateTime),
         event.tags.join(" "),
       ]
         .join(" ")
@@ -117,7 +67,7 @@ const Events = () => {
 
       return searchableContent.includes(normalizedSearchTerm);
     });
-  }, [searchTerm]);
+  }, [searchTerm, upcomingEvents]);
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -177,7 +127,7 @@ const Events = () => {
                 </Button>
               </div>
               <div className="flex flex-wrap gap-3">
-                {eventCategories.map((category) => (
+                {categorySummaries.map((category) => (
                   <Badge
                     key={category.label}
                     variant="secondary"
@@ -213,7 +163,7 @@ const Events = () => {
                   <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                     <span className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-primary" />
-                      {featuredEvent.date}
+                      {formatEventDateTime(featuredEvent.startDateTime)}
                     </span>
                     <span className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-primary" />
@@ -226,14 +176,26 @@ const Events = () => {
                   </div>
                   <div className="flex items-center gap-3">
                     <Avatar className="h-12 w-12 border border-primary/20">
-                      <AvatarImage src={featuredEvent.hostAvatar} alt={featuredEvent.host} />
-                      <AvatarFallback>{featuredEvent.host[0]}</AvatarFallback>
+                      <AvatarImage
+                        src={featuredEvent.host?.avatar}
+                        alt={featuredEvent.host?.name}
+                      />
+                      <AvatarFallback>
+                        {featuredEvent.host?.name?.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="text-sm font-semibold">Hosted by {featuredEvent.host}</p>
-                      <p className="text-xs text-muted-foreground">
-                        Community curator • 24 hosted experiences
+                      <p className="text-sm font-semibold">
+                        Hosted by {featuredEvent.host?.name}
                       </p>
+                      {featuredEvent.host && (
+                        <p className="text-xs text-muted-foreground">
+                          {featuredEvent.host.role}
+                          {featuredEvent.host.experiencesHosted
+                            ? ` • ${featuredEvent.host.experiencesHosted} hosted experiences`
+                            : ""}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -300,7 +262,7 @@ const Events = () => {
                 <Card
                   className="group h-full border-border/60 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
                   onClick={() => navigate(`/events/${event.id}`)}
-              >
+                >
                 <div className="h-40 overflow-hidden rounded-t-xl bg-muted">
                   <img
                     src={event.image}
@@ -316,7 +278,7 @@ const Events = () => {
                       </h3>
                       <p className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Calendar className="h-4 w-4 text-primary" />
-                        {event.date}
+                        {formatEventDateTime(event.startDateTime)}
                       </p>
                       <p className="flex items-center gap-2 text-sm text-muted-foreground">
                         <MapPin className="h-4 w-4 text-primary" />
@@ -334,7 +296,14 @@ const Events = () => {
                       </Badge>
                     ))}
                   </div>
-                  <Button className="w-full rounded-full" variant="secondary">
+                  <Button
+                    className="w-full rounded-full"
+                    variant="secondary"
+                    onClick={(buttonEvent) => {
+                      buttonEvent.stopPropagation();
+                      navigate(`/events/${event.id}`);
+                    }}
+                  >
                     View details
                   </Button>
                 </CardContent>

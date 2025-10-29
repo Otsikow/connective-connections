@@ -93,7 +93,7 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
   return (
     <motion.div
       ref={cardRef}
-      className={`absolute inset-0 swipe-card ${
+      className={`absolute inset-0 flex items-stretch justify-center px-2 sm:px-4 swipe-card ${
         isActive ? "cursor-grab active:cursor-grabbing" : "pointer-events-none"
       }`}
       style={{
@@ -117,16 +117,16 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
     >
       <Card
         animated={false}
-        className="h-full flex flex-col border-border overflow-hidden shadow-2xl bg-card"
+        className="relative h-full w-full max-w-[420px] flex flex-col border-border/60 overflow-hidden shadow-[0px_20px_40px_-20px_rgba(15,23,42,0.45)] bg-card/95 backdrop-blur-sm"
       >
         {/* Photo Section */}
-        <div className="relative flex-shrink-0 min-h-[260px] sm:min-h-[300px] overflow-hidden">
+        <div className="relative flex-shrink-0 aspect-[4/5] sm:aspect-[3/4] overflow-hidden">
           <img
             src={profile.photo}
             alt={`${profile.name}'s profile photo`}
             className="absolute inset-0 h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/40" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/5 to-black/60" />
 
           {/* Trust Badge */}
           {profile.trustBadge && (
@@ -177,35 +177,41 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
           </div>
         </div>
 
-        <CardContent className="flex-1 p-5 sm:p-6 text-center flex flex-col gap-6">
+        <CardContent className="flex-1 px-5 sm:px-7 py-6 sm:py-7 text-center flex flex-col gap-6 overflow-y-auto sm:overflow-visible">
           <div className="space-y-4">
             {/* Name and Age */}
             <div className="space-y-1">
-              <h2 className="text-2xl sm:text-3xl font-bold">{profile.name}</h2>
-              <p className="text-base sm:text-lg text-muted-foreground">
-                {profile.age} years old
-              </p>
-              {profile.distance && (
-                <p className="text-sm text-muted-foreground">{profile.distance} away</p>
-              )}
+              <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
+                {profile.name}
+              </h2>
+              <div className="flex flex-wrap items-center justify-center gap-3 text-sm sm:text-base text-muted-foreground">
+                <span className="font-medium text-foreground/80">{profile.age} years old</span>
+                {profile.distance && <span className="flex items-center gap-1">• {profile.distance} away</span>}
+                {profile.availability && (
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5 text-[#E8B956]" />
+                    {profile.availability}
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* Bio */}
-            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl mx-auto">
               {profile.bio}
             </p>
           </div>
 
           {profile.gallery && profile.gallery.length > 0 && (
             <div className="space-y-3 text-left w-full">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
                 Photo Highlights
               </h3>
               <div className="grid grid-cols-3 gap-2">
                 {profile.gallery.slice(0, 3).map((image, index) => (
                   <div
                     key={index}
-                    className="relative h-20 rounded-xl overflow-hidden border border-white/10 shadow-sm"
+                    className="relative aspect-square rounded-xl overflow-hidden border border-white/10 shadow-sm"
                   >
                     <img src={image} alt={`${profile.name} gallery ${index + 1}`} className="h-full w-full object-cover" />
                   </div>
@@ -216,12 +222,16 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
 
           {/* Interests */}
           <div className="flex-1 w-full">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground mb-3">
               Interests
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {profile.interests.map((interest, index) => (
-                <Badge key={index} variant="secondary" className="px-3 py-1 text-xs">
+                <Badge
+                  key={index}
+                  variant="secondary"
+                  className="px-3 py-1 text-xs bg-muted/60 hover:bg-muted text-foreground border border-border/50"
+                >
                   {interest}
                 </Badge>
               ))}
@@ -231,7 +241,7 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
           {/* CTA Button */}
           <Button
             onClick={onConnect}
-            className="w-full h-12 sm:h-14 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold gap-2 text-base sm:text-lg"
+            className="w-full h-12 sm:h-14 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold gap-2 text-base sm:text-lg shadow-lg shadow-[#E8B956]/40"
           >
             <Coffee className="w-4 h-4 sm:w-5 sm:h-5" />
             Let's grab coffee!

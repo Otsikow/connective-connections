@@ -1,276 +1,362 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
+import { useNavigate, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search, Calendar, MapPin, Users } from "lucide-react";
-import { motion } from "framer-motion";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Calendar, CalendarPlus, MapPin, Users } from "lucide-react";
 import BackButton from "@/components/BackButton";
+import { getEventById, upcomingEvents, EventData } from "@/data/events";
 
-interface Event {
-  id: string;
-  title: string;
-  date: string;
-  location: string;
-  category: string;
-  attendees: number;
-  image: string;
-  description: string;
-}
+const formatEventDateRange = (startIso: string, endIso: string) => {
+  const start = new Date(startIso);
+  const end = new Date(endIso);
 
-const Events = () => {
+  const dateFormatter = new Intl.DateTimeFormat("en-US", {
+    weekday: "short",
+    month: "long",
+    day: "numeric",
+  });
+
+  const timeFormatter = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+
+  const isSameDay =
+    start.getFullYear() === end.getFullYear() &&
+    start.getMonth() === end.getMonth() &&
+    start.getDate() === end.getDate();
+
+  if (isSameDay) {
+    return `${dateFormatter.format(start)} • ${timeFormatter.format(
+      start
+    )} – ${timeFormatter.format(end)}`;
+  }
+
+  return `${dateFormatter.format(start)} ${timeFormatter.format(
+    start
+  )} – ${dateFormatter.format(end)} ${timeFormatter.format(end)}`;
+};
+
+const formatEventDateTime = (isoDate: string) =>
+  new Intl.DateTimeFormat("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(isoDate));
+
+const toGoogleCalendarDate = (isoDate: string) =>
+  new Date(isoDate)
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}Z$/, "Z");
+
+const getGoogleCalendarUrl = (event: EventData) => {
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: event.title,
+    dates: `${toGoogleCalendarDate(event.startDateTime)}/${toGoogleCalendarDate(
+      event.endDateTime
+    )}`,
+    details: event.description,
+    location: event.location,
+    sf: "true",
+    output: "xml",
+  });
+
+  return `https://www.google.com/calendar/render?${params.toString()}`;
+};
+
+const EventDetail = () => {
   const navigate = useNavigate();
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("All");
+  const { id } = useParams<{ id: string }>();
 
-  const events: Event[] = [
-    {
-      id: "1",
-      title: "Morning Yoga & Meditation",
-      date: "Sat, Nov 15 • 7:00 AM",
-      location: "Central Park, New York",
-      category: "Wellness",
-      attendees: 18,
-      image:
-        "https://images.unsplash.com/photo-1552196563-55cd4e45efb3?w=1200&h=800&fit=crop",
-      description:
-        "Start your day with a calm, energizing yoga flow and guided meditation session led by Sarah Johnson.",
-    },
-    {
-      id: "2",
-      title: "Cooking Class: Italian Cuisine",
-      date: "Sun, Nov 16 • 3:00 PM",
-      location: "Downtown Toronto",
-      category: "Food",
-      attendees: 22,
-      image:
-        "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=800&fit=crop",
-      description:
-        "Learn authentic Italian cooking techniques with Chef Marco. Includes a 3-course meal tasting.",
-    },
-    {
-      id: "3",
-      title: "Tech Networking Night",
-      date: "Tue, Nov 18 • 6:30 PM",
-      location: "London Tech Hub",
-      category: "Networking",
-      attendees: 40,
-      image:
-        "https://images.unsplash.com/photo-1551836022-4c4c79ecde51?w=1200&h=800&fit=crop",
-      description:
-        "Meet founders, investors, and developers at this monthly networking event for tech professionals.",
-    },
-    {
-      id: "4",
-      title: "Photography Walk: City Lights",
-      date: "Fri, Nov 21 • 8:00 PM",
-      location: "Berlin City Center",
-      category: "Art",
-      attendees: 15,
-      image:
-        "https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=1200&h=800&fit=crop",
-      description:
-        "Join a group of photographers to explore city nightlife scenes and capture stunning long-exposure shots.",
-    },
-    {
-      id: "5",
-      title: "Sunset Paddleboarding Meetup",
-      date: "Sat, Nov 22 • 5:30 PM",
-      location: "Lake Union, Seattle",
-      category: "Wellness",
-      attendees: 20,
-      image:
-        "https://images.unsplash.com/photo-1515894203077-9cd1060f29e0?w=1200&h=800&fit=crop",
-      description:
-        "Unwind on the water with a relaxed paddle followed by a lakeside mindfulness cool-down session.",
-    },
-    {
-      id: "6",
-      title: "Community Brunch & Networking",
-      date: "Sun, Nov 23 • 11:00 AM",
-      location: "Market Square, Austin",
-      category: "Networking",
-      attendees: 34,
-      image:
-        "https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=1200&h=800&fit=crop",
-      description:
-        "Connect with local creators and entrepreneurs over a curated brunch experience and facilitated conversations.",
-    },
-    {
-      id: "7",
-      title: "Mindful Painting Workshop",
-      date: "Wed, Nov 26 • 6:00 PM",
-      location: "Creative Loft, Chicago",
-      category: "Art",
-      attendees: 18,
-      image:
-        "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=1200&h=800&fit=crop",
-      description:
-        "Explore color therapy techniques while creating a calming abstract piece guided by a local artist.",
-    },
-    {
-      id: "8",
-      title: "Global Bites Potluck",
-      date: "Thu, Nov 27 • 7:00 PM",
-      location: "Community Hall, Vancouver",
-      category: "Food",
-      attendees: 28,
-      image:
-        "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=800&fit=crop",
-      description:
-        "Share your favorite family recipes and discover new flavors during an evening of storytelling and cultural exchange.",
-    },
-  ];
+  const event = id ? getEventById(id) : undefined;
+  const recommendedEvents = upcomingEvents
+    .filter((upcomingEvent) => upcomingEvent.id !== event?.id)
+    .slice(0, 3);
 
-  const categories = [
-    "All",
-    ...Array.from(new Set(events.map((event) => event.category))),
-  ];
+  if (!event) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-6 px-4 text-center">
+          <BackButton
+            fallbackPath="/events"
+            variant="secondary"
+            className="rounded-full"
+          />
+          <Card className="border-border/60 shadow-sm">
+            <CardContent className="space-y-4 p-8">
+              <CardTitle className="text-2xl font-semibold">
+                Event not found
+              </CardTitle>
+              <CardDescription className="text-base text-muted-foreground">
+                The experience you&apos;re looking for may have been moved or is no longer available.
+              </CardDescription>
+              <Button
+                className="rounded-full"
+                onClick={() => navigate("/events")}
+              >
+                Browse all events
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
-  const filteredEvents = events.filter(
-    (event) =>
-      (filter === "All" || event.category === filter) &&
-      event.title.toLowerCase().includes(search.toLowerCase())
-  );
+  const googleCalendarUrl = getGoogleCalendarUrl(event);
+  const hostInitials = event.host?.name
+    ? event.host.name
+        .split(" ")
+        .map((segment) => segment.charAt(0))
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "CC";
 
   return (
-    <div className="space-y-6 animate-fadeInUp">
-      <div className="flex items-center gap-3">
+    <div className="min-h-screen bg-background pb-20">
+      <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-br from-primary/5 via-background to-background">
         <BackButton
           fallbackPath="/events"
-          variant="outline"
           size="icon"
-          className="rounded-full border-border/60"
+          className="absolute left-4 top-4 z-10 bg-background/80 border border-border/60 text-foreground shadow-sm backdrop-blur-sm hover:bg-muted"
+          ariaLabel="Go back"
         />
-        <h1 className="text-xl font-semibold">Events</h1>
-      </div>
-
-      {/* Header Section */}
-      <Card className="border-border/50 shadow-sm">
-        <CardContent className="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              <Calendar className="h-6 w-6 text-primary" />
-              Upcoming Events
-            </h2>
-            <p className="text-muted-foreground text-sm sm:text-base mt-1">
-              Discover, connect, and experience exciting community activities.
-            </p>
-          </div>
-
-          <div className="relative w-full sm:w-[300px]">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Search events..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Category Filters */}
-      <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
-        {categories.map((cat) => (
-          <Button
-            key={cat}
-            variant={filter === cat ? "default" : "outline"}
-            onClick={() => setFilter(cat)}
-            className={`rounded-full text-sm px-4 py-2 ${
-              filter === cat
-                ? "bg-primary text-white"
-                : "border-border hover:bg-muted/50"
-            }`}
+        <div className="absolute inset-y-0 -right-32 hidden md:block opacity-20 pointer-events-none">
+          <div className="h-full w-72 rounded-full bg-primary blur-3xl" />
+        </div>
+        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.35fr_1fr] lg:py-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="space-y-6"
           >
-            {cat}
-          </Button>
-        ))}
-      </div>
-
-      {/* Events Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredEvents.length === 0 ? (
-          <div className="text-center py-16 col-span-full text-muted-foreground">
-            <p className="text-lg font-medium mb-2">No events found</p>
-            <p className="text-sm">
-              Try adjusting your search or filters to find more events.
-            </p>
-          </div>
-        ) : (
-          filteredEvents.map((event, index) => (
-            <motion.div
-              key={event.id}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-            >
-              <Card
-                className="overflow-hidden border-border/50 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
-                onClick={() => navigate(`/events/${event.id}`)}
-              >
-                <div className="relative h-48 sm:h-56 bg-muted">
-                  <img
-                    src={event.image}
-                    alt={event.title}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <Badge className="bg-white/80 text-primary shadow-sm">
-                      {event.category}
-                    </Badge>
+            <div className="overflow-hidden rounded-2xl border border-border/60 shadow-lg shadow-primary/10">
+              <img
+                src={event.image}
+                alt={event.title}
+                className="h-72 w-full object-cover sm:h-96"
+              />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {event.tags.map((tag) => (
+                <Badge key={tag} variant="secondary" className="rounded-full">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+            <Card className="border-border/60 shadow-sm">
+              <CardHeader className="space-y-2">
+                <Badge className="w-fit rounded-full bg-primary/10 px-4 py-1 text-sm font-semibold text-primary">
+                  {event.category}
+                </Badge>
+                <CardTitle className="text-3xl font-bold leading-tight">
+                  {event.title}
+                </CardTitle>
+                <CardDescription className="text-base text-muted-foreground">
+                  {event.description}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6 text-sm text-muted-foreground">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="flex items-start gap-3">
+                    <div className="rounded-full bg-primary/10 p-2 text-primary">
+                      <Calendar className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground">
+                        When
+                      </p>
+                      <p>{formatEventDateRange(event.startDateTime, event.endDateTime)}</p>
+                    </div>
                   </div>
+                  <div className="flex items-start gap-3">
+                    <div className="rounded-full bg-primary/10 p-2 text-primary">
+                      <MapPin className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground">
+                        Where
+                      </p>
+                      <p>{event.location}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="rounded-full bg-primary/10 p-2 text-primary">
+                      <Users className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground">
+                        Attendees
+                      </p>
+                      <p>{event.attendees} community members joined</p>
+                    </div>
+                  </div>
+                  {event.host && (
+                    <div className="flex items-start gap-3">
+                      <Avatar className="h-10 w-10 border border-primary/20">
+                        <AvatarImage src={event.host.avatar} alt={event.host.name} />
+                        <AvatarFallback>{hostInitials}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-semibold text-foreground">
+                          Host
+                        </p>
+                        <p>{event.host.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {event.host.role}
+                          {event.host.experiencesHosted
+                            ? ` • ${event.host.experiencesHosted} hosted experiences`
+                            : null}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold">
-                    {event.title}
-                  </CardTitle>
-                </CardHeader>
-
-                <CardContent className="space-y-3">
-                  <div className="text-sm text-muted-foreground line-clamp-2">
-                    {event.description}
-                  </div>
-
-                  <div className="flex flex-wrap items-center justify-between text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4 text-primary" />
-                      {event.date}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <MapPin className="w-4 h-4 text-primary" />
-                      {event.location}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2">
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <Users className="w-4 h-4 text-primary" />
-                      {event.attendees} joined
-                    </div>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      className="rounded-full text-sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/events/${event.id}`);
-                      }}
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <Button size="lg" className="rounded-full bg-primary text-white hover:bg-primary/80">
+                    Join the experience
+                  </Button>
+                  <Button asChild variant="outline" size="lg" className="rounded-full">
+                    <a
+                      href={googleCalendarUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
-                      View Details
-                    </Button>
+                      <CalendarPlus className="mr-2 h-5 w-5" />
+                      Add to Google Calendar
+                    </a>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="space-y-6"
+          >
+            <Card className="border-border/60 bg-primary/5 shadow-sm">
+              <CardHeader className="space-y-2">
+                <CardTitle className="text-xl font-semibold text-primary">
+                  Why you&apos;ll love this
+                </CardTitle>
+                <CardDescription>
+                  Crafted to spark meaningful connections with thoughtful facilitation and welcoming hosts.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4 text-sm text-muted-foreground">
+                <p>
+                  Expect a curated group of attendees, guided introductions, and intentional moments designed to foster genuine friendships.
+                </p>
+                <ul className="list-inside list-disc space-y-2">
+                  <li>Expertly hosted to make everyone feel welcome</li>
+                  <li>Opportunities to connect one-on-one and in small groups</li>
+                  <li>Follow-up prompts to keep the conversation going</li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/60 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">
+                  Related experiences
+                </CardTitle>
+                <CardDescription>
+                  Discover more gatherings you might enjoy.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {recommendedEvents.map((relatedEvent) => (
+                  <div
+                    key={relatedEvent.id}
+                    className="flex items-start gap-4 rounded-xl border border-border/40 p-4 transition-colors hover:border-primary/40"
+                  >
+                    <div className="h-20 w-24 overflow-hidden rounded-lg bg-muted">
+                      <img
+                        src={relatedEvent.image}
+                        alt={relatedEvent.title}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-center justify-between gap-3">
+                        <h3 className="text-base font-semibold text-foreground">
+                          {relatedEvent.title}
+                        </h3>
+                        <Badge variant="outline" className="rounded-full text-xs">
+                          {relatedEvent.category}
+                        </Badge>
+                      </div>
+                      <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Calendar className="h-4 w-4 text-primary" />
+                        {formatEventDateTime(relatedEvent.startDateTime)}
+                      </p>
+                      <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <MapPin className="h-4 w-4 text-primary" />
+                        {relatedEvent.location}
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="rounded-full px-3 text-xs text-primary hover:bg-primary/10"
+                        onClick={() => navigate(`/events/${relatedEvent.id}`)}
+                      >
+                        View details
+                      </Button>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))
-        )}
-      </div>
+                ))}
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="mx-auto mt-16 max-w-6xl px-4 sm:px-6">
+        <Card className="border-border/50 bg-gradient-to-r from-primary/10 via-primary/5 to-background">
+          <CardContent className="flex flex-col gap-6 p-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-2xl space-y-2">
+              <h3 className="text-xl font-semibold">Bring your idea to life as a host</h3>
+              <p className="text-sm text-muted-foreground">
+                Share your expertise or passion with the community. We&apos;ll guide you through crafting a standout listing, managing guests, and keeping your events thriving.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button
+                className="rounded-full bg-primary text-white hover:bg-primary/80"
+                onClick={() => navigate("/host/create-event")}
+              >
+                Start a new event
+              </Button>
+              <Button
+                variant="outline"
+                className="rounded-full"
+                onClick={() => navigate("/host-dashboard")}
+              >
+                View host dashboard
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
     </div>
   );
 };
 
-export default Events;
+export default EventDetail;
