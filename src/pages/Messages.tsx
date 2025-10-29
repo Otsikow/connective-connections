@@ -9,6 +9,7 @@ import { sampleEvents, type EventItem } from "@/lib/events";
 import { communityGroups } from "@/lib/community-groups";
 import BackButton from "@/components/BackButton";
 import { useEndToEndEncryption } from "@/hooks/useEndToEndEncryption";
+import { useSubscription } from "@/hooks/useSubscription";
 
 interface Message {
   id: number;
@@ -51,6 +52,8 @@ const Messages = () => {
 
   const { encrypt, decrypt, isReady: isEncryptionReady, error: encryptionError } =
     useEndToEndEncryption(conversationId);
+  const { tier, requireProFeature } = useSubscription();
+  const isProMember = tier === "pro";
 
   type ParticipantInfo = (EventItem["participants"][number] | EventItem["host"]) & { id?: string };
 
@@ -336,6 +339,10 @@ const Messages = () => {
   };
 
   const handleSelectIcebreaker = (text: string) => {
+    if (!requireProFeature()) {
+      return;
+    }
+
     void handleSendMessage(text);
   };
 
@@ -501,6 +508,8 @@ const Messages = () => {
         onSelectIcebreaker={handleSelectIcebreaker}
         suggestions={dynamicSuggestions}
         isDisabled={!isEncryptionReady || Boolean(encryptionError)}
+        isPremiumFeatureLocked={!isProMember}
+        onRequestPremiumFeature={requireProFeature}
       />
     </div>
   );

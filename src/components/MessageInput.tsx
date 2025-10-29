@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -24,6 +25,9 @@ interface MessageInputProps {
   suggestions?: string[];
   className?: string;
   isDisabled?: boolean;
+  isPremiumFeatureLocked?: boolean;
+  onRequestPremiumFeature?: () => void;
+  premiumFeatureLabel?: string;
 }
 
 const FALLBACK_SUGGESTIONS = [
@@ -38,6 +42,9 @@ export const MessageInput = ({
   suggestions,
   className = "",
   isDisabled = false,
+  isPremiumFeatureLocked = false,
+  onRequestPremiumFeature,
+  premiumFeatureLabel = "Pro feature",
 }: MessageInputProps) => {
   const [message, setMessage] = useState("");
   const [isRecording, setIsRecording] = useState(false);
@@ -115,28 +122,65 @@ export const MessageInput = ({
     // Placeholder: Could use geolocation API
   };
 
+  const handleSuggestionClick = (suggestion: string) => {
+    if (isDisabled) {
+      return;
+    }
+
+    if (isPremiumFeatureLocked) {
+      onRequestPremiumFeature?.();
+      return;
+    }
+
+    onSelectIcebreaker(suggestion);
+  };
+
   return (
     <div className={`bg-card border-t border-border px-4 py-3 space-y-3 ${className}`}>
       {/* AI Icebreakers */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <span>💡</span>
         <span>{suggestions?.length ? "Smart suggestions for this chat" : "AI Icebreaker Suggestions"}</span>
+        {isPremiumFeatureLocked && (
+          <Badge
+            variant="outline"
+            className="border-sky-400/50 text-sky-600"
+          >
+            {premiumFeatureLabel}
+          </Badge>
+        )}
       </div>
-      
+
       <div className="flex flex-wrap gap-2">
         {(suggestions?.length ? suggestions : FALLBACK_SUGGESTIONS).map((suggestion, index) => (
           <Button
             key={index}
-            variant="outline"
+            variant={isPremiumFeatureLocked ? "outline" : "outline"}
             size="sm"
-            onClick={() => onSelectIcebreaker(suggestion)}
-            className="h-8 px-3 text-xs whitespace-nowrap hover:bg-muted"
+            onClick={() => handleSuggestionClick(suggestion)}
+            className={`h-8 px-3 text-xs whitespace-nowrap transition-all ${
+              isPremiumFeatureLocked
+                ? "border-dashed opacity-70 hover:bg-muted/60 focus-visible:ring-0"
+                : "hover:bg-muted"
+            }`}
             disabled={isDisabled}
+            aria-disabled={isPremiumFeatureLocked || isDisabled}
+            title={
+              isPremiumFeatureLocked
+                ? "Pro members unlock AI-powered suggestions"
+                : undefined
+            }
           >
             {suggestion}
           </Button>
         ))}
       </div>
+
+      {isPremiumFeatureLocked && (
+        <p className="text-xs text-muted-foreground">
+          Pro members unlock AI suggestions, priority visibility, and analytics across Connective.
+        </p>
+      )}
 
       {/* Input Bar */}
       <div className="flex items-center gap-2">
