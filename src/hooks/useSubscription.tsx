@@ -71,7 +71,7 @@ type ProfileUsage = Pick<
 >;
 
 const normalizeProfileUsage = (profile?: ProfileUsage | null) => ({
-  tier: profile?.subscription_tier ?? "basic",
+  tier: (profile?.subscription_tier ?? "basic") as SubscriptionTier,
   monthlyConnections: profile?.monthly_connections ?? 0,
   monthlyEventJoins: profile?.monthly_event_joins ?? 0,
   subscriptionExpires: profile?.subscription_expires

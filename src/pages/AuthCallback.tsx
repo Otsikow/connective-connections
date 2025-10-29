@@ -48,9 +48,7 @@ const AuthCallback = () => {
     }
 
     const exchangeSession = async () => {
-      const { error } = await supabase.auth.getSessionFromUrl({
-        storeSession: true,
-      });
+      const { error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
         toast({
