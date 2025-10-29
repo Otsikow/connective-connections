@@ -151,23 +151,53 @@ const Signup = () => {
 
     setIsSubmitting(true);
     try {
+      const profileMetadata = {
+        full_name: data.name.trim(),
+        bio: data.bio.trim(),
+        photoDataUrl: data.photoDataUrl || null,
+      };
+
       if (authTab === "email") {
-        await supabase.auth.signInWithOtp({
+        const { data: signUpData, error } = await supabase.auth.signUp({
           email: data.email,
-          options: { emailRedirectTo: `${window.location.origin}/profile-setup` },
+          password: data.password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/profile-setup`,
+            data: profileMetadata,
+          },
         });
+
+        if (error) throw error;
+
         toast({
           title: "Check your inbox",
-          description: "We sent you a verification link to finish creating your account.",
+          description:
+            "We sent a confirmation link. Verify your email, then log in with your new password.",
         });
+
+        if (signUpData.session) {
+          navigate("/profile-setup");
+        }
       } else {
-        await supabase.auth.signInWithOtp({ phone: data.phone });
-        toast({
-          title: "Check your phone",
-          description: "Enter the code we just texted you to verify your number.",
+        const { data: signUpData, error } = await supabase.auth.signUp({
+          phone: data.phone,
+          password: data.password,
+          options: {
+            data: profileMetadata,
+          },
         });
+
+        if (error) throw error;
+
+        toast({
+          title: "Verify your phone",
+          description: "Enter the code we just texted you, then sign in with your password.",
+        });
+
+        if (signUpData.session) {
+          navigate("/profile-setup");
+        }
       }
-      navigate("/profile-setup");
     } catch (error) {
       console.error(error);
       toast({

@@ -16,6 +16,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import type { LucideIcon } from "lucide-react";
 import {
   Home as HomeIcon,
   MessageSquare,
@@ -25,6 +26,10 @@ import {
   Calendar as CalendarIcon,
   MapPin,
   Users,
+  ShieldCheck,
+  PhoneCall,
+  Navigation,
+  AlertTriangle,
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
 
@@ -109,6 +114,29 @@ const Home = () => {
       description: "Capture moments and learn together.",
       members: "1.8k members",
       image: "/placeholder.svg",
+    },
+  ];
+
+  const safetyTips: { icon: LucideIcon; title: string; description: string }[] = [
+    {
+      icon: ShieldCheck,
+      title: "Meet in public",
+      description: "Choose busy, well-lit public places for the first few meetups.",
+    },
+    {
+      icon: PhoneCall,
+      title: "Share your plans",
+      description: "Let a trusted friend know who you're meeting and when you'll be back.",
+    },
+    {
+      icon: Navigation,
+      title: "Plan your own ride",
+      description: "Use your own transportation so you can leave whenever you need to.",
+    },
+    {
+      icon: AlertTriangle,
+      title: "Trust your instincts",
+      description: "If something feels off, step away and report the behavior to our team.",
     },
   ];
 
@@ -309,6 +337,43 @@ const Home = () => {
           </section>
         </TabsContent>
       </Tabs>
+
+      {/* Safety Tips */}
+      <section className="px-4 sm:px-6 pb-32">
+        <div className="rounded-3xl border border-border bg-card/80 backdrop-blur-sm p-6 space-y-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#E8B956]/15 text-[#E8B956]">
+              <ShieldCheck className="h-6 w-6" />
+            </div>
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold">Safety tips for meeting up</h2>
+              <p className="text-sm text-muted-foreground">
+                Keep these guidelines in mind whenever you plan to meet someone in person.
+              </p>
+            </div>
+          </div>
+
+          <ul className="grid gap-4 sm:grid-cols-2">
+            {safetyTips.map((tip, index) => {
+              const Icon = tip.icon;
+              return (
+                <li
+                  key={index}
+                  className="flex items-start gap-3 rounded-2xl border border-border bg-background/80 p-4 shadow-sm"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E8B956]/10 text-[#E8B956]">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-base">{tip.title}</h3>
+                    <p className="text-sm text-muted-foreground">{tip.description}</p>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
 
       {/* Floating Host Event Button */}
       <Button
