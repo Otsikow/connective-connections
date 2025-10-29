@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          id: string
+          created_at: string | null
+          updated_at: string | null
+          full_name: string | null
+          avatar_url: string | null
+          username: string | null
+          website: string | null
+          role: string | null
+        }
+        Insert: {
+          id: string
+          created_at?: string | null
+          updated_at?: string | null
+          full_name?: string | null
+          avatar_url?: string | null
+          username?: string | null
+          website?: string | null
+          role?: string | null
+        }
+        Update: {
+          id?: string
+          created_at?: string | null
+          updated_at?: string | null
+          full_name?: string | null
+          avatar_url?: string | null
+          username?: string | null
+          website?: string | null
+          role?: string | null
+        }
+      }
       groups: {
         Row: {
           id: string
@@ -88,6 +120,12 @@ export type Database = {
           group_id: string
         }
         Returns: number
+      }
+      is_admin: {
+        Args: {
+          user_id: string
+        }
+        Returns: boolean
       }
     }
     Enums: {
