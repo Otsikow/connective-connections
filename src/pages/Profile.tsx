@@ -68,7 +68,7 @@ const PLAN_FEATURES: Record<PlanKey, PlanFeature[]> = {
   ],
 };
 
-const PLAN_PRICING = {
+const PLAN_PRICING: Record<Exclude<PlanKey, "basic">, Record<BillingCadence, { label: string; priceId: string; helper?: string }>> = {
   standard: {
     monthly: { label: "$15 / month", priceId: STRIPE_PRICE_IDS.standardMonthly },
     yearly: { label: "$150 / year", priceId: STRIPE_PRICE_IDS.standardYearly, helper: "Two months free" },
@@ -390,7 +390,7 @@ export default function Profile() {
             {(Object.keys(PLAN_NAMES) as PlanKey[]).map((planKey) => {
               const isCurrentPlan = tier === planKey;
               const pricing = planKey === "basic" ? null : PLAN_PRICING[planKey][billingCadence];
-              const helper = pricing?.helper;
+              const helper = pricing?.helper ?? null;
 
               return (
                 <div

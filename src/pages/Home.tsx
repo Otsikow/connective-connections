@@ -20,7 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertTriangle, ArrowRight, ChatCircle, MapPin, PlayCircle, Send, Sparkles, Star } from "lucide-react";
+import { AlertTriangle, ArrowRight, MessageCircle, MapPin, PlayCircle, Send, Sparkles, Star, Calendar } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
@@ -341,7 +341,7 @@ const Home = () => {
                             <h3 className="text-lg font-semibold leading-tight">{event.title}</h3>
                             <div className="space-y-1 text-sm text-muted-foreground">
                               <div className="flex items-center gap-2">
-                                <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                                <Calendar className="h-4 w-4 text-muted-foreground" />
                                 <span>{event.date}</span>
                               </div>
                               <div className="flex items-center gap-2">

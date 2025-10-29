@@ -14,134 +14,119 @@ export type Database = {
   }
   public: {
     Tables: {
-      profiles: {
+      group_members: {
         Row: {
+          group_id: string
           id: string
-          created_at: string | null
-          updated_at: string | null
-          full_name: string | null
-          avatar_url: string | null
-          username: string | null
-          website: string | null
-          role: string | null
-          stripe_customer_id: string | null
-          subscription_tier: "basic" | "standard" | "pro"
-          monthly_connections: number
-          monthly_event_joins: number
-          subscription_expires: string | null
+          joined_at: string
+          user_id: string
         }
         Insert: {
-          id: string
-          created_at?: string | null
-          updated_at?: string | null
-          full_name?: string | null
-          avatar_url?: string | null
-          username?: string | null
-          website?: string | null
-          role?: string | null
-          stripe_customer_id?: string | null
-          subscription_tier?: "basic" | "standard" | "pro"
-          monthly_connections?: number
-          monthly_event_joins?: number
-          subscription_expires?: string | null
+          group_id: string
+          id?: string
+          joined_at?: string
+          user_id: string
         }
         Update: {
+          group_id?: string
           id?: string
-          created_at?: string | null
-          updated_at?: string | null
-          full_name?: string | null
-          avatar_url?: string | null
-          username?: string | null
-          website?: string | null
-          role?: string | null
-          stripe_customer_id?: string | null
-          subscription_tier?: "basic" | "standard" | "pro"
-          monthly_connections?: number
-          monthly_event_joins?: number
-          subscription_expires?: string | null
+          joined_at?: string
+          user_id?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       groups: {
         Row: {
-          id: string
-          name: string
-          description: string
           category: string
-          location: string
-          image_url: string | null
-          next_meeting: string | null
-          is_premium: boolean
-          creator_id: string
           created_at: string
+          creator_id: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_premium: boolean
+          location: string | null
+          name: string
+          next_meeting: string | null
           updated_at: string
         }
         Insert: {
-          id?: string
-          name: string
-          description: string
           category: string
-          location: string
-          image_url?: string | null
-          next_meeting?: string | null
-          is_premium?: boolean
-          creator_id: string
           created_at?: string
+          creator_id?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_premium?: boolean
+          location?: string | null
+          name: string
+          next_meeting?: string | null
           updated_at?: string
         }
         Update: {
-          id?: string
-          name?: string
-          description?: string
           category?: string
-          location?: string
-          image_url?: string | null
-          next_meeting?: string | null
-          is_premium?: boolean
-          creator_id?: string
           created_at?: string
+          creator_id?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_premium?: boolean
+          location?: string | null
+          name?: string
+          next_meeting?: string | null
           updated_at?: string
         }
+        Relationships: []
       }
-      group_members: {
+      profiles: {
         Row: {
+          created_at: string
+          full_name: string | null
           id: string
-          group_id: string
-          user_id: string
+          monthly_connections: number
+          monthly_event_joins: number
           role: string
-          joined_at: string
+          subscription_expires: string | null
+          subscription_tier: string
+          updated_at: string
         }
         Insert: {
-          id?: string
-          group_id: string
-          user_id: string
+          created_at?: string
+          full_name?: string | null
+          id: string
+          monthly_connections?: number
+          monthly_event_joins?: number
           role?: string
-          joined_at?: string
+          subscription_expires?: string | null
+          subscription_tier?: string
+          updated_at?: string
         }
         Update: {
+          created_at?: string
+          full_name?: string | null
           id?: string
-          group_id?: string
-          user_id?: string
+          monthly_connections?: number
+          monthly_event_joins?: number
           role?: string
-          joined_at?: string
+          subscription_expires?: string | null
+          subscription_tier?: string
+          updated_at?: string
         }
+        Relationships: []
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      get_group_member_count: {
-        Args: {
-          group_id: string
-        }
-        Returns: number
-      }
-      is_admin: {
-        Args: {
-          user_id: string
-        }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never

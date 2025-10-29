@@ -179,7 +179,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       if (!profile) {
         const { data: inserted, error: insertError } = await supabase
           .from("profiles")
-          .insert({ id })
+          .insert([{ id }])
           .select(
             "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires",
           )

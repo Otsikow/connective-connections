@@ -10,6 +10,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heart, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SwipeCard } from "@/components/SwipeCard";
@@ -244,7 +245,188 @@ const Matches = () => {
   const { toast } = useToast();
   usePageTitle("Your Matches");
 
-  // ...rest of logic and JSX remain unchanged from your last version
+  const handleLike = useCallback(async () => {
+    const canProceed = await attemptConnection();
+    if (!canProceed) return;
+
+    const newLiked = [...likedProfiles, profiles[currentIndex].id];
+    setLikedProfiles(newLiked);
+    setShowMatchModal(true);
+    setTimeout(() => {
+      setShowMatchModal(false);
+      if (currentIndex < profiles.length - 1) {
+        setCurrentIndex(currentIndex + 1);
+      }
+    }, 2000);
+  }, [currentIndex, likedProfiles, attemptConnection]);
+
+  const handlePass = () => {
+    if (currentIndex < profiles.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
+
+  const handleRatingChange = (id: string, rating: number) => {
+    setConnectionFeedback((prev) =>
+      prev.map((cf) => (cf.id === id ? { ...cf, yourRating: rating } : cf))
+    );
+  };
+
+  const handleCommentChange = (id: string, comment: string) => {
+    setConnectionFeedback((prev) =>
+      prev.map((cf) => (cf.id === id ? { ...cf, yourComment: comment } : cf))
+    );
+  };
+
+  const handleSubmitFeedback = (id: string) => {
+    setConnectionFeedback((prev) =>
+      prev.map((cf) =>
+        cf.id === id
+          ? {
+              ...cf,
+              submitted: true,
+            }
+          : cf
+      )
+    );
+    toast({
+      title: "Feedback submitted",
+      description: "Thank you for helping improve our community!",
+    });
+  };
+
+  const handleSwipe = useCallback((direction: "left" | "right") => {
+    if (direction === "right") {
+      handleLike();
+    } else {
+      handlePass();
+    }
+  }, []);
+
+  const handleConnect = useCallback(() => {
+    handleLike();
+  }, []);
+
+  const currentProfile = profiles[currentIndex];
+
+  return (
+    <div className="min-h-screen bg-background pb-20">
+      <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4">
+        <BackButton fallbackPath="/home" />
+      </div>
+
+      <Tabs defaultValue="discover" className="px-6 py-6">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="discover">Discover</TabsTrigger>
+          <TabsTrigger value="feedback">Connection Feedback</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="discover" className="space-y-6 mt-6">
+          {currentIndex < profiles.length ? (
+            <SwipeCard
+              profile={currentProfile}
+              onSwipe={handleSwipe}
+              onConnect={handleConnect}
+              onAttemptConnect={attemptConnection}
+              isActive={true}
+            />
+          ) : (
+            <Card className="text-center p-8">
+              <CardContent className="space-y-4">
+                <p className="text-lg font-semibold">That's everyone for now!</p>
+                <p className="text-muted-foreground">
+                  Check back later for new matches
+                </p>
+                <Button onClick={() => navigate("/home")}>Return Home</Button>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="feedback" className="space-y-4 mt-6">
+          <p className="text-sm text-muted-foreground mb-4">
+            Help us improve connections by sharing your experience
+          </p>
+
+          {connectionFeedback.map((cf) => (
+            <Card key={cf.id}>
+              <CardHeader>
+                <div className="flex items-start gap-3">
+                  <Avatar className="w-12 h-12">
+                    <AvatarImage src={cf.avatar} />
+                    <AvatarFallback>{cf.name[0]}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <CardTitle className="text-base">{cf.name}</CardTitle>
+                    <CardDescription className="text-sm">
+                      {cf.metAt}
+                    </CardDescription>
+                    <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+                      <span>Community: {cf.communityAverage.toFixed(1)}</span>
+                      <span>({cf.communityCount} ratings)</span>
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {!cf.submitted ? (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor={`rating-${cf.id}`}>Your rating</Label>
+                      <RatingStars
+                        rating={cf.yourRating || 0}
+                        onChange={(rating) => handleRatingChange(cf.id, rating)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`comment-${cf.id}`}>
+                        Comment (optional)
+                      </Label>
+                      <Textarea
+                        id={`comment-${cf.id}`}
+                        placeholder="What was your experience like?"
+                        value={cf.yourComment || ""}
+                        onChange={(e) =>
+                          handleCommentChange(cf.id, e.target.value)
+                        }
+                        className="resize-none"
+                        rows={3}
+                      />
+                    </div>
+                    <Button
+                      onClick={() => handleSubmitFeedback(cf.id)}
+                      disabled={!cf.yourRating}
+                      className="w-full"
+                    >
+                      Submit Feedback
+                    </Button>
+                  </>
+                ) : (
+                  <div className="text-center py-4 text-muted-foreground">
+                    <p>✓ Feedback submitted - thank you!</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </TabsContent>
+      </Tabs>
+
+      {showMatchModal && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+          <div className="bg-background rounded-3xl p-8 max-w-sm mx-4 text-center space-y-4">
+            <div className="w-20 h-20 bg-gradient-to-br from-[#E8B956] to-[#d9a840] rounded-full mx-auto flex items-center justify-center">
+              <Heart className="w-10 h-10 text-white fill-white" />
+            </div>
+            <h2 className="text-2xl font-bold">It's a Match!</h2>
+            <p className="text-muted-foreground">
+              You and {currentProfile?.name} liked each other
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default Matches;
