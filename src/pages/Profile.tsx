@@ -162,14 +162,11 @@ export default function Profile() {
           variant: "destructive",
         });
         break;
-      case "plans":
-        showConnectionUpgradePrompt();
-        break;
       default:
         break;
     }
     navigate("/profile", { replace: true });
-  }, [location.search, navigate, showConnectionUpgradePrompt, toast]);
+  }, [location.search, navigate, toast]);
 
   const handleCheckout = async (targetTier: "standard" | "pro") => {
     if (!hasStripeConfig()) {
