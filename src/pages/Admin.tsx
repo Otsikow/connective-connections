@@ -35,8 +35,9 @@ import {
 interface Profile {
   id: string;
   full_name: string | null;
-  created_at: string;
+  created_at: string | null;
   email?: string | null;
+  role: string | null;
   loading?: boolean;
 }
 
@@ -67,12 +68,17 @@ const Admin = () => {
           return;
         }
 
-        const role =
-          user.user_metadata?.role ||
-          user.app_metadata?.role ||
-          (user.email?.endsWith("@admin.connective.com") ? "admin" : "user");
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .maybeSingle();
 
-        if (role !== "admin") {
+        if (profileError) {
+          console.error("Error loading profile role:", profileError);
+        }
+
+        if (!profile || profile.role !== "admin") {
           setError("Access denied: admin only");
           setLoading(false);
           return;
@@ -95,9 +101,24 @@ const Admin = () => {
   const loadProfiles = async () => {
     try {
       setLoading(true);
-      // Note: profiles table doesn't exist yet - using placeholder data
-      // TODO: Create profiles table in database
-      setProfiles([]);
+      const { data, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, full_name, created_at, role")
+        .order("created_at", { ascending: false });
+
+      if (profilesError) {
+        throw profilesError;
+      }
+
+      setProfiles(
+        (data ?? []).map((profile) => ({
+          id: profile.id,
+          full_name: profile.full_name,
+          created_at: profile.created_at ?? null,
+          role: profile.role ?? "user",
+          email: null,
+        }))
+      );
     } catch (err) {
       console.error("Error loading profiles:", err);
       toast({
@@ -337,6 +358,7 @@ const Admin = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Name</TableHead>
+                    <TableHead>Role</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Joined</TableHead>
                   </TableRow>
@@ -345,6 +367,11 @@ const Admin = () => {
                   {profiles.map((profile, index) => (
                     <TableRow key={profile.id}>
                       <TableCell>{profile.full_name || "N/A"}</TableCell>
+                      <TableCell>
+                        <Badge variant={profile.role === "admin" ? "default" : "secondary"}>
+                          {(profile.role ?? "user").toUpperCase()}
+                        </Badge>
+                      </TableCell>
                       <TableCell>
                         {profile.email ? (
                           profile.email
@@ -361,7 +388,9 @@ const Admin = () => {
                         )}
                       </TableCell>
                       <TableCell>
-                        {new Date(profile.created_at).toLocaleDateString()}
+                        {profile.created_at
+                          ? new Date(profile.created_at).toLocaleDateString()
+                          : "Unknown"}
                       </TableCell>
                     </TableRow>
                   ))}

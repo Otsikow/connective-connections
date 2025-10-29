@@ -2,12 +2,13 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MoreVertical, Shield, Clock, Phone, Video } from "lucide-react";
+import { MoreVertical, Shield, Clock, Phone, Video, Lock } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { MessageInput } from "@/components/MessageInput";
 import { sampleEvents, type EventItem } from "@/lib/events";
 import { communityGroups } from "@/lib/community-groups";
 import BackButton from "@/components/BackButton";
+import { useEndToEndEncryption } from "@/hooks/useEndToEndEncryption";
 
 interface Message {
   id: number;
@@ -18,10 +19,15 @@ interface Message {
   type?: "text" | "image" | "voice" | "location";
 }
 
+interface EncryptedMessage extends Omit<Message, "content"> {
+  encryptedContent: string;
+}
+
 const Messages = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [encryptedMessages, setEncryptedMessages] = useState<EncryptedMessage[]>([]);
+  const [displayMessages, setDisplayMessages] = useState<Message[]>([]);
   const [isOnline, setIsOnline] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -32,6 +38,19 @@ const Messages = () => {
     () => communityGroups.find((group) => group.id === communityId),
     [communityId],
   );
+
+  const conversationId = useMemo(() => {
+    if (groupEvent) {
+      return `group:${groupEvent.id}`;
+    }
+    if (communityGroup) {
+      return `community:${communityGroup.id}`;
+    }
+    return "direct:alex-doe";
+  }, [groupEvent, communityGroup]);
+
+  const { encrypt, decrypt, isReady: isEncryptionReady, error: encryptionError } =
+    useEndToEndEncryption(conversationId);
 
   type ParticipantInfo = EventItem["participants"][number] | EventItem["host"];
 
@@ -46,11 +65,14 @@ const Messages = () => {
   }, [groupEvent, communityGroup]);
 
   // Default 1-on-1 chat messages
-  const defaultMessages: Message[] = [
-    { id: 1, sender: "Alex Doe", content: "Hey! How's it going? 👋", time: "10:00 AM", isMine: false },
-    { id: 2, sender: "You", content: "I'm doing great, thanks for asking!", time: "10:01 AM", isMine: true },
-    { id: 3, sender: "Alex Doe", content: "Want to grab coffee later?", time: "10:02 AM", isMine: false },
-  ];
+  const defaultMessages = useMemo<Message[]>(
+    () => [
+      { id: 1, sender: "Alex Doe", content: "Hey! How's it going? 👋", time: "10:00 AM", isMine: false },
+      { id: 2, sender: "You", content: "I'm doing great, thanks for asking!", time: "10:01 AM", isMine: true },
+      { id: 3, sender: "Alex Doe", content: "Want to grab coffee later?", time: "10:02 AM", isMine: false },
+    ],
+    [],
+  );
 
   // Group event messages
   const groupMessages: Message[] = useMemo(() => {
@@ -90,19 +112,101 @@ const Messages = () => {
     }));
   }, [communityGroup]);
 
+  const baseConversationMessages = useMemo(() => {
+    if (groupEvent && groupMessages.length) {
+      return groupMessages;
+    }
+
+    if (communityGroup && communityMessages.length) {
+      return communityMessages;
+    }
+
+    return defaultMessages;
+  }, [communityGroup, communityMessages, defaultMessages, groupEvent, groupMessages]);
+
   useEffect(() => {
-    if (groupEvent) {
-      setMessages(groupMessages);
+    setEncryptedMessages([]);
+    setDisplayMessages([]);
+  }, [conversationId]);
+
+  useEffect(() => {
+    if (!isEncryptionReady) {
       return;
     }
 
-    if (communityGroup) {
-      setMessages(communityMessages);
+    let cancelled = false;
+
+    const secureInitialMessages = async () => {
+      try {
+        const secured = await Promise.all(
+          baseConversationMessages.map(async (message) => {
+            const { content, ...rest } = message;
+            return {
+              ...rest,
+              encryptedContent: await encrypt(content),
+            } satisfies EncryptedMessage;
+          }),
+        );
+
+        if (!cancelled) {
+          setEncryptedMessages(secured);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.error("Failed to secure conversation messages", error);
+          setEncryptedMessages([]);
+        }
+      }
+    };
+
+    setEncryptedMessages([]);
+    void secureInitialMessages();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [baseConversationMessages, encrypt, isEncryptionReady]);
+
+  useEffect(() => {
+    if (!isEncryptionReady) {
       return;
     }
 
-    setMessages(defaultMessages);
-  }, [groupEvent, groupMessages, communityGroup, communityMessages]);
+    if (!encryptedMessages.length) {
+      setDisplayMessages([]);
+      return;
+    }
+
+    let cancelled = false;
+
+    const decryptMessages = async () => {
+      try {
+        const decrypted = await Promise.all(
+          encryptedMessages.map(async (message) => {
+            const { encryptedContent, ...rest } = message;
+            return {
+              ...rest,
+              content: await decrypt(encryptedContent),
+            } satisfies Message;
+          }),
+        );
+
+        if (!cancelled) {
+          setDisplayMessages(decrypted);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.error("Failed to decrypt messages", error);
+        }
+      }
+    };
+
+    void decryptMessages();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [decrypt, encryptedMessages, isEncryptionReady]);
 
   const quickReplies = groupEvent
     ? ["Where's the meetup point?", "Any parking tips?", "Can I bring a friend?"]
@@ -116,7 +220,7 @@ const Messages = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [displayMessages]);
 
   const dynamicSuggestions = useMemo(() => {
     const suggestions: string[] = [];
@@ -142,7 +246,7 @@ const Messages = () => {
       });
     };
 
-    const lastIncomingMessage = [...messages].reverse().find((msg) => !msg.isMine);
+    const lastIncomingMessage = [...displayMessages].reverse().find((msg) => !msg.isMine);
 
     if (groupEvent) {
       addUnique([
@@ -206,20 +310,34 @@ const Messages = () => {
     addUnique(baseSuggestions);
 
     return suggestions.slice(0, 5);
-  }, [messages, groupEvent, communityGroup]);
+  }, [displayMessages, groupEvent, communityGroup]);
 
-  const handleSendMessage = (message: string) => {
-    const newMessage: Message = {
-      id: messages.length + 1,
-      sender: "You",
-      content: message,
-      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      isMine: true,
-    };
-    setMessages((prev) => [...prev, newMessage]);
+  const handleSendMessage = async (message: string) => {
+    if (!isEncryptionReady || encryptionError) {
+      throw new Error(encryptionError ?? "Secure session is not ready");
+    }
+
+    const encryptedContent = await encrypt(message);
+    const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+    setEncryptedMessages((prev) => {
+      const nextId = prev.length ? prev[prev.length - 1].id + 1 : 1;
+      return [
+        ...prev,
+        {
+          id: nextId,
+          sender: "You",
+          encryptedContent,
+          time: timestamp,
+          isMine: true,
+        },
+      ];
+    });
   };
 
-  const handleSelectIcebreaker = (text: string) => handleSendMessage(text);
+  const handleSelectIcebreaker = (text: string) => {
+    void handleSendMessage(text);
+  };
 
   const handleCall = () => {
     console.log("Initiate voice call...");
@@ -326,7 +444,22 @@ const Messages = () => {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 space-y-4">
-        {messages.map((msg) => (
+        <div className="flex justify-center">
+          {encryptionError ? (
+            <span className="text-sm text-destructive text-center">
+              Secure messaging unavailable. Messages are hidden until encryption is restored.
+            </span>
+          ) : isEncryptionReady ? (
+            <Badge variant="outline" className="gap-1 text-xs text-muted-foreground">
+              <Lock className="w-3 h-3" />
+              End-to-end encrypted
+            </Badge>
+          ) : (
+            <span className="text-xs text-muted-foreground">Initializing secure session...</span>
+          )}
+        </div>
+
+        {displayMessages.map((msg) => (
           <div key={msg.id} className={`flex ${msg.isMine ? "justify-end" : "justify-start"}`}>
             <div className={`flex gap-3 max-w-[80%] ${msg.isMine ? "flex-row-reverse" : ""}`}>
               {!msg.isMine && (
@@ -367,6 +500,7 @@ const Messages = () => {
         onSendMessage={handleSendMessage}
         onSelectIcebreaker={handleSelectIcebreaker}
         suggestions={dynamicSuggestions}
+        isDisabled={!isEncryptionReady || Boolean(encryptionError)}
       />
     </div>
   );

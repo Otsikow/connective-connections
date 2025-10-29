@@ -7,23 +7,23 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { 
-  Plus, 
-  Send, 
-  Smile, 
-  Mic, 
-  Volume2, 
+import {
+  Plus,
+  Send,
+  Smile,
+  Mic,
+  Volume2,
   Calendar,
   Image,
-  FileText,
-  MapPin
+  MapPin,
 } from "lucide-react";
 
 interface MessageInputProps {
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: string) => Promise<void> | void;
   onSelectIcebreaker: (icebreaker: string) => void;
   suggestions?: string[];
   className?: string;
+  isDisabled?: boolean;
 }
 
 const FALLBACK_SUGGESTIONS = [
@@ -37,51 +37,80 @@ export const MessageInput = ({
   onSelectIcebreaker,
   suggestions,
   className = "",
+  isDisabled = false,
 }: MessageInputProps) => {
   const [message, setMessage] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleSend = () => {
-    if (message.trim()) {
-      onSendMessage(message.trim());
+  const handleSend = async () => {
+    if (isDisabled || !message.trim()) {
+      return;
+    }
+
+    try {
+      await onSendMessage(message.trim());
       setMessage("");
+    } catch (error) {
+      console.error("Failed to send message", error);
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (isDisabled) {
+      return;
+    }
+
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      void handleSend();
     }
   };
 
   const handleVoiceMessage = () => {
+    if (isDisabled) {
+      return;
+    }
     setIsRecording(!isRecording);
     // TODO: Implement voice recording
   };
 
   const handleTTS = () => {
+    if (isDisabled) {
+      return;
+    }
     // TODO: Implement text-to-speech
     // Placeholder: Could integrate with Web Speech API
   };
 
   const handleScheduleMeetup = () => {
+    if (isDisabled) {
+      return;
+    }
     // TODO: Implement schedule meetup
     // Placeholder: Could open calendar picker modal
   };
 
   const handleEmoji = () => {
+    if (isDisabled) {
+      return;
+    }
     // TODO: Implement emoji picker
     // Placeholder: Could open emoji picker component
   };
 
   const handleImage = () => {
+    if (isDisabled) {
+      return;
+    }
     // TODO: Implement image upload
     // Placeholder: Could trigger file input for image selection
   };
 
   const handleLocation = () => {
+    if (isDisabled) {
+      return;
+    }
     // TODO: Implement location sharing
     // Placeholder: Could use geolocation API
   };
@@ -102,6 +131,7 @@ export const MessageInput = ({
             size="sm"
             onClick={() => onSelectIcebreaker(suggestion)}
             className="h-8 px-3 text-xs whitespace-nowrap hover:bg-muted"
+            disabled={isDisabled}
           >
             {suggestion}
           </Button>
@@ -111,33 +141,33 @@ export const MessageInput = ({
       {/* Input Bar */}
       <div className="flex items-center gap-2">
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-10 w-10 p-0">
+          <DropdownMenuTrigger asChild disabled={isDisabled}>
+            <Button variant="outline" size="sm" className="h-10 w-10 p-0" disabled={isDisabled}>
               <Plus className="w-4 h-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-48">
-            <DropdownMenuItem onClick={handleEmoji}>
+            <DropdownMenuItem onClick={handleEmoji} disabled={isDisabled}>
               <Smile className="w-4 h-4 mr-2" />
               Emoji
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleImage}>
+            <DropdownMenuItem onClick={handleImage} disabled={isDisabled}>
               <Image className="w-4 h-4 mr-2" />
               Photo
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleLocation}>
+            <DropdownMenuItem onClick={handleLocation} disabled={isDisabled}>
               <MapPin className="w-4 h-4 mr-2" />
               Location
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleVoiceMessage}>
+            <DropdownMenuItem onClick={handleVoiceMessage} disabled={isDisabled}>
               <Mic className="w-4 h-4 mr-2" />
               Voice Message
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleTTS}>
+            <DropdownMenuItem onClick={handleTTS} disabled={isDisabled}>
               <Volume2 className="w-4 h-4 mr-2" />
               Text-to-Speech
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleScheduleMeetup}>
+            <DropdownMenuItem onClick={handleScheduleMeetup} disabled={isDisabled}>
               <Calendar className="w-4 h-4 mr-2" />
               Schedule Meetup
             </DropdownMenuItem>
@@ -151,11 +181,12 @@ export const MessageInput = ({
           onKeyPress={handleKeyPress}
           placeholder="Type a message..."
           className="flex-1 rounded-full bg-background border-border"
+          disabled={isDisabled}
         />
 
-        <Button 
-          onClick={handleSend}
-          disabled={!message.trim()}
+        <Button
+          onClick={() => void handleSend()}
+          disabled={isDisabled || !message.trim()}
           className="h-10 w-10 rounded-full bg-[#E8B956] hover:bg-[#d9a840] p-0 disabled:opacity-50"
         >
           <Send className="w-4 h-4 text-charcoal" />
