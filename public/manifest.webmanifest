@@ -1,0 +1,58 @@
+{
+  "name": "Connective - Real Friends. Real Connection.",
+  "short_name": "Connective",
+  "description": "Find meaningful friendships through AI-powered compatibility matching. Connect with real people, join local events, and build genuine relationships in a safe community.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "portrait",
+  "background_color": "#44337a",
+  "theme_color": "#44337a",
+  "categories": ["social", "lifestyle"],
+  "id": "/",
+  "lang": "en-US",
+  "icons": [
+    {
+      "src": "/pwa-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/connective-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Explore Connections",
+      "short_name": "Connections",
+      "description": "Browse curated matches and community spotlights.",
+      "url": "/#discover",
+      "icons": [
+        {
+          "src": "/pwa-icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Join Events",
+      "short_name": "Events",
+      "description": "Find local meetups that fit your vibe.",
+      "url": "/#events",
+      "icons": [
+        {
+          "src": "/pwa-icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
+}
