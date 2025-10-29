@@ -83,7 +83,7 @@ const Events = () => {
         <BackButton
           fallbackPath="/home"
           size="icon"
-          className="absolute left-4 top-4 z-10 bg-background/80 border border-border/60 text-foreground shadow-sm backdrop-blur-sm hover:bg-muted"
+          className="absolute left-6 top-6 z-10 bg-background/80 border border-border/60 text-foreground shadow-sm backdrop-blur-sm hover:bg-muted sm:left-10 sm:top-10"
           ariaLabel="Go back"
         />
         <div className="absolute inset-y-0 -right-32 hidden md:block opacity-20 pointer-events-none">
