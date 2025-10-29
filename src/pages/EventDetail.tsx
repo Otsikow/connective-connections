@@ -245,7 +245,7 @@ const EventDetail = () => {
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                   <Button
                     size="lg"
-                    className="rounded-full bg-primary text-white hover:bg-primary/80"
+                    className="rounded-full bg-primary text-white hover:bg-primary/80 dark:text-black"
                     onClick={handleJoinExperience}
                   >
                     Join the experience
@@ -359,7 +359,7 @@ const EventDetail = () => {
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button
-                className="rounded-full bg-primary text-white hover:bg-primary/80"
+                className="rounded-full bg-primary text-white hover:bg-primary/80 dark:text-black"
                 onClick={() => navigate("/host/create-event")}
               >
                 Start a new event

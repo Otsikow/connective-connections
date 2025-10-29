@@ -101,7 +101,7 @@ const HostDashboard = () => {
           </p>
         </div>
         <Button
-          className="rounded-full bg-primary text-white hover:bg-primary/80 gap-2"
+          className="rounded-full bg-primary text-white hover:bg-primary/80 dark:text-black gap-2"
           onClick={() => navigate("/host/create-experience")}
         >
           <Plus className="h-4 w-4" /> Create Event
@@ -197,7 +197,7 @@ const HostDashboard = () => {
             Create an event and start earning today — share your passion with others.
           </p>
           <Button
-            className="rounded-full bg-primary text-white hover:bg-primary/80"
+            className="rounded-full bg-primary text-white hover:bg-primary/80 dark:text-black"
             onClick={() => navigate("/host/create-event")}
           >
             Create New Event
