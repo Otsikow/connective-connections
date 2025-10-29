@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { isSupabaseConfigured, supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -132,6 +132,11 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const fetchProfile = useCallback(async () => {
+    if (!isSupabaseConfigured) {
+      resetProfileState();
+      return;
+    }
+
     setState((previous) => ({ ...previous, isLoading: true }));
 
     const {
@@ -218,12 +223,17 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
     handleProfileLoaded,
     handleSignedOut,
     isAuthorizationError,
+    isSupabaseConfigured,
     resetProfileState,
     toast,
   ]);
 
   useEffect(() => {
     fetchProfile();
+
+    if (!isSupabaseConfigured) {
+      return undefined;
+    }
 
     const { data: authListener } = supabase.auth.onAuthStateChange((_, session) => {
       if (!isMountedRef.current) return;
@@ -239,7 +249,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       authListener?.subscription.unsubscribe();
     };
-  }, [fetchProfile, handleSignedOut]);
+  }, [fetchProfile, handleSignedOut, isSupabaseConfigured, resetProfileState]);
 
   const openUpgrade = useCallback((prompt: UpgradePrompt) => {
     setUpgradePrompt(prompt);
@@ -251,6 +261,15 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
 
   const recordUsage = useCallback(
     async (action: UsageAction) => {
+      if (!isSupabaseConfigured) {
+        toast({
+          title: "Live usage tracking unavailable",
+          description:
+            "Connective is running in preview mode. Usage limits will reset when backend setup is complete.",
+        });
+        return true;
+      }
+
       if (!userId) {
         toast({
           title: "Please sign in",
@@ -324,7 +343,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
 
       return true;
     },
-    [openUpgrade, state, toast, userId],
+    [isSupabaseConfigured, openUpgrade, state, toast, userId],
   );
 
   const attemptConnection = useCallback(
