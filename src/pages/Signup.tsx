@@ -22,7 +22,11 @@ import {
 import { FcGoogle } from "react-icons/fc";
 import { useToast } from "@/hooks/use-toast";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  getSupabaseRedirectUrl,
+  isSupabaseConfigured,
+  supabase,
+} from "@/integrations/supabase/client";
 import BackButton from "@/components/BackButton";
 import { cn } from "@/lib/utils";
 
@@ -211,9 +215,18 @@ const Signup = () => {
   };
 
   const handleOAuth = async () => {
+    if (!isSupabaseConfigured) {
+      toast({
+        title: "Live sign-up unavailable",
+        description:
+          "Google sign-up is disabled in this preview build. Please create an account with email instead.",
+      });
+      return;
+    }
+
     try {
-      const redirectUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(
-        "/profile-setup"
+      const redirectUrl = `${getSupabaseRedirectUrl("/auth/callback")}?next=${encodeURIComponent(
+        "/profile-setup",
       )}`;
       await supabase.auth.signInWithOAuth({
         provider: "google",

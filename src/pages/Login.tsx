@@ -8,7 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  getSupabaseRedirectUrl,
+  isSupabaseConfigured,
+  supabase,
+} from "@/integrations/supabase/client";
 import { Separator } from "@/components/ui/separator";
 import BackButton from "@/components/BackButton";
 
@@ -57,9 +61,18 @@ const Login = () => {
   };
 
   const handleOAuth = async () => {
+    if (!isSupabaseConfigured) {
+      toast({
+        title: "Live sign-in unavailable",
+        description:
+          "Google sign-in is disabled in this preview build. Please use email and password instead.",
+      });
+      return;
+    }
+
     try {
-      const redirectUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(
-        "/home"
+      const redirectUrl = `${getSupabaseRedirectUrl("/auth/callback")}?next=${encodeURIComponent(
+        "/home",
       )}`;
       await supabase.auth.signInWithOAuth({
         provider: "google",

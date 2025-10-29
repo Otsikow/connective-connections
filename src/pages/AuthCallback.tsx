@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { isSupabaseConfigured, supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
@@ -23,6 +23,16 @@ const AuthCallback = () => {
       toast({
         title: "Authentication error",
         description: errorDescription,
+      });
+      navigate("/login", { replace: true });
+      return;
+    }
+
+    if (!isSupabaseConfigured) {
+      toast({
+        title: "Authentication unavailable",
+        description:
+          "Live authentication is disabled in this preview build. Please try again later.",
       });
       navigate("/login", { replace: true });
       return;
