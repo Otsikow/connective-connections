@@ -2,363 +2,285 @@ import { useNavigate } from "react-router-dom";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import {
   ArrowRight,
+  Brain,
   CalendarDays,
-  Crown,
+  Clock,
+  Compass,
   HeartHandshake,
+  Map,
   MessageCircle,
-  MessagesSquare,
+  Play,
   ShieldCheck,
   Sparkles,
-  Users,
-  UserPlus,
+  Star,
+  Users2,
+  UserCheck,
 } from "lucide-react";
-import { Logo } from "@/components/Logo";
-import eventsImage from "@/assets/onboarding-1.png";
-import connectionsImage from "@/assets/onboarding-2.png";
-import groupsImage from "@/assets/onboarding-3.png";
+import experienceImage from "@/assets/onboarding-1.png";
 
-const heroHighlights = [
+const experienceCards = [
   {
-    icon: CalendarDays,
-    title: "World-class events",
+    icon: Clock,
+    title: "Intimate salons",
     description:
-      "Join salons, retreats, and masterminds hosted by tastemakers in every major innovation hub.",
+      "Weekly gatherings curated for candid conversation and co-creation with founders, creatives, and investors.",
+    detail: "Hosted in penthouses, ateliers, and private clubs across 12 global cities.",
   },
   {
-    icon: Users,
-    title: "Find your circle",
+    icon: Map,
+    title: "Signature retreats",
     description:
-      "Discover people who match your energy with chemistry scores and curated introductions.",
+      "Immersive weekends designed for restoration, collaboration, and unlocking your next chapter together.",
+    detail: "From Napa estates to coastal hideaways, every itinerary is handcrafted.",
   },
   {
-    icon: MessagesSquare,
-    title: "Always-on chats",
+    icon: Users2,
+    title: "Priority introductions",
     description:
-      "Drop into themed channels and keep the momentum going long after the event ends.",
-  },
-  {
-    icon: UserPlus,
-    title: "Launch private groups",
-    description:
-      "Spin up your own mastermind or interest club with moderation tools built for leaders.",
+      "Curated matches backed by neuroscience ensure every connection has the potential to become transformational.",
+    detail: "Receive warm intros, mastermind circles, and follow-up playbooks each month.",
   },
 ];
 
-const premiumHighlights = [
+const journeyHighlights = [
   {
     icon: Sparkles,
-    title: "Concierge onboarding",
+    title: "Membership concierge",
     description:
-      "Get a tailored welcome plan and handpicked member intros from our community team.",
+      "A dedicated team architecting your first 90 days with white-glove onboarding and bespoke pathways.",
   },
   {
-    icon: HeartHandshake,
-    title: "Verified hosts",
+    icon: Brain,
+    title: "Neuroscience-backed matching",
     description:
-      "Every experience is led by trusted facilitators who champion safe, inclusive spaces.",
+      "Proprietary chemistry scores align energy, intention, and ambition for every member introduction.",
+  },
+  {
+    icon: Compass,
+    title: "Intention frameworks",
+    description:
+      "Curated prompts, ritualized check-ins, and thematic salons keep every interaction purposeful.",
   },
   {
     icon: MessageCircle,
-    title: "Guided conversations",
+    title: "Integrated follow-ups",
     description:
-      "Arrive prepared with prompts, conversation starters, and curated follow-up connections.",
+      "Momentum continues with guided recaps, warm referrals, and digital salons between in-person gatherings.",
   },
 ];
 
-const capabilityCards = [
+const journeyStats = [
   {
-    title: "Signature events calendar",
-    description:
-      "Reserve your spot at invite-only gatherings designed to stretch your thinking and grow your network.",
-    icon: CalendarDays,
-    image: eventsImage,
-    badge: "Events",
+    value: "92%",
+    label: "Report transformative collaborations within 60 days",
   },
   {
-    title: "Find friends with intent",
-    description:
-      "Match with founders, creatives, and operators who mirror your pace and passions.",
-    icon: Users,
-    image: connectionsImage,
-    badge: "Connections",
+    value: "48hrs",
+    label: "Average time to first curated introduction",
   },
   {
-    title: "Meaningful chats",
-    description:
-      "Drop into moderated channels that keep ideas flowing between IRL meetups.",
-    icon: MessagesSquare,
-    image: connectionsImage,
-    badge: "Chats",
-  },
-  {
-    title: "Create your own groups",
-    description:
-      "Build private spaces, set the vibe, and invite collaborators to grow alongside you.",
-    icon: UserPlus,
-    image: groupsImage,
-    badge: "Groups",
+    value: "12",
+    label: "Global cities with active Connective hosts",
   },
 ];
 
 const testimonials = [
   {
+    quote:
+      "The intentionality is unmatched. Every dinner and retreat unlocked new collaborators and dear friends.",
     name: "Daniela P.",
     title: "Product Designer, NYC",
-    quote:
-      "I met my closest circle through Connective. The community is electric and the events are unmatched.",
   },
   {
-    name: "Ravi N.",
-    title: "Startup Founder, SF",
     quote:
-      "Priority introductions paired me with collaborators that helped me triple my customer base in 60 days.",
+      "Within weeks I had investors, co-builders, and accountability partners who genuinely understood my vision.",
+    name: "Ravi N.",
+    title: "Founder, SF",
   },
+  {
+    quote:
+      "The neuroscience-led matching paired me with a mentor who helped me scale a global initiative in record time.",
+    name: "Leah M.",
+    title: "Social Impact Strategist, London",
+  },
+];
+
+const membershipBenefits = [
+  "Curated events in 12 cities with world-class hosts",
+  "Monthly mastermind matches aligned to your goals",
+  "Private digital salon access with guided prompts",
+  "Concierge travel planning for retreats and residencies",
+  "Trust & safety protocols led by our member council",
+  "Impact reporting so every connection creates momentum",
 ];
 
 const Splash = () => {
   const navigate = useNavigate();
-  usePageTitle("Welcome to Connective Connections");
+  usePageTitle("Connective Connections | Exclusive Membership");
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-200 text-slate-900">
-      {/* Background accents */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -left-24 top-32 h-72 w-72 rounded-full bg-gradient-to-br from-indigo-200/70 via-sky-100 to-transparent blur-3xl" />
-        <div className="absolute right-24 top-16 h-80 w-80 rounded-full bg-gradient-to-br from-amber-200/80 via-orange-100 to-transparent blur-3xl" />
-        <div className="absolute bottom-[-6rem] right-[-4rem] h-[22rem] w-[22rem] rounded-full bg-gradient-to-br from-rose-200/60 via-pink-100 to-transparent blur-3xl" />
+    <div className="relative min-h-screen overflow-hidden bg-slate-950 text-slate-100">
+      <div className="pointer-events-none absolute inset-0 -z-10 opacity-70">
+        <div className="absolute left-[-10%] top-[-15%] h-[28rem] w-[28rem] rounded-full bg-amber-500/20 blur-[120px]" />
+        <div className="absolute right-[-15%] top-[20%] h-[32rem] w-[32rem] rounded-full bg-indigo-500/20 blur-[130px]" />
+        <div className="absolute bottom-[-20%] right-[-5%] h-[30rem] w-[30rem] rounded-full bg-purple-500/20 blur-[140px]" />
       </div>
 
-      {/* Content wrapper */}
-      <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col px-6 pb-20 pt-10 sm:px-10 lg:px-16">
-        {/* Header */}
-        <header className="flex items-center justify-between">
-          <Logo
-            size="md"
-            tagline="WHERE THE RIGHT PEOPLE MEET"
-            taglineClassName="text-[0.6rem] tracking-[0.5em] text-slate-500"
-            className="scale-[0.92] sm:scale-100"
-          />
-          <nav className="hidden items-center gap-8 text-sm font-medium text-slate-600 lg:flex">
-            <button
-              className="transition hover:text-slate-900"
-              onClick={() => navigate("/events")}
-            >
-              Events
-            </button>
-            <button
-              className="transition hover:text-slate-900"
-              onClick={() => navigate("/community")}
-            >
-              Community
-            </button>
-            <button
-              className="transition hover:text-slate-900"
-              onClick={() => navigate("/matches")}
-            >
-              Matching
-            </button>
-            <button
-              className="transition hover:text-slate-900"
-              onClick={() => navigate("/login")}
-            >
-              Sign in
-            </button>
+      <div className="relative mx-auto flex min-h-screen max-w-4xl flex-col px-6 pb-24 pt-16 sm:px-10 lg:px-0">
+        <header className="flex flex-col items-center text-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-amber-400/40 bg-amber-500/10 px-4 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.35em] text-amber-200">
+            Connective Connections
+          </span>
+          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.5em] text-slate-400">
+            Exclusive Experiential Membership
+          </p>
+          <h1 className="mt-6 text-balance text-4xl font-semibold leading-tight sm:text-5xl">
+            The future of connection is curated.
+          </h1>
+          <p className="mt-6 max-w-2xl text-pretty text-lg text-slate-300 sm:text-xl">
+            Backed by neuroscience and crafted by world-class hosts, Connective orchestrates immersive experiences
+            where ambitious humans build relationships that accelerate their impact.
+          </p>
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             <button
               onClick={() => navigate("/signup")}
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 px-5 py-2 text-slate-900 shadow-lg shadow-amber-300/60 transition hover:shadow-xl hover:shadow-amber-300"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 px-8 py-3 text-sm font-semibold text-slate-950 shadow-[0_12px_30px_-12px_rgba(250,204,21,0.6)] transition hover:scale-[1.02]"
             >
-              Join Connective
-              <ArrowRight className="h-4 w-4" />
+              <Sparkles className="h-4 w-4" /> Request an invite
             </button>
-          </nav>
+            <button
+              onClick={() => navigate("/events")}
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/70 px-8 py-3 text-sm font-semibold text-slate-200 transition hover:border-slate-600"
+            >
+              <CalendarDays className="h-4 w-4" /> Explore upcoming salons
+            </button>
+          </div>
         </header>
 
-        {/* Hero Section */}
-        <main className="grid flex-1 gap-16 pt-20 lg:grid-cols-[minmax(0,1fr)_480px] lg:pt-28">
-          <section className="max-w-2xl space-y-10">
-            <div className="space-y-6">
-              <span className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-amber-700">
-                <Crown className="h-3.5 w-3.5" /> Pro perks unlocked
-              </span>
-              <h1 className="text-4xl font-bold leading-tight text-slate-900 sm:text-5xl lg:text-6xl">
-                Elevate your connections experience with curated communities and unforgettable events.
-              </h1>
-              <p className="text-lg text-slate-600 sm:text-xl">
-                Connective is the members-only platform designed to help leaders, creators, and connectors build meaningful relationships in real life. Discover experiences tailored to your ambitions and passions.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-4 sm:flex-row">
-              <button
-                onClick={() => navigate("/signup")}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 px-8 py-3 text-base font-semibold text-white shadow-lg shadow-indigo-200 transition hover:scale-[1.02] hover:shadow-xl hover:shadow-indigo-300"
-              >
-                Start your membership
-                <ArrowRight className="h-5 w-5" />
-              </button>
-              <button
-                onClick={() => navigate("/host-dashboard")}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 px-8 py-3 text-base font-semibold text-slate-800 transition hover:border-slate-400 hover:bg-slate-100"
-              >
-                Host an experience
-              </button>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              {heroHighlights.map((item) => (
-                <div
-                  key={item.title}
-                  className="rounded-2xl border border-slate-200 bg-white/90 p-5 shadow-lg shadow-slate-100"
+        <section className="mt-16">
+          <div className="relative overflow-hidden rounded-[2rem] border border-slate-800/60 bg-gradient-to-br from-slate-900/80 via-slate-950 to-slate-950">
+            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-amber-500/10 via-transparent to-transparent" />
+            <img
+              src={experienceImage}
+              alt="Members connecting"
+              className="h-[340px] w-full object-cover opacity-70"
+            />
+            <div className="absolute inset-0 flex flex-col justify-between p-8 sm:p-10">
+              <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.35em] text-slate-300">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-amber-400/20 text-amber-200">
+                  <Star className="h-4 w-4" />
+                </span>
+                Connection begins here
+              </div>
+              <div className="space-y-4">
+                <p className="text-sm uppercase tracking-[0.4em] text-slate-400">Immersive storytelling</p>
+                <h2 className="text-3xl font-semibold text-white sm:text-4xl">
+                  Step inside a world designed for meaningful chemistry.
+                </h2>
+                <button
+                  onClick={() => navigate("/home")}
+                  className="inline-flex items-center gap-2 rounded-full border border-amber-300/40 bg-amber-400/10 px-6 py-2 text-sm font-semibold text-amber-200 transition hover:bg-amber-400/20"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
-                      <item.icon className="h-5 w-5" />
-                    </div>
-                    <p className="text-base font-semibold text-slate-900">
-                      {item.title}
-                    </p>
-                  </div>
-                  <p className="mt-3 text-sm text-slate-600">
-                    {item.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Sidebar */}
-          <aside className="relative">
-            <div className="absolute inset-0 rounded-3xl bg-white/80 shadow-2xl shadow-slate-200" />
-            <div className="relative space-y-6 rounded-3xl border border-slate-100 bg-white/90 p-8 shadow-lg">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.35em] text-indigo-500">
-                      Pro perks
-                    </p>
-                    <h2 className="mt-2 text-2xl font-semibold text-slate-900">
-                      Unlock the full experience
-                    </h2>
-                  </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 text-white shadow-lg shadow-indigo-200">
-                    <Crown className="h-6 w-6" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  {[eventsImage, connectionsImage, groupsImage].map((image, index) => (
-                    <div
-                      key={index}
-                      className={`overflow-hidden rounded-2xl border border-slate-100 ${
-                        index === 0 ? "col-span-2" : ""
-                      }`}
-                    >
-                      <img
-                        src={image}
-                        alt="Connective experience"
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                {premiumHighlights.map((item) => (
-                  <div
-                    key={item.title}
-                    className="flex gap-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4"
-                  >
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 text-indigo-500">
-                      <item.icon className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <p className="text-base font-semibold text-slate-900">
-                        {item.title}
-                      </p>
-                      <p className="text-sm text-slate-600">
-                        {item.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  <Play className="h-4 w-4" /> Watch story
+                </button>
               </div>
             </div>
-          </aside>
-        </main>
-
-        {/* Safety section */}
-        <section className="mt-24">
-          <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-indigo-50 via-white to-amber-50 p-6 text-sm text-slate-600">
-            <p className="font-semibold text-slate-900">
-              Trust & safety comes first
-            </p>
-            <p className="mt-2 flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-indigo-500">
-              <ShieldCheck className="h-4 w-4" /> Verified hosts • Moderated communities
-            </p>
           </div>
         </section>
 
-        {/* Testimonials */}
-        <section className="mt-24 grid gap-8 lg:grid-cols-[1.6fr_1fr]">
-          <div className="rounded-3xl border border-slate-200 bg-white/90 p-8 shadow-xl shadow-slate-200">
-            <h3 className="text-2xl font-semibold text-slate-900">
-              Why leaders choose Connective
-            </h3>
-            <div className="mt-6 grid gap-6 sm:grid-cols-2">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-6">
-                <CalendarDays className="h-6 w-6 text-indigo-500" />
-                <h4 className="mt-4 text-lg font-semibold text-slate-900">
-                  Curated calendar
-                </h4>
-                <p className="mt-2 text-sm text-slate-600">
-                  Attend premium salons, masterminds, and adventures
-                  tailored to your ambitions.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-6">
-                <MessageCircle className="h-6 w-6 text-indigo-500" />
-                <h4 className="mt-4 text-lg font-semibold text-slate-900">
-                  Real relationships
-                </h4>
-                <p className="mt-2 text-sm text-slate-600">
-                  Spark deeper conversations with immersive prompts and shared passions.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-6">
-                <HeartHandshake className="h-6 w-6 text-indigo-500" />
-                <h4 className="mt-4 text-lg font-semibold text-slate-900">
-                  Global host network
-                </h4>
-                <p className="mt-2 text-sm text-slate-600">
-                  Access vetted hosts and members across hubs worldwide.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-6">
-                <Sparkles className="h-6 w-6 text-indigo-500" />
-                <h4 className="mt-4 text-lg font-semibold text-slate-900">
-                  Moments that stay with you
-                </h4>
-                <p className="mt-2 text-sm text-slate-600">
-                  From rooftop tastings to retreats, every event builds lasting memories.
-                </p>
-              </div>
-            </div>
+        <section className="mt-20 space-y-8">
+          <div className="text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-amber-200">Crafted experiences</p>
+            <h2 className="mt-4 text-balance text-3xl font-semibold sm:text-4xl">
+              Curated experiences crafted for depth.
+            </h2>
+            <p className="mt-4 text-pretty text-base text-slate-300">
+              Every gathering is intentionally designed to foster vulnerability, brilliance, and long-term collaboration.
+            </p>
           </div>
+          <div className="grid gap-6">
+            {experienceCards.map((card) => (
+              <div
+                key={card.title}
+                className="rounded-3xl border border-slate-800/70 bg-slate-900/80 p-8 shadow-[0_25px_60px_-40px_rgba(15,23,42,0.8)]"
+              >
+                <div className="flex items-start gap-5">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-400/15 text-amber-200">
+                    <card.icon className="h-6 w-6" />
+                  </div>
+                  <div className="space-y-3 text-left">
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">{card.title}</h3>
+                      <p className="mt-3 text-sm text-slate-300">{card.description}</p>
+                    </div>
+                    <p className="text-xs uppercase tracking-[0.35em] text-slate-500">{card.detail}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
 
-          <div className="space-y-6">
+        <section className="mt-24 space-y-12">
+          <div className="space-y-6 text-center">
+            <span className="inline-flex items-center gap-2 rounded-full border border-slate-800/60 bg-slate-900/80 px-4 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-slate-400">
+              Your journey
+            </span>
+            <h2 className="text-balance text-3xl font-semibold sm:text-4xl">
+              Your curated journey is guided by experts.
+            </h2>
+            <p className="mx-auto max-w-2xl text-pretty text-base text-slate-300">
+              We combine human insight with proprietary intelligence so every step feels intentional, elevated, and
+              uniquely yours.
+            </p>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-3">
+            {journeyStats.map((stat) => (
+              <div key={stat.label} className="rounded-3xl border border-slate-800/60 bg-slate-900/80 p-6 text-left">
+                <p className="text-4xl font-semibold text-white">{stat.value}</p>
+                <p className="mt-3 text-sm text-slate-400">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2">
+            {journeyHighlights.map((highlight) => (
+              <div
+                key={highlight.title}
+                className="flex h-full flex-col gap-4 rounded-3xl border border-slate-800/60 bg-slate-900/80 p-6 text-left"
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-400/15 text-amber-200">
+                  <highlight.icon className="h-6 w-6" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-white">{highlight.title}</h3>
+                  <p className="text-sm text-slate-300">{highlight.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-24 space-y-10">
+          <div className="text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-amber-200">Member stories</p>
+            <h2 className="mt-4 text-balance text-3xl font-semibold sm:text-4xl">What members say.</h2>
+            <p className="mt-4 text-pretty text-base text-slate-300">
+              Intentionality meets momentum. Hear how Connective members translate chemistry into lasting impact.
+            </p>
+          </div>
+          <div className="grid gap-6">
             {testimonials.map((testimonial) => (
               <div
                 key={testimonial.name}
-                className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-lg shadow-slate-200"
+                className="rounded-3xl border border-slate-800/60 bg-slate-900/80 p-8 text-left shadow-[0_25px_60px_-40px_rgba(15,23,42,0.9)]"
               >
-                <p className="text-sm uppercase tracking-[0.3em] text-indigo-500">
-                  Member story
-                </p>
-                <p className="mt-4 text-lg font-semibold text-slate-900">
+                <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">
+                  <ShieldCheck className="h-4 w-4 text-amber-200" /> Verified member
+                </div>
+                <p className="mt-6 text-lg text-white">
                   “{testimonial.quote}”
                 </p>
-                <p className="mt-6 text-sm font-medium text-slate-600">
+                <p className="mt-6 text-sm font-semibold text-slate-400">
                   {testimonial.name} · {testimonial.title}
                 </p>
               </div>
@@ -366,34 +288,45 @@ const Splash = () => {
           </div>
         </section>
 
-        {/* Final CTA */}
-        <section className="mt-20 overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-r from-indigo-500 via-purple-500 to-rose-500 p-[1px] shadow-2xl shadow-slate-300">
-          <div className="flex h-full w-full flex-col items-start gap-8 rounded-[calc(theme(borderRadius.3xl)-1px)] bg-white/95 p-10 text-left sm:flex-row sm:items-center sm:justify-between">
-            <div className="max-w-2xl space-y-4">
-              <p className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-indigo-500">
-                <Users className="h-3.5 w-3.5" /> Ready to unlock your next chapter?
-              </p>
-              <h3 className="text-3xl font-semibold text-slate-900 sm:text-4xl">
-                Join the most intentional community of leaders, innovators, and connectors.
-              </h3>
-              <p className="text-base text-slate-600">
-                Claim your invite today and get instant access to exclusive introductions, curated events, and a network that accelerates your growth.
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <button
-                onClick={() => navigate("/signup")}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-indigo-600 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-indigo-300 transition hover:scale-105 hover:bg-indigo-500"
-              >
-                Become a member
-                <ArrowRight className="h-5 w-5" />
-              </button>
-              <button
-                onClick={() => navigate("/login")}
-                className="inline-flex items-center justify-center rounded-full border border-indigo-200 px-6 py-3 text-base font-semibold text-indigo-600 transition hover:border-indigo-400 hover:bg-indigo-50"
-              >
-                I already have an account
-              </button>
+        <section className="mt-24">
+          <div className="overflow-hidden rounded-[2rem] border border-amber-400/40 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-950 p-[1px]">
+            <div className="flex h-full w-full flex-col gap-10 rounded-[calc(theme(borderRadius.4xl)-1px)] bg-slate-950/95 p-10">
+              <div className="space-y-4">
+                <span className="inline-flex w-fit items-center gap-2 rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-amber-200">
+                  Membership benefits
+                </span>
+                <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
+                  Membership benefits designed to elevate every interaction.
+                </h2>
+                <p className="max-w-2xl text-pretty text-base text-slate-300">
+                  From curated introductions to immersive residencies, every benefit is engineered so your circle, influence,
+                  and wellbeing expand in tandem.
+                </p>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {membershipBenefits.map((benefit) => (
+                  <div key={benefit} className="flex items-start gap-4 text-left">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-400/15 text-amber-200">
+                      <UserCheck className="h-5 w-5" />
+                    </div>
+                    <p className="text-sm text-slate-300">{benefit}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <button
+                  onClick={() => navigate("/signup")}
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 px-8 py-3 text-sm font-semibold text-slate-950 shadow-[0_12px_30px_-12px_rgba(250,204,21,0.6)] transition hover:scale-[1.02]"
+                >
+                  <ArrowRight className="h-4 w-4" /> Start your application
+                </button>
+                <button
+                  onClick={() => navigate("/login")}
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/80 px-8 py-3 text-sm font-semibold text-slate-200 transition hover:border-slate-600"
+                >
+                  <HeartHandshake className="h-4 w-4" /> Already a member?
+                </button>
+              </div>
             </div>
           </div>
         </section>
