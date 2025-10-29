@@ -200,19 +200,20 @@ const Home = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-background via-background to-muted/30 pb-32">
+    <div className="relative min-h-screen bg-[radial-gradient(circle_at_top,_#f6f9ff,_#fffdf6_55%,_#fff8ed)] pb-32 text-slate-800 dark:bg-gradient-to-b dark:from-slate-950 dark:via-slate-950/90 dark:to-slate-900">
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[520px] bg-[radial-gradient(120%_60%_at_50%_-20%,rgba(244,244,255,0.8),rgba(244,244,255,0)),radial-gradient(80%_50%_at_0%_0%,rgba(255,240,220,0.7),rgba(255,240,220,0))] dark:hidden" />
       {/* Header */}
-      <header className="sticky top-0 z-30 border-b border-border/60 backdrop-blur bg-background/80">
+      <header className="sticky top-0 z-30 border-b border-white/40 bg-white/85 backdrop-blur-xl shadow-[0_1px_0_rgba(15,23,42,0.08)] transition-all dark:border-slate-800/60 dark:bg-slate-950/70 dark:shadow-none">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <div className="flex items-center gap-3">
             <BackButton fallbackPath="/" className="hidden sm:inline-flex" />
             <div className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E8B956]/20">
-                <Sparkles className="h-5 w-5 text-[#E8B956]" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#fce9c8] via-[#f8d7bd] to-[#f5cde2] shadow-sm">
+                <Sparkles className="h-5 w-5 text-[#c27b1b]" />
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Welcome to</p>
-                <h1 className="text-xl font-bold tracking-tight">Connective</h1>
+                <p className="text-sm font-medium text-slate-500">Welcome to</p>
+                <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Connective</h1>
               </div>
             </div>
           </div>
@@ -221,7 +222,7 @@ const Home = () => {
               Log in
             </Button>
             <Button
-              className="rounded-full bg-[#E8B956] px-4 text-sm font-semibold text-black hover:bg-[#d9a840]"
+              className="rounded-full bg-[#f7c145] px-4 text-sm font-semibold text-black shadow-sm hover:bg-[#f3b52a]"
               onClick={() => navigate("/signup")}
             >
               Join now
@@ -237,21 +238,23 @@ const Home = () => {
       {/* Feature tabs */}
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 pt-10 sm:px-6 lg:pt-16">
         {/* Hero */}
-        <section className="relative overflow-hidden rounded-4xl border border-border/70 bg-card/90 p-8 shadow-xl sm:p-12">
+        <section className="relative overflow-hidden rounded-4xl border border-white/70 bg-white/95 p-8 shadow-[0_25px_70px_-30px_rgba(148,163,184,0.55)] backdrop-blur-sm transition dark:border-slate-800/70 dark:bg-slate-950/80">
+          <div className="pointer-events-none absolute -right-12 top-[-120px] h-64 w-64 rounded-full bg-[radial-gradient(circle,_rgba(253,236,200,0.55),_rgba(255,255,255,0))]" />
+          <div className="pointer-events-none absolute -left-10 bottom-[-160px] h-72 w-72 rounded-full bg-[radial-gradient(circle,_rgba(214,231,255,0.45),_rgba(255,255,255,0))]" />
           <div className="relative z-10 space-y-6">
-            <Badge className="rounded-full bg-[#E8B956]/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#b3852f]">
+            <Badge className="rounded-full bg-gradient-to-r from-[#fbe7c0] via-[#ffe6d5] to-[#f5f0ff] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#b27a1d] shadow-sm">
               Experience connections differently
             </Badge>
-            <h2 className="text-3xl font-bold sm:text-5xl">
+            <h2 className="text-3xl font-bold text-slate-900 sm:text-5xl dark:text-white">
               A social universe built for discovering friends, experiences, and conversations that stick.
             </h2>
-            <p className="max-w-xl text-base text-muted-foreground sm:text-lg">
+            <p className="max-w-2xl text-base text-slate-600 sm:text-lg dark:text-slate-200">
               Connective helps you find people you vibe with, join curated events, and chat with natural prompts.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <Button
                 size="lg"
-                className="rounded-full bg-[#E8B956] text-black hover:bg-[#d9a840]"
+                className="rounded-full bg-[#f7c145] text-black shadow-sm hover:bg-[#f3b52a]"
                 onClick={() => handleNavigate("/signup")}
               >
                 Get started
@@ -259,7 +262,7 @@ const Home = () => {
               <Button
                 size="lg"
                 variant="outline"
-                className="rounded-full"
+                className="rounded-full border-slate-200 bg-white/80 text-slate-700 hover:bg-white"
                 onClick={() => handleNavigate("/splash")}
               >
                 <PlayCircle className="mr-2 h-5 w-5" /> Watch walkthrough
@@ -270,23 +273,23 @@ const Home = () => {
 
         {/* Feature journeys */}
         <section>
-          <h3 className="text-2xl font-bold mb-3">Choose your next move</h3>
+          <h3 className="mb-3 text-2xl font-bold text-slate-900 dark:text-white">Choose your next move</h3>
           <Tabs value={activeFeature} onValueChange={setActiveFeature} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 rounded-full bg-muted/60 p-1">
+            <TabsList className="grid w-full grid-cols-4 rounded-full bg-white/80 p-1 shadow-inner backdrop-blur dark:bg-slate-900/50">
               {features.map((feature) => (
                 <TabsTrigger
                   key={feature.value}
                   value={feature.value}
-                  className="rounded-full data-[state=active]:bg-background data-[state=active]:text-foreground"
+                  className="rounded-full text-slate-500 transition data-[state=active]:bg-[#fef7e6] data-[state=active]:text-slate-900 data-[state=active]:shadow-sm dark:text-slate-300 dark:data-[state=active]:bg-slate-800 dark:data-[state=active]:text-white"
                 >
                   {feature.title.split(" ")[0]}
                 </TabsTrigger>
               ))}
             </TabsList>
             <TabsContent value={selectedFeature.value} className="mt-6">
-              <Card className="border-border bg-background/80 p-6">
+              <Card className="border border-white/70 bg-white/95 p-6 shadow-[0_20px_45px_-25px_rgba(148,163,184,0.6)] dark:border-slate-800/70 dark:bg-slate-950/80">
                 <CardHeader>
-                  <Badge className={`w-fit px-3 py-1 text-xs font-semibold ${selectedFeature.accent}`}>
+                  <Badge className={`w-fit rounded-full px-3 py-1 text-xs font-semibold shadow-sm ${selectedFeature.accent}`}>
                     {selectedFeature.highlight}
                   </Badge>
                   <CardTitle>{selectedFeature.title}</CardTitle>
@@ -294,7 +297,7 @@ const Home = () => {
                 </CardHeader>
                 <CardContent>
                   <Button
-                    className="rounded-full bg-[#E8B956] text-black hover:bg-[#d9a840]"
+                    className="rounded-full bg-[#f7c145] text-black shadow-sm hover:bg-[#f3b52a]"
                     onClick={() => handleNavigate(selectedFeature.cta.path, selectedFeature.cta.requiresSubscription)}
                   >
                     {selectedFeature.cta.label}
@@ -307,9 +310,9 @@ const Home = () => {
 
         {/* Featured experiences + communities */}
         <section className="grid gap-6 lg:grid-cols-2">
-          <Card className="p-6">
+          <Card className="border border-white/70 bg-white/95 p-6 shadow-[0_25px_60px_-30px_rgba(148,163,184,0.5)] dark:border-slate-800/70 dark:bg-slate-950/80">
             <CardHeader>
-              <CardTitle>Featured Experiences</CardTitle>
+              <CardTitle className="text-slate-900 dark:text-white">Featured Experiences</CardTitle>
               <CardDescription>Events hosted by trusted members near you</CardDescription>
             </CardHeader>
             <CardContent>
@@ -317,7 +320,7 @@ const Home = () => {
                 <CarouselContent>
                   {upcomingEvents.map((event) => (
                     <CarouselItem key={event.id} className="md:basis-1/2">
-                      <div className="overflow-hidden rounded-3xl border bg-background/70 shadow-sm">
+                      <div className="overflow-hidden rounded-3xl border border-white/70 bg-white/95 shadow-[0_15px_35px_-20px_rgba(148,163,184,0.5)] backdrop-blur-sm dark:border-slate-800/70 dark:bg-slate-900">
                         <div className="relative h-48 w-full overflow-hidden">
                           <img
                             src={event.image}
@@ -329,7 +332,7 @@ const Home = () => {
                             {event.tags.map((tag) => (
                               <Badge
                                 key={`${event.id}-${tag}`}
-                                className="rounded-full bg-background/80 px-3 py-1 text-xs font-medium text-foreground backdrop-blur"
+                                className="rounded-full bg-white/85 px-3 py-1 text-xs font-medium text-slate-700 backdrop-blur dark:bg-slate-900/70 dark:text-slate-100"
                               >
                                 {tag}
                               </Badge>
@@ -350,11 +353,11 @@ const Home = () => {
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center justify-between text-sm text-muted-foreground">
+                          <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-300">
                             <span>{event.attendees}+ attending</span>
                             <Button
                               size="sm"
-                              className="rounded-full bg-[#E8B956] px-5 text-black hover:bg-[#d9a840]"
+                              className="rounded-full bg-[#f7c145] px-5 text-black shadow-sm hover:bg-[#f3b52a]"
                               onClick={() => handleNavigate(`/events/${event.id}`)}
                             >
                               Join Event
@@ -379,17 +382,17 @@ const Home = () => {
             </CardContent>
           </Card>
 
-          <Card className="p-6">
+          <Card className="border border-white/70 bg-white/95 p-6 shadow-[0_25px_60px_-30px_rgba(148,163,184,0.5)] dark:border-slate-800/70 dark:bg-slate-950/80">
             <CardHeader>
-              <CardTitle>Communities You Should See</CardTitle>
+              <CardTitle className="text-slate-900 dark:text-white">Communities You Should See</CardTitle>
               <CardDescription>Preview and join local groups</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {communityStories.map((c) => (
-                <div key={c.name} className="rounded-xl border p-4">
-                  <p className="font-semibold">{c.name}</p>
-                  <p className="text-sm text-muted-foreground">{c.description}</p>
-                  <Badge className="mt-2 rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
+                <div key={c.name} className="rounded-xl border border-slate-100 bg-white/80 p-4 shadow-sm transition hover:border-[#f7c145]/50 hover:shadow-[0_15px_30px_-25px_rgba(247,193,69,0.7)] dark:border-slate-800 dark:bg-slate-900/70">
+                  <p className="font-semibold text-slate-900 dark:text-white">{c.name}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-300">{c.description}</p>
+                  <Badge className="mt-2 rounded-full bg-[#fef7e6] px-3 py-1 text-xs text-slate-600 shadow-sm dark:bg-slate-800 dark:text-slate-200">
                     {c.members}
                   </Badge>
                 </div>
@@ -401,17 +404,20 @@ const Home = () => {
         {/* Testimonials */}
         <section className="grid gap-6 lg:grid-cols-2">
           {testimonials.map((t) => (
-            <Card key={t.author} className="p-6">
+            <Card
+              key={t.author}
+              className="border border-white/70 bg-white/95 p-6 shadow-[0_20px_50px_-28px_rgba(148,163,184,0.6)] transition hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(148,163,184,0.65)] dark:border-slate-800/70 dark:bg-slate-950/80"
+            >
               <CardContent className="space-y-4">
-                <p className="text-lg font-medium">“{t.quote}”</p>
+                <p className="text-lg font-medium text-slate-800 dark:text-slate-100">“{t.quote}”</p>
                 <div className="flex items-center gap-3">
                   <Avatar className="h-12 w-12">
                     <AvatarImage src="/placeholder.svg" />
                     <AvatarFallback>{t.author[0]}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-semibold">{t.author}</p>
-                    <p className="text-sm text-muted-foreground">{t.role}</p>
+                    <p className="font-semibold text-slate-900 dark:text-white">{t.author}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-300">{t.role}</p>
                   </div>
                 </div>
               </CardContent>
@@ -424,14 +430,14 @@ const Home = () => {
       <Dialog open={showSubscribePrompt} onOpenChange={setShowSubscribePrompt}>
         <DialogContent>
           <DialogHeader>
-            <Badge className="w-fit rounded-full bg-[#E8B956]/20 text-[#a0772d]">Pro Exclusive</Badge>
+            <Badge className="w-fit rounded-full bg-[#fef3d5] text-[#a0772d]">Pro Exclusive</Badge>
             <DialogTitle>Upgrade to unlock this experience</DialogTitle>
             <DialogDescription>
               Messaging, premium communities, and hosted events are part of Connective Pro. Subscribe to access them.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-3">
-            <Button className="rounded-full bg-[#E8B956] text-black" onClick={() => handleNavigate("/profile")}>
+            <Button className="rounded-full bg-[#f7c145] text-black shadow-sm hover:bg-[#f3b52a]" onClick={() => handleNavigate("/profile")}>
               Subscribe now
             </Button>
             <Button variant="outline" className="rounded-full" onClick={() => setShowSubscribePrompt(false)}>
@@ -443,7 +449,7 @@ const Home = () => {
 
       {/* Floating CTA */}
       <Button
-        className="fixed bottom-20 right-4 z-40 flex items-center gap-2 rounded-full bg-[#E8B956] px-5 py-3 text-sm font-semibold text-black shadow-lg hover:bg-[#d9a840]"
+        className="fixed bottom-20 right-4 z-40 flex items-center gap-2 rounded-full bg-[#f7c145] px-5 py-3 text-sm font-semibold text-black shadow-lg hover:bg-[#f3b52a]"
         onClick={() => handleNavigate("/host/create-event")}
       >
         <Send className="h-4 w-4" /> Host an experience
