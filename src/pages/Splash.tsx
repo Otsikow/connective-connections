@@ -32,12 +32,6 @@ const premiumHighlights = [
   },
 ];
 
-const stats = [
-  { label: "Members worldwide", value: "120K+" },
-  { label: "Meaningful connections", value: "2.4M" },
-  { label: "Average meetup rating", value: "4.9/5" },
-];
-
 const testimonials = [
   {
     name: "Daniela P.",
@@ -147,22 +141,6 @@ const Splash = () => {
               </button>
             </div>
 
-            {/* Stats */}
-            <div className="grid gap-6 sm:grid-cols-3">
-              {stats.map((stat) => (
-                <div
-                  key={stat.label}
-                  className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center shadow-lg shadow-black/20 backdrop-blur"
-                >
-                  <p className="text-3xl font-bold text-white sm:text-4xl">
-                    {stat.value}
-                  </p>
-                  <p className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-300/80">
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
-            </div>
           </section>
 
           {/* Sidebar (Pro perks) */}

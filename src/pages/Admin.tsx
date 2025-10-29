@@ -16,13 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Shield,
-  Mail,
-  Users,
-  Settings,
-  Send,
-} from "lucide-react";
+import { Shield, Mail, Users, Settings, Send, Music, Timer, Globe } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import {
   Table,
@@ -54,6 +48,43 @@ const Admin = () => {
   const [emailSubject, setEmailSubject] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
+
+  const adminMetrics = [
+    {
+      title: "Total Users",
+      value: profiles.length.toString(),
+      icon: Users,
+    },
+    {
+      title: "Email Campaigns",
+      value: "—",
+      icon: Mail,
+    },
+    {
+      title: "System Status",
+      value: "Online",
+      icon: Settings,
+      valueClass: "text-green-600",
+    },
+  ];
+
+  const platformStats = [
+    {
+      title: "Songs in the library",
+      value: "390",
+      icon: Music,
+    },
+    {
+      title: "Worshippers online",
+      value: "1",
+      icon: Timer,
+    },
+    {
+      title: "Countries reached",
+      value: "9",
+      icon: Globe,
+    },
+  ];
 
   // ✅ Verify current user is admin
   useEffect(() => {
@@ -268,41 +299,48 @@ const Admin = () => {
       </div>
 
       <div className="p-4 sm:p-6 space-y-6">
-        {/* Stats */}
+        {/* Core Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="w-4 h-4" /> Total Users
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{profiles.length}</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Mail className="w-4 h-4" /> Email Campaigns
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">—</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="w-4 h-4" /> System Status
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-green-600 font-bold">Online</p>
-            </CardContent>
-          </Card>
+          {adminMetrics.map(({ title, value, icon: Icon, valueClass }) => (
+            <Card key={title}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Icon className="w-4 h-4" /> {title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className={`text-2xl font-bold ${valueClass ?? ""}`}>{value}</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
+
+        {/* Platform Reach */}
+        <Card className="border-dashed">
+          <CardHeader>
+            <CardTitle className="text-base font-semibold text-muted-foreground">
+              Community reach overview
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {platformStats.map(({ title, value, icon: Icon }) => (
+                <div
+                  key={title}
+                  className="flex flex-col items-center justify-center rounded-xl border border-border/50 bg-muted/30 p-4 text-center"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <p className="mt-3 text-3xl font-bold">{value}</p>
+                  <p className="mt-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                    {title}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Bulk Email */}
         <Card>
