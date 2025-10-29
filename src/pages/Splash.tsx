@@ -8,7 +8,7 @@ const Splash = () => {
   useEffect(() => {
     // Navigate to onboarding after 2.5 seconds
     const timer = setTimeout(() => {
-      navigate("/onboarding");
+      navigate("/signup");
     }, 2500);
 
     return () => clearTimeout(timer);

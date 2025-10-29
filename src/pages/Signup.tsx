@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +19,20 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import BackButton from "@/components/BackButton";
 
-const TOTAL_STEPS = 5;
+const SIGNUP_STEPS = [
+  {
+    title: "Stay connected",
+    description: "Choose the best way for us to reach you and get started in seconds.",
+  },
+  {
+    title: "Secure your account",
+    description: "Tell us who you are and create a strong password you'll remember.",
+  },
+  {
+    title: "Personalize your profile",
+    description: "Add a friendly touch so people know they've found the right you.",
+  },
+];
 
 async function autoSquareCropToDataUrl(file: File): Promise<string> {
   const fileDataUrl = await new Promise<string>((resolve, reject) => {
@@ -51,18 +65,24 @@ async function autoSquareCropToDataUrl(file: File): Promise<string> {
 }
 
 function StepHeader({ step }: { step: number }) {
-  const widthPercent = Math.round(((step - 1) / TOTAL_STEPS) * 100);
+  const stepIndex = Math.max(0, Math.min(SIGNUP_STEPS.length - 1, step - 1));
+  const widthPercent = Math.round((step / SIGNUP_STEPS.length) * 100);
+
   return (
-    <div className="mb-6">
-      <p className="text-sm text-muted-foreground mb-2">
-        Step {step} of {TOTAL_STEPS}
-      </p>
-      <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+    <div className="mb-8">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-sm font-medium text-muted-foreground">Step {step} of {SIGNUP_STEPS.length}</p>
+        <span className="text-sm font-semibold text-[#E8B956]">{SIGNUP_STEPS[stepIndex].title}</span>
+      </div>
+      <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
         <div
           className="h-full bg-[#E8B956] transition-all duration-300"
-          style={{ width: `${Math.max(2, widthPercent)}%` }}
+          style={{ width: `${Math.max(6, widthPercent)}%` }}
         />
       </div>
+      <p className="mt-3 text-sm text-muted-foreground">
+        {SIGNUP_STEPS[stepIndex].description}
+      </p>
     </div>
   );
 }
@@ -73,7 +93,7 @@ const Signup = () => {
   const [step, setStep] = useState(1);
   const [authTab, setAuthTab] = useState<"email" | "phone">("email");
   const [showPassword, setShowPassword] = useState(false);
-  const [isSendingCode, setIsSendingCode] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [data, setData] = useState({
     email: "",
@@ -85,29 +105,54 @@ const Signup = () => {
     photoDataUrl: "",
   });
 
-  const canContinue =
-    data.agreedToTerms &&
-    ((authTab === "email" && data.email) || (authTab === "phone" && data.phone));
+  const contactValue = authTab === "email" ? data.email.trim() : data.phone.trim();
+  const passwordIsStrong = data.password.length >= 8;
+  const canContinue = step === 1
+    ? Boolean(contactValue)
+    : step === 2
+    ? Boolean(data.name.trim()) && passwordIsStrong
+    : data.agreedToTerms;
 
-  const handleSendCode = async () => {
-    if (!canContinue) return;
-    setIsSendingCode(true);
+  const goToNextStep = () => setStep((current) => Math.min(SIGNUP_STEPS.length, current + 1));
+  const goToPreviousStep = () => setStep((current) => Math.max(1, current - 1));
+
+  const handleCreateAccount = async () => {
+    if (!data.agreedToTerms) {
+      toast({ title: "Agree to continue", description: "Please accept the terms to create your account." });
+      return;
+    }
+
+    if (!contactValue) {
+      setStep(1);
+      toast({ title: "Contact required", description: "Let us know how to reach you to continue." });
+      return;
+    }
+
+    if (!data.name.trim() || !passwordIsStrong) {
+      setStep(2);
+      toast({ title: "Almost there", description: "Add your name and a strong password to continue." });
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
       if (authTab === "email") {
         await supabase.auth.signInWithOtp({
           email: data.email,
-          options: { emailRedirectTo: window.location.origin },
+          options: { emailRedirectTo: `${window.location.origin}/profile-setup` },
         });
-        toast({ title: "Email sent", description: "Check your inbox for verification link." });
+        toast({ title: "Check your inbox", description: "We sent you a verification link to finish creating your account." });
       } else {
         await supabase.auth.signInWithOtp({ phone: data.phone });
-        toast({ title: "SMS sent", description: "Check your phone for the verification code." });
+        toast({ title: "Check your phone", description: "Enter the code we just texted you to verify your number." });
       }
-      setStep(2);
-    } catch {
-      toast({ title: "Error", description: "Failed to send verification. Try again." });
+
+      navigate("/profile-setup");
+    } catch (error) {
+      console.error(error);
+      toast({ title: "Signup failed", description: "We couldn't create your account just yet. Try again in a moment." });
     } finally {
-      setIsSendingCode(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -115,7 +160,8 @@ const Signup = () => {
     try {
       await supabase.auth.signInWithOAuth({ provider });
       navigate("/profile-setup");
-    } catch {
+    } catch (error) {
+      console.error(error);
       toast({ title: "OAuth Error", description: "Please try again later." });
     }
   };
@@ -127,23 +173,18 @@ const Signup = () => {
     try {
       const cropped = await autoSquareCropToDataUrl(file);
       setData((prev) => ({ ...prev, photoDataUrl: cropped }));
-    } catch {
+      toast({ title: "Photo updated", description: "Looking great!" });
+    } catch (error) {
+      console.error(error);
       toast({ title: "Photo upload failed", description: "Try a different image." });
     } finally {
       setIsUploading(false);
     }
   };
 
-  function next() {
-    setStep((s) => Math.min(TOTAL_STEPS, s + 1));
-  }
-  function back() {
-    setStep((s) => Math.max(1, s - 1));
-  }
-
   return (
-    <div className="min-h-screen bg-background px-4 sm:px-6 py-8">
-      <div className="max-w-md mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 px-4 sm:px-6 py-10 flex items-center justify-center">
+      <div className="w-full max-w-xl">
         <BackButton
           fallbackPath="/"
           size="icon"
@@ -151,180 +192,262 @@ const Signup = () => {
           onClick={(event) => {
             if (step > 1) {
               event.preventDefault();
-              back();
+              goToPreviousStep();
             }
           }}
         />
 
-        <h1 className="text-3xl font-bold text-center mb-2">Create Account</h1>
-        <p className="text-center text-muted-foreground mb-6">
-          Join Connective and start making real connections
-        </p>
-
-        <StepHeader step={step} />
-
-        {step === 1 && (
-          <>
-            <Tabs value={authTab} onValueChange={(v) => setAuthTab(v as typeof authTab)}>
-              <TabsList className="grid grid-cols-2 w-full mb-4">
-                <TabsTrigger value="email">
-                  <Mail size={16} className="mr-2" /> Email
-                </TabsTrigger>
-                <TabsTrigger value="phone">
-                  <PhoneIcon size={16} className="mr-2" /> Phone
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="email" className="space-y-3">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={data.email}
-                  onChange={(e) => setData({ ...data, email: e.target.value })}
-                  className="h-12 rounded-xl"
-                />
-              </TabsContent>
-
-              <TabsContent value="phone" className="space-y-3">
-                <Label htmlFor="phone">Phone</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+1 555 123 4567"
-                  value={data.phone}
-                  onChange={(e) => setData({ ...data, phone: e.target.value })}
-                  className="h-12 rounded-xl"
-                />
-              </TabsContent>
-            </Tabs>
-
-            <div className="mt-4 space-y-4">
-              <Label htmlFor="password">Create Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Create a strong password"
-                  value={data.password}
-                  onChange={(e) => setData({ ...data, password: e.target.value })}
-                  className="h-12 pr-10 rounded-xl"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id="terms"
-                  checked={data.agreedToTerms}
-                  onCheckedChange={(v) => setData({ ...data, agreedToTerms: Boolean(v) })}
-                />
-                <Label htmlFor="terms" className="text-sm">
-                  I agree to the{" "}
-                  <a href="#" className="underline text-[#E8B956]">
-                    Terms
-                  </a>{" "}
-                  and{" "}
-                  <a href="#" className="underline text-[#E8B956]">
-                    Privacy Policy
-                  </a>
-                  .
-                </Label>
-              </div>
-
-              <Button
-                onClick={handleSendCode}
-                disabled={!canContinue || isSendingCode}
-                className="w-full h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal"
-              >
-                Continue
-              </Button>
-            </div>
-
-            <div className="mt-6 space-y-3">
-              <Button
-                variant="outline"
-                className="w-full h-12 rounded-full"
-                onClick={() => handleOAuth("google")}
-              >
-                <FcGoogle className="w-5 h-5 mr-2" />
-                Continue with Google
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full h-12 rounded-full"
-                onClick={() => handleOAuth("apple")}
-              >
-                <Apple className="w-5 h-5 mr-2" />
-                Continue with Apple
-              </Button>
-            </div>
-          </>
-        )}
-
-        {step > 1 && (
-          <div className="space-y-6 mt-8">
-            <Label htmlFor="name">Your Name</Label>
-            <Input
-              id="name"
-              value={data.name}
-              onChange={(e) => setData({ ...data, name: e.target.value })}
-              placeholder="Enter your full name"
-              className="h-12 rounded-xl"
-            />
-
-            <Label htmlFor="bio">About You</Label>
-            <Textarea
-              id="bio"
-              value={data.bio}
-              onChange={(e) => setData({ ...data, bio: e.target.value })}
-              placeholder="Tell people about your interests..."
-              className="rounded-xl"
-            />
-
-            <Label>Profile Photo</Label>
-            <div className="flex items-center gap-3">
-              {data.photoDataUrl && (
-                <img
-                  src={data.photoDataUrl}
-                  alt="preview"
-                  className="w-20 h-20 rounded-full object-cover"
-                />
-              )}
-              <Button
-                type="button"
-                onClick={() => document.getElementById("photo-upload")?.click()}
-                variant="outline"
-                className="rounded-full"
-                disabled={isUploading}
-              >
-                <ImageIcon className="w-4 h-4 mr-2" />
-                {isUploading ? "Uploading..." : "Upload Photo"}
-              </Button>
-              <input
-                id="photo-upload"
-                type="file"
-                accept="image/*"
-                onChange={handlePhotoChange}
-                className="hidden"
-              />
-            </div>
-
-            <Button
-              onClick={next}
-              className="w-full h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal mt-8"
-            >
-              Continue
-            </Button>
+        <motion.div
+          className="bg-card border border-border/50 rounded-3xl shadow-lg p-6 sm:p-10"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold mb-2">Create Your Connective Account</h1>
+            <p className="text-muted-foreground">
+              Join a community built on meaningful, real-world connections.
+            </p>
           </div>
-        )}
+
+          <StepHeader step={step} />
+
+          <AnimatePresence mode="wait">
+            {step === 1 && (
+              <motion.div
+                key="step-1"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.25 }}
+                className="space-y-6"
+              >
+                <Tabs value={authTab} onValueChange={(value) => setAuthTab(value as typeof authTab)}>
+                  <TabsList className="grid grid-cols-2 w-full mb-6 rounded-full bg-muted/60 p-1">
+                    <TabsTrigger value="email" className="rounded-full">
+                      <Mail size={16} className="mr-2" /> Email
+                    </TabsTrigger>
+                    <TabsTrigger value="phone" className="rounded-full">
+                      <PhoneIcon size={16} className="mr-2" /> Phone
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="email" className="space-y-3">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="you@example.com"
+                      value={data.email}
+                      onChange={(e) => setData({ ...data, email: e.target.value })}
+                      className="h-12 rounded-xl"
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="phone" className="space-y-3">
+                    <Label htmlFor="phone">Phone</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+1 555 123 4567"
+                      value={data.phone}
+                      onChange={(e) => setData({ ...data, phone: e.target.value })}
+                      className="h-12 rounded-xl"
+                    />
+                  </TabsContent>
+                </Tabs>
+
+                <Button
+                  onClick={goToNextStep}
+                  disabled={!canContinue}
+                  className="w-full h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold"
+                >
+                  Continue
+                </Button>
+
+                <div className="space-y-3 pt-2">
+                  <Button
+                    variant="outline"
+                    className="w-full h-12 rounded-full"
+                    onClick={() => handleOAuth("google")}
+                  >
+                    <FcGoogle className="w-5 h-5 mr-2" />
+                    Continue with Google
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full h-12 rounded-full"
+                    onClick={() => handleOAuth("apple")}
+                  >
+                    <Apple className="w-5 h-5 mr-2" />
+                    Continue with Apple
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+
+            {step === 2 && (
+              <motion.div
+                key="step-2"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.25 }}
+                className="space-y-6"
+              >
+                <div className="space-y-3">
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input
+                    id="name"
+                    value={data.name}
+                    onChange={(e) => setData({ ...data, name: e.target.value })}
+                    placeholder="Enter your full name"
+                    className="h-12 rounded-xl"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <Label htmlFor="password">Create Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="At least 8 characters"
+                      value={data.password}
+                      onChange={(e) => setData({ ...data, password: e.target.value })}
+                      className="h-12 pr-12 rounded-xl"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                  <p className={cn("text-sm", passwordIsStrong ? "text-emerald-600" : "text-muted-foreground")}>
+                    {passwordIsStrong ? "Strong password" : "Use at least 8 characters for a secure password."}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3 pt-2">
+                  <Button variant="outline" className="flex-1 h-12 rounded-full" onClick={goToPreviousStep}>
+                    Back
+                  </Button>
+                  <Button
+                    className="flex-1 h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold"
+                    onClick={goToNextStep}
+                    disabled={!canContinue}
+                  >
+                    Continue
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+
+            {step === 3 && (
+              <motion.div
+                key="step-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.25 }}
+                className="space-y-6"
+              >
+                <div className="space-y-3">
+                  <Label htmlFor="bio">Short Bio</Label>
+                  <Textarea
+                    id="bio"
+                    value={data.bio}
+                    onChange={(e) => setData({ ...data, bio: e.target.value })}
+                    placeholder="Share a few interests or what you're looking for..."
+                    className="rounded-xl"
+                    rows={4}
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <Label>Profile Photo</Label>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    {data.photoDataUrl ? (
+                      <img
+                        src={data.photoDataUrl}
+                        alt="Preview"
+                        className="w-24 h-24 rounded-full object-cover shadow-md"
+                      />
+                    ) : (
+                      <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+                        <ImageIcon className="w-6 h-6" />
+                      </div>
+                    )}
+                    <div className="space-y-2">
+                      <Button
+                        type="button"
+                        onClick={() => document.getElementById("photo-upload")?.click()}
+                        variant="outline"
+                        className="rounded-full"
+                        disabled={isUploading}
+                      >
+                        <ImageIcon className="w-4 h-4 mr-2" />
+                        {isUploading ? "Uploading..." : data.photoDataUrl ? "Change photo" : "Upload photo"}
+                      </Button>
+                      <p className="text-xs text-muted-foreground">Square photos look best. We'll crop it for you automatically.</p>
+                    </div>
+                  </div>
+                  <input
+                    id="photo-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                    className="hidden"
+                  />
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <Checkbox
+                    id="terms"
+                    checked={data.agreedToTerms}
+                    onCheckedChange={(value) => setData({ ...data, agreedToTerms: Boolean(value) })}
+                  />
+                  <Label htmlFor="terms" className="text-sm text-muted-foreground">
+                    I agree to the{" "}
+                    <a href="#" className="text-[#E8B956] font-medium underline-offset-4 hover:underline">
+                      Terms
+                    </a>{" "}
+                    and{" "}
+                    <a href="#" className="text-[#E8B956] font-medium underline-offset-4 hover:underline">
+                      Privacy Policy
+                    </a>
+                    .
+                  </Label>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                  <Button variant="outline" className="h-12 rounded-full" onClick={goToPreviousStep}>
+                    Back
+                  </Button>
+                  <Button
+                    className="h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold flex-1"
+                    onClick={handleCreateAccount}
+                    disabled={!canContinue || isSubmitting}
+                  >
+                    {isSubmitting ? "Creating account..." : "Create account"}
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <p className="text-center text-sm text-muted-foreground mt-10">
+            Already have an account?{" "}
+            <button
+              onClick={() => navigate("/login")}
+              className="text-[#E8B956] font-medium hover:underline"
+            >
+              Log in
+            </button>
+          </p>
+        </motion.div>
       </div>
     </div>
   );

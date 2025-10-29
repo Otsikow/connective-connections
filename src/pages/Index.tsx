@@ -26,7 +26,7 @@ const Index = () => {
             Real Friends. Real Connection.
           </p>
           <Button
-            onClick={() => navigate("/onboarding")}
+            onClick={() => navigate("/signup")}
             className="bg-[#E8B956] hover:bg-[#d9a840] text-charcoal rounded-full px-8 h-12 text-base sm:text-lg font-semibold transition-all"
           >
             Get Started

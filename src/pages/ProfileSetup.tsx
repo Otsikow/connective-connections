@@ -177,7 +177,7 @@ const ProfileSetup = () => {
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <BackButton
-            fallbackPath="/onboarding"
+            fallbackPath="/signup"
             size="icon"
             className="h-10 w-10"
             ariaLabel="Go back"
