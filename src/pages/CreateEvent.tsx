@@ -1,7 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { motion } from "framer-motion";
 import {
   Calendar as CalendarIcon,
   Check,
@@ -9,7 +8,6 @@ import {
   MapPin,
   Users,
   DollarSign,
-  Globe,
   Upload,
   Plus,
   Tag,
@@ -38,6 +36,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import {
@@ -63,6 +68,8 @@ interface TicketTier {
   quantity: string;
   perks: string;
 }
+
+type EventFormat = "in-person" | "virtual" | "hybrid";
 
 const timezoneOptions = [
   "America/Los_Angeles",
@@ -94,7 +101,7 @@ const CreateEvent = () => {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [eventDate, setEventDate] = useState<Date | undefined>();
-  const [eventFormat, setEventFormat] = useState<"in-person" | "virtual" | "hybrid">("in-person");
+  const [eventFormat, setEventFormat] = useState<EventFormat>("in-person");
   const [requireDeposit, setRequireDeposit] = useState(true);
   const [isPaidEvent, setIsPaidEvent] = useState(true);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
@@ -597,9 +604,719 @@ const CreateEvent = () => {
           </div>
         </div>
 
-        {/* Main layout with event creation form and preview */}
-        {/* The rest of your form content remains identical from merged version */}
-        {/* (omitted for brevity, same as your full working version visible in main) */}
+        <div className="mt-12 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+          <div className="space-y-6">
+            <Card className="border border-dashed border-primary/20 bg-card/80">
+              <CardHeader>
+                <CardTitle className="text-lg">Experience essentials</CardTitle>
+                <CardDescription>
+                  Name your gathering and outline the core details guests will see first.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Event title</Label>
+                  <Input
+                    id="title"
+                    placeholder="Add an event title"
+                    value={formData.title}
+                    onChange={(event) =>
+                      setFormData((prev) => ({ ...prev, title: event.target.value }))
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Keep it short, descriptive, and clear so guests immediately understand the vibe.
+                  </p>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="category">Category</Label>
+                    <Select
+                      value={formData.category}
+                      onValueChange={(value) =>
+                        setFormData((prev) => ({ ...prev, category: value }))
+                      }
+                    >
+                      <SelectTrigger id="category" className="bg-background">
+                        <SelectValue placeholder="Choose a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="capacity">Guest capacity</Label>
+                    <Input
+                      id="capacity"
+                      type="number"
+                      min="1"
+                      value={formData.capacity}
+                      onChange={(event) =>
+                        setFormData((prev) => ({ ...prev, capacity: event.target.value }))
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description">Experience description</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Tell guests about the transformation, flow, and special touches they can expect."
+                    value={formData.description}
+                    onChange={(event) =>
+                      setFormData((prev) => ({ ...prev, description: event.target.value }))
+                    }
+                    rows={6}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Share the energy, outcomes, and any signature details. Aim for 2–3 short paragraphs.
+                  </p>
+                </div>
+                <div className="space-y-3">
+                  <Label htmlFor="tag-input" className="flex items-center gap-2">
+                    Discovery tags
+                    <Badge variant="outline" className="text-[10px] uppercase">
+                      optional
+                    </Badge>
+                  </Label>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {tags.map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => removeTag(tag)}
+                        className="group"
+                        aria-label={`Remove tag ${tag}`}
+                      >
+                        <Badge
+                          variant="secondary"
+                          className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs capitalize group-hover:bg-destructive/10 group-hover:text-destructive"
+                        >
+                          <Tag className="h-3 w-3" />
+                          {tag}
+                        </Badge>
+                      </button>
+                    ))}
+                    <Input
+                      id="tag-input"
+                      placeholder="Press enter to add"
+                      value={tagInput}
+                      onChange={(event) => setTagInput(event.target.value)}
+                      onKeyDown={handleTagKeyDown}
+                      className="w-full min-w-[12rem] flex-1 bg-background sm:w-60"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Add keywords like “immersive”, “mindful”, or “chef-led” to boost search and influence the cover art.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border border-dashed border-primary/20 bg-card/80">
+              <CardHeader>
+                <CardTitle className="text-lg">Format & location</CardTitle>
+                <CardDescription>
+                  Tell guests how they&apos;ll join and where they need to be.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium">Experience format</Label>
+                  <RadioGroup
+                    value={eventFormat}
+                    onValueChange={(value) => setEventFormat(value as EventFormat)}
+                    className="grid gap-3 sm:grid-cols-3"
+                  >
+                    {[
+                      { id: "in-person", label: "In person", description: "Guests meet at your venue" },
+                      { id: "virtual", label: "Virtual", description: "Hosted entirely online" },
+                      { id: "hybrid", label: "Hybrid", description: "Offer both options" },
+                    ].map((option) => (
+                      <label
+                        key={option.id}
+                        htmlFor={`format-${option.id}`}
+                        className={cn(
+                          "flex h-full cursor-pointer flex-col gap-2 rounded-2xl border bg-background/80 p-4 text-left transition-all",
+                          eventFormat === option.id
+                            ? "border-primary shadow-[0_0_0_1px_rgba(99,102,241,0.35)]"
+                            : "border-border/60 hover:border-primary/40"
+                        )}
+                      >
+                        <RadioGroupItem id={`format-${option.id}`} value={option.id} className="sr-only" />
+                        <p className="text-sm font-semibold">{option.label}</p>
+                        <p className="text-xs text-muted-foreground">{option.description}</p>
+                      </label>
+                    ))}
+                  </RadioGroup>
+                </div>
+
+                {eventFormat !== "virtual" && (
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="venueName">Venue name</Label>
+                      <Input
+                        id="venueName"
+                        placeholder="Loft, studio, or gathering space"
+                        value={formData.venueName}
+                        onChange={(event) =>
+                          setFormData((prev) => ({ ...prev, venueName: event.target.value }))
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="address">Street address</Label>
+                      <Input
+                        id="address"
+                        placeholder="123 Connection Ave"
+                        value={formData.address}
+                        onChange={(event) =>
+                          setFormData((prev) => ({ ...prev, address: event.target.value }))
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="city">City or neighbourhood</Label>
+                      <Input
+                        id="city"
+                        placeholder="Brooklyn, NY"
+                        value={formData.city}
+                        onChange={(event) =>
+                          setFormData((prev) => ({ ...prev, city: event.target.value }))
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="timezone">Timezone</Label>
+                      <Select
+                        value={formData.timezone}
+                        onValueChange={(value) =>
+                          setFormData((prev) => ({ ...prev, timezone: value }))
+                        }
+                      >
+                        <SelectTrigger id="timezone" className="bg-background">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {timezoneOptions.map((option) => (
+                            <SelectItem key={option} value={option}>
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )}
+
+                {eventFormat !== "in-person" && (
+                  <div className="space-y-2">
+                    <Label htmlFor="streamingLink">Streaming link</Label>
+                    <Input
+                      id="streamingLink"
+                      placeholder="https://"
+                      value={formData.streamingLink}
+                      onChange={(event) =>
+                        setFormData((prev) => ({ ...prev, streamingLink: event.target.value }))
+                      }
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Share the access link you&apos;ll confirm in reminder emails.
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="border border-dashed border-primary/20 bg-card/80">
+              <CardHeader>
+                <CardTitle className="text-lg">Schedule & investment</CardTitle>
+                <CardDescription>
+                  Lock in the timing and let guests know how to secure their spot.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Date</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start gap-2 bg-background",
+                            !eventDate && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="h-4 w-4" />
+                          {formattedDate}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={eventDate}
+                          onSelect={setEventDate}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="start-time">Start time</Label>
+                    <Input
+                      id="start-time"
+                      type="time"
+                      value={formData.startTime}
+                      onChange={(event) =>
+                        setFormData((prev) => ({ ...prev, startTime: event.target.value }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="end-time">End time</Label>
+                    <Input
+                      id="end-time"
+                      type="time"
+                      value={formData.endTime}
+                      onChange={(event) =>
+                        setFormData((prev) => ({ ...prev, endTime: event.target.value }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="basePrice">Ticket price</Label>
+                    <Input
+                      id="basePrice"
+                      type="number"
+                      min="0"
+                      value={formData.basePrice}
+                      onChange={(event) =>
+                        setFormData((prev) => ({ ...prev, basePrice: event.target.value }))
+                      }
+                      disabled={!isPaidEvent}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="flex items-start justify-between gap-4 rounded-2xl border border-border/60 bg-background/80 p-4">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium">Paid experience</p>
+                      <p className="text-xs text-muted-foreground">
+                        Toggle off if you&apos;re hosting this one for free.
+                      </p>
+                    </div>
+                    <Switch checked={isPaidEvent} onCheckedChange={setIsPaidEvent} />
+                  </div>
+                  <div className="flex items-start justify-between gap-4 rounded-2xl border border-border/60 bg-background/80 p-4">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium">Collect a deposit</p>
+                      <p className="text-xs text-muted-foreground">
+                        Secure commitment and reduce no-shows.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={requireDeposit}
+                      onCheckedChange={setRequireDeposit}
+                      disabled={!isPaidEvent}
+                    />
+                  </div>
+                </div>
+
+                {isPaidEvent && requireDeposit && (
+                  <div className="space-y-2">
+                    <Label htmlFor="deposit">Deposit amount</Label>
+                    <Input
+                      id="deposit"
+                      type="number"
+                      min="0"
+                      value={formData.deposit}
+                      onChange={(event) =>
+                        setFormData((prev) => ({ ...prev, deposit: event.target.value }))
+                      }
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Guests pay this upfront and settle the remainder before the event begins.
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="border border-dashed border-primary/20 bg-card/80">
+              <CardHeader>
+                <CardTitle className="text-lg">Experience flow</CardTitle>
+                <CardDescription>
+                  Map the journey from arrivals to farewells so guests know what to expect.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  {agendaItems.map((item, index) => (
+                    <div
+                      key={item.id}
+                      className="rounded-2xl border border-border/60 bg-background/80 p-4 shadow-sm"
+                    >
+                      <div className="mb-4 flex items-center justify-between">
+                        <p className="text-sm font-semibold">Segment {index + 1}</p>
+                        {agendaItems.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveAgendaItem(item.id)}
+                            className="h-8 text-xs text-muted-foreground hover:text-destructive"
+                          >
+                            Remove
+                          </Button>
+                        )}
+                      </div>
+                      <div className="grid gap-4 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+                        <div className="space-y-3">
+                          <div className="space-y-2">
+                            <Label htmlFor={`agenda-title-${item.id}`}>Title</Label>
+                            <Input
+                              id={`agenda-title-${item.id}`}
+                              placeholder="Warm welcome, signature tasting, closing ritual"
+                              value={item.title}
+                              onChange={(event) =>
+                                handleAgendaChange(item.id, "title", event.target.value)
+                              }
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`agenda-description-${item.id}`}>Description</Label>
+                            <Textarea
+                              id={`agenda-description-${item.id}`}
+                              value={item.description}
+                              onChange={(event) =>
+                                handleAgendaChange(item.id, "description", event.target.value)
+                              }
+                              rows={3}
+                            />
+                          </div>
+                        </div>
+                        <div className="grid gap-3 md:grid-cols-2">
+                          <div className="space-y-2">
+                            <Label htmlFor={`agenda-start-${item.id}`}>Start</Label>
+                            <Input
+                              id={`agenda-start-${item.id}`}
+                              type="time"
+                              value={item.startTime}
+                              onChange={(event) =>
+                                handleAgendaChange(item.id, "startTime", event.target.value)
+                              }
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`agenda-end-${item.id}`}>End</Label>
+                            <Input
+                              id={`agenda-end-${item.id}`}
+                              type="time"
+                              value={item.endTime}
+                              onChange={(event) =>
+                                handleAgendaChange(item.id, "endTime", event.target.value)
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleAddAgendaItem}
+                  className="w-full gap-2 border-dashed"
+                >
+                  <Plus className="h-4 w-4" /> Add another segment
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border border-dashed border-primary/20 bg-card/80">
+              <CardHeader>
+                <CardTitle className="text-lg">Ticketing</CardTitle>
+                <CardDescription>
+                  Craft tiers that reflect the value of your experience.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {!isPaidEvent && (
+                  <div className="rounded-2xl border border-dashed border-emerald-200 bg-emerald-50/60 p-4 text-sm text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-200">
+                    Guests will be able to RSVP for free. Turn on paid ticketing above to customise tiers.
+                  </div>
+                )}
+                {isPaidEvent && (
+                  <div className="space-y-4">
+                    {ticketTiers.map((tier, index) => (
+                      <div
+                        key={tier.id}
+                        className="rounded-2xl border border-border/60 bg-background/80 p-4 shadow-sm"
+                      >
+                        <div className="mb-4 flex items-center justify-between">
+                          <p className="text-sm font-semibold">Tier {index + 1}</p>
+                          {ticketTiers.length > 1 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleRemoveTicket(tier.id)}
+                              className="h-8 text-xs text-muted-foreground hover:text-destructive"
+                            >
+                              Remove
+                            </Button>
+                          )}
+                        </div>
+                        <div className="grid gap-4 md:grid-cols-2">
+                          <div className="space-y-2">
+                            <Label htmlFor={`tier-name-${tier.id}`}>Name</Label>
+                            <Input
+                              id={`tier-name-${tier.id}`}
+                              placeholder="General Admission"
+                              value={tier.name}
+                              onChange={(event) =>
+                                handleTicketChange(tier.id, "name", event.target.value)
+                              }
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`tier-price-${tier.id}`}>Price</Label>
+                            <Input
+                              id={`tier-price-${tier.id}`}
+                              type="number"
+                              min="0"
+                              value={tier.price}
+                              onChange={(event) =>
+                                handleTicketChange(tier.id, "price", event.target.value)
+                              }
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`tier-quantity-${tier.id}`}>Quantity</Label>
+                            <Input
+                              id={`tier-quantity-${tier.id}`}
+                              type="number"
+                              min="1"
+                              value={tier.quantity}
+                              onChange={(event) =>
+                                handleTicketChange(tier.id, "quantity", event.target.value)
+                              }
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`tier-perks-${tier.id}`}>Perks</Label>
+                            <Textarea
+                              id={`tier-perks-${tier.id}`}
+                              rows={3}
+                              value={tier.perks}
+                              onChange={(event) =>
+                                handleTicketChange(tier.id, "perks", event.target.value)
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {isPaidEvent && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleAddTicketTier}
+                    className="w-full gap-2 border-dashed"
+                  >
+                    <Plus className="h-4 w-4" /> Add ticket tier
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="border border-dashed border-primary/20 bg-card/80">
+              <CardHeader>
+                <CardTitle className="text-lg">Host touchpoints</CardTitle>
+                <CardDescription>
+                  Make it easy for guests to reach you and keep your checklist handy.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="hostEmail">Contact email</Label>
+                    <Input
+                      id="hostEmail"
+                      type="email"
+                      placeholder="you@example.com"
+                      value={formData.hostEmail}
+                      onChange={(event) =>
+                        setFormData((prev) => ({ ...prev, hostEmail: event.target.value }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="hostPhone">Phone number</Label>
+                    <Input
+                      id="hostPhone"
+                      placeholder="Optional backup contact"
+                      value={formData.hostPhone}
+                      onChange={(event) =>
+                        setFormData((prev) => ({ ...prev, hostPhone: event.target.value }))
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="checklistNotes">Arrival checklist</Label>
+                  <Textarea
+                    id="checklistNotes"
+                    value={formData.checklistNotes}
+                    onChange={(event) =>
+                      setFormData((prev) => ({ ...prev, checklistNotes: event.target.value }))
+                    }
+                    rows={4}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    We&apos;ll surface this in reminders so every guest feels confident and prepared.
+                  </p>
+                </div>
+              </CardContent>
+              <CardFooter className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm text-muted-foreground">
+                  Ready to share? You can publish now or save a draft and return anytime.
+                </p>
+                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleSaveDraft}
+                    disabled={isSavingDraft}
+                  >
+                    {isSavingDraft ? "Saving…" : "Save draft"}
+                  </Button>
+                  <Button type="button" onClick={handlePublish} disabled={isPublishing} className="gap-2">
+                    {isPublishing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                    {isPublishing ? "Publishing" : "Publish experience"}
+                  </Button>
+                </div>
+              </CardFooter>
+            </Card>
+          </div>
+
+          <div className="space-y-6">
+            <Card className="border border-dashed border-primary/30 bg-card/70">
+              <CardHeader>
+                <CardTitle className="text-base font-semibold">Launch readiness</CardTitle>
+                <CardDescription>Complete the steps below for the best guest conversion.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm font-medium">
+                    <span>{readinessScore}% ready</span>
+                    <span className="text-muted-foreground">{readinessChecklist.filter((item) => item.complete).length}/{readinessChecklist.length} done</span>
+                  </div>
+                  <Progress value={readinessScore} className="h-2" />
+                </div>
+                <ul className="space-y-3 text-sm">
+                  {readinessChecklist.map((item) => (
+                    <li key={item.label} className="flex items-start gap-3">
+                      <div
+                        className={cn(
+                          "mt-0.5 h-2.5 w-2.5 rounded-full",
+                          item.complete ? "bg-primary" : "bg-muted"
+                        )}
+                      />
+                      <span className={cn(item.complete ? "text-foreground" : "text-muted-foreground")}>{item.label}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card className="overflow-hidden border border-border/60 bg-background/90 shadow-sm">
+              <CardHeader className="space-y-1">
+                <CardTitle className="text-base font-semibold">Guest preview</CardTitle>
+                <CardDescription>Here&apos;s how your experience is shaping up.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <h2 className="text-xl font-semibold">{formData.title || "Add an event title"}</h2>
+                  <p className="text-sm text-muted-foreground">
+                    {formData.description
+                      ? formData.description
+                      : "Your description will appear here once you add it above."}
+                  </p>
+                </div>
+                <Separator />
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <CalendarIcon className="h-4 w-4" />
+                    <span>{formattedDate}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Clock className="h-4 w-4" />
+                    <span>
+                      {formData.startTime} – {formData.endTime} {formData.timezone}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <MapPin className="h-4 w-4" />
+                    <span>
+                      {eventFormat === "virtual"
+                        ? "Hosted online"
+                        : [formData.venueName, formData.city].filter(Boolean).join(" • ") || "Add your venue details"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Users className="h-4 w-4" />
+                    <span>{formData.capacity} guests</span>
+                  </div>
+                  {isPaidEvent ? (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <DollarSign className="h-4 w-4" />
+                      <span>
+                        {primaryTicket
+                          ? `${primaryTicket.price} per guest`
+                          : `${formData.basePrice} per guest`}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Sparkles className="h-4 w-4" />
+                      <span>Complimentary experience</span>
+                    </div>
+                  )}
+                </div>
+                {isPaidEvent && (
+                  <div className="rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-4 text-xs text-primary">
+                    Estimated revenue if you sell out: ${totalEstimatedRevenue.toLocaleString()}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="border border-dashed border-primary/30 bg-card/70">
+              <CardHeader>
+                <CardTitle className="text-base font-semibold">Need inspiration?</CardTitle>
+                <CardDescription>These quick wins help new hosts stand out.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li>• Offer a sensory welcome ritual that sets the tone.</li>
+                  <li>• Share a follow-up resource within 24 hours to keep momentum.</li>
+                  <li>• Add a surprise moment to create a memorable story.</li>
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
