@@ -243,7 +243,7 @@ const Community = () => {
 
                   <Button
                     className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black font-semibold"
-                    onClick={() => navigate(`/messages?community=${group.id}`)}
+                    onClick={() => navigate(`/messages/community/${group.id}`)}
                   >
                     <MessageSquare size={18} className="mr-2" />
                     Join Chat

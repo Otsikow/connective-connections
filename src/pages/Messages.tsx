@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { MoreVertical, Shield, Clock, Phone, Video, Lock } from "lucide-react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { MessageInput } from "@/components/MessageInput";
 import { sampleEvents, type EventItem } from "@/lib/events";
 import { communityGroups } from "@/lib/community-groups";
@@ -25,22 +25,97 @@ interface EncryptedMessage extends Omit<Message, "content"> {
   encryptedContent: string;
 }
 
+const formatContactName = (identifier: string) => {
+  if (!identifier) {
+    return "Alex Doe";
+  }
+
+  return identifier
+    .split(/[\s_-]+/)
+    .filter(Boolean)
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(" ");
+};
+
+const getInitials = (name: string) => {
+  const parts = name
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase());
+
+  if (!parts.length) {
+    return "AD";
+  }
+
+  if (parts.length === 1) {
+    return parts[0];
+  }
+
+  return `${parts[0]}${parts[parts.length - 1]}`;
+};
+
 const Messages = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { "*": conversationPath = "" } = useParams();
   const [encryptedMessages, setEncryptedMessages] = useState<EncryptedMessage[]>([]);
   const [displayMessages, setDisplayMessages] = useState<Message[]>([]);
   const [isOnline, setIsOnline] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   usePageTitle("Messages");
 
-  const groupId = searchParams.get("group");
-  const communityId = searchParams.get("community");
-  const groupEvent = useMemo(() => sampleEvents.find((e) => e.id === groupId), [groupId]);
-  const communityGroup = useMemo(
-    () => communityGroups.find((group) => group.id === communityId),
-    [communityId],
+  const { type: pathType, identifier: pathIdentifier } = useMemo<{
+    type: "group" | "community" | "direct" | null;
+    identifier: string | null;
+  }>(() => {
+    if (!conversationPath) {
+      return { type: null, identifier: null };
+    }
+
+    const segments = conversationPath.split("/").filter(Boolean);
+
+    if (!segments.length) {
+      return { type: null, identifier: null };
+    }
+
+    const [first, second] = segments;
+
+    if (first === "group" || first === "community") {
+      return { type: first, identifier: second ?? null };
+    }
+
+    if (first === "direct") {
+      return { type: "direct", identifier: second ?? null };
+    }
+
+    return { type: "direct", identifier: first ?? null };
+  }, [conversationPath]);
+
+  const queryGroupId = searchParams.get("group") ?? undefined;
+  const queryCommunityId = searchParams.get("community") ?? undefined;
+  const queryDirectId = searchParams.get("user") ?? undefined;
+
+  const resolvedGroupId = pathType === "group" && pathIdentifier ? pathIdentifier : queryGroupId;
+  const resolvedCommunityId =
+    pathType === "community" && pathIdentifier ? pathIdentifier : queryCommunityId;
+  const resolvedDirectId =
+    pathType === "direct" && pathIdentifier ? pathIdentifier : (queryDirectId ?? undefined);
+
+  const groupEvent = useMemo(
+    () => sampleEvents.find((event) => event.id === resolvedGroupId),
+    [resolvedGroupId],
   );
+  const communityGroup = useMemo(
+    () => communityGroups.find((group) => group.id === resolvedCommunityId),
+    [resolvedCommunityId],
+  );
+
+  const directConversationId = resolvedDirectId ?? "alex-doe";
+  const directContactName = useMemo(
+    () => formatContactName(directConversationId),
+    [directConversationId],
+  );
+  const directContactInitials = useMemo(() => getInitials(directContactName), [directContactName]);
 
   const conversationId = useMemo(() => {
     if (groupEvent) {
@@ -49,8 +124,8 @@ const Messages = () => {
     if (communityGroup) {
       return `community:${communityGroup.id}`;
     }
-    return "direct:alex-doe";
-  }, [groupEvent, communityGroup]);
+    return `direct:${directConversationId}`;
+  }, [communityGroup, directConversationId, groupEvent]);
 
   const { encrypt, decrypt, isReady: isEncryptionReady, error: encryptionError } =
     useEndToEndEncryption(conversationId);
@@ -72,11 +147,23 @@ const Messages = () => {
   // Default 1-on-1 chat messages
   const defaultMessages = useMemo<Message[]>(
     () => [
-      { id: 1, sender: "Alex Doe", content: "Hey! How's it going? 👋", time: "10:00 AM", isMine: false },
+      {
+        id: 1,
+        sender: directContactName,
+        content: "Hey! How's it going? 👋",
+        time: "10:00 AM",
+        isMine: false,
+      },
       { id: 2, sender: "You", content: "I'm doing great, thanks for asking!", time: "10:01 AM", isMine: true },
-      { id: 3, sender: "Alex Doe", content: "Want to grab coffee later?", time: "10:02 AM", isMine: false },
+      {
+        id: 3,
+        sender: directContactName,
+        content: "Want to grab coffee later?",
+        time: "10:02 AM",
+        isMine: false,
+      },
     ],
-    [],
+    [directContactName],
   );
 
   // Group event messages
@@ -418,11 +505,11 @@ const Messages = () => {
           <>
             <Avatar className="w-10 h-10">
               <AvatarImage src="/placeholder.svg" />
-              <AvatarFallback>AD</AvatarFallback>
+              <AvatarFallback>{directContactInitials}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-base sm:text-lg font-semibold truncate">Alex Doe</h1>
+                <h1 className="text-base sm:text-lg font-semibold truncate">{directContactName}</h1>
                 <Badge className="bg-green-500 text-white gap-1 text-xs">
                   <Shield className="w-3 h-3" />
                   Verified
@@ -473,7 +560,7 @@ const Messages = () => {
               {!msg.isMine && (
                 <Avatar className="w-8 h-8 flex-shrink-0">
                   <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback>AD</AvatarFallback>
+                  <AvatarFallback>{directContactInitials}</AvatarFallback>
                 </Avatar>
               )}
               <div>

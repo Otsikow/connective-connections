@@ -120,7 +120,7 @@ const AnimatedRoutes = () => {
           }
         />
         <Route
-          path="/messages"
+          path="/messages/*"
           element={
             <PageTransition>
               <Messages />
