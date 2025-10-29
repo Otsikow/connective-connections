@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -14,6 +14,9 @@ import {
   Plus,
   Tag,
   ShieldCheck,
+  Loader2,
+  Sparkles,
+  Wand2,
 } from "lucide-react";
 
 import {
@@ -37,6 +40,11 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import {
+  COVER_STYLE_CONFIG,
+  CoverStyle,
+  generateEventCoverImage,
+} from "@/lib/cover-generator";
 import BackButton from "@/components/BackButton";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
@@ -90,7 +98,15 @@ const CreateEvent = () => {
   const [requireDeposit, setRequireDeposit] = useState(true);
   const [isPaidEvent, setIsPaidEvent] = useState(true);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [coverStyle, setCoverStyle] = useState<CoverStyle>("sunset");
+  const [isGeneratingCover, setIsGeneratingCover] = useState(false);
   const [tagInput, setTagInput] = useState("");
+  const coverInputRef = useRef<HTMLInputElement>(null);
+
+  const coverStyleEntries = useMemo(
+    () => Object.entries(COVER_STYLE_CONFIG) as [CoverStyle, (typeof COVER_STYLE_CONFIG)[CoverStyle]][],
+    []
+  );
 
   const [formData, setFormData] = useState({
     title: "",
@@ -222,9 +238,104 @@ const CreateEvent = () => {
   const handleCoverUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({
+        title: "Unsupported file",
+        description: "Please upload a PNG or JPG image for your cover.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const reader = new FileReader();
-    reader.onload = (e) => setCoverPreview(String(e.target?.result ?? null));
+    reader.onload = (e) => {
+      setCoverPreview(String(e.target?.result ?? null));
+      toast({
+        title: "Cover image updated",
+        description: "We're using your uploaded artwork in the live preview.",
+      });
+    };
+    reader.onerror = () => {
+      toast({
+        title: "Upload failed",
+        description: "We couldn't read that file. Try again with a different image.",
+        variant: "destructive",
+      });
+    };
     reader.readAsDataURL(file);
+    if (coverInputRef.current) {
+      coverInputRef.current.value = "";
+    }
+  };
+
+  const handleGenerateCover = async () => {
+    if (!formData.title.trim()) {
+      toast({
+        title: "Add an event title",
+        description: "Give your experience a name so we can design the artwork around it.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGeneratingCover(true);
+    try {
+      const subtitleParts: string[] = [];
+      if (formData.category) {
+        subtitleParts.push(formData.category);
+      }
+      if (eventFormat === "virtual") {
+        subtitleParts.push("Live online");
+      } else if (formData.city.trim()) {
+        subtitleParts.push(formData.city.trim());
+      } else {
+        subtitleParts.push(eventFormat === "hybrid" ? "Hybrid gathering" : "Hosted in person");
+      }
+      const subtitle = subtitleParts.join(" • ");
+
+      const cleanedDescription = formData.description.replace(/\s+/g, " ").trim();
+      const mood = cleanedDescription ? cleanedDescription.slice(0, 220) : undefined;
+
+      const keywordCandidates = tags
+        .filter(Boolean)
+        .map((tag) =>
+          tag
+            .split(/[-_]/)
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ")
+        );
+
+      if (!keywordCandidates.length && primaryTicket) {
+        keywordCandidates.push(primaryTicket.name);
+      }
+      if (!keywordCandidates.length) {
+        keywordCandidates.push(eventFormat === "virtual" ? "Remote friendly" : "Curated guests");
+      }
+
+      const dataUrl = await generateEventCoverImage({
+        title: formData.title.trim(),
+        subtitle: subtitle || undefined,
+        mood,
+        keywords: keywordCandidates,
+        style: coverStyle,
+      });
+
+      setCoverPreview(dataUrl);
+      toast({
+        title: "Cover ready",
+        description: "We crafted a high-impact hero image right in your browser.",
+      });
+    } catch (error) {
+      console.error("Error generating event cover", error);
+      toast({
+        title: "Generation failed",
+        description: "We couldn't render the artwork. Try again or upload your own image.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingCover(false);
+    }
   };
 
   const validateForm = () => {
@@ -329,6 +440,160 @@ const CreateEvent = () => {
                 Events that complete every step convert 3× more bookings.
               </p>
             </div>
+          </div>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.75fr)_minmax(0,1fr)]">
+          <Card className="overflow-hidden border border-dashed border-primary/30 bg-card/60 shadow-sm">
+            <CardHeader className="space-y-1">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Sparkles className="h-4 w-4 text-primary" />
+                Experience cover designer
+              </CardTitle>
+              <CardDescription>
+                Generate on-brand artwork instantly or upload your own image.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="relative aspect-[1200/630] w-full overflow-hidden rounded-3xl border border-border/60 bg-muted/30">
+                {coverPreview ? (
+                  <img
+                    src={coverPreview}
+                    alt="Generated event cover preview"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center p-6 text-center text-sm text-muted-foreground">
+                    <p>
+                      Your generated artwork will appear here. Use your event title, description, and tags to
+                      guide the design.
+                    </p>
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
+                <span>
+                  {coverPreview
+                    ? `Using the ${COVER_STYLE_CONFIG[coverStyle].label} palette.`
+                    : "Choose a palette below and we’ll render a share-ready image."}
+                </span>
+                {coverPreview && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setCoverPreview(null)}
+                    className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    Remove image
+                  </Button>
+                )}
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Button
+                  type="button"
+                  onClick={handleGenerateCover}
+                  disabled={isGeneratingCover}
+                  className="w-full justify-center gap-2"
+                >
+                  {isGeneratingCover ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Designing cover…
+                    </>
+                  ) : (
+                    <>
+                      <Wand2 className="h-4 w-4" />
+                      {coverPreview ? "Generate new variation" : "Generate cover"}
+                    </>
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => coverInputRef.current?.click()}
+                  className="w-full justify-center gap-2"
+                >
+                  <Upload className="h-4 w-4" />
+                  Upload image
+                </Button>
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCoverUpload}
+                  className="hidden"
+                />
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm font-medium">Palette</p>
+                  <p className="text-xs text-muted-foreground">
+                    Select a visual mood to influence lighting and accents.
+                  </p>
+                </div>
+                <RadioGroup
+                  value={coverStyle}
+                  onValueChange={(value) => setCoverStyle(value as CoverStyle)}
+                  className="grid gap-3 md:grid-cols-2"
+                >
+                  {coverStyleEntries.map(([styleId, meta]) => (
+                    <label
+                      key={styleId}
+                      htmlFor={`cover-style-${styleId}`}
+                      className={cn(
+                        "relative flex cursor-pointer flex-col gap-3 rounded-2xl border bg-background/80 p-4 transition-all",
+                        coverStyle === styleId
+                          ? "border-primary shadow-[0_0_0_1px_rgba(99,102,241,0.35)]"
+                          : "border-border/60 hover:border-primary/40"
+                      )}
+                    >
+                      <RadioGroupItem value={styleId} id={`cover-style-${styleId}`} className="sr-only" />
+                      <div
+                        className="h-16 w-full rounded-xl border border-white/20 shadow-inner"
+                        style={{
+                          backgroundImage: `linear-gradient(135deg, ${meta.previewGradient[0]}, ${meta.previewGradient[1]}, ${meta.previewGradient[2]})`,
+                        }}
+                      />
+                      <div className="space-y-1">
+                        <p className="text-sm font-semibold">{meta.label}</p>
+                        <p className="text-xs leading-relaxed text-muted-foreground">{meta.description}</p>
+                      </div>
+                      {coverStyle === styleId && (
+                        <span className="absolute right-4 top-4 inline-flex h-2 w-2 rounded-full bg-primary shadow-[0_0_0_4px_rgba(99,102,241,0.35)]" />
+                      )}
+                    </label>
+                  ))}
+                </RadioGroup>
+              </div>
+            </CardContent>
+          </Card>
+          <div className="space-y-4">
+            <Card className="border-dashed border-muted-foreground/40 bg-muted/20">
+              <CardHeader>
+                <CardTitle className="text-base font-semibold">Pro tips</CardTitle>
+                <CardDescription>Use your event details to get the strongest results.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li>• Finalise the title and description for richer mood text.</li>
+                  <li>• Add tags like “immersive” or “wine tasting” to influence the keyword pills.</li>
+                  <li>• Upload a custom image anytime if you prefer your own photography.</li>
+                </ul>
+              </CardContent>
+            </Card>
+            <Card className="bg-background/80">
+              <CardHeader>
+                <CardTitle className="text-base font-semibold">Why this works</CardTitle>
+                <CardDescription>
+                  The artwork is rendered locally with curated palettes, so it never fails because of external services.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm text-muted-foreground">
+                <p>No API keys required—everything runs in the browser.</p>
+                <p>Generated images are 1200×630, perfect for event pages and social sharing.</p>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
