@@ -6,6 +6,7 @@ import { MoreVertical, Shield, Clock, Phone, Video } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { MessageInput } from "@/components/MessageInput";
 import { sampleEvents, type EventItem } from "@/lib/events";
+import { communityGroups } from "@/lib/community-groups";
 import BackButton from "@/components/BackButton";
 
 interface Message {
@@ -25,16 +26,24 @@ const Messages = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const groupId = searchParams.get("group");
+  const communityId = searchParams.get("community");
   const groupEvent = useMemo(() => sampleEvents.find((e) => e.id === groupId), [groupId]);
+  const communityGroup = useMemo(
+    () => communityGroups.find((group) => group.id === communityId),
+    [communityId],
+  );
 
   type ParticipantInfo = EventItem["participants"][number] | EventItem["host"];
 
   const displayedParticipants = useMemo<ParticipantInfo[]>(() => {
-    if (!groupEvent) {
-      return [];
+    if (groupEvent) {
+      return [groupEvent.host, ...groupEvent.participants];
     }
-    return [groupEvent.host, ...groupEvent.participants];
-  }, [groupEvent]);
+    if (communityGroup) {
+      return [communityGroup.host, ...communityGroup.participants];
+    }
+    return [];
+  }, [groupEvent, communityGroup]);
 
   // Default 1-on-1 chat messages
   const defaultMessages: Message[] = [
@@ -44,32 +53,61 @@ const Messages = () => {
   ];
 
   // Group event messages
-  const groupMessages: Message[] = groupEvent
-    ? [
-        {
-          id: 1,
-          sender: groupEvent.host.name,
-          content: `Welcome to ${groupEvent.title} group chat!`,
-          time: "9:00 AM",
-          isMine: false,
-        },
-        { id: 2, sender: "You", content: "Hi everyone! Excited to join 👋", time: "9:01 AM", isMine: true },
-        {
-          id: 3,
-          sender: groupEvent.participants[0]?.name || "Member",
-          content: "See you all there!",
-          time: "9:05 AM",
-          isMine: false,
-        },
-      ]
-    : [];
+  const groupMessages: Message[] = useMemo(() => {
+    if (!groupEvent) {
+      return [];
+    }
+    return [
+      {
+        id: 1,
+        sender: groupEvent.host.name,
+        content: `Welcome to ${groupEvent.title} group chat!`,
+        time: "9:00 AM",
+        isMine: false,
+      },
+      { id: 2, sender: "You", content: "Hi everyone! Excited to join 👋", time: "9:01 AM", isMine: true },
+      {
+        id: 3,
+        sender: groupEvent.participants[0]?.name || "Member",
+        content: "See you all there!",
+        time: "9:05 AM",
+        isMine: false,
+      },
+    ];
+  }, [groupEvent]);
+
+  const communityMessages: Message[] = useMemo(() => {
+    if (!communityGroup) {
+      return [];
+    }
+
+    return communityGroup.chatSampleConversation.map((message, index) => ({
+      id: index + 1,
+      sender: message.sender,
+      content: message.content,
+      time: message.time,
+      isMine: message.isMine,
+    }));
+  }, [communityGroup]);
 
   useEffect(() => {
-    setMessages(groupEvent ? groupMessages : defaultMessages);
-  }, [groupEvent]);
+    if (groupEvent) {
+      setMessages(groupMessages);
+      return;
+    }
+
+    if (communityGroup) {
+      setMessages(communityMessages);
+      return;
+    }
+
+    setMessages(defaultMessages);
+  }, [groupEvent, groupMessages, communityGroup, communityMessages]);
 
   const quickReplies = groupEvent
     ? ["Where's the meetup point?", "Any parking tips?", "Can I bring a friend?"]
+    : communityGroup
+    ? communityGroup.chatQuickReplies
     : ["Sounds good! ☕", "What time were you thinking?"];
 
   const scrollToBottom = () => {
@@ -88,6 +126,8 @@ const Messages = () => {
           `Share what you're most excited about for ${groupEvent.title}`,
           "Check if there are any last-minute updates for the event",
         ]
+      : communityGroup
+      ? communityGroup.chatSuggestions
       : [
           "Ask about their day to keep things friendly",
           "Suggest a time that works for you",
@@ -111,15 +151,23 @@ const Messages = () => {
       ]);
     }
 
+    if (communityGroup) {
+      addUnique(communityGroup.chatSuggestions);
+    }
+
     if (lastIncomingMessage) {
       const content = lastIncomingMessage.content.toLowerCase();
 
       if (content.includes("coffee")) {
-        addUnique([
-          "That sounds great! What time works best for you?",
-          "Do you have a favorite coffee spot in mind?",
-          "Should we invite anyone else to join us?",
-        ]);
+        if (communityGroup) {
+          addUnique(["Count me in! Who else is coming?", "Love that idea—what should I bring?", "Let's make it happen!"]);
+        } else {
+          addUnique([
+            "That sounds great! What time works best for you?",
+            "Do you have a favorite coffee spot in mind?",
+            "Should we invite anyone else to join us?",
+          ]);
+        }
       }
 
       if (content.includes("weekend")) {
@@ -158,7 +206,7 @@ const Messages = () => {
     addUnique(baseSuggestions);
 
     return suggestions.slice(0, 5);
-  }, [messages, groupEvent]);
+  }, [messages, groupEvent, communityGroup]);
 
   const handleSendMessage = (message: string) => {
     const newMessage: Message = {
@@ -211,6 +259,28 @@ const Messages = () => {
                 </h1>
                 <p className="text-xs text-muted-foreground truncate">
                   Event group chat · {groupEvent.participants.length + 1} members
+                </p>
+              </div>
+            </div>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <MoreVertical className="w-4 h-4" />
+            </Button>
+          </>
+        ) : communityGroup ? (
+          <>
+            <div className="flex items-center gap-3 flex-1">
+              <div className="flex -space-x-3">
+                {displayedParticipants.slice(0, 4).map((participant, idx) => (
+                  <Avatar key={participant.id ?? idx} className="w-8 h-8 ring-2 ring-background">
+                    <AvatarImage src={participant.avatarUrl || "/placeholder.svg"} />
+                    <AvatarFallback>{participant.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                ))}
+              </div>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-sm sm:text-base font-semibold leading-tight truncate">{communityGroup.name}</h1>
+                <p className="text-xs text-muted-foreground truncate">
+                  Community chat · {communityGroup.members} members
                 </p>
               </div>
             </div>

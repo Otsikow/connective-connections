@@ -1,15 +1,24 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Home,
+  MessageSquare,
+  Search,
+  User,
+  Users,
+  Crown,
+  MapPin,
+  Calendar,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Home, MessageSquare, Search, User, Users, Crown, MapPin, Calendar } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import type { Tables } from "@/integrations/supabase/types";
+import { Skeleton } from "@/components/ui/skeleton";
 import { CreateGroupDialog } from "@/components/CreateGroupDialog";
 import { useToast } from "@/hooks/use-toast";
-import { Skeleton } from "@/components/ui/skeleton";
+import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 
 type GroupWithMembers = Tables<"groups"> & {
   memberCount: number;
@@ -22,6 +31,7 @@ type SupabaseGroupResponse = Tables<"groups"> & {
 const Community = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+
   const [isPremium] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -38,20 +48,22 @@ const Community = () => {
         .select("*, group_members(count)")
         .order("created_at", { ascending: false });
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
-      const mappedGroups = (data as SupabaseGroupResponse[] | null)?.map((group) => ({
-        ...group,
-        memberCount: group.group_members?.[0]?.count ?? 1,
-      }));
+      const mappedGroups = (data as SupabaseGroupResponse[] | null)?.map(
+        (group) => ({
+          ...group,
+          memberCount: group.group_members?.[0]?.count ?? 1,
+        })
+      );
 
       setGroups(mappedGroups ?? []);
     } catch (error: unknown) {
       console.error("Error loading groups:", error);
       const message =
-        error instanceof Error ? error.message : "Unable to load groups. Please try again.";
+        error instanceof Error
+          ? error.message
+          : "Unable to load groups. Please try again.";
       setErrorMessage(message);
       toast({
         title: "Error",
@@ -68,15 +80,10 @@ const Community = () => {
   }, [fetchGroups]);
 
   const nextMeetingLabel = useCallback((nextMeeting: string | null) => {
-    if (!nextMeeting) {
-      return "Next meeting to be announced";
-    }
+    if (!nextMeeting) return "Next meeting to be announced";
 
     const date = new Date(nextMeeting);
-
-    if (Number.isNaN(date.getTime())) {
-      return "Next meeting to be announced";
-    }
+    if (Number.isNaN(date.getTime())) return "Next meeting to be announced";
 
     return `Next meeting: ${date.toLocaleString(undefined, {
       month: "short",
@@ -87,37 +94,48 @@ const Community = () => {
   }, []);
 
   const groupsLabel = useMemo(() => {
-    if (isLoading) {
-      return "Loading groups...";
-    }
-
-    if (groups.length === 0) {
-      return "No groups in your area yet";
-    }
-
+    if (isLoading) return "Loading groups...";
+    if (groups.length === 0) return "No groups in your area yet";
     return `${groups.length} local group${groups.length === 1 ? "" : "s"} near you`;
   }, [groups.length, isLoading]);
 
   const getCategoryColor = (category: string) => {
     const categoryStyles: Record<string, string> = {
-      "Book Club": "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
-      "Books & Literature": "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
-      "Hiking Team": "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-      "Outdoor & Adventure": "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-      "Language Swap": "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
-      "Language & Culture": "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
-      "Business & Networking": "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300",
-      "Arts & Photography": "bg-rose-100 text-rose-700 dark:bg-rose-900 dark:text-rose-300",
-      "Food & Cooking": "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300",
-      "Sports & Fitness": "bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300",
-      Technology: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300",
-      Music: "bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300",
-      Gaming: "bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900 dark:text-fuchsia-300",
-      "Health & Wellness": "bg-teal-100 text-teal-700 dark:bg-teal-900 dark:text-teal-300",
-      Other: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
+      "Book Club":
+        "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
+      "Books & Literature":
+        "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
+      "Hiking Team":
+        "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
+      "Outdoor & Adventure":
+        "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
+      "Language Swap":
+        "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+      "Language & Culture":
+        "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+      "Business & Networking":
+        "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300",
+      "Arts & Photography":
+        "bg-rose-100 text-rose-700 dark:bg-rose-900 dark:text-rose-300",
+      "Food & Cooking":
+        "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300",
+      "Sports & Fitness":
+        "bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300",
+      Technology:
+        "bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300",
+      Music:
+        "bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300",
+      Gaming:
+        "bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900 dark:text-fuchsia-300",
+      "Health & Wellness":
+        "bg-teal-100 text-teal-700 dark:bg-teal-900 dark:text-teal-300",
+      Other:
+        "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
     };
-
-    return categoryStyles[category] ?? "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
+    return (
+      categoryStyles[category] ??
+      "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+    );
   };
 
   return (
@@ -148,9 +166,7 @@ const Community = () => {
 
         {/* Groups Info */}
         <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            {groupsLabel}
-          </p>
+          <p className="text-sm text-muted-foreground">{groupsLabel}</p>
         </div>
 
         {/* Groups List */}
@@ -176,9 +192,7 @@ const Community = () => {
 
           {!isLoading && errorMessage && (
             <Card className="border-destructive/20 bg-destructive/5">
-              <CardContent className="p-4 text-sm text-destructive">
-                {errorMessage}
-              </CardContent>
+              <CardContent className="p-4 text-sm text-destructive">{errorMessage}</CardContent>
             </Card>
           )}
 
@@ -194,7 +208,8 @@ const Community = () => {
             </Card>
           )}
 
-          {!isLoading && !errorMessage &&
+          {!isLoading &&
+            !errorMessage &&
             groups.map((group) => (
               <Card key={group.id} className="border-border overflow-hidden">
                 {/* Group Image */}
@@ -246,7 +261,10 @@ const Community = () => {
                   </div>
 
                   {/* Join Chat Button */}
-                  <Button className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold">
+                  <Button
+                    className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold"
+                    onClick={() => navigate(`/messages?community=${group.id}`)}
+                  >
                     <MessageSquare size={18} className="mr-2" />
                     Join Chat
                   </Button>
@@ -292,12 +310,11 @@ const Community = () => {
         </button>
       </nav>
 
+      {/* Create Group Dialog */}
       <CreateGroupDialog
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
-        onGroupCreated={() => {
-          void fetchGroups();
-        }}
+        onGroupCreated={() => void fetchGroups()}
       />
     </div>
   );
