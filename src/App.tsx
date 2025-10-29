@@ -95,7 +95,7 @@ const AnimatedRoutes = () => {
           }
         />
         <Route
-          path="/events/:id"
+          path="/events/:eventId"
           element={
             <PageTransition>
               <EventDetail />

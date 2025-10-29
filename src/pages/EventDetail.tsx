@@ -80,11 +80,11 @@ const getGoogleCalendarUrl = (event: EventData) => {
 
 const EventDetail = () => {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
+  const { eventId } = useParams<{ eventId: string }>();
   const { attemptEventJoin } = useSubscription();
   const { toast } = useToast();
 
-  const event = id ? getEventById(id) : undefined;
+  const event = eventId ? getEventById(eventId) : undefined;
   const recommendedEvents = upcomingEvents
     .filter((upcomingEvent) => upcomingEvent.id !== event?.id)
     .slice(0, 3);
@@ -335,7 +335,7 @@ const EventDetail = () => {
                         size="sm"
                         variant="ghost"
                         className="rounded-full px-3 text-xs text-primary hover:bg-primary/10"
-                        onClick={() => navigate(`/events/${relatedEvent.id}`)}
+                        onClick={() => navigate(`/events/${relatedEvent.slug}`)}
                       >
                         View details
                       </Button>
