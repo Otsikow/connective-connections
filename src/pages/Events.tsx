@@ -148,8 +148,9 @@ const Events = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1 }}
+              className="self-stretch"
             >
-              <Card className="border-border/60 shadow-lg shadow-primary/10">
+              <Card className="h-full border-border/60 shadow-lg shadow-primary/10">
                 <CardHeader className="space-y-2 pb-4">
                   <Badge className="w-fit rounded-full bg-amber-500/10 text-amber-600">
                     Featured
@@ -269,7 +270,7 @@ const Events = () => {
                 transition={{ duration: 0.35, delay: index * 0.05 }}
               >
                 <Card
-                  className="group h-full border-border/60 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
+                  className="group h-full border-border/60 shadow-sm transition-all sm:hover:-translate-y-1 sm:hover:shadow-lg"
                   onClick={() => navigate(`/events/${event.slug}`)}
                 >
                   <div className="h-40 overflow-hidden rounded-t-xl bg-muted">
@@ -279,8 +280,8 @@ const Events = () => {
                       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   </div>
-                  <CardContent className="space-y-4 p-5">
-                    <div className="flex items-start justify-between">
+                  <CardContent className="space-y-4 pt-4 sm:pt-5">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                       <div className="space-y-1">
                         <h3 className="text-lg font-semibold text-foreground">
                           {event.title}
@@ -294,7 +295,7 @@ const Events = () => {
                           {event.location}
                         </p>
                       </div>
-                      <Badge variant="outline" className="rounded-full text-xs">
+                      <Badge variant="outline" className="w-fit rounded-full text-xs">
                         {event.attendees} going
                       </Badge>
                     </div>
