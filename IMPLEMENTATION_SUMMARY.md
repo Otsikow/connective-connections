@@ -217,6 +217,7 @@ WHERE email = 'your-admin@email.com';
 - Monitor failed authentication attempts
 - Update dependencies regularly
 - Review admin user list quarterly
+ - Schedule regular security audits and vulnerability assessments to keep the app’s defenses up to date
 
 ### Incident Response
 If unauthorized access suspected:
