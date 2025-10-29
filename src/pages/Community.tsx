@@ -1,15 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Home,
-  MessageSquare,
-  Search,
-  User,
-  Users,
-  Crown,
-  MapPin,
-  Calendar,
-} from "lucide-react";
+import { Crown, MapPin, Calendar } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -260,30 +251,6 @@ const Community = () => {
             ))}
         </div>
       </div>
-
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-6 py-3 flex items-center justify-around z-10">
-        <button onClick={() => navigate("/home")} className="flex flex-col items-center gap-1 text-muted-foreground">
-          <Home size={24} />
-          <span className="text-xs">Home</span>
-        </button>
-        <button onClick={() => navigate("/messages")} className="flex flex-col items-center gap-1 text-muted-foreground">
-          <MessageSquare size={24} />
-          <span className="text-xs">Messages</span>
-        </button>
-        <button className="flex flex-col items-center gap-1 text-[#E8B956]">
-          <Users size={24} />
-          <span className="text-xs font-medium">Community</span>
-        </button>
-        <button onClick={() => navigate("/matches")} className="flex flex-col items-center gap-1 text-muted-foreground">
-          <Search size={24} />
-          <span className="text-xs">Search</span>
-        </button>
-        <button onClick={() => navigate("/profile")} className="flex flex-col items-center gap-1 text-muted-foreground">
-          <User size={24} />
-          <span className="text-xs">Profile</span>
-        </button>
-      </nav>
 
       {/* Create Group Dialog */}
       <CreateGroupDialog
