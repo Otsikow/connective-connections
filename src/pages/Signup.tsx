@@ -17,7 +17,6 @@ import {
   Phone as PhoneIcon,
   Eye,
   EyeOff,
-  Apple,
   Image as ImageIcon,
 } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
@@ -209,13 +208,13 @@ const Signup = () => {
     }
   };
 
-  const handleOAuth = async (provider: "google" | "apple") => {
+  const handleOAuth = async () => {
     try {
       const redirectUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(
         "/profile-setup"
       )}`;
       await supabase.auth.signInWithOAuth({
-        provider,
+        provider: "google",
         options: {
           redirectTo: redirectUrl,
           queryParams: { prompt: "select_account" },
@@ -331,18 +330,10 @@ const Signup = () => {
                   <Button
                     variant="outline"
                     className="w-full h-12 rounded-full"
-                    onClick={() => handleOAuth("google")}
+                    onClick={handleOAuth}
                   >
                     <FcGoogle className="w-5 h-5 mr-2" />
                     Continue with Google
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full h-12 rounded-full"
-                    onClick={() => handleOAuth("apple")}
-                  >
-                    <Apple className="w-5 h-5 mr-2" />
-                    Continue with Apple
                   </Button>
                 </div>
               </motion.div>

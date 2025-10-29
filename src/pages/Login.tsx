@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, Sparkles } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
-import { FaApple } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -55,13 +54,13 @@ const Login = () => {
     setIsLoading(false);
   };
 
-  const handleOAuth = async (provider: "google" | "apple") => {
+  const handleOAuth = async () => {
     try {
       const redirectUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(
-        "/home",
+        "/home"
       )}`;
       await supabase.auth.signInWithOAuth({
-        provider,
+        provider: "google",
         options: {
           redirectTo: redirectUrl,
           queryParams: {
@@ -87,7 +86,9 @@ const Login = () => {
         >
           <div className="inline-flex items-center rounded-full bg-white/80 px-3 py-1 text-sm shadow-sm backdrop-blur dark:bg-white/10">
             <Sparkles className="mr-2 h-4 w-4 text-[#E8B956]" />
-            <span className="text-slate-900 dark:text-slate-100">Reconnect with your people</span>
+            <span className="text-slate-900 dark:text-slate-100">
+              Reconnect with your people
+            </span>
           </div>
           <h1 className="mt-6 text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl">
             Welcome back to Connective
@@ -104,7 +105,9 @@ const Login = () => {
                 className="flex items-start gap-3 rounded-2xl border border-black/5 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5"
               >
                 <div className="mt-1 h-2 w-2 rounded-full bg-[#E8B956]" />
-                <p className="text-base text-slate-700 dark:text-slate-200">{feature}</p>
+                <p className="text-base text-slate-700 dark:text-slate-200">
+                  {feature}
+                </p>
               </div>
             ))}
           </div>
@@ -128,10 +131,15 @@ const Login = () => {
             </div>
 
             <div className="mt-4">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Sign in to your account</h2>
+              <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
+                Sign in to your account
+              </h2>
               <p className="mt-1 text-sm text-muted-foreground dark:text-slate-400">
-                New to Connective? {" "}
-                <Link to="/signup" className="font-medium text-[#E8B956] hover:underline">
+                New to Connective?{" "}
+                <Link
+                  to="/signup"
+                  className="font-medium text-[#E8B956] hover:underline"
+                >
                   Create an account
                 </Link>
               </p>
@@ -141,16 +149,9 @@ const Login = () => {
               <Button
                 variant="outline"
                 className="h-12 gap-2 rounded-xl border-black/10 bg-white/90 text-slate-900 transition dark:border-white/10 dark:bg-white/5 dark:text-slate-100"
-                onClick={() => handleOAuth("google")}
+                onClick={handleOAuth}
               >
                 <FcGoogle className="h-5 w-5" /> Continue with Google
-              </Button>
-              <Button
-                variant="outline"
-                className="h-12 gap-2 rounded-xl border-black/10 bg-white/90 text-slate-900 transition dark:border-white/10 dark:bg-white/5 dark:text-slate-100"
-                onClick={() => handleOAuth("apple")}
-              >
-                <FaApple className="h-5 w-5" /> Continue with Apple
               </Button>
             </div>
 
@@ -163,7 +164,10 @@ const Login = () => {
 
             <form className="space-y-5" onSubmit={handleSubmit}>
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-slate-900 dark:text-slate-200">
+                <Label
+                  htmlFor="email"
+                  className="text-sm font-medium text-slate-900 dark:text-slate-200"
+                >
                   Email
                 </Label>
                 <div className="relative">
@@ -181,7 +185,10 @@ const Login = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-slate-900 dark:text-slate-200">
+                <Label
+                  htmlFor="password"
+                  className="text-sm font-medium text-slate-900 dark:text-slate-200"
+                >
                   Password
                 </Label>
                 <div className="relative">
@@ -201,7 +208,11 @@ const Login = () => {
                     className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted-foreground transition-colors hover:bg-muted dark:text-slate-400 dark:hover:bg-white/10"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -210,7 +221,10 @@ const Login = () => {
                 <label className="text-muted-foreground dark:text-slate-400">
                   <input type="checkbox" className="mr-2" /> Keep me signed in
                 </label>
-                <Link to="/forgot-password" className="font-medium text-[#E8B956] hover:underline">
+                <Link
+                  to="/forgot-password"
+                  className="font-medium text-[#E8B956] hover:underline"
+                >
                   Forgot password?
                 </Link>
               </div>
