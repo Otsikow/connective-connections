@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, Calendar, MessageSquare, Search, User } from "lucide-react";
+import { Home, Calendar, MessageSquare, Search, User, Users } from "lucide-react";
 import { triggerHaptic } from "@/lib/haptics";
 
 interface NavItem {
@@ -11,6 +11,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { icon: Home, label: "Home", path: "/home" },
+  { icon: Users, label: "Friend Finder", path: "/friend-finder" },
   { icon: Calendar, label: "Events", path: "/events" },
   { icon: MessageSquare, label: "Messages", path: "/messages" },
   { icon: Search, label: "Community", path: "/community" },

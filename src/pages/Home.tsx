@@ -51,7 +51,7 @@ const Home = () => {
           "Tell us what lights you up and our matcher introduces you to people already on your wavelength.",
         highlight: "12 new connections matched for you this week.",
         accent: "bg-emerald-500/15 text-emerald-500",
-        cta: { label: "Browse matches", path: "/matches" },
+        cta: { label: "Browse matches", path: "/friend-finder" },
         secondaryCta: { label: "Build profile", path: "/profile" },
         spotlight: {
           avatar: "/placeholder.svg",
