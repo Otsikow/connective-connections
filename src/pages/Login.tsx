@@ -57,8 +57,18 @@ const Login = () => {
 
   const handleOAuth = async (provider: "google" | "apple") => {
     try {
-      await supabase.auth.signInWithOAuth({ provider });
-      navigate("/home");
+      const redirectUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(
+        "/home",
+      )}`;
+      await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: redirectUrl,
+          queryParams: {
+            prompt: "select_account",
+          },
+        },
+      });
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Please try again later.";

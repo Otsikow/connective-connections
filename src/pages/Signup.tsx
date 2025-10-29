@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +13,6 @@ import {
 import { Mail, Phone as PhoneIcon, Eye, EyeOff, Apple, Image as ImageIcon } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import BackButton from "@/components/BackButton";
 
@@ -68,7 +66,6 @@ function StepHeader({ step }: { step: number }) {
 }
 
 const Signup = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [authTab, setAuthTab] = useState<"email" | "phone">("email");
@@ -113,10 +110,22 @@ const Signup = () => {
 
   const handleOAuth = async (provider: "google" | "apple") => {
     try {
-      await supabase.auth.signInWithOAuth({ provider });
-      navigate("/profile-setup");
-    } catch {
-      toast({ title: "OAuth Error", description: "Please try again later." });
+      const redirectUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(
+        "/profile-setup",
+      )}`;
+      await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: redirectUrl,
+          queryParams: {
+            prompt: "select_account",
+          },
+        },
+      });
+    } catch (error) {
+      const description =
+        error instanceof Error ? error.message : "Please try again later.";
+      toast({ title: "OAuth Error", description });
     }
   };
 
