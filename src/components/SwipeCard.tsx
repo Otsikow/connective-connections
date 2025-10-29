@@ -128,23 +128,21 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/40" />
 
-          {/* Trust Badge */}
-          {profile.trustBadge && (
-            <div className="absolute top-4 right-4">
-              <Badge className="bg-green-500 text-white gap-1 trust-badge">
-                <Shield className="w-3 h-3" />
-                Verified
-              </Badge>
-            </div>
-          )}
-
-          {/* Availability */}
-          {profile.availability && (
-            <div className="absolute top-4 left-4">
-              <Badge variant="secondary" className="gap-1">
-                <Clock className="w-3 h-3" />
-                {profile.availability}
-              </Badge>
+          {/* Status Badges */}
+          {(profile.availability || profile.trustBadge) && (
+            <div className="absolute inset-x-0 bottom-0 flex items-end gap-2 px-4 pb-4">
+              {profile.availability && (
+                <Badge variant="secondary" className="gap-1">
+                  <Clock className="w-3 h-3" />
+                  {profile.availability}
+                </Badge>
+              )}
+              {profile.trustBadge && (
+                <Badge className="ml-auto bg-green-500 text-white gap-1 trust-badge">
+                  <Shield className="w-3 h-3" />
+                  Verified
+                </Badge>
+              )}
             </div>
           )}
 
