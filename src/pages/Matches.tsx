@@ -88,6 +88,91 @@ const profiles: Profile[] = [
     availability: "Mornings",
     distance: "4 miles away",
   },
+  {
+    id: "5",
+    name: "Priya S.",
+    age: 27,
+    photo:
+      "https://images.unsplash.com/photo-1542596768-5d1d21f1cf98?auto=format&fit=crop&w=900&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1542831371-d531d36971e6?auto=format&fit=crop&w=400&q=80",
+    ],
+    interests: ["Food Truck Explorer", "Live Music", "Pop Culture", "Skating"],
+    bio: "Marketing professional who loves discovering new live music venues and foodie spots. Always ready for a trivia night!",
+    trustBadge: true,
+    availability: "Weeknights",
+    distance: "0.8 miles away",
+  },
+  {
+    id: "6",
+    name: "Miguel A.",
+    age: 33,
+    photo:
+      "https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?auto=format&fit=crop&w=900&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80",
+    ],
+    interests: ["Cycling", "Coffee Roasting", "Tech Meetups", "Board Games"],
+    bio: "Engineer by day, amateur coffee roaster by night. Looking for friends to join weekend bike rides and board game sessions.",
+    trustBadge: false,
+    availability: "Early mornings and weekends",
+    distance: "5 miles away",
+  },
+  {
+    id: "7",
+    name: "Taylor B.",
+    age: 25,
+    photo:
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80",
+    ],
+    interests: ["Indie Films", "Street Photography", "Thrifting", "City Walks"],
+    bio: "Documentary filmmaker capturing everyday stories. Let’s explore flea markets and share photo walks across the city.",
+    trustBadge: true,
+    availability: "Flexible schedule",
+    distance: "2.3 miles away",
+  },
+  {
+    id: "8",
+    name: "Hannah C.",
+    age: 30,
+    photo:
+      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=900&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=400&q=80",
+    ],
+    interests: ["Community Theater", "Vegan Cooking", "Literary Salons", "Escape Rooms"],
+    bio: "Event planner who loves organizing themed dinner parties and supporting local theater. Seeking collaborators for creative projects!",
+    trustBadge: false,
+    availability: "Evenings",
+    distance: "1 mile away",
+  },
+  {
+    id: "9",
+    name: "Omar N.",
+    age: 32,
+    photo:
+      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=900&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1519340333755-56e9c77f5a47?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=400&q=80",
+    ],
+    interests: ["Urban Gardening", "Podcasting", "Soccer", "Language Exchange"],
+    bio: "Host of a local community podcast and coach for a pickup soccer league. Let’s swap stories and organize community events.",
+    trustBadge: true,
+    availability: "Weekends and late evenings",
+    distance: "3.7 miles away",
+  },
 ];
 
 const Matches = () => {
