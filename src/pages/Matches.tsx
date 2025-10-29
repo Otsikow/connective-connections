@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Heart, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SwipeCard } from "@/components/SwipeCard";
 import BackButton from "@/components/BackButton";
+import { useSubscription } from "@/hooks/useSubscription";
 
 interface Profile {
   id: string;
@@ -94,25 +95,48 @@ const Matches = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [likedProfiles, setLikedProfiles] = useState<string[]>([]);
   const [showMatchModal, setShowMatchModal] = useState(false);
+  const { attemptConnection } = useSubscription();
 
-  const handleSwipe = (direction: "left" | "right") => {
-    if (direction === "right") {
-      const currentProfile = profiles[currentIndex];
-      setLikedProfiles((prev) => [...prev, currentProfile.id]);
+  const handleSwipeComplete = useCallback(
+    (direction: "left" | "right") => {
+      setCurrentIndex((prevIndex) => {
+        if (direction === "right") {
+          const profile = profiles[prevIndex];
+          if (profile) {
+            setLikedProfiles((prev) => [...prev, profile.id]);
+            if (Math.random() > 0.7) {
+              setShowMatchModal(true);
+            }
+          }
+        }
 
-      // Simulated mutual match (randomized for demo)
-      if (Math.random() > 0.7) {
-        setShowMatchModal(true);
-      }
+        if (prevIndex < profiles.length - 1) {
+          return prevIndex + 1;
+        }
+
+        return prevIndex;
+      });
+    },
+    [],
+  );
+
+  const attemptConnectAndAdvance = useCallback(async () => {
+    const allowed = await attemptConnection();
+    if (!allowed) {
+      return false;
     }
 
-    if (currentIndex < profiles.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    }
+    handleSwipeComplete("right");
+    return true;
+  }, [attemptConnection, handleSwipeComplete]);
+
+  const handleSkip = () => {
+    handleSwipeComplete("left");
   };
 
-  const handleConnect = () => handleSwipe("right");
-  const handleSkip = () => handleSwipe("left");
+  const handleConnect = () => {
+    void attemptConnectAndAdvance();
+  };
 
   const handleStartChat = () => {
     setShowMatchModal(false);
@@ -141,7 +165,8 @@ const Matches = () => {
             <SwipeCard
               key={profile.id}
               profile={profile}
-              onSwipe={handleSwipe}
+              onSwipe={handleSwipeComplete}
+              onAttemptConnect={attemptConnectAndAdvance}
               onConnect={handleConnect}
               isActive={index === 0}
             />
