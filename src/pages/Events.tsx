@@ -67,7 +67,7 @@ const Events = () => {
 
       return searchableContent.includes(normalizedSearchTerm);
     });
-  }, [searchTerm, upcomingEvents]);
+  }, [searchTerm]);
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -79,13 +79,13 @@ const Events = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-        <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-br from-primary/5 via-background to-background">
-          <BackButton
-            fallbackPath="/home"
-            size="icon"
-            className="absolute left-4 top-4 z-10 bg-background/80 border border-border/60 text-foreground shadow-sm backdrop-blur-sm hover:bg-muted"
-            ariaLabel="Go back"
-          />
+      <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-br from-primary/5 via-background to-background">
+        <BackButton
+          fallbackPath="/home"
+          size="icon"
+          className="absolute left-4 top-4 z-10 bg-background/80 border border-border/60 text-foreground shadow-sm backdrop-blur-sm hover:bg-muted"
+          ariaLabel="Go back"
+        />
         <div className="absolute inset-y-0 -right-32 hidden md:block opacity-20 pointer-events-none">
           <div className="h-full w-72 rounded-full bg-primary blur-3xl" />
         </div>
@@ -104,7 +104,9 @@ const Events = () => {
                 Find events curated for real, lasting friendships.
               </h1>
               <p className="text-base text-muted-foreground sm:text-lg">
-                Explore gatherings hosted by community builders, tastemakers, and leaders near you. Search by vibe, interest, or neighborhood to discover your next great connection.
+                Explore gatherings hosted by community builders, tastemakers,
+                and leaders near you. Search by vibe, interest, or neighborhood
+                to discover your next great connection.
               </p>
               <div className="flex flex-col gap-4 sm:flex-row">
                 <form
@@ -206,7 +208,7 @@ const Events = () => {
                     ))}
                   </div>
                   <Button
-                    className="w-full rounded-full bg-primary text-white hover:bg-primary/80"
+                    className="w-full rounded-full bg-primary text-white hover:bg-primary/80 dark:text-black"
                     onClick={() => navigate(`/events/${featuredEvent.slug}`)}
                   >
                     View experience details
@@ -240,12 +242,19 @@ const Events = () => {
             <Card className="md:col-span-2 xl:col-span-3 border-dashed border-border/70">
               <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
                 <div className="space-y-2">
-                  <h3 className="text-xl font-semibold text-foreground">No experiences match your search</h3>
+                  <h3 className="text-xl font-semibold text-foreground">
+                    No experiences match your search
+                  </h3>
                   <p className="text-sm text-muted-foreground">
-                    Try a different keyword or adjust your filters to discover more curated connections.
+                    Try a different keyword or adjust your filters to discover
+                    more curated connections.
                   </p>
                 </div>
-                <Button variant="secondary" className="rounded-full" onClick={handleClearSearch}>
+                <Button
+                  variant="secondary"
+                  className="rounded-full"
+                  onClick={handleClearSearch}
+                >
                   Clear search
                 </Button>
               </CardContent>
@@ -263,52 +272,56 @@ const Events = () => {
                   className="group h-full border-border/60 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
                   onClick={() => navigate(`/events/${event.slug}`)}
                 >
-                <div className="h-40 overflow-hidden rounded-t-xl bg-muted">
-                  <img
-                    src={event.image}
-                    alt={event.title}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
-                <CardContent className="space-y-4 p-5">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <h3 className="text-lg font-semibold text-foreground">
-                        {event.title}
-                      </h3>
-                      <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="h-4 w-4 text-primary" />
-                        {formatEventDateTime(event.startDateTime)}
-                      </p>
-                      <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <MapPin className="h-4 w-4 text-primary" />
-                        {event.location}
-                      </p>
-                    </div>
-                    <Badge variant="outline" className="rounded-full text-xs">
-                      {event.attendees} going
-                    </Badge>
+                  <div className="h-40 overflow-hidden rounded-t-xl bg-muted">
+                    <img
+                      src={event.image}
+                      alt={event.title}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {event.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="rounded-full">
-                        {tag}
+                  <CardContent className="space-y-4 p-5">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-1">
+                        <h3 className="text-lg font-semibold text-foreground">
+                          {event.title}
+                        </h3>
+                        <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Calendar className="h-4 w-4 text-primary" />
+                          {formatEventDateTime(event.startDateTime)}
+                        </p>
+                        <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <MapPin className="h-4 w-4 text-primary" />
+                          {event.location}
+                        </p>
+                      </div>
+                      <Badge variant="outline" className="rounded-full text-xs">
+                        {event.attendees} going
                       </Badge>
-                    ))}
-                  </div>
-                  <Button
-                    className="w-full rounded-full"
-                    variant="secondary"
-                    onClick={(buttonEvent) => {
-                      buttonEvent.stopPropagation();
-                      navigate(`/events/${event.slug}`);
-                    }}
-                  >
-                    View details
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {event.tags.map((tag) => (
+                        <Badge
+                          key={tag}
+                          variant="secondary"
+                          className="rounded-full"
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                    <Button
+                      className="w-full rounded-full"
+                      variant="secondary"
+                      onClick={(buttonEvent) => {
+                        buttonEvent.stopPropagation();
+                        navigate(`/events/${event.slug}`);
+                      }}
+                    >
+                      View details
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))
           )}
         </div>
@@ -318,14 +331,18 @@ const Events = () => {
         <Card className="border-border/50 bg-gradient-to-r from-primary/10 via-primary/5 to-background">
           <CardContent className="flex flex-col gap-6 p-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-2xl space-y-2">
-              <h3 className="text-xl font-semibold">Bring your idea to life as a host</h3>
+              <h3 className="text-xl font-semibold">
+                Bring your idea to life as a host
+              </h3>
               <p className="text-sm text-muted-foreground">
-                Share your expertise or passion with the community. We’ll guide you through crafting a standout listing, managing guests, and keeping your events thriving.
+                Share your expertise or passion with the community. We’ll guide
+                you through crafting a standout listing, managing guests, and
+                keeping your events thriving.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button
-                className="rounded-full bg-primary text-white hover:bg-primary/80"
+                className="rounded-full bg-primary text-white hover:bg-primary/80 dark:text-black"
                 onClick={() => navigate("/host/create-event")}
               >
                 Start a new event
