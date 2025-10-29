@@ -495,4 +495,14 @@ export default function Profile() {
                 onClick={() => handleCheckout("premium")}
                 disabled={tier === "premium" || isCheckoutLoading}
               >
-                {tier === "premium" ? "Already premium" : "Try
+                {tier === "premium" ? "Already premium" : "Try premium"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+      </div>
+    </div>
+  );
+}
+
