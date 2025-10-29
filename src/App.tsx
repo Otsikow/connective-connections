@@ -17,6 +17,7 @@ import Login from "./pages/Login";
 import ProfileSetup from "./pages/ProfileSetup";
 import Home from "./pages/Home";
 import Matches from "./pages/Matches";
+import FriendFinder from "./pages/FriendFinder";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
 import Community from "./pages/Community";
@@ -116,6 +117,14 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <Matches />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/friend-finder"
+          element={
+            <PageTransition>
+              <FriendFinder />
             </PageTransition>
           }
         />

@@ -1,0 +1,678 @@
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { CalendarCheck, Sparkles, Users } from "lucide-react";
+import BackButton from "@/components/BackButton";
+import { usePageTitle } from "@/hooks/usePageTitle";
+
+interface FriendProfile {
+  id: string;
+  name: string;
+  age: number;
+  location: string;
+  photo: string;
+  compatibility: number;
+  sharedInterests: string[];
+  vibe: "energizing" | "grounding" | "creative" | "balanced";
+  availability: "weeknights" | "weekends" | "mornings" | "flexible";
+  introduction: string;
+  highlights: string[];
+  socialFormats: ("In-person" | "Digital" | "Hybrid")[];
+  mutualConnections: number;
+  badges: string[];
+}
+
+const friendProfiles: FriendProfile[] = [
+  {
+    id: "noah",
+    name: "Noah Alvarez",
+    age: 29,
+    location: "Capitol Hill • 1.2 mi",
+    photo:
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
+    compatibility: 92,
+    sharedInterests: [
+      "Sunrise hikes",
+      "Coffee tasting",
+      "Film photography",
+      "Community volunteering",
+    ],
+    vibe: "energizing",
+    availability: "weekends",
+    introduction:
+      "Hosts a Saturday sunrise hike and brunch club for new arrivals in the city.",
+    highlights: ["Introduced 3 hiking buddies this month", "Leads weekend adventures"],
+    socialFormats: ["In-person", "Hybrid"],
+    mutualConnections: 4,
+    badges: ["Trail leader", "Verified"],
+  },
+  {
+    id: "amira",
+    name: "Amira Chen",
+    age: 32,
+    location: "Ballard • 3.4 mi",
+    photo:
+      "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=900&q=80",
+    compatibility: 88,
+    sharedInterests: [
+      "Supper clubs",
+      "Live music",
+      "Storytelling nights",
+      "Zero-proof mixology",
+    ],
+    vibe: "creative",
+    availability: "weeknights",
+    introduction:
+      "Curates an invite-only dinner party for creatives looking to collaborate.",
+    highlights: ["Hosts monthly supper club", "Audio producer by day"],
+    socialFormats: ["In-person"],
+    mutualConnections: 2,
+    badges: ["Community host"],
+  },
+  {
+    id: "darius",
+    name: "Darius Kaur",
+    age: 34,
+    location: "South Lake • 0.9 mi",
+    photo:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=80",
+    compatibility: 85,
+    sharedInterests: [
+      "Startup roundtables",
+      "Language exchange",
+      "Sunday soccer",
+      "Board game strategy",
+    ],
+    vibe: "balanced",
+    availability: "flexible",
+    introduction:
+      "Runs a Sunday co-working and accountability group for multilingual founders.",
+    highlights: ["Shares weekly accountability prompts", "Goal-focused"],
+    socialFormats: ["Hybrid", "Digital"],
+    mutualConnections: 3,
+    badges: ["Accountability partner"],
+  },
+  {
+    id: "lucia",
+    name: "Lucia Romero",
+    age: 27,
+    location: "Fremont • 2.1 mi",
+    photo:
+      "https://images.unsplash.com/photo-1542596768-5d1d21f1cf98?auto=format&fit=crop&w=900&q=80",
+    compatibility: 90,
+    sharedInterests: [
+      "Indie film club",
+      "Rooftop yoga",
+      "Gallery hopping",
+      "Plant swaps",
+    ],
+    vibe: "grounding",
+    availability: "weeknights",
+    introduction:
+      "Looking for a co-host to expand her mindful movement and film nights.",
+    highlights: ["Mindful energy", "Great with small group facilitation"],
+    socialFormats: ["In-person"],
+    mutualConnections: 1,
+    badges: ["Mindful guide", "Rising leader"],
+  },
+  {
+    id: "marco",
+    name: "Marco Silva",
+    age: 31,
+    location: "Queen Anne • 1.8 mi",
+    photo:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=900&q=80",
+    compatibility: 82,
+    sharedInterests: [
+      "Urban gardening",
+      "Cycling meetups",
+      "Local podcasts",
+      "Pop-up markets",
+    ],
+    vibe: "energizing",
+    availability: "mornings",
+    introduction:
+      "Produces a neighborhood podcast and searches for collaborators for the next season.",
+    highlights: ["Seeking co-host", "Organizes monthly skill swaps"],
+    socialFormats: ["Hybrid"],
+    mutualConnections: 5,
+    badges: ["Connector"],
+  },
+];
+
+const quickFilters = [
+  "Accountability partners",
+  "Outdoor adventures",
+  "Creative collabs",
+  "Skill swapping",
+  "New to town",
+];
+
+const vibeOptions: Array<{ value: FriendProfile["vibe"] | "all"; label: string }> = [
+  { value: "all", label: "All vibes" },
+  { value: "balanced", label: "Balanced energy" },
+  { value: "energizing", label: "High-energy" },
+  { value: "grounding", label: "Grounding" },
+  { value: "creative", label: "Creative spark" },
+];
+
+const availabilityOptions: Array<{
+  value: FriendProfile["availability"] | "any";
+  label: string;
+}> = [
+  { value: "any", label: "Anytime" },
+  { value: "weeknights", label: "Weeknights" },
+  { value: "weekends", label: "Weekends" },
+  { value: "mornings", label: "Early mornings" },
+  { value: "flexible", label: "Flexible schedule" },
+];
+
+const FriendFinder = () => {
+  const navigate = useNavigate();
+  usePageTitle("Friend Finder");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [selectedVibe, setSelectedVibe] = useState<FriendProfile["vibe"] | "all">(
+    "all",
+  );
+  const [selectedAvailability, setSelectedAvailability] = useState<
+    FriendProfile["availability"] | "any"
+  >("any");
+  const [onlyInPerson, setOnlyInPerson] = useState(false);
+
+  const availableInterests = useMemo(
+    () =>
+      Array.from(
+        new Set(friendProfiles.flatMap((profile) => profile.sharedInterests)),
+      ).sort(),
+    [],
+  );
+
+  const filteredProfiles = useMemo(() => {
+    return friendProfiles.filter((profile) => {
+      const matchesSearch = searchTerm
+        ? profile.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          profile.sharedInterests.some((interest) =>
+            interest.toLowerCase().includes(searchTerm.toLowerCase()),
+          )
+        : true;
+
+      const matchesFilter =
+        selectedFilters.length === 0 ||
+        selectedFilters.some((filter) =>
+          profile.highlights.some((highlight) =>
+            highlight.toLowerCase().includes(filter.toLowerCase()),
+          ),
+        ) ||
+        selectedFilters.some((filter) =>
+          profile.sharedInterests.some((interest) =>
+            interest.toLowerCase().includes(filter.toLowerCase()),
+          ),
+        );
+
+      const matchesVibe =
+        selectedVibe === "all" || profile.vibe === selectedVibe;
+
+      const matchesAvailability =
+        selectedAvailability === "any" ||
+        profile.availability === selectedAvailability;
+
+      const matchesFormat = onlyInPerson
+        ? profile.socialFormats.includes("In-person")
+        : true;
+
+      return (
+        matchesSearch &&
+        matchesFilter &&
+        matchesVibe &&
+        matchesAvailability &&
+        matchesFormat
+      );
+    });
+  }, [searchTerm, selectedFilters, selectedVibe, selectedAvailability, onlyInPerson]);
+
+  const toggleFilter = (value: string) => {
+    setSelectedFilters((prev) =>
+      prev.includes(value)
+        ? prev.filter((filter) => filter !== value)
+        : [...prev, value],
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-background pb-24">
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border">
+        <div className="px-4 py-4 flex items-center gap-3">
+          <BackButton fallbackPath="/home" />
+          <div>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">
+              Friend Finder
+            </p>
+            <h1 className="text-lg font-semibold leading-tight">
+              Curated matches ready to meet
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-8 px-4 py-6">
+        <Card className="border border-border/60 bg-card/80 backdrop-blur">
+          <CardHeader className="space-y-2">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Sparkles className="h-4 w-4 text-[#E8B956]" />
+              This week’s tailored intros
+            </CardTitle>
+            <CardDescription>
+              These members mirror your interests and rhythm. Send an intro or
+              save them to Matches Pro to unlock extended insights.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              <span>5 new high-compatibility matches</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CalendarCheck className="h-4 w-4" />
+              <span>3 openings for weekend plans</span>
+            </div>
+          </CardContent>
+          <CardFooter className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-sm text-muted-foreground">
+              Need a deeper dive?
+              <Button
+                variant="link"
+                className="px-1 text-[#E8B956]"
+                onClick={() => navigate("/matches")}
+              >
+                Open Matches workspace
+              </Button>
+            </div>
+            <Button
+              className="w-full sm:w-auto bg-[#E8B956] text-black hover:bg-[#d9a840]"
+              onClick={() => navigate("/messages")}
+            >
+              Start an intro chat
+            </Button>
+          </CardFooter>
+        </Card>
+
+        <Card className="border border-border/60">
+          <CardHeader className="space-y-4">
+            <div className="space-y-2">
+              <CardTitle className="text-base">Refine your matches</CardTitle>
+              <CardDescription>
+                Fine-tune by vibe, availability, and preferred formats to see
+                who fits your flow.
+              </CardDescription>
+            </div>
+            <div className="space-y-3">
+              <Label htmlFor="friend-search" className="text-xs uppercase tracking-wide">
+                Search interests or names
+              </Label>
+              <Input
+                id="friend-search"
+                placeholder="Try ‘coffee’, ‘trail’, or ‘board games’"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+              />
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <p className="text-xs font-medium uppercase text-muted-foreground">
+                Quick filters
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {quickFilters.map((filter) => {
+                  const isActive = selectedFilters.includes(filter);
+                  return (
+                    <Button
+                      key={filter}
+                      variant={isActive ? "default" : "outline"}
+                      size="sm"
+                      className={`rounded-full ${
+                        isActive
+                          ? "bg-[#E8B956] text-black hover:bg-[#d9a840]"
+                          : "border-border/60"
+                      }`}
+                      onClick={() => toggleFilter(filter)}
+                    >
+                      {filter}
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="space-y-2">
+                <Label className="text-xs uppercase tracking-wide">Preferred vibe</Label>
+                <div className="flex flex-wrap gap-2">
+                  {vibeOptions.map((option) => {
+                    const isActive = selectedVibe === option.value;
+                    return (
+                      <Button
+                        key={option.value}
+                        size="sm"
+                        variant={isActive ? "default" : "outline"}
+                        className={`rounded-full text-xs ${
+                          isActive
+                            ? "bg-[#E8B956] text-black hover:bg-[#d9a840]"
+                            : "border-border/60"
+                        }`}
+                        onClick={() => setSelectedVibe(option.value)}
+                      >
+                        {option.label}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs uppercase tracking-wide">Availability</Label>
+                <div className="flex flex-wrap gap-2">
+                  {availabilityOptions.map((option) => {
+                    const isActive = selectedAvailability === option.value;
+                    return (
+                      <Button
+                        key={option.value}
+                        size="sm"
+                        variant={isActive ? "default" : "outline"}
+                        className={`rounded-full text-xs ${
+                          isActive
+                            ? "bg-[#E8B956] text-black hover:bg-[#d9a840]"
+                            : "border-border/60"
+                        }`}
+                        onClick={() => setSelectedAvailability(option.value)}
+                      >
+                        {option.label}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="space-y-3 rounded-2xl border border-dashed border-border/60 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                      In-person ready
+                    </p>
+                    <p className="text-sm font-medium">
+                      Show members open to meeting locally
+                    </p>
+                  </div>
+                  <Switch
+                    checked={onlyInPerson}
+                    onCheckedChange={setOnlyInPerson}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Perfect for planning hikes, cafés, or co-working sessions this
+                  week.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-xs uppercase tracking-wide">
+                Explore by shared interests
+              </Label>
+              <div className="flex flex-wrap gap-2">
+                {availableInterests.map((interest) => {
+                  const isActive = selectedFilters.includes(interest);
+                  return (
+                    <Badge
+                      key={interest}
+                      className={`cursor-pointer rounded-full px-3 py-1 text-xs transition-colors ${
+                        isActive
+                          ? "bg-[#E8B956] text-black"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                      onClick={() => toggleFilter(interest)}
+                    >
+                      {interest}
+                    </Badge>
+                  );
+                })}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold">Matches picked for you</h2>
+              <p className="text-sm text-muted-foreground">
+                Compatibility scores blend your interests, rhythm, and group
+                preferences.
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="hidden text-xs font-medium text-muted-foreground sm:inline-flex"
+              onClick={() => navigate("/matches")}
+            >
+              View full matcher
+            </Button>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            {filteredProfiles.map((profile) => (
+              <Card key={profile.id} className="border border-border/60">
+                <CardHeader className="flex flex-row items-start gap-4 pb-4">
+                  <Avatar className="h-14 w-14">
+                    <AvatarImage src={profile.photo} alt={profile.name} />
+                    <AvatarFallback>
+                      {profile.name
+                        .split(" ")
+                        .map((part) => part[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-base font-semibold">
+                        {profile.name} · {profile.age}
+                      </h3>
+                      <Badge className="rounded-full bg-emerald-500/15 text-emerald-600">
+                        {profile.compatibility}% match
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {profile.location}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {profile.badges.map((badge) => (
+                        <Badge
+                          key={badge}
+                          variant="outline"
+                          className="rounded-full border-dashed"
+                        >
+                          {badge}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    {profile.introduction}
+                  </p>
+
+                  <div className="space-y-3 rounded-xl bg-muted/50 p-4">
+                    <div className="flex items-center justify-between text-xs font-medium uppercase text-muted-foreground">
+                      <span>Connection fit</span>
+                      <span>{profile.compatibility}%</span>
+                    </div>
+                    <Progress value={profile.compatibility} className="h-2" />
+                    <div className="flex flex-wrap gap-2 text-xs">
+                      {profile.sharedInterests.map((interest) => (
+                        <Badge
+                          key={interest}
+                          className="rounded-full bg-background text-muted-foreground"
+                        >
+                          {interest}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid gap-3 text-xs text-muted-foreground sm:grid-cols-2">
+                    <div className="space-y-1">
+                      <p className="font-medium text-foreground">Highlights</p>
+                      <ul className="space-y-1">
+                        {profile.highlights.map((highlight) => (
+                          <li key={highlight} className="leading-relaxed">
+                            • {highlight}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="font-medium text-foreground">
+                        Preferred formats
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {profile.socialFormats.map((format) => (
+                          <Badge
+                            key={format}
+                            variant="secondary"
+                            className="rounded-full bg-[#E8B956]/15 text-[#C48F21]"
+                          >
+                            {format}
+                          </Badge>
+                        ))}
+                      </div>
+                      <p className="text-muted-foreground">
+                        {profile.mutualConnections} mutual introductions
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <Button
+                    variant="outline"
+                    className="w-full rounded-full border-border/70"
+                    onClick={() => navigate(`/messages/${profile.id}`)}
+                  >
+                    Send an intro
+                  </Button>
+                  <Button
+                    className="w-full rounded-full bg-[#E8B956] text-black hover:bg-[#d9a840]"
+                    onClick={() => navigate(`/profile?focus=${profile.id}`)}
+                  >
+                    View full profile
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+
+          {filteredProfiles.length === 0 && (
+            <Card className="border border-dashed border-border/60">
+              <CardContent className="py-10 text-center text-sm text-muted-foreground">
+                We couldn’t find an exact match. Relax filters or explore the
+                Matches workspace for more intros.
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        <Card className="border border-border/60">
+          <CardHeader>
+            <CardTitle className="text-base">Upcoming vibes to join</CardTitle>
+            <CardDescription>
+              Reserve your spot and we’ll introduce you before the event so the
+              first hello feels easy.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-3">
+            {[
+              {
+                title: "Golden Hour Hikers",
+                description: "Sunday 7am • Discovery Park",
+                tags: ["Outdoors", "Mindful"],
+              },
+              {
+                title: "Story-forward supper club",
+                description: "Wed 6pm • Capitol Hill loft",
+                tags: ["Creative", "Intimate"],
+              },
+              {
+                title: "Cozy cowork & accountability",
+                description: "Fri 9am • Communal space",
+                tags: ["Productive", "Hybrid"],
+              },
+            ].map((event) => (
+              <Card
+                key={event.title}
+                className="border border-border/40 bg-muted/40"
+              >
+                <CardContent className="space-y-3 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold">{event.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {event.description}
+                      </p>
+                    </div>
+                    <Badge className="rounded-full bg-[#E8B956]/20 text-[#C48F21]">
+                      Limited spots
+                    </Badge>
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                    {event.tags.map((tag) => (
+                      <Badge
+                        key={tag}
+                        variant="secondary"
+                        className="rounded-full"
+                      >
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="justify-start px-0 text-xs text-muted-foreground"
+                    onClick={() => navigate("/events")}
+                  >
+                    View event details
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default FriendFinder;
