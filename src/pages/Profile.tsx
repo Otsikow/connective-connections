@@ -37,6 +37,7 @@ import {
   Users,
   Award,
   Shield,
+  ShieldCheck,
   Bell,
   CreditCard,
   Crown,
@@ -249,6 +250,9 @@ const Profile = () => {
     },
   });
 
+  const [isMfaEnabled, setIsMfaEnabled] = useState(false);
+  const [loginAlertsEnabled, setLoginAlertsEnabled] = useState(false);
+
   const [friendDialogOpen, setFriendDialogOpen] = useState(false);
   const [selectedFriendId, setSelectedFriendId] = useState<number | null>(null);
   const selectedFriend = useMemo(
@@ -277,6 +281,33 @@ const Profile = () => {
     toast({
       title: "You're all set!",
       description: "Premium features have been unlocked for your profile.",
+    });
+  };
+
+  const handleMfaToggle = (enabled: boolean) => {
+    setIsMfaEnabled(enabled);
+    toast({
+      title: enabled ? "Multi-factor authentication enabled" : "Multi-factor authentication disabled",
+      description: enabled
+        ? "We'll guide you through connecting an authenticator app or SMS verification to protect future logins."
+        : "Turn this back on anytime to keep your account extra secure.",
+    });
+  };
+
+  const handleLoginAlertsToggle = (enabled: boolean) => {
+    setLoginAlertsEnabled(enabled);
+    toast({
+      title: enabled ? "Login alerts enabled" : "Login alerts disabled",
+      description: enabled
+        ? "We'll notify you whenever a new device signs in so you can confirm it's really you."
+        : "You won't receive notifications for new device sign-ins.",
+    });
+  };
+
+  const handleManageAuthenticator = () => {
+    toast({
+      title: "Security setup coming soon",
+      description: "Authenticator app and SMS walkthroughs will be available in an upcoming update.",
     });
   };
 
@@ -762,6 +793,41 @@ const Profile = () => {
                     onCheckedChange={(value) => handlePrivacyToggle("showEvents", value)}
                   />
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5" /> Security
+                </CardTitle>
+                <CardDescription>
+                  Implement multi-factor authentication using an authenticator app or SMS verification when you want an extra
+                  layer of protection.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="font-medium">Multi-factor authentication</p>
+                    <p className="text-sm text-muted-foreground">
+                      Add an extra verification step so only you can access your account.
+                    </p>
+                  </div>
+                  <Switch checked={isMfaEnabled} onCheckedChange={handleMfaToggle} />
+                </div>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="font-medium">Login alerts</p>
+                    <p className="text-sm text-muted-foreground">
+                      Get notified whenever a new device signs in with your credentials.
+                    </p>
+                  </div>
+                  <Switch checked={loginAlertsEnabled} onCheckedChange={handleLoginAlertsToggle} />
+                </div>
+                <Button variant="outline" className="w-full" onClick={handleManageAuthenticator}>
+                  Manage authenticator setup
+                </Button>
               </CardContent>
             </Card>
 
