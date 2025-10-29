@@ -5,6 +5,20 @@ export interface EventHost {
   experiencesHosted?: number;
 }
 
+export interface EventReview {
+  id: string;
+  reviewerName: string;
+  reviewerAvatar: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
+export interface EventRatingSummary {
+  average: number;
+  count: number;
+}
+
 export interface EventData {
   id: string;
   slug: string;
@@ -19,6 +33,8 @@ export interface EventData {
   tags: string[];
   host?: EventHost;
   featured?: boolean;
+  rating?: EventRatingSummary;
+  reviews?: EventReview[];
 }
 
 const createSlug = (value: string) =>
@@ -48,6 +64,42 @@ export const events: EventData[] = [
       experiencesHosted: 24,
     },
     featured: true,
+    rating: {
+      average: 4.9,
+      count: 182,
+    },
+    reviews: [
+      {
+        id: "101-1",
+        reviewerName: "Maya L.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=200&q=80",
+        rating: 5,
+        comment:
+          "The host created such a welcoming atmosphere. I left with three new friends and plans for next week!",
+        createdAt: "2024-05-12T18:30:00-05:00",
+      },
+      {
+        id: "101-2",
+        reviewerName: "Darius H.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80",
+        rating: 5,
+        comment:
+          "Perfect balance of guided activities and free conversation. The skyline views were unforgettable.",
+        createdAt: "2024-05-08T20:45:00-05:00",
+      },
+      {
+        id: "101-3",
+        reviewerName: "Sophie R.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+        rating: 4,
+        comment:
+          "Loved the live music and curated guest list. I wish it had lasted just a little longer!",
+        createdAt: "2024-05-02T19:15:00-05:00",
+      },
+    ],
   },
   {
     id: "1",
@@ -62,6 +114,32 @@ export const events: EventData[] = [
     attendees: 18,
     image: "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?w=1600&h=900&fit=crop",
     tags: ["Casual", "Coffee Lovers"],
+    rating: {
+      average: 4.8,
+      count: 96,
+    },
+    reviews: [
+      {
+        id: "1-1",
+        reviewerName: "Jordan P.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=200&q=80",
+        rating: 5,
+        comment:
+          "Incredible mix of cafés and conversation prompts. Highly recommend for coffee lovers new to the city.",
+        createdAt: "2024-04-28T10:05:00-05:00",
+      },
+      {
+        id: "1-2",
+        reviewerName: "Priya S.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1542596768-5d1d21f1cf98?auto=format&fit=crop&w=200&q=80",
+        rating: 4,
+        comment:
+          "Great variety of roasts and the group was so friendly. One stop was a bit crowded but still fun!",
+        createdAt: "2024-04-20T09:45:00-05:00",
+      },
+    ],
   },
   {
     id: "2",
@@ -76,6 +154,32 @@ export const events: EventData[] = [
     attendees: 22,
     image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&h=900&fit=crop",
     tags: ["Food", "Hands-on", "Chef-led"],
+    rating: {
+      average: 4.7,
+      count: 143,
+    },
+    reviews: [
+      {
+        id: "2-1",
+        reviewerName: "Miguel A.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?auto=format&fit=crop&w=200&q=80",
+        rating: 5,
+        comment:
+          "Chef Marco makes complex dishes so approachable. Learned a ton and bonded with my table mates.",
+        createdAt: "2024-05-01T18:50:00-05:00",
+      },
+      {
+        id: "2-2",
+        reviewerName: "Alex K.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80",
+        rating: 4,
+        comment:
+          "Delicious recipes and great pacing. Would love a follow-up class focused on desserts!",
+        createdAt: "2024-04-18T17:30:00-05:00",
+      },
+    ],
   },
   {
     id: "3",
@@ -90,6 +194,32 @@ export const events: EventData[] = [
     attendees: 24,
     image: "https://images.unsplash.com/photo-1552196563-55cd4e45efb3?w=1600&h=900&fit=crop",
     tags: ["Wellness", "Outdoors"],
+    rating: {
+      average: 4.9,
+      count: 88,
+    },
+    reviews: [
+      {
+        id: "3-1",
+        reviewerName: "Taylor B.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80",
+        rating: 5,
+        comment:
+          "The sunrise stretch was magical. Sarah's guidance made everyone feel comfortable regardless of experience.",
+        createdAt: "2024-05-10T08:15:00-05:00",
+      },
+      {
+        id: "3-2",
+        reviewerName: "Omar N.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80",
+        rating: 5,
+        comment:
+          "Great blend of movement and meditation. Left feeling energized and grounded for the day.",
+        createdAt: "2024-04-29T08:40:00-05:00",
+      },
+    ],
   },
   {
     id: "4",
@@ -104,6 +234,32 @@ export const events: EventData[] = [
     attendees: 14,
     image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&h=900&fit=crop",
     tags: ["Tech", "Collaboration"],
+    rating: {
+      average: 4.6,
+      count: 57,
+    },
+    reviews: [
+      {
+        id: "4-1",
+        reviewerName: "Casey R.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=200&q=80",
+        rating: 5,
+        comment:
+          "Met two collaborators for a side project! Loved the creative prompts and relaxed vibe.",
+        createdAt: "2024-04-26T16:45:00-05:00",
+      },
+      {
+        id: "4-2",
+        reviewerName: "Hannah C.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=200&q=80",
+        rating: 4,
+        comment:
+          "Great energy and facilitation. Would have loved a bit more time for open collaboration at the end.",
+        createdAt: "2024-04-12T18:05:00-05:00",
+      },
+    ],
   },
   {
     id: "5",
@@ -118,6 +274,32 @@ export const events: EventData[] = [
     attendees: 28,
     image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&h=900&fit=crop",
     tags: ["Food", "Community"],
+    rating: {
+      average: 4.8,
+      count: 72,
+    },
+    reviews: [
+      {
+        id: "5-1",
+        reviewerName: "Sarah M.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=200&q=80",
+        rating: 5,
+        comment:
+          "Felt like celebrating with family. Amazing dishes and thoughtful conversation prompts.",
+        createdAt: "2024-05-05T18:20:00-05:00",
+      },
+      {
+        id: "5-2",
+        reviewerName: "Lena Q.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
+        rating: 4,
+        comment:
+          "Loved the potluck format and cozy atmosphere. Bring a dish you're excited to share!",
+        createdAt: "2024-04-21T19:10:00-05:00",
+      },
+    ],
   },
   {
     id: "6",
@@ -132,6 +314,32 @@ export const events: EventData[] = [
     attendees: 22,
     image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1600&h=900&fit=crop",
     tags: ["Adventure", "Outdoors"],
+    rating: {
+      average: 4.9,
+      count: 64,
+    },
+    reviews: [
+      {
+        id: "6-1",
+        reviewerName: "Miguel A.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?auto=format&fit=crop&w=200&q=80",
+        rating: 5,
+        comment:
+          "The guide kept everyone safe and energized. Sunrise views were worth the early wake-up!",
+        createdAt: "2024-05-11T07:30:00-05:00",
+      },
+      {
+        id: "6-2",
+        reviewerName: "Omar N.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80",
+        rating: 5,
+        comment:
+          "Great pace and conversation along the trail. Will definitely join the next hike!",
+        createdAt: "2024-04-30T08:25:00-05:00",
+      },
+    ],
   },
   {
     id: "7",
@@ -146,6 +354,32 @@ export const events: EventData[] = [
     attendees: 31,
     image: "https://images.unsplash.com/photo-1551836022-4c4c79ecde51?w=1600&h=900&fit=crop",
     tags: ["Networking", "Startups"],
+    rating: {
+      average: 4.5,
+      count: 118,
+    },
+    reviews: [
+      {
+        id: "7-1",
+        reviewerName: "Luca F.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=200&q=80",
+        rating: 4,
+        comment:
+          "High-energy networking with thoughtful facilitation. Ideal for startup founders looking for collaborators.",
+        createdAt: "2024-04-16T18:10:00-05:00",
+      },
+      {
+        id: "7-2",
+        reviewerName: "Anika V.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=200&q=80",
+        rating: 5,
+        comment:
+          "Loved the pitch feedback circles. Walked away with new contacts and concrete next steps.",
+        createdAt: "2024-04-10T19:40:00-05:00",
+      },
+    ],
   },
   {
     id: "8",
@@ -160,6 +394,32 @@ export const events: EventData[] = [
     attendees: 34,
     image: "https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=1600&h=900&fit=crop",
     tags: ["Networking", "Brunch"],
+    rating: {
+      average: 4.7,
+      count: 103,
+    },
+    reviews: [
+      {
+        id: "8-1",
+        reviewerName: "Nia J.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=200&q=80",
+        rating: 5,
+        comment:
+          "The brunch menu was incredible and the facilitated introductions made it easy to connect.",
+        createdAt: "2024-04-27T11:20:00-05:00",
+      },
+      {
+        id: "8-2",
+        reviewerName: "Samira D.",
+        reviewerAvatar:
+          "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=200&q=80",
+        rating: 4,
+        comment:
+          "Loved the mix of creatives and entrepreneurs. Would enjoy a longer post-event hangout next time.",
+        createdAt: "2024-04-19T12:05:00-05:00",
+      },
+    ],
   },
 ];
 
