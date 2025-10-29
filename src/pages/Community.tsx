@@ -5,93 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Home, MessageSquare, Search, User, Users, Crown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { communityGroups } from "@/lib/community-groups";
 
 const Community = () => {
   const navigate = useNavigate();
   const [isPremium] = useState(true); // Enables Create Group button for premium users
-
-  const groups = [
-    {
-      id: 1,
-      name: "Downtown Book Club",
-      category: "Book Club",
-      description:
-        "Monthly discussions on contemporary fiction. Currently reading 'The Midnight Library'. Join us for coffee and conversation!",
-      members: 124,
-      image: "/placeholder.svg",
-      meetingTime: "Every 2nd Saturday, 3:00 PM",
-    },
-    {
-      id: 2,
-      name: "Summit Seekers Hiking",
-      category: "Hiking Team",
-      description:
-        "Weekend warriors exploring local trails. All fitness levels welcome. We provide carpools and gear advice for beginners.",
-      members: 89,
-      image: "/placeholder.svg",
-      meetingTime: "Sundays, 7:00 AM",
-    },
-    {
-      id: 3,
-      name: "Spanish Language Exchange",
-      category: "Language Swap",
-      description:
-        "Practice español in a friendly environment. Native speakers and learners meet for conversational practice over tapas.",
-      members: 156,
-      image: "/placeholder.svg",
-      meetingTime: "Wednesdays, 6:30 PM",
-    },
-    {
-      id: 4,
-      name: "French Conversation Circle",
-      category: "Language Swap",
-      description:
-        "Bonjour! Improve your French through casual conversation. All levels welcome, from beginners to advanced speakers.",
-      members: 92,
-      image: "/placeholder.svg",
-      meetingTime: "Thursdays, 7:00 PM",
-    },
-    {
-      id: 5,
-      name: "Mystery & Thriller Readers",
-      category: "Book Club",
-      description:
-        "For fans of suspense, crime novels, and psychological thrillers. Share theories and recommendations with fellow sleuths.",
-      members: 78,
-      image: "/placeholder.svg",
-      meetingTime: "Every 3rd Sunday, 4:00 PM",
-    },
-    {
-      id: 6,
-      name: "Sunrise Trail Runners",
-      category: "Hiking Team",
-      description:
-        "Early morning trail running group. We focus on building endurance and exploring scenic routes. Coffee stop included!",
-      members: 65,
-      image: "/placeholder.svg",
-      meetingTime: "Tuesdays & Saturdays, 6:00 AM",
-    },
-    {
-      id: 7,
-      name: "Italian Culture & Conversation",
-      category: "Language Swap",
-      description:
-        "Parliamo italiano! Learn Italian while discovering Italian culture, cuisine, and traditions. Beginner-friendly sessions.",
-      members: 103,
-      image: "/placeholder.svg",
-      meetingTime: "Mondays, 7:30 PM",
-    },
-    {
-      id: 8,
-      name: "Women's Mountain Hiking",
-      category: "Hiking Team",
-      description:
-        "Empowering women through mountain adventures. Build confidence, fitness, and lasting friendships on challenging trails.",
-      members: 141,
-      image: "/placeholder.svg",
-      meetingTime: "1st & 3rd Sunday, 8:00 AM",
-    },
-  ];
 
   const getCategoryColor = (category: string) => {
     switch (category) {
@@ -132,13 +50,13 @@ const Community = () => {
         {/* Groups Info */}
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            {groups.length} local groups near you
+            {communityGroups.length} local groups near you
           </p>
         </div>
 
         {/* Groups List */}
         <div className="space-y-4">
-          {groups.map((group) => (
+          {communityGroups.map((group) => (
             <Card key={group.id} className="border-border overflow-hidden">
               {/* Group Image */}
               <div className="h-48 bg-gradient-to-br from-[#E8B956]/20 to-[#E8B956]/5 relative flex items-center justify-center">
@@ -171,7 +89,10 @@ const Community = () => {
                 </div>
 
                 {/* Join Chat Button */}
-                <Button className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold">
+                <Button
+                  className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold"
+                  onClick={() => navigate(`/messages?community=${group.id}`)}
+                >
                   <MessageSquare size={18} className="mr-2" />
                   Join Chat
                 </Button>
