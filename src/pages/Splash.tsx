@@ -2,37 +2,101 @@ import { useNavigate } from "react-router-dom";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import {
   ArrowRight,
-  Calendar,
+  CalendarDays,
   Crown,
   HeartHandshake,
   MessageCircle,
+  MessagesSquare,
   ShieldCheck,
   Sparkles,
   Users,
+  UserPlus,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
-import heroGathering from "@/assets/onboarding-1.png";
-import heroConnection from "@/assets/onboarding-2.png";
-import heroCelebration from "@/assets/onboarding-3.png";
+import eventsImage from "@/assets/onboarding-1.png";
+import connectionsImage from "@/assets/onboarding-2.png";
+import groupsImage from "@/assets/onboarding-3.png";
+
+const heroHighlights = [
+  {
+    icon: CalendarDays,
+    title: "World-class events",
+    description:
+      "Join salons, retreats, and masterminds hosted by tastemakers in every major innovation hub.",
+  },
+  {
+    icon: Users,
+    title: "Find your circle",
+    description:
+      "Discover people who match your energy with chemistry scores and curated introductions.",
+  },
+  {
+    icon: MessagesSquare,
+    title: "Always-on chats",
+    description:
+      "Drop into themed channels and keep the momentum going long after the event ends.",
+  },
+  {
+    icon: UserPlus,
+    title: "Launch private groups",
+    description:
+      "Spin up your own mastermind or interest club with moderation tools built for leaders.",
+  },
+];
 
 const premiumHighlights = [
   {
     icon: Sparkles,
-    title: "Intelligent matching",
+    title: "Concierge onboarding",
     description:
-      "Meet the people you will genuinely vibe with using AI-assisted chemistry scores.",
+      "Get a tailored welcome plan and handpicked member intros from our community team.",
   },
   {
     icon: HeartHandshake,
-    title: "Community-first events",
+    title: "Verified hosts",
     description:
-      "Unlock curated gatherings hosted weekly across 25+ cities worldwide.",
+      "Every experience is led by trusted facilitators who champion safe, inclusive spaces.",
   },
   {
     icon: MessageCircle,
-    title: "Deeper conversations",
+    title: "Guided conversations",
     description:
-      "Break the ice with guided prompts and shared interests that get past small talk fast.",
+      "Arrive prepared with prompts, conversation starters, and curated follow-up connections.",
+  },
+];
+
+const capabilityCards = [
+  {
+    title: "Signature events calendar",
+    description:
+      "Reserve your spot at invite-only gatherings designed to stretch your thinking and grow your network.",
+    icon: CalendarDays,
+    image: eventsImage,
+    badge: "Events",
+  },
+  {
+    title: "Find friends with intent",
+    description:
+      "Match with founders, creatives, and operators who mirror your pace and passions.",
+    icon: Users,
+    image: connectionsImage,
+    badge: "Connections",
+  },
+  {
+    title: "Meaningful chats",
+    description:
+      "Drop into moderated channels that keep ideas flowing between IRL meetups.",
+    icon: MessagesSquare,
+    image: connectionsImage,
+    badge: "Chats",
+  },
+  {
+    title: "Create your own groups",
+    description:
+      "Build private spaces, set the vibe, and invite collaborators to grow alongside you.",
+    icon: UserPlus,
+    image: groupsImage,
+    badge: "Groups",
   },
 ];
 
@@ -109,8 +173,8 @@ const Splash = () => {
           </nav>
         </header>
 
-        {/* Main Hero */}
-        <main className="grid flex-1 gap-16 pt-16 lg:grid-cols-[minmax(0,1fr)_420px] lg:pt-24">
+        {/* Hero Section */}
+        <main className="grid flex-1 gap-16 pt-20 lg:grid-cols-[minmax(0,1fr)_480px] lg:pt-28">
           <section className="max-w-2xl space-y-10">
             <div className="space-y-6">
               <span className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-amber-700">
@@ -124,7 +188,6 @@ const Splash = () => {
               </p>
             </div>
 
-            {/* CTA buttons */}
             <div className="flex flex-col gap-4 sm:flex-row">
               <button
                 onClick={() => navigate("/signup")}
@@ -141,9 +204,29 @@ const Splash = () => {
               </button>
             </div>
 
+            <div className="grid gap-4 sm:grid-cols-2">
+              {heroHighlights.map((item) => (
+                <div
+                  key={item.title}
+                  className="rounded-2xl border border-slate-200 bg-white/90 p-5 shadow-lg shadow-slate-100"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
+                      <item.icon className="h-5 w-5" />
+                    </div>
+                    <p className="text-base font-semibold text-slate-900">
+                      {item.title}
+                    </p>
+                  </div>
+                  <p className="mt-3 text-sm text-slate-600">
+                    {item.description}
+                  </p>
+                </div>
+              ))}
+            </div>
           </section>
 
-          {/* Sidebar (Pro perks + imagery) */}
+          {/* Sidebar */}
           <aside className="relative">
             <div className="absolute inset-0 rounded-3xl bg-white/80 shadow-2xl shadow-slate-200" />
             <div className="relative space-y-6 rounded-3xl border border-slate-100 bg-white/90 p-8 shadow-lg">
@@ -163,14 +246,16 @@ const Splash = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  {[heroGathering, heroConnection, heroCelebration].map((image, index) => (
+                  {[eventsImage, connectionsImage, groupsImage].map((image, index) => (
                     <div
                       key={index}
-                      className={`overflow-hidden rounded-2xl border border-slate-100 ${index === 0 ? "col-span-2" : ""}`}
+                      className={`overflow-hidden rounded-2xl border border-slate-100 ${
+                        index === 0 ? "col-span-2" : ""
+                      }`}
                     >
                       <img
                         src={image}
-                        alt="Connective community experience"
+                        alt="Connective experience"
                         className="h-full w-full object-cover"
                       />
                     </div>
@@ -198,18 +283,23 @@ const Splash = () => {
                   </div>
                 ))}
               </div>
-
-              <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-indigo-50 via-white to-amber-50 p-6 text-sm text-slate-600">
-                <p className="font-semibold text-slate-900">Trust &amp; safety comes first</p>
-                <p className="mt-2 flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-indigo-500">
-                  <ShieldCheck className="h-4 w-4" /> Verified hosts • Moderated communities
-                </p>
-              </div>
             </div>
           </aside>
         </main>
 
-        {/* Testimonials + Why Choose */}
+        {/* Safety section */}
+        <section className="mt-24">
+          <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-indigo-50 via-white to-amber-50 p-6 text-sm text-slate-600">
+            <p className="font-semibold text-slate-900">
+              Trust & safety comes first
+            </p>
+            <p className="mt-2 flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-indigo-500">
+              <ShieldCheck className="h-4 w-4" /> Verified hosts • Moderated communities
+            </p>
+          </div>
+        </section>
+
+        {/* Testimonials */}
         <section className="mt-24 grid gap-8 lg:grid-cols-[1.6fr_1fr]">
           <div className="rounded-3xl border border-slate-200 bg-white/90 p-8 shadow-xl shadow-slate-200">
             <h3 className="text-2xl font-semibold text-slate-900">
@@ -217,13 +307,13 @@ const Splash = () => {
             </h3>
             <div className="mt-6 grid gap-6 sm:grid-cols-2">
               <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-6">
-                <Calendar className="h-6 w-6 text-indigo-500" />
+                <CalendarDays className="h-6 w-6 text-indigo-500" />
                 <h4 className="mt-4 text-lg font-semibold text-slate-900">
                   Curated calendar
                 </h4>
                 <p className="mt-2 text-sm text-slate-600">
-                  Attend premium salons, masterminds, and city adventures
-                  tailored to your ambitions every week.
+                  Attend premium salons, masterminds, and adventures
+                  tailored to your ambitions.
                 </p>
               </div>
               <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-6">
@@ -232,7 +322,7 @@ const Splash = () => {
                   Real relationships
                 </h4>
                 <p className="mt-2 text-sm text-slate-600">
-                  Spark deeper conversations before you even arrive with immersive prompts and shared passions.
+                  Spark deeper conversations with immersive prompts and shared passions.
                 </p>
               </div>
               <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-6">
@@ -241,7 +331,7 @@ const Splash = () => {
                   Global host network
                 </h4>
                 <p className="mt-2 text-sm text-slate-600">
-                  Access vetted hosts and members across innovation hubs spanning the US, Europe, and Asia.
+                  Access vetted hosts and members across hubs worldwide.
                 </p>
               </div>
               <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-6">
@@ -250,7 +340,7 @@ const Splash = () => {
                   Moments that stay with you
                 </h4>
                 <p className="mt-2 text-sm text-slate-600">
-                  From rooftop tastings to immersive retreats, every event is designed to create lasting memories.
+                  From rooftop tastings to retreats, every event builds lasting memories.
                 </p>
               </div>
             </div>
