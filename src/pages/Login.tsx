@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, Sparkles } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
-import { FaApple } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -55,13 +54,13 @@ const Login = () => {
     setIsLoading(false);
   };
 
-  const handleOAuth = async (provider: "google" | "apple") => {
+  const handleOAuth = async () => {
     try {
       const redirectUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(
         "/home",
       )}`;
       await supabase.auth.signInWithOAuth({
-        provider,
+        provider: "google",
         options: {
           redirectTo: redirectUrl,
           queryParams: {
@@ -141,16 +140,9 @@ const Login = () => {
               <Button
                 variant="outline"
                 className="h-12 gap-2 rounded-xl border-black/10"
-                onClick={() => handleOAuth("google")}
+                onClick={handleOAuth}
               >
                 <FcGoogle className="h-5 w-5" /> Continue with Google
-              </Button>
-              <Button
-                variant="outline"
-                className="h-12 gap-2 rounded-xl border-black/10"
-                onClick={() => handleOAuth("apple")}
-              >
-                <FaApple className="h-5 w-5" /> Continue with Apple
               </Button>
             </div>
 
