@@ -33,14 +33,8 @@ const BackButton = ({
       return;
     }
 
-    const historyState =
-      typeof window !== "undefined" && "history" in window
-        ? window.history.state
-        : null;
-    const canNavigateBack =
-      typeof historyState?.idx === "number" && historyState.idx > 0;
-
-    if (canNavigateBack) {
+    // Try to go back in history, with fallback to specified path
+    if (window.history.length > 1) {
       navigate(-1);
     } else {
       navigate(fallbackPath);
