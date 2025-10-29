@@ -441,7 +441,7 @@ const SubscriptionUpgradeDialog = ({
             limits and unlocks premium-only experiences.
           </p>
         </div>
-        <DialogFooter className="flex flex-col sm:flex-row sm:justify-between sm:space-x-2">
+        <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">
             Maybe later
           </Button>
