@@ -322,7 +322,7 @@ const Signup = () => {
                 <Button
                   onClick={goToNextStep}
                   disabled={!canContinue}
-                  className="w-full h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold"
+                  className="w-full h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black font-semibold"
                 >
                   Continue
                 </Button>
@@ -404,7 +404,7 @@ const Signup = () => {
                     Back
                   </Button>
                   <Button
-                    className="flex-1 h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold"
+                    className="flex-1 h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black font-semibold"
                     onClick={goToNextStep}
                     disabled={!canContinue}
                   >
@@ -508,7 +508,7 @@ const Signup = () => {
                     Back
                   </Button>
                   <Button
-                    className="h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold flex-1"
+                    className="h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black font-semibold flex-1"
                     onClick={handleCreateAccount}
                     disabled={!canContinue || isSubmitting}
                   >

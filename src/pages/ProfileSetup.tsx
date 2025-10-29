@@ -362,7 +362,7 @@ const ProfileSetup = () => {
                     variant={isSelected ? "default" : "outline"}
                     className={`cursor-pointer px-4 py-2 text-sm ${
                       isSelected
-                        ? "bg-[#E8B956] text-charcoal hover:bg-[#d9a840]"
+                        ? "bg-[#E8B956] text-black hover:bg-[#d9a840]"
                         : "hover:border-[#E8B956]"
                     }`}
                     onClick={() => toggleInterest(interest)}
@@ -617,7 +617,7 @@ const ProfileSetup = () => {
         <div className="mt-8 space-y-4">
           <Button
             onClick={handleNext}
-            className="w-full h-14 text-lg font-semibold rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal shadow-md"
+            className="w-full h-14 text-lg font-semibold rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black shadow-md"
           >
             {currentStep === totalSteps ? "Complete Setup" : "Continue"}
           </Button>

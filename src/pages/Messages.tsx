@@ -52,7 +52,7 @@ const Messages = () => {
   const { encrypt, decrypt, isReady: isEncryptionReady, error: encryptionError } =
     useEndToEndEncryption(conversationId);
 
-  type ParticipantInfo = EventItem["participants"][number] | EventItem["host"];
+  type ParticipantInfo = (EventItem["participants"][number] | EventItem["host"]) & { id?: string };
 
   const displayedParticipants = useMemo<ParticipantInfo[]>(() => {
     if (groupEvent) {
@@ -475,7 +475,7 @@ const Messages = () => {
                 <div
                   className={`px-4 py-3 rounded-2xl ${
                     msg.isMine
-                      ? "bg-[#E8B956] text-charcoal rounded-br-sm"
+                      ? "bg-[#E8B956] text-black rounded-br-sm"
                       : "bg-[#FF8663] text-white rounded-bl-sm"
                   }`}
                 >

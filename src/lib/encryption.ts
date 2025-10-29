@@ -73,7 +73,7 @@ export const ensureConversationKey = async (conversationId: string): Promise<Cry
   const storedKey = storage.getItem(storageKey);
   if (storedKey) {
     const rawKey = fromBase64(storedKey);
-    return crypto.subtle.importKey("raw", rawKey, ALGORITHM, true, ["encrypt", "decrypt"]);
+    return crypto.subtle.importKey("raw", rawKey.buffer as ArrayBuffer, ALGORITHM, true, ["encrypt", "decrypt"]);
   }
 
   const key = await crypto.subtle.generateKey(ALGORITHM, true, ["encrypt", "decrypt"]);

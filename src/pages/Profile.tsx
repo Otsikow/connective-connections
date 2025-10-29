@@ -31,9 +31,7 @@ import {
 } from "lucide-react";
 
 type BillingCadence = "monthly" | "yearly";
-
 type SubscriptionTier = "free" | "mid" | "premium";
-
 type PlanKey = "free" | "mid" | "premium";
 
 type PlanFeature = {
@@ -84,7 +82,7 @@ const PLAN_PRICING = {
 const formatDate = (date: Date) =>
   new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(date);
 
-const Profile = () => {
+export default function Profile() {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -103,7 +101,6 @@ const Profile = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const billingStatus = params.get("billing");
-
     if (!billingStatus) return;
 
     switch (billingStatus) {
@@ -132,13 +129,12 @@ const Profile = () => {
       default:
         break;
     }
-
     navigate("/profile", { replace: true });
   }, [location.search, navigate, openUpgrade, toast]);
 
   const formattedExpiration = useMemo(
     () => (subscriptionExpires ? formatDate(subscriptionExpires) : null),
-    [subscriptionExpires],
+    [subscriptionExpires]
   );
 
   const badge = getBadgeForTier(tier);
@@ -171,7 +167,6 @@ const Profile = () => {
     }
 
     const pricing = PLAN_PRICING[targetTier][billingCadence];
-
     if (!pricing.priceId) {
       toast({
         title: "Missing price",
@@ -253,6 +248,7 @@ const Profile = () => {
           className="h-10 w-10 border border-border/60 bg-background shadow-sm"
         />
 
+        {/* Membership Summary */}
         <Card className="border-border/60 shadow-lg">
           <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-2">
@@ -261,7 +257,9 @@ const Profile = () => {
                 Stay on top of your connection limits, event access, and billing preferences in one place.
               </CardDescription>
               <div className="flex flex-wrap items-center gap-3">
-                <Badge className={`${badge.className} flex items-center gap-2`}>{badge.icon} {badge.label}</Badge>
+                <Badge className={`${badge.className} flex items-center gap-2`}>
+                  {badge.icon} {badge.label}
+                </Badge>
                 {formattedExpiration && (
                   <span className="text-sm text-muted-foreground">
                     Renews on {formattedExpiration}
@@ -276,13 +274,15 @@ const Profile = () => {
                   onClick={handleManageSubscription}
                   disabled={isPortalLoading}
                   variant="outline"
-                  className="sm:w-auto"
                 >
                   {isPortalLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Manage subscription
                 </Button>
               ) : (
-                <Button onClick={() => handleCheckout("mid")} disabled={isCheckoutLoading} className="sm:w-auto">
+                <Button
+                  onClick={() => handleCheckout("mid")}
+                  disabled={isCheckoutLoading}
+                >
                   {isCheckoutLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Upgrade now
                 </Button>
@@ -294,9 +294,9 @@ const Profile = () => {
             <div className="rounded-xl border border-border/60 bg-muted/20 p-5">
               <div className="mb-3 flex items-center gap-3">
                 <Users className="h-5 w-5 text-primary" />
-                <p className="font-medium text-foreground">Friend connections</p>
+                <p className="font-medium">Friend connections</p>
               </div>
-              <p className="text-2xl font-semibold text-foreground">
+              <p className="text-2xl font-semibold">
                 {Number.isFinite(connectionLimit)
                   ? `${monthlyConnections} / ${connectionLimit}`
                   : `Unlimited`}
@@ -307,7 +307,13 @@ const Profile = () => {
               {Number.isFinite(connectionLimit) && (
                 <div className="mt-4 space-y-2">
                   <Progress value={connectionProgress} />
-                  <Button variant="link" className="px-0 text-sm" onClick={() => openUpgrade("connections")}>See upgrade options</Button>
+                  <Button
+                    variant="link"
+                    className="px-0 text-sm"
+                    onClick={() => openUpgrade("connections")}
+                  >
+                    See upgrade options
+                  </Button>
                 </div>
               )}
             </div>
@@ -315,10 +321,12 @@ const Profile = () => {
             <div className="rounded-xl border border-border/60 bg-muted/20 p-5">
               <div className="mb-3 flex items-center gap-3">
                 <Calendar className="h-5 w-5 text-primary" />
-                <p className="font-medium text-foreground">Events this month</p>
+                <p className="font-medium">Events this month</p>
               </div>
-              <p className="text-2xl font-semibold text-foreground">
-                {Number.isFinite(eventLimit) ? `${monthlyEventJoins} / ${eventLimit}` : `Unlimited`}
+              <p className="text-2xl font-semibold">
+                {Number.isFinite(eventLimit)
+                  ? `${monthlyEventJoins} / ${eventLimit}`
+                  : `Unlimited`}
               </p>
               <p className="text-sm text-muted-foreground">
                 {usageHelper(eventLimit, monthlyEventJoins)}
@@ -326,26 +334,36 @@ const Profile = () => {
               {Number.isFinite(eventLimit) && (
                 <div className="mt-4 space-y-2">
                   <Progress value={eventProgress} />
-                  <Button variant="link" className="px-0 text-sm" onClick={() => openUpgrade("events")}>Unlock more events</Button>
+                  <Button
+                    variant="link"
+                    className="px-0 text-sm"
+                    onClick={() => openUpgrade("events")}
+                  >
+                    Unlock more events
+                  </Button>
                 </div>
               )}
             </div>
           </CardContent>
         </Card>
 
+        {/* Pricing Tiers */}
         <Card className="border-border/60 shadow-sm">
           <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle>Choose the plan that matches your pace</CardTitle>
-              <CardDescription>Toggle monthly or annual billing and switch plans anytime.</CardDescription>
+              <CardTitle>Choose your plan</CardTitle>
+              <CardDescription>Toggle monthly or annual billing anytime.</CardDescription>
             </div>
             <div className="inline-flex rounded-full border border-border/60 p-1 text-sm">
               {(["monthly", "yearly"] as BillingCadence[]).map((cadence) => (
                 <Button
                   key={cadence}
-                  type="button"
                   variant={billingCadence === cadence ? "default" : "ghost"}
-                  className={`rounded-full px-4 py-1 text-sm ${billingCadence === cadence ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+                  className={`rounded-full px-4 py-1 ${
+                    billingCadence === cadence
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground"
+                  }`}
                   onClick={() => setBillingCadence(cadence)}
                 >
                   {cadence === "monthly" ? "Monthly" : "Yearly"}
@@ -364,30 +382,44 @@ const Profile = () => {
                 <div
                   key={planKey}
                   className={`flex flex-col rounded-2xl border border-border/60 bg-card/80 p-6 shadow-sm ${
-                    planKey === "premium" ? "ring-2 ring-sky-500/40" : planKey === "mid" ? "ring-1 ring-amber-400/40" : ""
+                    planKey === "premium"
+                      ? "ring-2 ring-sky-500/40"
+                      : planKey === "mid"
+                      ? "ring-1 ring-amber-400/40"
+                      : ""
                   }`}
                 >
                   <div className="mb-4 flex items-center justify-between">
-                    <p className="text-sm font-medium text-muted-foreground">{PLAN_NAMES[planKey]}</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      {PLAN_NAMES[planKey]}
+                    </p>
                     {planKey === "mid" && (
-                      <Badge variant="outline" className="border-amber-400/60 bg-amber-500/10 text-amber-600">
+                      <Badge
+                        variant="outline"
+                        className="border-amber-400/60 bg-amber-500/10 text-amber-600"
+                      >
                         Most popular
                       </Badge>
                     )}
                     {planKey === "premium" && (
-                      <Badge variant="outline" className="border-sky-400/60 bg-sky-500/10 text-sky-600">
+                      <Badge
+                        variant="outline"
+                        className="border-sky-400/60 bg-sky-500/10 text-sky-600"
+                      >
                         Hosts love this
                       </Badge>
                     )}
                   </div>
 
                   <div className="mb-6 space-y-1">
-                    <p className="text-2xl font-semibold text-foreground">
+                    <p className="text-2xl font-semibold">
                       {pricing?.label ?? (planKey === "free" ? "$0 / month" : "Contact support")}
                     </p>
                     {helper && <p className="text-sm text-primary">{helper}</p>}
                     {planKey === "free" && (
-                      <p className="text-sm text-muted-foreground">Perfect for exploring Connective.</p>
+                      <p className="text-sm text-muted-foreground">
+                        Perfect for exploring Connective.
+                      </p>
                     )}
                   </div>
 
@@ -415,7 +447,9 @@ const Profile = () => {
                         disabled={isCurrentPlan || isCheckoutLoading}
                         onClick={() => handleCheckout(planKey as "mid" | "premium")}
                       >
-                        {isCurrentPlan ? "Current plan" : `Upgrade to ${PLAN_NAMES[planKey]}`}
+                        {isCurrentPlan
+                          ? "Current plan"
+                          : `Upgrade to ${PLAN_NAMES[planKey]}`}
                       </Button>
                     )}
                   </div>
@@ -425,6 +459,7 @@ const Profile = () => {
           </CardContent>
         </Card>
 
+        {/* Tips Section */}
         <Card className="border-border/60 bg-primary/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-primary">
@@ -432,12 +467,12 @@ const Profile = () => {
               Tips to make the most of your plan
             </CardTitle>
             <CardDescription>
-              Track your monthly usage and get personalized recommendations for when it makes sense to level up.
+              Track your monthly usage and get personalized recommendations for when to level up.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-2">
             <div className="rounded-xl border border-primary/10 bg-background/80 p-4">
-              <p className="font-medium text-foreground">Need more connections?</p>
+              <p className="font-medium">Need more connections?</p>
               <p className="text-sm text-muted-foreground">
                 Connections reset on the 1st of each month. Upgrade when you consistently max out your quota.
               </p>
@@ -450,9 +485,9 @@ const Profile = () => {
               </Button>
             </div>
             <div className="rounded-xl border border-primary/10 bg-background/80 p-4">
-              <p className="font-medium text-foreground">Hosting regularly?</p>
+              <p className="font-medium">Hosting regularly?</p>
               <p className="text-sm text-muted-foreground">
-                Premium members unlock concierge help for salons and guaranteed placement in featured events.
+                Premium members unlock concierge help and guaranteed placement in featured events.
               </p>
               <Button
                 variant="link"
@@ -460,14 +495,4 @@ const Profile = () => {
                 onClick={() => handleCheckout("premium")}
                 disabled={tier === "premium" || isCheckoutLoading}
               >
-                {tier === "premium" ? "Already premium" : "Try premium"}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-};
-
-export default Profile;
+                {tier === "premium" ? "Already premium" : "Try

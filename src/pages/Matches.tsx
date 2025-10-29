@@ -185,7 +185,7 @@ const Matches = () => {
 
           <Button
             onClick={handleConnect}
-            className="h-14 w-14 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal"
+            className="h-14 w-14 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black"
           >
             <Heart className="w-6 h-6" />
           </Button>
@@ -224,7 +224,7 @@ const Matches = () => {
                 </Button>
                 <Button
                   onClick={handleStartChat}
-                  className="flex-1 bg-[#E8B956] hover:bg-[#d9a840] text-charcoal"
+                  className="flex-1 bg-[#E8B956] hover:bg-[#d9a840] text-black"
                 >
                   Start Chat
                 </Button>

@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button, type ButtonProps } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-interface BackButtonProps extends Omit<ButtonProps, "onClick"> {
+interface BackButtonProps extends ButtonProps {
   fallbackPath?: string;
   iconClassName?: string;
   ariaLabel?: string;

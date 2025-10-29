@@ -132,7 +132,7 @@ export const CreateGroupDialog = ({ open, onOpenChange, onGroupCreated }: Create
           image_url: formData.imageUrl || null,
           is_premium: false,
           creator_id: user.id
-        })
+        } as any)
         .select()
         .single();
 
@@ -283,7 +283,7 @@ export const CreateGroupDialog = ({ open, onOpenChange, onGroupCreated }: Create
             </Button>
             <Button
               type="submit"
-              className="bg-[#E8B956] hover:bg-[#d9a840] text-charcoal"
+              className="bg-[#E8B956] hover:bg-[#d9a840] text-black"
               disabled={isLoading}
             >
               {isLoading ? (
