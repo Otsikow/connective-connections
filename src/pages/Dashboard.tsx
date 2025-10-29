@@ -45,9 +45,21 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
+import { useSubscription } from "@/hooks/useSubscription";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { tier, openUpgrade } = useSubscription();
+  const isProMember = tier === "pro";
+
+  const handleProUpsell = () => {
+    openUpgrade({
+      message: "This feature is only available to Premium users",
+      highlightTier: "pro",
+    });
+  };
+
+  const analyticsLocked = !isProMember;
 
   const statCards = [
     {
@@ -605,12 +617,16 @@ const Dashboard = () => {
               </CardFooter>
             </Card>
 
-            <Card className="border-border/60">
-              <CardHeader className="pb-4">
+            <Card
+              className={`border-border/60 ${analyticsLocked ? "relative overflow-hidden" : ""}`}
+            >
+              <CardHeader className={`pb-4 ${analyticsLocked ? "opacity-60" : ""}`}>
                 <CardTitle className="text-2xl">Insights to act on</CardTitle>
                 <CardDescription>Curated takeaways tailored for your hosts.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent
+                className={`space-y-4 ${analyticsLocked ? "pointer-events-none opacity-50" : ""}`}
+              >
                 {insights.map((insight, index) => (
                   <div key={insight.label} className="flex gap-3 rounded-xl bg-muted/60 p-4">
                     <div className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -623,12 +639,26 @@ const Dashboard = () => {
                   </div>
                 ))}
               </CardContent>
-              <CardFooter>
-                <Button variant="ghost" className="ml-auto rounded-full" onClick={() => navigate("/matches")}
+              <CardFooter className={analyticsLocked ? "pointer-events-none opacity-50" : ""}>
+                <Button
+                  variant="ghost"
+                  className="ml-auto rounded-full"
+                  onClick={() => (analyticsLocked ? handleProUpsell() : navigate("/matches"))}
                 >
                   Review full report
                 </Button>
               </CardFooter>
+              {analyticsLocked && (
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-[inherit] bg-background/85 px-6 text-center backdrop-blur-sm">
+                  <p className="text-sm font-semibold">Pro analytics locked</p>
+                  <p className="text-xs text-muted-foreground">
+                    Unlock AI-powered suggestions, priority visibility, and engagement analytics with Pro.
+                  </p>
+                  <Button className="rounded-full" onClick={handleProUpsell}>
+                    Upgrade to Pro
+                  </Button>
+                </div>
+              )}
             </Card>
           </div>
         </section>
