@@ -15,6 +15,7 @@ import BackButton from "@/components/BackButton";
 import { getEventById, upcomingEvents, EventData } from "@/data/events";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useToast } from "@/hooks/use-toast";
+import EventLocationMap from "@/components/EventLocationMap";
 
 const formatEventDateRange = (startIso: string, endIso: string) => {
   const start = new Date(startIso);
@@ -263,6 +264,10 @@ const EventDetail = () => {
                 </div>
               </CardContent>
             </Card>
+            <EventLocationMap
+              location={event.location}
+              title="See where we'll meet"
+            />
           </motion.div>
 
           <motion.div
