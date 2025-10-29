@@ -16,16 +16,9 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import {
-  ArrowLeft,
-  Calendar,
-  CheckCircle2,
-  Compass,
-  MapPin,
-  Sparkles,
-  Users,
-} from "lucide-react";
+import { Calendar, CheckCircle2, Compass, MapPin, Sparkles, Users } from "lucide-react";
 import BackButton from "@/components/BackButton";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const vibeTags = [
   "Cozy", "High-Energy", "Thoughtful", "Hands-on", "Outdoors", "Wellness",
@@ -35,6 +28,7 @@ const vibeTags = [
 const HostEvent = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  usePageTitle("Host Experience Blueprint");
 
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -450,10 +444,17 @@ const HostEvent = () => {
           </CardContent>
 
           <div className="flex items-center justify-between border-t border-border/60 bg-muted/40 px-6 py-4">
-            <Button variant="ghost" className="gap-2" onClick={handleBack} disabled={step === 1}>
-              <ArrowLeft className="h-4 w-4" />
-              Back
-            </Button>
+            <BackButton
+              variant="ghost"
+              className="text-muted-foreground"
+              disabled={step === 1}
+              onClick={(event) => {
+                if (step > 1) {
+                  event.preventDefault();
+                  handleBack();
+                }
+              }}
+            />
             {step < totalSteps ? (
               <Button className="rounded-full" onClick={handleNext}>
                 Continue

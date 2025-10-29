@@ -46,10 +46,12 @@ import {
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import { useSubscription } from "@/hooks/useSubscription";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { tier, openUpgrade } = useSubscription();
+  usePageTitle("Connection Intelligence Dashboard");
   const isProMember = tier === "pro";
 
   const handleProUpsell = () => {
@@ -240,8 +242,7 @@ const Dashboard = () => {
           <div className="flex items-start gap-3">
             <BackButton
               fallbackPath="/host-dashboard"
-              size="icon"
-              className="h-10 w-10 border border-border/60 text-muted-foreground hover:bg-muted"
+              className="border border-border/60 text-muted-foreground hover:bg-muted"
             />
             <div>
               <p className="text-sm font-medium text-muted-foreground">Host Dashboard</p>

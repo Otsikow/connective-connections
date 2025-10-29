@@ -36,6 +36,7 @@ import {
   Users,
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 type Feature = {
   value: string;
@@ -50,6 +51,7 @@ type Feature = {
 
 const Home = () => {
   const navigate = useNavigate();
+  usePageTitle("Member Home");
   const [activeFeature, setActiveFeature] = useState("friends");
   const [showSubscribePrompt, setShowSubscribePrompt] = useState(false);
   const isSubscribed = false;
@@ -136,6 +138,9 @@ const Home = () => {
       location: "Ridgeview Trail",
       attendees: 18,
       tags: ["Outdoors", "Mindfulness"],
+      image:
+        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+      imageAlt: "Friends hiking together along a mountain ridge at sunrise.",
     },
     {
       id: "2",
@@ -144,6 +149,9 @@ const Home = () => {
       location: "Downtown",
       attendees: 32,
       tags: ["Food", "Creative"],
+      image:
+        "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
+      imageAlt: "People enjoying coffee tasting flights at a cozy cafe.",
     },
     {
       id: "3",
@@ -152,6 +160,9 @@ const Home = () => {
       location: "Art Haus",
       attendees: 24,
       tags: ["Culture", "Nightlife"],
+      image:
+        "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80",
+      imageAlt: "Guests mingling inside a modern art museum during the evening.",
     },
   ];
 
@@ -208,7 +219,7 @@ const Home = () => {
       <header className="sticky top-0 z-30 border-b border-border/60 backdrop-blur bg-background/80">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <div className="flex items-center gap-3">
-            <BackButton fallbackPath="/" size="icon" className="hidden h-10 w-10 sm:flex" />
+            <BackButton fallbackPath="/" className="hidden sm:inline-flex" />
             <div className="flex items-center gap-2">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E8B956]/20">
                 <Sparkles className="h-5 w-5 text-[#E8B956]" />
@@ -320,22 +331,63 @@ const Home = () => {
                 <CarouselContent>
                   {upcomingEvents.map((event) => (
                     <CarouselItem key={event.id} className="md:basis-1/2">
-                      <div className="p-5 rounded-3xl border bg-background/70">
-                        <h3 className="font-semibold">{event.title}</h3>
-                        <p className="text-sm text-muted-foreground">{event.date} • {event.location}</p>
-                        <Button
-                          className="mt-4 rounded-full bg-[#E8B956] text-black hover:bg-[#d9a840]"
-                          onClick={() => handleNavigate(`/events/${event.id}`)}
-                        >
-                          Join Event
-                        </Button>
+                      <div className="overflow-hidden rounded-3xl border bg-background/70 shadow-sm">
+                        <div className="relative h-48 w-full overflow-hidden">
+                          <img
+                            src={event.image}
+                            alt={event.imageAlt}
+                            className="h-full w-full object-cover"
+                            loading="lazy"
+                          />
+                          <div className="absolute bottom-4 left-4 flex flex-wrap gap-2">
+                            {event.tags.map((tag) => (
+                              <Badge
+                                key={`${event.id}-${tag}`}
+                                className="rounded-full bg-background/80 px-3 py-1 text-xs font-medium text-foreground backdrop-blur"
+                              >
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="space-y-4 px-5 pb-5 pt-6">
+                          <div className="space-y-2">
+                            <h3 className="text-lg font-semibold leading-tight">{event.title}</h3>
+                            <div className="space-y-1 text-sm text-muted-foreground">
+                              <div className="flex items-center gap-2">
+                                <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                                <span>{event.date}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4 text-muted-foreground" />
+                                <span>{event.location}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between text-sm text-muted-foreground">
+                            <span>{event.attendees}+ attending</span>
+                            <Button
+                              size="sm"
+                              className="rounded-full bg-[#E8B956] px-5 text-black hover:bg-[#d9a840]"
+                              onClick={() => handleNavigate(`/events/${event.id}`)}
+                            >
+                              Join Event
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <div className="flex justify-end gap-2 mt-4">
-                  <CarouselPrevious className="relative" />
-                  <CarouselNext className="relative" />
+                <div className="mt-5 flex items-center justify-end gap-2">
+                  <CarouselPrevious
+                    variant="ghost"
+                    className="!static h-10 w-10 rounded-full border border-border bg-background/80 text-foreground shadow-sm backdrop-blur hover:bg-background"
+                  />
+                  <CarouselNext
+                    variant="ghost"
+                    className="!static h-10 w-10 rounded-full border border-border bg-background/80 text-foreground shadow-sm backdrop-blur hover:bg-background"
+                  />
                 </div>
               </Carousel>
             </CardContent>

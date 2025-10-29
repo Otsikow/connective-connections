@@ -20,6 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { fallbackGroups, type GroupWithMembers } from "@/data/groups";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 type SupabaseGroupResponse = Tables<"groups"> & {
   group_members?: { count: number }[];
@@ -28,6 +29,7 @@ type SupabaseGroupResponse = Tables<"groups"> & {
 const Community = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  usePageTitle("Community Hubs");
 
   const [isPremium] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);

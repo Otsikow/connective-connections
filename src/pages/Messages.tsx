@@ -10,6 +10,7 @@ import { communityGroups } from "@/lib/community-groups";
 import BackButton from "@/components/BackButton";
 import { useEndToEndEncryption } from "@/hooks/useEndToEndEncryption";
 import { useSubscription } from "@/hooks/useSubscription";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 interface Message {
   id: number;
@@ -31,6 +32,7 @@ const Messages = () => {
   const [displayMessages, setDisplayMessages] = useState<Message[]>([]);
   const [isOnline, setIsOnline] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  usePageTitle("Messages");
 
   const groupId = searchParams.get("group");
   const communityId = searchParams.get("community");
@@ -360,8 +362,7 @@ const Messages = () => {
       <div className="bg-card border-b border-border px-3 sm:px-4 py-3 flex items-center gap-2 sm:gap-3">
         <BackButton
           fallbackPath="/home"
-          size="icon"
-          className="h-10 w-10 rounded-full"
+          className="rounded-full"
           ariaLabel="Back to previous page"
         />
 

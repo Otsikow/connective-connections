@@ -22,6 +22,9 @@ const BackButton = ({
   ...props
 }: BackButtonProps) => {
   const navigate = useNavigate();
+  const content = children ?? "Back";
+  const computedAriaLabel =
+    ariaLabel ?? (typeof content === "string" ? content : "Go back");
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     onClick?.(event);
@@ -48,14 +51,14 @@ const BackButton = ({
     <Button
       type="button"
       variant={variant}
-      size={size ?? (children ? "default" : "icon")}
-      className={cn("rounded-full", className)}
+      size={size ?? "sm"}
+      className={cn("gap-2 rounded-full px-4", className)}
       onClick={handleClick}
-      aria-label={ariaLabel ?? (typeof children === "string" ? children : "Go back")}
+      aria-label={computedAriaLabel}
       {...props}
     >
-      <ArrowLeft className={cn(children ? "h-4 w-4" : "h-5 w-5", iconClassName)} />
-      {children}
+      <ArrowLeft aria-hidden="true" className={cn("h-4 w-4", iconClassName)} />
+      {content}
     </Button>
   );
 };
