@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, Filter, MapPin, Search, Users } from "lucide-react";
 import BackButton from "@/components/BackButton";
+import { RatingStars } from "@/components/RatingStars";
 
 import {
   featuredEvent,
@@ -29,6 +30,16 @@ const formatEventDateTime = (isoDate: string) =>
     hour: "numeric",
     minute: "2-digit",
   }).format(new Date(isoDate));
+
+const getAverageRating = (event: (typeof allEvents)[number]) =>
+  event.rating?.average ??
+  (event.reviews && event.reviews.length > 0
+    ? event.reviews.reduce((sum, review) => sum + review.rating, 0) /
+      event.reviews.length
+    : 0);
+
+const getReviewCount = (event: (typeof allEvents)[number]) =>
+  event.rating?.count ?? event.reviews?.length ?? 0;
 
 const categorySummaries = (() => {
   const counts = new Map<string, number>();
@@ -46,6 +57,9 @@ const categorySummaries = (() => {
 const Events = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+
+  const featuredAverageRating = getAverageRating(featuredEvent);
+  const featuredReviewCount = getReviewCount(featuredEvent);
 
   const filteredEvents = useMemo(() => {
     const normalizedSearchTerm = searchTerm.trim().toLowerCase();
@@ -163,23 +177,35 @@ const Events = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-primary" />
-                      {formatEventDateTime(featuredEvent.startDateTime)}
-                    </span>
-                    <span className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-primary" />
-                      {featuredEvent.location}
-                    </span>
-                    <span className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-primary" />
-                      {featuredEvent.attendees} attending
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-12 w-12 border border-primary/20">
-                      <AvatarImage
+                <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                  <span className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-primary" />
+                    {formatEventDateTime(featuredEvent.startDateTime)}
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-primary" />
+                    {featuredEvent.location}
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-primary" />
+                    {featuredEvent.attendees} attending
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <RatingStars
+                    rating={featuredAverageRating}
+                    readOnly
+                    size="sm"
+                    className="pointer-events-none"
+                    label={`Rating for ${featuredEvent.title}`}
+                  />
+                  <span>
+                    {featuredAverageRating.toFixed(1)} ({featuredReviewCount} reviews)
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-12 w-12 border border-primary/20">
+                    <AvatarImage
                         src={featuredEvent.host?.avatar}
                         alt={featuredEvent.host?.name}
                       />
@@ -261,69 +287,86 @@ const Events = () => {
               </CardContent>
             </Card>
           ) : (
-            filteredEvents.map((event, index) => (
-              <motion.div
-                key={event.id}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.35, delay: index * 0.05 }}
-              >
-                <Card
-                  className="group h-full border-border/60 shadow-sm transition-all sm:hover:-translate-y-1 sm:hover:shadow-lg"
-                  onClick={() => navigate(`/events/${event.slug}`)}
+            filteredEvents.map((event, index) => {
+              const averageRating = getAverageRating(event);
+              const reviewCount = getReviewCount(event);
+
+              return (
+                <motion.div
+                  key={event.id}
+                  initial={{ opacity: 0, y: 25 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.35, delay: index * 0.05 }}
                 >
-                  <div className="h-40 overflow-hidden rounded-t-xl bg-muted">
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
-                  <CardContent className="space-y-4 pt-4 sm:pt-5">
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                      <div className="space-y-1">
-                        <h3 className="text-lg font-semibold text-foreground">
-                          {event.title}
-                        </h3>
-                        <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Calendar className="h-4 w-4 text-primary" />
-                          {formatEventDateTime(event.startDateTime)}
-                        </p>
-                        <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <MapPin className="h-4 w-4 text-primary" />
-                          {event.location}
-                        </p>
-                      </div>
-                      <Badge variant="outline" className="w-fit rounded-full text-xs">
-                        {event.attendees} going
-                      </Badge>
+                  <Card
+                    className="group h-full border-border/60 shadow-sm transition-all sm:hover:-translate-y-1 sm:hover:shadow-lg"
+                    onClick={() => navigate(`/events/${event.slug}`)}
+                  >
+                    <div className="h-40 overflow-hidden rounded-t-xl bg-muted">
+                      <img
+                        src={event.image}
+                        alt={event.title}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      {event.tags.map((tag) => (
-                        <Badge
-                          key={tag}
-                          variant="secondary"
-                          className="rounded-full"
-                        >
-                          {tag}
+                    <CardContent className="space-y-4 pt-4 sm:pt-5">
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="space-y-1">
+                          <h3 className="text-lg font-semibold text-foreground">
+                            {event.title}
+                          </h3>
+                          <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Calendar className="h-4 w-4 text-primary" />
+                            {formatEventDateTime(event.startDateTime)}
+                          </p>
+                          <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <MapPin className="h-4 w-4 text-primary" />
+                            {event.location}
+                          </p>
+                        </div>
+                        <Badge variant="outline" className="w-fit rounded-full text-xs">
+                          {event.attendees} going
                         </Badge>
-                      ))}
-                    </div>
-                    <Button
-                      className="w-full rounded-full"
-                      variant="secondary"
-                      onClick={(buttonEvent) => {
-                        buttonEvent.stopPropagation();
-                        navigate(`/events/${event.slug}`);
-                      }}
-                    >
-                      View details
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <RatingStars
+                          rating={averageRating}
+                          readOnly
+                          size="sm"
+                          className="pointer-events-none"
+                          label={`Rating for ${event.title}`}
+                        />
+                        <span>
+                          {averageRating.toFixed(1)} ({reviewCount} reviews)
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {event.tags.map((tag) => (
+                          <Badge
+                            key={tag}
+                            variant="secondary"
+                            className="rounded-full"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                      <Button
+                        className="w-full rounded-full"
+                        variant="secondary"
+                        onClick={(buttonEvent) => {
+                          buttonEvent.stopPropagation();
+                          navigate(`/events/${event.slug}`);
+                        }}
+                      >
+                        View details
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })
           )}
         </div>
       </section>

@@ -1,9 +1,21 @@
 import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Heart, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SwipeCard } from "@/components/SwipeCard";
 import BackButton from "@/components/BackButton";
+import { RatingStars } from "@/components/RatingStars";
+import { useToast } from "@/hooks/use-toast";
 import { useSubscription } from "@/hooks/useSubscription";
 
 interface Profile {
@@ -175,12 +187,60 @@ const profiles: Profile[] = [
   },
 ];
 
+interface ConnectionFeedback {
+  id: string;
+  name: string;
+  avatar: string;
+  context: string;
+  metAt: string;
+  communityAverage: number;
+  communityCount: number;
+  yourRating?: number;
+  yourComment?: string;
+  submitted?: boolean;
+}
+
+const connectionFeedbackSeeds: ConnectionFeedback[] = [
+  {
+    id: "cf-1",
+    name: "Sarah M.",
+    avatar:
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=200&q=80",
+    context: "Met through the Sunset Rooftop Social",
+    metAt: "You matched after Alicia's rooftop social",
+    communityAverage: 4.9,
+    communityCount: 56,
+  },
+  {
+    id: "cf-2",
+    name: "Alex K.",
+    avatar:
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80",
+    context: "Grabbed coffee during Neighborhood Crawl",
+    metAt: "Introduced during the Riverfront coffee crawl",
+    communityAverage: 4.7,
+    communityCount: 42,
+  },
+  {
+    id: "cf-3",
+    name: "Priya S.",
+    avatar:
+      "https://images.unsplash.com/photo-1542596768-5d1d21f1cf98?auto=format&fit=crop&w=200&q=80",
+    context: "Partnered at Creative Coding Jam",
+    metAt: "Paired during the creative coding workshop",
+    communityAverage: 4.8,
+    communityCount: 38,
+  },
+];
+
 const Matches = () => {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [likedProfiles, setLikedProfiles] = useState<string[]>([]);
   const [showMatchModal, setShowMatchModal] = useState(false);
+  const [connectionFeedback, setConnectionFeedback] = useState(connectionFeedbackSeeds);
   const { attemptConnection } = useSubscription();
+  const { toast } = useToast();
 
   const handleSwipeComplete = useCallback(
     (direction: "left" | "right") => {
@@ -227,6 +287,79 @@ const Matches = () => {
     setShowMatchModal(false);
     navigate("/messages");
   };
+
+  const handleConnectionRatingChange = useCallback((id: string, rating: number) => {
+    setConnectionFeedback((prev) =>
+      prev.map((connection) => {
+        if (connection.id !== id || connection.submitted) {
+          return connection;
+        }
+
+        return {
+          ...connection,
+          yourRating: rating,
+        };
+      }),
+    );
+  }, []);
+
+  const handleConnectionCommentChange = useCallback((id: string, value: string) => {
+    setConnectionFeedback((prev) =>
+      prev.map((connection) => {
+        if (connection.id !== id || connection.submitted) {
+          return connection;
+        }
+
+        return {
+          ...connection,
+          yourComment: value,
+        };
+      }),
+    );
+  }, []);
+
+  const handleConnectionSubmit = useCallback(
+    (id: string) => {
+      let toastMessage: { title: string; description: string } | null = null;
+
+      setConnectionFeedback((prev) => {
+        const target = prev.find((connection) => connection.id === id);
+
+        if (!target || !target.yourRating || target.submitted) {
+          return prev;
+        }
+
+        const trimmedComment = target.yourComment?.trim() ?? "";
+        const updatedCount = target.communityCount + 1;
+        const updatedAverageRaw =
+          (target.communityAverage * target.communityCount + target.yourRating) /
+          updatedCount;
+        const updatedAverage = Number(updatedAverageRaw.toFixed(2));
+
+        toastMessage = {
+          title: "Feedback shared",
+          description: `Thanks for helping others learn about ${target.name}.`,
+        };
+
+        return prev.map((connection) =>
+          connection.id === id
+            ? {
+                ...connection,
+                communityAverage: updatedAverage,
+                communityCount: updatedCount,
+                yourComment: trimmedComment,
+                submitted: true,
+              }
+            : connection,
+        );
+      });
+
+      if (toastMessage) {
+        toast(toastMessage);
+      }
+    },
+    [toast],
+  );
 
   const currentProfile = profiles[currentIndex];
   const isLastProfile = currentIndex >= profiles.length - 1;
@@ -317,6 +450,101 @@ const Matches = () => {
             </div>
           </div>
         )}
+      </div>
+
+      <div className="mx-auto mt-12 max-w-3xl space-y-6">
+        <Card className="border-border/60 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold">Rate your recent meetups</CardTitle>
+            <CardDescription>
+              Share a quick note so the community knows which connections feel welcoming and safe.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            {connectionFeedback.map((connection) => (
+              <div
+                key={connection.id}
+                className="rounded-2xl border border-border/60 bg-background p-4 shadow-sm"
+              >
+                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                  <div className="flex items-start gap-3 md:max-w-xs">
+                    <Avatar className="h-12 w-12 border border-primary/20">
+                      <AvatarImage src={connection.avatar} alt={connection.name} />
+                      <AvatarFallback>
+                        {connection.name
+                          .split(" ")
+                          .map((segment) => segment.charAt(0))
+                          .join("")
+                          .slice(0, 2)
+                          .toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold text-foreground">{connection.name}</p>
+                      <p className="text-xs text-muted-foreground">{connection.context}</p>
+                      <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                        <RatingStars
+                          rating={connection.communityAverage}
+                          readOnly
+                          size="sm"
+                          className="pointer-events-none"
+                          label={`Community rating for ${connection.name}`}
+                        />
+                        <span>
+                          {connection.communityAverage.toFixed(1)} ({connection.communityCount} reviews)
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex-1 space-y-4">
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        How was your meetup?
+                      </p>
+                      <RatingStars
+                        rating={connection.yourRating ?? 0}
+                        onChange={(rating) => handleConnectionRatingChange(connection.id, rating)}
+                        size="md"
+                        label={`Your rating for ${connection.name}`}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`connection-comment-${connection.id}`}>
+                        Leave a quick note
+                      </Label>
+                      <Textarea
+                        id={`connection-comment-${connection.id}`}
+                        placeholder="Share a highlight or follow-up plan"
+                        value={connection.yourComment ?? ""}
+                        onChange={(event) =>
+                          handleConnectionCommentChange(connection.id, event.target.value)
+                        }
+                        rows={3}
+                        disabled={connection.submitted}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+                      <p>{connection.metAt}</p>
+                      <Button
+                        type="button"
+                        onClick={() => handleConnectionSubmit(connection.id)}
+                        disabled={!connection.yourRating || connection.submitted}
+                        className="rounded-full self-start sm:self-auto"
+                      >
+                        {connection.submitted ? "Review shared" : "Submit feedback"}
+                      </Button>
+                    </div>
+                    {connection.submitted && (
+                      <p className="text-xs font-medium text-emerald-600">
+                        Thanks! Your rating now helps others decide to connect.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
