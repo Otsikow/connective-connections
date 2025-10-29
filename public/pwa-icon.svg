@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Connective PWA icon</title>
+  <desc id="desc">Rounded gradient square with two interlocking conversation bubbles shaped like a C</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6d28d9" />
+      <stop offset="48%" stop-color="#7c3aed" />
+      <stop offset="100%" stop-color="#fbbf24" />
+    </linearGradient>
+    <linearGradient id="bubble" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#e2e8f0" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#312e81" flood-opacity="0.45" />
+    </filter>
+  </defs>
+  <rect x="24" y="24" width="464" height="464" rx="140" fill="url(#bg)" filter="url(#shadow)" />
+  <path
+    fill="none"
+    stroke="url(#bubble)"
+    stroke-width="40"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    d="M322 154c-43-44-114-44-157 0s-43 115 0 159 114 44 157 0"
+  />
+  <path
+    fill="none"
+    stroke="#fcd34d"
+    stroke-width="32"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    d="M356 210c26 40 18 94-19 126"
+  />
+  <circle cx="196" cy="210" r="16" fill="#fcd34d" />
+  <circle cx="316" cy="302" r="16" fill="#fcd34d" />
+</svg>

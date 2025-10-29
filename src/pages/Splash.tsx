@@ -7,7 +7,6 @@ import {
   MessageCircle,
   ShieldCheck,
   Sparkles,
-  Users,
 } from "lucide-react";
 
 const premiumHighlights = [
@@ -63,8 +62,8 @@ const Splash = () => {
       <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col px-6 pb-16 pt-8 sm:px-10 lg:px-16">
         <header className="flex items-center justify-between">
           <div className="flex items-center gap-3 text-lg font-semibold">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-slate-900 shadow-lg shadow-yellow-400/30">
-              <Users className="h-7 w-7" />
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-white text-slate-900 shadow-lg shadow-yellow-400/30 ring-1 ring-white/30">
+              <img src="/pwa-icon.svg" alt="Connective logo" className="h-12 w-12 object-contain" loading="lazy" />
             </div>
             <div>
               <p className="text-sm uppercase tracking-[0.3em] text-slate-400">Connective</p>
