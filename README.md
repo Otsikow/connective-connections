@@ -71,3 +71,46 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Stripe payments setup
+
+This project now ships with a Stripe-powered checkout and billing portal experience.
+
+### Frontend environment variables
+
+Add the following keys to your Vite environment (for example in `.env.local`):
+
+```bash
+VITE_STRIPE_PUBLISHABLE_KEY=pk_live_...
+VITE_STRIPE_PREMIUM_PRICE_ID=price_...
+# Optional: override the generated Supabase Functions URL
+# VITE_STRIPE_FUNCTION_URL=https://<project>.supabase.co/functions/v1/stripe-checkout
+```
+
+By default the frontend will call the hosted Supabase Function at
+`<SUPABASE_URL>/functions/v1/stripe-checkout`. Override the URL if you proxy the
+function elsewhere.
+
+### Supabase Edge Function
+
+Deploy `supabase/functions/stripe-checkout` and provide these secrets:
+
+```bash
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_DEFAULT_PRICE_ID=price_...    # Used if the frontend omits a price ID
+SUPABASE_URL=...                     # Already configured for other functions
+SUPABASE_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...        # Enables automatic profile updates
+```
+
+The function will:
+
+- Ensure the caller is authenticated.
+- Create or reuse a Stripe Customer associated with the Supabase user.
+- Start a Checkout Session (subscription by default) and return the session ID and URL.
+- Launch the Stripe Billing Portal when requested.
+- Persist the `stripe_customer_id` on the `profiles` table for subsequent billing actions.
+
+After checkout completes, Stripe should redirect back to `/profile?billing=success`. The
+profile screen displays helpful toasts for success, cancellation, or portal updates and
+will automatically show premium-specific UI.

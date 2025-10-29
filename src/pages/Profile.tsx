@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Card, CardContent, CardDescription, CardHeader, CardTitle
 } from "@/components/ui/card";
@@ -51,8 +51,16 @@ import {
   Send,
   UserPlus,
   Bookmark,
+  Loader2,
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
+import {
+  createStripeBillingPortalSession,
+  createStripeCheckoutSession,
+  getStripe,
+  hasStripeConfig,
+  STRIPE_PREMIUM_PRICE_ID,
+} from "@/integrations/stripe";
 
 type Friend = {
   id: number;
@@ -114,6 +122,7 @@ type SettingsState = {
 
 const Profile = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<"friends" | "events" | "badges" | "settings">("friends");
 
@@ -249,6 +258,44 @@ const Profile = () => {
     },
   });
 
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const [isPortalLoading, setIsPortalLoading] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const billingStatus = params.get("billing");
+
+    if (!billingStatus) return;
+
+    switch (billingStatus) {
+      case "success":
+        setProfile((prev) => ({ ...prev, isPremium: true }));
+        toast({
+          title: "Welcome to Premium!",
+          description: "Your payment was successful and premium access is unlocked.",
+        });
+        break;
+      case "updated":
+        setProfile((prev) => ({ ...prev, isPremium: true }));
+        toast({
+          title: "Billing updated",
+          description: "Your subscription details were updated successfully.",
+        });
+        break;
+      case "cancel":
+        toast({
+          title: "Checkout canceled",
+          description: "No charges were made. You can try upgrading again when ready.",
+          variant: "destructive",
+        });
+        break;
+      default:
+        break;
+    }
+
+    navigate("/profile", { replace: true });
+  }, [location.search, navigate, toast]);
+
   const [friendDialogOpen, setFriendDialogOpen] = useState(false);
   const [selectedFriendId, setSelectedFriendId] = useState<number | null>(null);
   const selectedFriend = useMemo(
@@ -264,20 +311,89 @@ const Profile = () => {
 
   const earnedBadges = useMemo(() => badges.filter((badge) => badge.earned).length, [badges]);
 
-  const handleUpgrade = () => {
-    if (profile.isPremium) {
+  const handleStartPremiumCheckout = async () => {
+    if (!hasStripeConfig() || !STRIPE_PREMIUM_PRICE_ID) {
       toast({
-        title: "Manage subscription",
-        description: "Subscription management will be available soon.",
+        title: "Stripe not configured",
+        description:
+          "Add your Stripe publishable key, function URL, and price ID to enable checkout.",
+        variant: "destructive",
       });
       return;
     }
 
-    setProfile((prev) => ({ ...prev, isPremium: true }));
-    toast({
-      title: "You're all set!",
-      description: "Premium features have been unlocked for your profile.",
-    });
+    if (isCheckoutLoading) return;
+
+    setIsCheckoutLoading(true);
+    try {
+      const { sessionId, url } = await createStripeCheckoutSession({
+        priceId: STRIPE_PREMIUM_PRICE_ID,
+        metadata: { plan: "premium" },
+      });
+
+      const stripe = await getStripe();
+      if (stripe && sessionId) {
+        const { error } = await stripe.redirectToCheckout({ sessionId });
+        if (error) {
+          if (url) {
+            window.location.href = url;
+            return;
+          }
+          throw new Error(error.message);
+        }
+        return;
+      }
+
+      if (url) {
+        window.location.href = url;
+        return;
+      }
+
+      throw new Error("Stripe did not return a checkout redirect URL");
+    } catch (error) {
+      console.error("stripe-checkout", error);
+      toast({
+        title: "Unable to start checkout",
+        description:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred while contacting Stripe.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCheckoutLoading(false);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    if (!hasStripeConfig()) {
+      toast({
+        title: "Stripe not configured",
+        description: "Connect Stripe to manage billing from your profile.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (isPortalLoading) return;
+
+    setIsPortalLoading(true);
+    try {
+      const { url } = await createStripeBillingPortalSession();
+      window.location.href = url;
+    } catch (error) {
+      console.error("stripe-portal", error);
+      toast({
+        title: "Unable to open billing portal",
+        description:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred while opening the customer portal.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsPortalLoading(false);
+    }
   };
 
   const handleAddFriend = () => {
@@ -522,9 +638,17 @@ const Profile = () => {
               </p>
               <Button
                 className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white"
-                onClick={handleUpgrade}
+                onClick={handleStartPremiumCheckout}
+                disabled={isCheckoutLoading}
               >
-                Upgrade Now
+                {isCheckoutLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Redirecting…
+                  </span>
+                ) : (
+                  "Upgrade Now"
+                )}
               </Button>
             </CardContent>
           </Card>
@@ -539,8 +663,20 @@ const Profile = () => {
               <p className="text-muted-foreground mb-4">
                 You're enjoying the full Connective experience. Manage your plan any time.
               </p>
-              <Button variant="outline" className="w-full" onClick={handleUpgrade}>
-                Manage subscription
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleManageSubscription}
+                disabled={isPortalLoading}
+              >
+                {isPortalLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Opening portal…
+                  </span>
+                ) : (
+                  "Manage subscription"
+                )}
               </Button>
             </CardContent>
           </Card>
@@ -806,8 +942,34 @@ const Profile = () => {
                     {profile.isPremium ? "Active" : "Free"}
                   </Badge>
                 </div>
-                <Button className="w-full" onClick={handleUpgrade}>
-                  {profile.isPremium ? "Manage Subscription" : "Upgrade to Premium"}
+                <Button
+                  className="w-full"
+                  onClick={
+                    profile.isPremium
+                      ? handleManageSubscription
+                      : handleStartPremiumCheckout
+                  }
+                  disabled={
+                    profile.isPremium ? isPortalLoading : isCheckoutLoading
+                  }
+                >
+                  {profile.isPremium ? (
+                    isPortalLoading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Opening portal…
+                      </span>
+                    ) : (
+                      "Manage Subscription"
+                    )
+                  ) : isCheckoutLoading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Redirecting…
+                    </span>
+                  ) : (
+                    "Upgrade to Premium"
+                  )}
                 </Button>
               </CardContent>
             </Card>
