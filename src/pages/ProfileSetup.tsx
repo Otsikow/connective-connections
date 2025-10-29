@@ -178,8 +178,6 @@ const ProfileSetup = () => {
         <div className="mb-6 flex items-center justify-between">
           <BackButton
             fallbackPath="/signup"
-            size="icon"
-            className="h-10 w-10"
             ariaLabel="Go back"
             onClick={(event) => {
               if (currentStep > 1) {

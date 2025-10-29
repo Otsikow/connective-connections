@@ -236,8 +236,7 @@ const Matches = () => {
       {/* Back Arrow */}
       <BackButton
         fallbackPath="/home"
-        size="icon"
-        className="mb-6 h-10 w-10"
+        className="mb-6"
       />
 
       <div className="max-w-md mx-auto">

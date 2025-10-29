@@ -248,8 +248,7 @@ const Signup = () => {
       <div className="w-full max-w-xl">
         <BackButton
           fallbackPath="/"
-          size="icon"
-          className="mb-6 h-10 w-10"
+          className="mb-6"
           onClick={(event) => {
             if (step > 1) {
               event.preventDefault();

@@ -360,8 +360,7 @@ const Messages = () => {
       <div className="bg-card border-b border-border px-3 sm:px-4 py-3 flex items-center gap-2 sm:gap-3">
         <BackButton
           fallbackPath="/home"
-          size="icon"
-          className="h-10 w-10 rounded-full"
+          className="rounded-full"
           ariaLabel="Back to previous page"
         />
 

@@ -147,7 +147,6 @@ const EventDetail = () => {
       <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-br from-primary/5 via-background to-background">
         <BackButton
           fallbackPath="/events"
-          size="icon"
           className="absolute left-4 top-4 z-10 bg-background/80 border border-border/60 text-foreground shadow-sm backdrop-blur-sm hover:bg-muted"
           ariaLabel="Go back"
         />

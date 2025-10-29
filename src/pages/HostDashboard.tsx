@@ -87,8 +87,6 @@ const HostDashboard = () => {
           <div className="flex items-center gap-2">
             <BackButton
               fallbackPath="/home"
-              size="icon"
-              className="h-10 w-10"
               ariaLabel="Go back"
             />
             <h1 className="text-2xl font-bold flex items-center gap-2">
