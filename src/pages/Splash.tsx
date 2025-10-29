@@ -174,15 +174,15 @@ const Splash = () => {
               </div>
               <div className="space-y-4">
                 <p className="text-sm uppercase tracking-[0.4em] text-slate-400">Immersive storytelling</p>
-                <h2 className="text-3xl font-semibold text-white sm:text-4xl">
-                  Step inside a world designed for meaningful chemistry.
-                </h2>
                 <button
                   onClick={() => navigate("/home")}
                   className="inline-flex items-center gap-2 rounded-full border border-amber-300/40 bg-amber-400/10 px-6 py-2 text-sm font-semibold text-amber-200 transition hover:bg-amber-400/20"
                 >
                   <Play className="h-4 w-4" /> Watch story
                 </button>
+                <h2 className="text-3xl font-semibold text-white sm:text-4xl">
+                  Step inside a world designed for meaningful chemistry.
+                </h2>
               </div>
             </div>
           </div>
