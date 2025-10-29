@@ -207,7 +207,7 @@ const Events = () => {
                   </div>
                   <Button
                     className="w-full rounded-full bg-primary text-white hover:bg-primary/80"
-                    onClick={() => navigate(`/events/${featuredEvent.id}`)}
+                    onClick={() => navigate(`/events/${featuredEvent.slug}`)}
                   >
                     View experience details
                   </Button>
@@ -261,7 +261,7 @@ const Events = () => {
               >
                 <Card
                   className="group h-full border-border/60 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
-                  onClick={() => navigate(`/events/${event.id}`)}
+                  onClick={() => navigate(`/events/${event.slug}`)}
                 >
                 <div className="h-40 overflow-hidden rounded-t-xl bg-muted">
                   <img
@@ -301,7 +301,7 @@ const Events = () => {
                     variant="secondary"
                     onClick={(buttonEvent) => {
                       buttonEvent.stopPropagation();
-                      navigate(`/events/${event.id}`);
+                      navigate(`/events/${event.slug}`);
                     }}
                   >
                     View details
