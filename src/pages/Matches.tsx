@@ -123,7 +123,7 @@ const Matches = () => {
   const isLastProfile = currentIndex >= profiles.length - 1;
 
   return (
-    <div className="min-h-screen bg-background px-4 sm:px-6 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background/95 to-background px-4 sm:px-6 py-8">
       {/* Back Arrow */}
       <BackButton
         fallbackPath="/home"
@@ -134,8 +134,8 @@ const Matches = () => {
       <div className="max-w-md mx-auto">
         {/* Card Stack Container */}
         <div
-          className="relative mb-6"
-          style={{ minHeight: "clamp(540px, 75vh, 680px)" }}
+          className="relative mb-6 flex items-stretch justify-center"
+          style={{ minHeight: "clamp(520px, 78vh, 680px)" }}
         >
           {profiles.slice(currentIndex, currentIndex + 3).map((profile, index) => (
             <SwipeCard

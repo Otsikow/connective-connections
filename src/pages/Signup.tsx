@@ -12,12 +12,19 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { Mail, Phone as PhoneIcon, Eye, EyeOff, Apple, Image as ImageIcon } from "lucide-react";
+import {
+  Mail,
+  Phone as PhoneIcon,
+  Eye,
+  EyeOff,
+  Apple,
+  Image as ImageIcon,
+} from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import BackButton from "@/components/BackButton";
+import { cn } from "@/lib/utils";
 
 const SIGNUP_STEPS = [
   {
@@ -71,8 +78,12 @@ function StepHeader({ step }: { step: number }) {
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-sm font-medium text-muted-foreground">Step {step} of {SIGNUP_STEPS.length}</p>
-        <span className="text-sm font-semibold text-[#E8B956]">{SIGNUP_STEPS[stepIndex].title}</span>
+        <p className="text-sm font-medium text-muted-foreground">
+          Step {step} of {SIGNUP_STEPS.length}
+        </p>
+        <span className="text-sm font-semibold text-[#E8B956]">
+          {SIGNUP_STEPS[stepIndex].title}
+        </span>
       </div>
       <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
         <div
@@ -107,18 +118,22 @@ const Signup = () => {
 
   const contactValue = authTab === "email" ? data.email.trim() : data.phone.trim();
   const passwordIsStrong = data.password.length >= 8;
-  const canContinue = step === 1
-    ? Boolean(contactValue)
-    : step === 2
-    ? Boolean(data.name.trim()) && passwordIsStrong
-    : data.agreedToTerms;
+  const canContinue =
+    step === 1
+      ? Boolean(contactValue)
+      : step === 2
+      ? Boolean(data.name.trim()) && passwordIsStrong
+      : data.agreedToTerms;
 
-  const goToNextStep = () => setStep((current) => Math.min(SIGNUP_STEPS.length, current + 1));
-  const goToPreviousStep = () => setStep((current) => Math.max(1, current - 1));
+  const goToNextStep = () => setStep((s) => Math.min(SIGNUP_STEPS.length, s + 1));
+  const goToPreviousStep = () => setStep((s) => Math.max(1, s - 1));
 
   const handleCreateAccount = async () => {
     if (!data.agreedToTerms) {
-      toast({ title: "Agree to continue", description: "Please accept the terms to create your account." });
+      toast({
+        title: "Agree to continue",
+        description: "Please accept the terms to create your account.",
+      });
       return;
     }
 
@@ -141,16 +156,24 @@ const Signup = () => {
           email: data.email,
           options: { emailRedirectTo: `${window.location.origin}/profile-setup` },
         });
-        toast({ title: "Check your inbox", description: "We sent you a verification link to finish creating your account." });
+        toast({
+          title: "Check your inbox",
+          description: "We sent you a verification link to finish creating your account.",
+        });
       } else {
         await supabase.auth.signInWithOtp({ phone: data.phone });
-        toast({ title: "Check your phone", description: "Enter the code we just texted you to verify your number." });
+        toast({
+          title: "Check your phone",
+          description: "Enter the code we just texted you to verify your number.",
+        });
       }
-
       navigate("/profile-setup");
     } catch (error) {
       console.error(error);
-      toast({ title: "Signup failed", description: "We couldn't create your account just yet. Try again in a moment." });
+      toast({
+        title: "Signup failed",
+        description: "We couldn't create your account just yet. Try again in a moment.",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -158,11 +181,20 @@ const Signup = () => {
 
   const handleOAuth = async (provider: "google" | "apple") => {
     try {
-      await supabase.auth.signInWithOAuth({ provider });
-      navigate("/profile-setup");
+      const redirectUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(
+        "/profile-setup"
+      )}`;
+      await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: redirectUrl,
+          queryParams: { prompt: "select_account" },
+        },
+      });
     } catch (error) {
-      console.error(error);
-      toast({ title: "OAuth Error", description: "Please try again later." });
+      const description =
+        error instanceof Error ? error.message : "Please try again later.";
+      toast({ title: "OAuth Error", description });
     }
   };
 
@@ -222,7 +254,7 @@ const Signup = () => {
                 transition={{ duration: 0.25 }}
                 className="space-y-6"
               >
-                <Tabs value={authTab} onValueChange={(value) => setAuthTab(value as typeof authTab)}>
+                <Tabs value={authTab} onValueChange={(v) => setAuthTab(v as typeof authTab)}>
                   <TabsList className="grid grid-cols-2 w-full mb-6 rounded-full bg-muted/60 p-1">
                     <TabsTrigger value="email" className="rounded-full">
                       <Mail size={16} className="mr-2" /> Email
@@ -325,8 +357,15 @@ const Signup = () => {
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
-                  <p className={cn("text-sm", passwordIsStrong ? "text-emerald-600" : "text-muted-foreground")}>
-                    {passwordIsStrong ? "Strong password" : "Use at least 8 characters for a secure password."}
+                  <p
+                    className={cn(
+                      "text-sm",
+                      passwordIsStrong ? "text-emerald-600" : "text-muted-foreground"
+                    )}
+                  >
+                    {passwordIsStrong
+                      ? "Strong password"
+                      : "Use at least 8 characters for a secure password."}
                   </p>
                 </div>
 
@@ -389,9 +428,15 @@ const Signup = () => {
                         disabled={isUploading}
                       >
                         <ImageIcon className="w-4 h-4 mr-2" />
-                        {isUploading ? "Uploading..." : data.photoDataUrl ? "Change photo" : "Upload photo"}
+                        {isUploading
+                          ? "Uploading..."
+                          : data.photoDataUrl
+                          ? "Change photo"
+                          : "Upload photo"}
                       </Button>
-                      <p className="text-xs text-muted-foreground">Square photos look best. We'll crop it for you automatically.</p>
+                      <p className="text-xs text-muted-foreground">
+                        Square photos look best. We'll crop it for you automatically.
+                      </p>
                     </div>
                   </div>
                   <input
@@ -407,15 +452,21 @@ const Signup = () => {
                   <Checkbox
                     id="terms"
                     checked={data.agreedToTerms}
-                    onCheckedChange={(value) => setData({ ...data, agreedToTerms: Boolean(value) })}
+                    onCheckedChange={(v) => setData({ ...data, agreedToTerms: Boolean(v) })}
                   />
                   <Label htmlFor="terms" className="text-sm text-muted-foreground">
                     I agree to the{" "}
-                    <a href="#" className="text-[#E8B956] font-medium underline-offset-4 hover:underline">
+                    <a
+                      href="#"
+                      className="text-[#E8B956] font-medium underline-offset-4 hover:underline"
+                    >
                       Terms
                     </a>{" "}
                     and{" "}
-                    <a href="#" className="text-[#E8B956] font-medium underline-offset-4 hover:underline">
+                    <a
+                      href="#"
+                      className="text-[#E8B956] font-medium underline-offset-4 hover:underline"
+                    >
                       Privacy Policy
                     </a>
                     .
