@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
 import {
+  Calendar,
   CalendarClock,
   Lightbulb,
+  MapPin,
   Megaphone,
   NotebookPen,
   Palette,
@@ -11,10 +13,20 @@ import {
   Stars,
   Users,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import BackButton from "@/components/BackButton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 
 const checklist = [
   {
@@ -121,6 +133,31 @@ const faqs = [
   },
 ];
 
+const previewExperience = {
+  title: "Creative Connection Lab",
+  tagline: "A hands-on evening helping hosts polish their most magnetic experiences.",
+  date: "Saturday, November 16",
+  time: "6:00 PM – 9:00 PM",
+  location: "The Atelier Loft · Brooklyn, NY",
+  capacity: "Ideal for 12 curious guests",
+  category: "Community experience",
+  highlights: [
+    "Clarify the transformation your guests will feel.",
+    "Design an engaging, chapter-based flow with connection prompts.",
+    "Capture hospitality touches that encourage effortless belonging.",
+  ],
+  flow: [
+    "Warm arrivals with sensory cues and guided intros.",
+    "Interactive workshop to prototype key guest moments.",
+    "Collective reflection with call-to-action for next steps.",
+  ],
+  essentials: [
+    "Ambient playlist & scent pairings",
+    "Workshop materials for 12 guests",
+    "Two co-hosts confirmed",
+  ],
+};
+
 const HostCreateExperience = () => {
   return (
     <div className="min-h-screen bg-[#f8f1e7] px-4 py-8 sm:px-6">
@@ -202,13 +239,13 @@ const HostCreateExperience = () => {
                 </div>
               ))}
             </div>
-            <div className="rounded-2xl bg-gradient-to-r from-[#f8e5cf] to-[#f6d7b8] p-5 text-[#2d2214]">
-              <h4 className="text-sm font-semibold">Ready to publish?</h4>
-              <p className="mt-1 text-sm text-[#604527]">Open the step-by-step builder and we&apos;ll save your progress automatically.</p>
-              <Button className="mt-4 w-full rounded-full bg-[#2d2214] text-white hover:bg-[#3c2e1b]">
-                Start building
-              </Button>
-            </div>
+              <div className="rounded-2xl bg-gradient-to-r from-[#f8e5cf] to-[#f6d7b8] p-5 text-[#2d2214]">
+                <h4 className="text-sm font-semibold">Ready to publish?</h4>
+                <p className="mt-1 text-sm text-[#604527]">Open the step-by-step builder and we&apos;ll save your progress automatically.</p>
+                <Button asChild className="mt-4 w-full rounded-full bg-[#2d2214] text-white hover:bg-[#3c2e1b]">
+                  <Link to="/host/create-event">Start building</Link>
+                </Button>
+              </div>
           </aside>
         </section>
 
@@ -309,16 +346,95 @@ const HostCreateExperience = () => {
         </section>
 
         <section className="rounded-3xl border border-[#ddcdb8] bg-white/80 p-6 shadow-sm backdrop-blur sm:p-10">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-2">
-              <Badge className="rounded-full bg-[#efe0cf] px-3 py-1 text-xs font-medium uppercase tracking-wide text-[#6d5433]">
-                FAQ
-              </Badge>
-              <h2 className="text-2xl font-semibold text-[#2d2214]">Answer guest questions before they ask</h2>
-              <p className="text-sm text-[#755a37]">Use these prompts in your listing to set expectations and build trust right away.</p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="space-y-2">
+                <Badge className="rounded-full bg-[#efe0cf] px-3 py-1 text-xs font-medium uppercase tracking-wide text-[#6d5433]">
+                  FAQ
+                </Badge>
+                <h2 className="text-2xl font-semibold text-[#2d2214]">Answer guest questions before they ask</h2>
+                <p className="text-sm text-[#755a37]">Use these prompts in your listing to set expectations and build trust right away.</p>
+              </div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="rounded-full bg-[#2d2214] px-6 text-white hover:bg-[#3c2e1b]">Preview listing</Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-3xl overflow-hidden rounded-3xl border-0 p-0">
+                  <DialogHeader className="space-y-1 bg-[#2d2214] px-6 py-6 text-left text-white sm:px-8">
+                    <DialogTitle className="text-2xl font-semibold">{previewExperience.title}</DialogTitle>
+                    <DialogDescription className="text-sm text-white/80">
+                      {previewExperience.tagline}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-0 bg-white sm:grid-cols-[1.6fr_1fr]">
+                    <div className="space-y-6 px-6 py-6 sm:px-8">
+                      <div className="space-y-2">
+                        <div className="flex flex-wrap gap-3 text-sm text-[#6d5433]">
+                          <span className="flex items-center gap-2 rounded-full bg-[#f3e5d2] px-3 py-1 font-medium">
+                            <Calendar className="h-4 w-4 text-[#8f6636]" /> {previewExperience.date}
+                          </span>
+                          <span className="flex items-center gap-2 rounded-full bg-[#f3e5d2] px-3 py-1 font-medium">
+                            <CalendarClock className="h-4 w-4 text-[#8f6636]" /> {previewExperience.time}
+                          </span>
+                          <span className="flex items-center gap-2 rounded-full bg-[#f3e5d2] px-3 py-1 font-medium">
+                            <MapPin className="h-4 w-4 text-[#8f6636]" /> {previewExperience.location}
+                          </span>
+                        </div>
+                        <p className="text-sm text-[#6d5433]">{previewExperience.capacity}</p>
+                      </div>
+                      <div className="rounded-2xl border border-[#efe0cf] bg-[#fdf8f2] p-5 text-sm text-[#604527]">
+                        <p className="font-semibold uppercase tracking-wide text-[#b58a57]">What guests will love</p>
+                        <ul className="mt-3 space-y-2 list-disc pl-5">
+                          {previewExperience.highlights.map((highlight) => (
+                            <li key={highlight}>{highlight}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="space-y-4">
+                        <p className="text-sm font-semibold uppercase tracking-wide text-[#b58a57]">Experience flow</p>
+                        <div className="space-y-3">
+                          {previewExperience.flow.map((step) => (
+                            <div
+                              key={step}
+                              className="rounded-2xl border border-[#efe0cf] bg-white/80 px-4 py-3 text-sm text-[#604527]"
+                            >
+                              {step}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-6 border-t border-[#f0e2cf] bg-[#f9f2e8] px-6 py-6 sm:border-l sm:border-t-0 sm:px-6 sm:py-8">
+                      <div className="space-y-2">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-[#b58a57]">Category</p>
+                        <p className="text-sm font-medium text-[#2d2214]">{previewExperience.category}</p>
+                      </div>
+                      <Separator className="bg-[#ead8c1]" />
+                      <div className="space-y-2">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-[#b58a57]">Readiness checklist</p>
+                        <ul className="space-y-2 text-sm text-[#604527]">
+                          {previewExperience.essentials.map((essential) => (
+                            <li key={essential} className="flex items-center gap-2">
+                              <Sparkles className="h-4 w-4 text-[#c7924a]" />
+                              <span>{essential}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <Separator className="bg-[#ead8c1]" />
+                      <div className="space-y-2">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-[#b58a57]">Next step</p>
+                        <p className="text-sm text-[#604527]">
+                          Capture these details in your listing draft so guests can envision the experience before booking.
+                        </p>
+                        <Button asChild className="mt-2 w-full rounded-full bg-[#2d2214] text-white hover:bg-[#3c2e1b]">
+                          <Link to="/host/create-event">Open builder</Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
-            <Button className="rounded-full bg-[#2d2214] px-6 text-white hover:bg-[#3c2e1b]">Preview listing</Button>
-          </div>
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
             {faqs.map((faq) => (
               <div key={faq.question} className="flex flex-col gap-2 rounded-2xl border border-[#efe0cf] bg-white/70 p-5">
