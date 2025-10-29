@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SubscriptionProvider } from "@/hooks/useSubscription";
+import { BottomNav } from "@/components/BottomNav";
 
 // Pages
 import Splash from "./pages/Splash";
@@ -202,7 +203,10 @@ const AppContent = () => {
   return (
     <>
       {showThemeToggle && <ThemeToggle />}
-      <AnimatedRoutes />
+      <div className="pb-24 md:pb-0">
+        <AnimatedRoutes />
+      </div>
+      <BottomNav currentPath={location.pathname} />
     </>
   );
 };

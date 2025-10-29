@@ -20,21 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  AlertTriangle,
-  ArrowRight,
-  CalendarDays,
-  ChatCircle,
-  Home as HomeIcon,
-  MapPin,
-  MessageSquare,
-  PlayCircle,
-  Send,
-  Sparkles,
-  Star,
-  User,
-  Users,
-} from "lucide-react";
+import { AlertTriangle, ArrowRight, ChatCircle, MapPin, PlayCircle, Send, Sparkles, Star } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
@@ -433,27 +419,6 @@ const Home = () => {
           ))}
         </section>
       </main>
-
-      {/* Bottom Nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/90 px-3 py-3 backdrop-blur">
-        <div className="mx-auto grid w-full max-w-5xl grid-cols-5 text-center text-xs font-medium text-muted-foreground">
-          <button className="flex flex-col items-center text-[#E8B956]">
-            <HomeIcon className="h-5 w-5" /> Home
-          </button>
-          <button onClick={() => handleNavigate("/events")}>
-            <CalendarDays className="h-5 w-5" /> Events
-          </button>
-          <button onClick={() => handleNavigate("/matches")}>
-            <Users className="h-5 w-5" /> Friends
-          </button>
-          <button onClick={() => handleNavigate("/messages", true)}>
-            <MessageSquare className="h-5 w-5" /> Chat
-          </button>
-          <button onClick={() => handleNavigate("/profile")}>
-            <User className="h-5 w-5" /> Profile
-          </button>
-        </div>
-      </nav>
 
       {/* Pro Dialog */}
       <Dialog open={showSubscribePrompt} onOpenChange={setShowSubscribePrompt}>
