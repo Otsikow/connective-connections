@@ -7,7 +7,7 @@ export function ThemeToggle() {
   const isDark = theme === "dark";
 
   return (
-    <div className="fixed top-6 right-6 z-50">
+    <div className="w-full flex justify-end px-6 pt-6">
       <motion.button
         onClick={toggleTheme}
         className="relative flex items-center gap-2 px-4 py-2.5 rounded-full bg-card border border-border shadow-lg hover:shadow-xl transition-all duration-300 group overflow-hidden"
