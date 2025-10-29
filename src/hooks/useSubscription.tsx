@@ -172,12 +172,6 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
         }
 
         console.error("subscription:profile", error);
-        toast({
-          title: "Unable to load subscription",
-          description:
-            "We couldn't fetch your subscription details. Try refreshing the page.",
-          variant: "destructive",
-        });
         resetProfileState();
         return;
       }
