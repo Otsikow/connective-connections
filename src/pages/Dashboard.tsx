@@ -46,10 +46,12 @@ import {
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import { useSubscription } from "@/hooks/useSubscription";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { tier, openUpgrade } = useSubscription();
+  usePageTitle("Connection Intelligence Dashboard");
   const isProMember = tier === "pro";
 
   const handleProUpsell = () => {

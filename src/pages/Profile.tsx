@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import BackButton from "@/components/BackButton";
 import { useSubscription, type SubscriptionTier } from "@/hooks/useSubscription";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import {
   createStripeBillingPortalSession,
   createStripeCheckoutSession,
@@ -85,6 +86,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
+  usePageTitle("Your Profile");
   const {
     tier,
     monthlyConnections,

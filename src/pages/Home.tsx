@@ -36,6 +36,7 @@ import {
   Users,
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 type Feature = {
   value: string;
@@ -50,6 +51,7 @@ type Feature = {
 
 const Home = () => {
   const navigate = useNavigate();
+  usePageTitle("Member Home");
   const [activeFeature, setActiveFeature] = useState("friends");
   const [showSubscribePrompt, setShowSubscribePrompt] = useState(false);
   const isSubscribed = false;

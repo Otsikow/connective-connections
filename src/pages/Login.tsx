@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
 import { Separator } from "@/components/ui/separator";
 import BackButton from "@/components/BackButton";
@@ -20,6 +21,7 @@ const featureHighlights = [
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  usePageTitle("Sign In to Connective Connections");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);

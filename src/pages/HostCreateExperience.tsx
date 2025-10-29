@@ -27,6 +27,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const checklist = [
   {
@@ -159,6 +160,7 @@ const previewExperience = {
 };
 
 const HostCreateExperience = () => {
+  usePageTitle("Design an Unforgettable Experience");
   return (
     <div
       className="min-h-screen bg-gradient-to-br from-[#f8f1e7] via-[#fcf5ec] to-[#f2e3d0] px-4 py-8 transition-colors duration-500 sm:px-6 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950"

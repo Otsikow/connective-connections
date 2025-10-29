@@ -10,6 +10,7 @@ import { communityGroups } from "@/lib/community-groups";
 import BackButton from "@/components/BackButton";
 import { useEndToEndEncryption } from "@/hooks/useEndToEndEncryption";
 import { useSubscription } from "@/hooks/useSubscription";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 interface Message {
   id: number;
@@ -31,6 +32,7 @@ const Messages = () => {
   const [displayMessages, setDisplayMessages] = useState<Message[]>([]);
   const [isOnline, setIsOnline] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  usePageTitle("Messages");
 
   const groupId = searchParams.get("group");
   const communityId = searchParams.get("community");

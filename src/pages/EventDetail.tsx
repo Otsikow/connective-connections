@@ -16,6 +16,7 @@ import { getEventById, upcomingEvents, EventData } from "@/data/events";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useToast } from "@/hooks/use-toast";
 import EventLocationMap from "@/components/EventLocationMap";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const formatEventDateRange = (startIso: string, endIso: string) => {
   const start = new Date(startIso);
@@ -86,6 +87,9 @@ const EventDetail = () => {
   const { toast } = useToast();
 
   const event = eventId ? getEventById(eventId) : undefined;
+  usePageTitle(
+    event ? `${event.title} – Experience Details` : "Experience Not Found"
+  );
   const recommendedEvents = upcomingEvents
     .filter((upcomingEvent) => upcomingEvent.id !== event?.id)
     .slice(0, 3);
