@@ -5,6 +5,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
@@ -20,6 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import type { PostgrestError } from "@supabase/supabase-js";
 
 export type SubscriptionTier = Tables<"profiles">["subscription_tier"];
 
@@ -86,84 +88,158 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
     isLoading: true,
   });
   const [upgradePrompt, setUpgradePrompt] = useState<UpgradePrompt | null>(null);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  const resetProfileState = useCallback(() => {
+    if (!isMountedRef.current) return;
+    setState({ ...defaultProfileState, isLoading: false });
+  }, []);
+
+  const handleSignedOut = useCallback(() => {
+    setUserId(null);
+    resetProfileState();
+  }, [resetProfileState]);
+
+  const handleProfileLoaded = useCallback(
+    (profile: ProfileUsage | null | undefined) => {
+      if (!isMountedRef.current) return;
+      setState({
+        ...normalizeProfileUsage(profile ?? undefined),
+        isLoading: false,
+      });
+    },
+    [],
+  );
+
+  const isAuthorizationError = useCallback((error: PostgrestError) => {
+    const code = error.code;
+    const normalized = `${error.message ?? ""} ${error.details ?? ""}`.toLowerCase();
+    return (
+      code === "PGRST301" ||
+      code === "PGRST302" ||
+      code === "42501" ||
+      normalized.includes("jwt") ||
+      normalized.includes("auth") ||
+      normalized.includes("permission") ||
+      normalized.includes("authorized")
+    );
+  }, []);
 
   const fetchProfile = useCallback(async () => {
     setState((previous) => ({ ...previous, isLoading: true }));
 
     const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
 
-    if (userError || !user) {
-      setUserId(null);
-      setState((previous) => ({
-        ...previous,
-        ...defaultProfileState,
-        isLoading: false,
-      }));
+    if (!isMountedRef.current) return;
+
+    if (sessionError || !session?.user) {
+      handleSignedOut();
       return;
     }
 
-    setUserId(user.id);
+    setUserId(session.user.id);
 
-    const { data: profile, error } = await supabase
-      .from("profiles")
-      .select(
-        "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires",
-      )
-      .eq("id", user.id)
-      .maybeSingle();
-
-    if (error) {
-      console.error("subscription:profile", error);
-      toast({
-        title: "Unable to load subscription",
-        description:
-          "We couldn't fetch your subscription details. Try refreshing the page.",
-        variant: "destructive",
-      });
-      setState({ ...defaultProfileState, isLoading: false });
-      return;
-    }
-
-    if (!profile) {
-      const { data: inserted, error: insertError } = await supabase
+    const loadProfile = async (id: string) => {
+      const { data: profile, error } = await supabase
         .from("profiles")
-        .insert({ id: user.id })
         .select(
           "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires",
         )
+        .eq("id", id)
         .maybeSingle();
 
-      if (insertError) {
-        console.error("subscription:create-profile", insertError);
+      if (!isMountedRef.current) return;
+
+      if (error) {
+        if (isAuthorizationError(error)) {
+          console.warn("subscription:profile-unauthorized", error);
+          handleSignedOut();
+          return;
+        }
+
+        console.error("subscription:profile", error);
         toast({
-          title: "Unable to prepare profile",
+          title: "Unable to load subscription",
           description:
-            "We couldn't create your profile record. Please contact support if this continues.",
+            "We couldn't fetch your subscription details. Try refreshing the page.",
           variant: "destructive",
         });
-        setState({ ...defaultProfileState, isLoading: false });
+        resetProfileState();
         return;
       }
 
-      setState({
-        ...normalizeProfileUsage(inserted),
-        isLoading: false,
-      });
-      return;
-    }
+      if (!profile) {
+        const { data: inserted, error: insertError } = await supabase
+          .from("profiles")
+          .insert({ id })
+          .select(
+            "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires",
+          )
+          .maybeSingle();
 
-    setState({
-      ...normalizeProfileUsage(profile),
-      isLoading: false,
-    });
-  }, [toast]);
+        if (!isMountedRef.current) return;
+
+        if (insertError) {
+          if (isAuthorizationError(insertError)) {
+            console.warn("subscription:create-profile-unauthorized", insertError);
+            handleSignedOut();
+            return;
+          }
+
+          console.error("subscription:create-profile", insertError);
+          toast({
+            title: "Unable to prepare profile",
+            description:
+              "We couldn't create your profile record. Please contact support if this continues.",
+            variant: "destructive",
+          });
+          resetProfileState();
+          return;
+        }
+
+        handleProfileLoaded(inserted);
+        return;
+      }
+
+      handleProfileLoaded(profile);
+    };
+
+    await loadProfile(session.user.id);
+  }, [
+    handleProfileLoaded,
+    handleSignedOut,
+    isAuthorizationError,
+    resetProfileState,
+    toast,
+  ]);
 
   useEffect(() => {
     fetchProfile();
-  }, [fetchProfile]);
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_, session) => {
+      if (!isMountedRef.current) return;
+
+      if (session?.user) {
+        setUserId(session.user.id);
+        fetchProfile();
+      } else {
+        handleSignedOut();
+      }
+    });
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, [fetchProfile, handleSignedOut]);
 
   const openUpgrade = useCallback((prompt: UpgradePrompt) => {
     setUpgradePrompt(prompt);
