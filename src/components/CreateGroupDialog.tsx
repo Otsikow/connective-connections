@@ -283,7 +283,7 @@ export const CreateGroupDialog = ({ open, onOpenChange, onGroupCreated }: Create
             </Button>
             <Button
               type="submit"
-              className="bg-[#E8B956] hover:bg-[#d9a840] text-charcoal"
+              className="bg-[#E8B956] hover:bg-[#d9a840] text-black"
               disabled={isLoading}
             >
               {isLoading ? (

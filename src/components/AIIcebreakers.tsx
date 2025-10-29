@@ -68,8 +68,8 @@ export const AIIcebreakers = ({ onSelectIcebreaker, className = "" }: AIIcebreak
             size="sm"
             onClick={() => handleSelect(suggestion, index)}
             className={`h-8 px-3 text-xs whitespace-nowrap transition-all ${
-              selectedIndex === index 
-                ? "bg-[#E8B956] text-charcoal hover:bg-[#d9a840]" 
+              selectedIndex === index
+                ? "bg-[#E8B956] text-black hover:bg-[#d9a840]"
                 : "hover:bg-muted"
             }`}
             disabled={selectedIndex === index}

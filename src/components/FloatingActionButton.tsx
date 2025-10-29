@@ -33,7 +33,7 @@ export const FloatingActionButton = ({
     <motion.button
       onClick={handleClick}
       className={cn(
-        "fixed z-40 flex items-center gap-2 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal shadow-lg px-4 py-3 font-medium",
+        "fixed z-40 flex items-center gap-2 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black shadow-lg px-4 py-3 font-medium",
         positionClasses[position],
         className
       )}

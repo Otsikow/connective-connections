@@ -164,7 +164,7 @@ const Community = () => {
         {/* Premium Create Group Button */}
         {isPremium && (
           <Button
-            className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold h-12 flex items-center justify-center gap-2"
+            className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black font-semibold h-12 flex items-center justify-center gap-2"
             onClick={() => setIsDialogOpen(true)}
           >
             <Crown size={20} />
@@ -270,7 +270,7 @@ const Community = () => {
 
                   {/* Join Chat Button */}
                   <Button
-                    className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold"
+                    className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black font-semibold"
                     onClick={() => navigate(`/messages?community=${group.id}`)}
                   >
                     <MessageSquare size={18} className="mr-2" />
