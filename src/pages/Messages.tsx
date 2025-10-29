@@ -475,7 +475,7 @@ const Messages = () => {
                 <div
                   className={`px-4 py-3 rounded-2xl ${
                     msg.isMine
-                      ? "bg-[#E8B956] text-charcoal rounded-br-sm"
+                      ? "bg-[#E8B956] text-black rounded-br-sm"
                       : "bg-[#FF8663] text-white rounded-bl-sm"
                   }`}
                 >

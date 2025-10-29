@@ -238,9 +238,9 @@ const Home = () => {
       {/* Tabs */}
       <Tabs defaultValue="matches" className="w-full px-4 sm:px-6 py-6 space-y-6">
         <TabsList className="w-full grid grid-cols-3 h-11 bg-muted rounded-full">
-          <TabsTrigger value="matches" className="rounded-full data-[state=active]:bg-[#E8B956] data-[state=active]:text-charcoal">Matches</TabsTrigger>
-          <TabsTrigger value="groups" className="rounded-full data-[state=active]:bg-[#E8B956] data-[state=active]:text-charcoal">Groups</TabsTrigger>
-          <TabsTrigger value="events" className="rounded-full data-[state=active]:bg-[#E8B956] data-[state=active]:text-charcoal">Events</TabsTrigger>
+          <TabsTrigger value="matches" className="rounded-full data-[state=active]:bg-[#E8B956] data-[state=active]:text-black">Matches</TabsTrigger>
+          <TabsTrigger value="groups" className="rounded-full data-[state=active]:bg-[#E8B956] data-[state=active]:text-black">Groups</TabsTrigger>
+          <TabsTrigger value="events" className="rounded-full data-[state=active]:bg-[#E8B956] data-[state=active]:text-black">Events</TabsTrigger>
         </TabsList>
 
         {/* Content for matches, groups, events — unchanged */}
@@ -282,7 +282,7 @@ const Home = () => {
 
       {/* Floating Button */}
       <Button
-        className="fixed bottom-20 sm:bottom-24 right-4 sm:right-6 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal shadow-lg flex items-center gap-2 h-12 sm:h-auto px-4 sm:px-6 text-sm sm:text-base"
+        className="fixed bottom-20 sm:bottom-24 right-4 sm:right-6 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black shadow-lg flex items-center gap-2 h-12 sm:h-auto px-4 sm:px-6 text-sm sm:text-base"
         onClick={() => navigate("/host/create-event")}
       >
         <Plus className="h-4 w-4 sm:h-5 sm:w-5" />

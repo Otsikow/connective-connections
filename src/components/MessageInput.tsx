@@ -189,7 +189,7 @@ export const MessageInput = ({
           disabled={isDisabled || !message.trim()}
           className="h-10 w-10 rounded-full bg-[#E8B956] hover:bg-[#d9a840] p-0 disabled:opacity-50"
         >
-          <Send className="w-4 h-4 text-charcoal" />
+          <Send className="w-4 h-4 text-black" />
         </Button>
       </div>
 

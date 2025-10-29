@@ -239,7 +239,7 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
           {/* CTA Button */}
           <Button
             onClick={onConnect}
-            className="w-full h-12 sm:h-14 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold gap-2 text-base sm:text-lg shadow-lg shadow-[#E8B956]/40"
+            className="w-full h-12 sm:h-14 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black font-semibold gap-2 text-base sm:text-lg shadow-lg shadow-[#E8B956]/40"
           >
             <Coffee className="w-4 h-4 sm:w-5 sm:h-5" />
             Let's grab coffee!
