@@ -38,6 +38,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import BackButton from "@/components/BackButton";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 interface AgendaItem {
   id: string;
@@ -80,6 +81,7 @@ const createId = () => Math.random().toString(36).slice(2, 10);
 const CreateEvent = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  usePageTitle("Host a New Experience");
 
   const [isPublishing, setIsPublishing] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);

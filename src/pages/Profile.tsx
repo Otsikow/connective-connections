@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import BackButton from "@/components/BackButton";
 import { useSubscription, type SubscriptionTier } from "@/hooks/useSubscription";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import {
   createStripeBillingPortalSession,
   createStripeCheckoutSession,
@@ -85,6 +86,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
+  usePageTitle("Your Profile");
   const {
     tier,
     monthlyConnections,
@@ -257,8 +259,7 @@ export default function Profile() {
       <div className="mx-auto max-w-5xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
         <BackButton
           fallbackPath="/home"
-          size="icon"
-          className="h-10 w-10 border border-border/60 bg-background shadow-sm"
+          className="border border-border/60 bg-background shadow-sm"
         />
 
         {/* Membership Summary */}

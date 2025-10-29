@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import BackButton from "@/components/BackButton";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const INTEREST_OPTIONS = [
   "Sports", "Music", "Art", "Books", "Movies", "Gaming", 
@@ -50,6 +51,7 @@ const AVAILABILITY_OPTIONS = [
 
 const ProfileSetup = () => {
   const navigate = useNavigate();
+  usePageTitle("Complete Your Profile");
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 6;
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -178,8 +180,6 @@ const ProfileSetup = () => {
         <div className="mb-6 flex items-center justify-between">
           <BackButton
             fallbackPath="/signup"
-            size="icon"
-            className="h-10 w-10"
             ariaLabel="Go back"
             onClick={(event) => {
               if (currentStep > 1) {

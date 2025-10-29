@@ -18,9 +18,11 @@ import {
   Users,
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const HostDashboard = () => {
   const navigate = useNavigate();
+  usePageTitle("Host Dashboard");
 
   const stats = [
     {
@@ -87,8 +89,6 @@ const HostDashboard = () => {
           <div className="flex items-center gap-2">
             <BackButton
               fallbackPath="/home"
-              size="icon"
-              className="h-10 w-10"
               ariaLabel="Go back"
             />
             <h1 className="text-2xl font-bold flex items-center gap-2">

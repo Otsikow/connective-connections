@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { useToast } from "@/hooks/use-toast";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
 import BackButton from "@/components/BackButton";
 import { cn } from "@/lib/utils";
@@ -100,6 +101,7 @@ function StepHeader({ step }: { step: number }) {
 const Signup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  usePageTitle("Create Your Connective Account");
   const [step, setStep] = useState(1);
   const [authTab, setAuthTab] = useState<"email" | "phone">("email");
   const [showPassword, setShowPassword] = useState(false);
@@ -248,8 +250,7 @@ const Signup = () => {
       <div className="w-full max-w-xl">
         <BackButton
           fallbackPath="/"
-          size="icon"
-          className="mb-6 h-10 w-10"
+          className="mb-6"
           onClick={(event) => {
             if (step > 1) {
               event.preventDefault();
