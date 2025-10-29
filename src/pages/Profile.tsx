@@ -257,8 +257,7 @@ export default function Profile() {
       <div className="mx-auto max-w-5xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
         <BackButton
           fallbackPath="/home"
-          size="icon"
-          className="h-10 w-10 border border-border/60 bg-background shadow-sm"
+          className="border border-border/60 bg-background shadow-sm"
         />
 
         {/* Membership Summary */}

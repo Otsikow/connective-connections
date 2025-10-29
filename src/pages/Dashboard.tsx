@@ -240,8 +240,7 @@ const Dashboard = () => {
           <div className="flex items-start gap-3">
             <BackButton
               fallbackPath="/host-dashboard"
-              size="icon"
-              className="h-10 w-10 border border-border/60 text-muted-foreground hover:bg-muted"
+              className="border border-border/60 text-muted-foreground hover:bg-muted"
             />
             <div>
               <p className="text-sm font-medium text-muted-foreground">Host Dashboard</p>

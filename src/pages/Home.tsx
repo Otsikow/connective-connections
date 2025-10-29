@@ -208,7 +208,7 @@ const Home = () => {
       <header className="sticky top-0 z-30 border-b border-border/60 backdrop-blur bg-background/80">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <div className="flex items-center gap-3">
-            <BackButton fallbackPath="/" size="icon" className="hidden h-10 w-10 sm:flex" />
+            <BackButton fallbackPath="/" className="hidden sm:inline-flex" />
             <div className="flex items-center gap-2">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E8B956]/20">
                 <Sparkles className="h-5 w-5 text-[#E8B956]" />

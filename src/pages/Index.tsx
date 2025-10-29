@@ -11,8 +11,6 @@ const Index = () => {
       <div className="px-4 sm:px-6 py-4">
         <BackButton
           fallbackPath="/"
-          size="icon"
-          className="h-10 w-10"
         />
       </div>
 
