@@ -31,9 +31,13 @@ import HostCreateExperience from "./pages/HostCreateExperience";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback";
+import Onboarding from "./pages/Onboarding"; // Added from feature branch
 
 const queryClient = new QueryClient();
 
+/**
+ * Handles animated page transitions
+ */
 const AnimatedRoutes = () => {
   const location = useLocation();
 
@@ -45,6 +49,14 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <Splash />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/onboarding"
+          element={
+            <PageTransition>
+              <Onboarding />
             </PageTransition>
           }
         />
@@ -128,8 +140,18 @@ const AnimatedRoutes = () => {
             </PageTransition>
           }
         />
+        {/* Keep legacy messages route for bottom nav compatibility */}
         <Route
-          path="/messages/*"
+          path="/messages"
+          element={
+            <PageTransition>
+              <Messages />
+            </PageTransition>
+          }
+        />
+        {/* Dynamic chat route per match */}
+        <Route
+          path="/messages/:id"
           element={
             <PageTransition>
               <Messages />
@@ -205,6 +227,9 @@ const AnimatedRoutes = () => {
   );
 };
 
+/**
+ * Core app layout with theme toggle and bottom navigation
+ */
 const AppContent = () => {
   const location = useLocation();
   const showThemeToggle = location.pathname === "/";
@@ -220,6 +245,9 @@ const AppContent = () => {
   );
 };
 
+/**
+ * Root App component
+ */
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="light">
