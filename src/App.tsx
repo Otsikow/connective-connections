@@ -27,6 +27,7 @@ import HostDashboard from "./pages/HostDashboard";
 import HostEvent from "./pages/HostEvent";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
+import AuthCallback from "./pages/AuthCallback";
 
 const queryClient = new QueryClient();
 
@@ -73,6 +74,14 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <ProfileSetup />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/auth/callback"
+          element={
+            <PageTransition>
+              <AuthCallback />
             </PageTransition>
           }
         />
