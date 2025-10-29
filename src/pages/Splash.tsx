@@ -119,38 +119,38 @@ const Splash = () => {
   usePageTitle("Connective Connections | Exclusive Membership");
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-950 text-slate-100">
+    <div className="relative min-h-screen overflow-hidden bg-[#0f172a] text-white">
       <div className="pointer-events-none absolute inset-0 -z-10 opacity-70">
-        <div className="absolute left-[-10%] top-[-15%] h-[28rem] w-[28rem] rounded-full bg-amber-500/20 blur-[120px]" />
-        <div className="absolute right-[-15%] top-[20%] h-[32rem] w-[32rem] rounded-full bg-indigo-500/20 blur-[130px]" />
-        <div className="absolute bottom-[-20%] right-[-5%] h-[30rem] w-[30rem] rounded-full bg-purple-500/20 blur-[140px]" />
+        <div className="absolute left-[-10%] top-[-15%] h-[28rem] w-[28rem] rounded-full bg-[#f59e0b]/20 blur-[120px]" />
+        <div className="absolute right-[-15%] top-[20%] h-[32rem] w-[32rem] rounded-full bg-[#6366f1]/20 blur-[130px]" />
+        <div className="absolute bottom-[-20%] right-[-5%] h-[30rem] w-[30rem] rounded-full bg-[#a855f7]/20 blur-[140px]" />
       </div>
 
       <div className="relative mx-auto flex min-h-screen max-w-4xl flex-col px-6 pb-24 pt-16 sm:px-10 lg:px-0">
         <header className="flex flex-col items-center text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-amber-400/40 bg-amber-500/10 px-4 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.35em] text-amber-200">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#fbbf24]/40 bg-[#f59e0b]/10 px-4 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.35em] text-[#fde68a]">
             Connective Connections
           </span>
-          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.5em] text-slate-400">
+          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.5em] text-gray-400">
             Exclusive Experiential Membership
           </p>
-          <h1 className="mt-6 text-balance text-4xl font-semibold leading-tight sm:text-5xl">
+          <h1 className="mt-6 text-balance text-4xl font-semibold leading-tight text-white sm:text-5xl">
             The future of connection is curated.
           </h1>
-          <p className="mt-6 max-w-2xl text-pretty text-lg text-slate-300 sm:text-xl">
+          <p className="mt-6 max-w-2xl text-pretty text-lg text-gray-300 sm:text-xl">
             Backed by neuroscience and crafted by world-class hosts, Connective orchestrates immersive experiences
             where ambitious humans build relationships that accelerate their impact.
           </p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             <button
               onClick={() => navigate("/signup")}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 px-8 py-3 text-sm font-semibold text-slate-950 shadow-[0_12px_30px_-12px_rgba(250,204,21,0.6)] transition hover:scale-[1.02]"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#fcd34d] via-[#fbbf24] to-[#f59e0b] px-8 py-3 text-sm font-semibold text-[#0f172a] shadow-[0_12px_30px_-12px_rgba(250,204,21,0.6)] transition hover:scale-[1.02]"
             >
               <Sparkles className="h-4 w-4" /> Request an invite
             </button>
             <button
               onClick={() => navigate("/events")}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/70 px-8 py-3 text-sm font-semibold text-slate-200 transition hover:border-slate-600"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-gray-700/70 bg-[#1e293b]/70 px-8 py-3 text-sm font-semibold text-gray-200 transition hover:border-gray-600"
             >
               <CalendarDays className="h-4 w-4" /> Explore upcoming salons
             </button>
@@ -158,25 +158,25 @@ const Splash = () => {
         </header>
 
         <section className="mt-16">
-          <div className="relative overflow-hidden rounded-[2rem] border border-slate-800/60 bg-gradient-to-br from-slate-900/80 via-slate-950 to-slate-950">
-            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-amber-500/10 via-transparent to-transparent" />
+          <div className="relative overflow-hidden rounded-[2rem] border border-gray-800/60 bg-gradient-to-br from-[#1e293b]/80 via-[#0f172a] to-[#0f172a]">
+            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#f59e0b]/10 via-transparent to-transparent" />
             <img
               src={experienceImage}
               alt="Members connecting"
               className="h-[340px] w-full object-cover opacity-70"
             />
             <div className="absolute inset-0 flex flex-col justify-between p-8 sm:p-10">
-              <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.35em] text-slate-300">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-amber-400/20 text-amber-200">
+              <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.35em] text-gray-300">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#f59e0b]/20 text-[#fde68a]">
                   <Star className="h-4 w-4" />
                 </span>
                 Connection begins here
               </div>
               <div className="space-y-4">
-                <p className="text-sm uppercase tracking-[0.4em] text-slate-400">Immersive storytelling</p>
+                <p className="text-sm uppercase tracking-[0.4em] text-gray-400">Immersive storytelling</p>
                 <button
                   onClick={() => navigate("/home")}
-                  className="inline-flex items-center gap-2 rounded-full border border-amber-300/40 bg-amber-400/10 px-6 py-2 text-sm font-semibold text-amber-200 transition hover:bg-amber-400/20"
+                  className="inline-flex items-center gap-2 rounded-full border border-[#fcd34d]/40 bg-[#fbbf24]/10 px-6 py-2 text-sm font-semibold text-[#fde68a] transition hover:bg-[#fbbf24]/20"
                 >
                   <Play className="h-4 w-4" /> Watch story
                 </button>
@@ -190,11 +190,11 @@ const Splash = () => {
 
         <section className="mt-20 space-y-8">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-amber-200">Crafted experiences</p>
-            <h2 className="mt-4 text-balance text-3xl font-semibold sm:text-4xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-[#fde68a]">Crafted experiences</p>
+            <h2 className="mt-4 text-balance text-3xl font-semibold text-white sm:text-4xl">
               Curated experiences crafted for depth.
             </h2>
-            <p className="mt-4 text-pretty text-base text-slate-300">
+            <p className="mt-4 text-pretty text-base text-gray-300">
               Every gathering is intentionally designed to foster vulnerability, brilliance, and long-term collaboration.
             </p>
           </div>
@@ -202,18 +202,18 @@ const Splash = () => {
             {experienceCards.map((card) => (
               <div
                 key={card.title}
-                className="rounded-3xl border border-slate-800/70 bg-slate-900/80 p-8 shadow-[0_25px_60px_-40px_rgba(15,23,42,0.8)]"
+                className="rounded-3xl border border-gray-800/70 bg-[#1e293b]/80 p-8 shadow-[0_25px_60px_-40px_rgba(15,23,42,0.8)]"
               >
                 <div className="flex items-start gap-5">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-400/15 text-amber-200">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fbbf24]/15 text-[#fde68a]">
                     <card.icon className="h-6 w-6" />
                   </div>
                   <div className="space-y-3 text-left">
                     <div>
                       <h3 className="text-lg font-semibold text-white">{card.title}</h3>
-                      <p className="mt-3 text-sm text-slate-300">{card.description}</p>
+                      <p className="mt-3 text-sm text-gray-300">{card.description}</p>
                     </div>
-                    <p className="text-xs uppercase tracking-[0.35em] text-slate-500">{card.detail}</p>
+                    <p className="text-xs uppercase tracking-[0.35em] text-gray-500">{card.detail}</p>
                   </div>
                 </div>
               </div>
@@ -223,22 +223,22 @@ const Splash = () => {
 
         <section className="mt-24 space-y-12">
           <div className="space-y-6 text-center">
-            <span className="inline-flex items-center gap-2 rounded-full border border-slate-800/60 bg-slate-900/80 px-4 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-slate-400">
+            <span className="inline-flex items-center gap-2 rounded-full border border-gray-800/60 bg-[#1e293b]/80 px-4 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-gray-400">
               Your journey
             </span>
-            <h2 className="text-balance text-3xl font-semibold sm:text-4xl">
+            <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
               Your curated journey is guided by experts.
             </h2>
-            <p className="mx-auto max-w-2xl text-pretty text-base text-slate-300">
+            <p className="mx-auto max-w-2xl text-pretty text-base text-gray-300">
               We combine human insight with proprietary intelligence so every step feels intentional, elevated, and
               uniquely yours.
             </p>
           </div>
           <div className="grid gap-6 sm:grid-cols-3">
             {journeyStats.map((stat) => (
-              <div key={stat.label} className="rounded-3xl border border-slate-800/60 bg-slate-900/80 p-6 text-left">
+              <div key={stat.label} className="rounded-3xl border border-gray-800/60 bg-[#1e293b]/80 p-6 text-left">
                 <p className="text-4xl font-semibold text-white">{stat.value}</p>
-                <p className="mt-3 text-sm text-slate-400">{stat.label}</p>
+                <p className="mt-3 text-sm text-gray-400">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -246,14 +246,14 @@ const Splash = () => {
             {journeyHighlights.map((highlight) => (
               <div
                 key={highlight.title}
-                className="flex h-full flex-col gap-4 rounded-3xl border border-slate-800/60 bg-slate-900/80 p-6 text-left"
+                className="flex h-full flex-col gap-4 rounded-3xl border border-gray-800/60 bg-[#1e293b]/80 p-6 text-left"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-400/15 text-amber-200">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#fbbf24]/15 text-[#fde68a]">
                   <highlight.icon className="h-6 w-6" />
                 </div>
                 <div className="space-y-2">
                   <h3 className="text-lg font-semibold text-white">{highlight.title}</h3>
-                  <p className="text-sm text-slate-300">{highlight.description}</p>
+                  <p className="text-sm text-gray-300">{highlight.description}</p>
                 </div>
               </div>
             ))}
@@ -262,9 +262,9 @@ const Splash = () => {
 
         <section className="mt-24 space-y-10">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-amber-200">Member stories</p>
-            <h2 className="mt-4 text-balance text-3xl font-semibold sm:text-4xl">What members say.</h2>
-            <p className="mt-4 text-pretty text-base text-slate-300">
+            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-[#fde68a]">Member stories</p>
+            <h2 className="mt-4 text-balance text-3xl font-semibold text-white sm:text-4xl">What members say.</h2>
+            <p className="mt-4 text-pretty text-base text-gray-300">
               Intentionality meets momentum. Hear how Connective members translate chemistry into lasting impact.
             </p>
           </div>
@@ -289,16 +289,16 @@ const Splash = () => {
         </section>
 
         <section className="mt-24">
-          <div className="overflow-hidden rounded-[2rem] border border-amber-400/40 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-950 p-[1px]">
-            <div className="flex h-full w-full flex-col gap-10 rounded-[calc(theme(borderRadius.4xl)-1px)] bg-slate-950/95 p-10">
+          <div className="overflow-hidden rounded-[2rem] border border-[#fbbf24]/40 bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-[#0f172a] p-[1px]">
+            <div className="flex h-full w-full flex-col gap-10 rounded-[calc(theme(borderRadius.4xl)-1px)] bg-[#0f172a]/95 p-10">
               <div className="space-y-4">
-                <span className="inline-flex w-fit items-center gap-2 rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-amber-200">
+                <span className="inline-flex w-fit items-center gap-2 rounded-full border border-[#fbbf24]/30 bg-[#fbbf24]/10 px-4 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-[#fde68a]">
                   Membership benefits
                 </span>
                 <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
                   Membership benefits designed to elevate every interaction.
                 </h2>
-                <p className="max-w-2xl text-pretty text-base text-slate-300">
+                <p className="max-w-2xl text-pretty text-base text-gray-300">
                   From curated introductions to immersive residencies, every benefit is engineered so your circle, influence,
                   and wellbeing expand in tandem.
                 </p>
@@ -306,23 +306,23 @@ const Splash = () => {
               <div className="grid gap-4 sm:grid-cols-2">
                 {membershipBenefits.map((benefit) => (
                   <div key={benefit} className="flex items-start gap-4 text-left">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-400/15 text-amber-200">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#fbbf24]/15 text-[#fde68a]">
                       <UserCheck className="h-5 w-5" />
                     </div>
-                    <p className="text-sm text-slate-300">{benefit}</p>
+                    <p className="text-sm text-gray-300">{benefit}</p>
                   </div>
                 ))}
               </div>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <button
                   onClick={() => navigate("/signup")}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 px-8 py-3 text-sm font-semibold text-slate-950 shadow-[0_12px_30px_-12px_rgba(250,204,21,0.6)] transition hover:scale-[1.02]"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#fcd34d] via-[#fbbf24] to-[#f59e0b] px-8 py-3 text-sm font-semibold text-[#0f172a] shadow-[0_12px_30px_-12px_rgba(250,204,21,0.6)] transition hover:scale-[1.02]"
                 >
                   <ArrowRight className="h-4 w-4" /> Start your application
                 </button>
                 <button
                   onClick={() => navigate("/login")}
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/80 px-8 py-3 text-sm font-semibold text-slate-200 transition hover:border-slate-600"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-gray-700/70 bg-[#1e293b]/80 px-8 py-3 text-sm font-semibold text-gray-200 transition hover:border-gray-600"
                 >
                   <HeartHandshake className="h-4 w-4" /> Already a member?
                 </button>

@@ -89,7 +89,12 @@ const Messages = () => {
         { id: 2, sender: "You", content: "Hi everyone! 👋", time: "9:01 AM", isMine: true },
       ];
     }
-    if (communityGroup) return communityGroup.chatSampleConversation;
+    if (communityGroup) {
+      return communityGroup.chatSampleConversation.map((msg, index) => ({
+        ...msg,
+        id: index + 1,
+      }));
+    }
     return [
       { id: 1, sender: directContactName, content: "Hey! How's it going? 👋", time: "10:00 AM", isMine: false },
       { id: 2, sender: "You", content: "Doing great, thanks! ☕", time: "10:01 AM", isMine: true },

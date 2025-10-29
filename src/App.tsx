@@ -31,7 +31,6 @@ import HostCreateExperience from "./pages/HostCreateExperience";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback";
-import Onboarding from "./pages/Onboarding"; // Added from feature branch
 
 const queryClient = new QueryClient();
 
@@ -49,14 +48,6 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <Splash />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/onboarding"
-          element={
-            <PageTransition>
-              <Onboarding />
             </PageTransition>
           }
         />
