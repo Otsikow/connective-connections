@@ -74,7 +74,8 @@
     --popover-foreground: 210 40% 98%;
 
     --primary: 174 65% 48%;
-    --primary-foreground: 0 0% 100%;
+    /* Improve contrast on vibrant surfaces in dark mode by using a dark foreground */
+    --primary-foreground: 0 0% 8%;
 
     --secondary: 14 100% 70%;
     --secondary-foreground: 222 47% 11%;
@@ -83,7 +84,7 @@
     --muted-foreground: 215 20% 65%;
 
     --accent: 174 60% 50%;
-    --accent-foreground: 0 0% 100%;
+    --accent-foreground: 0 0% 8%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
