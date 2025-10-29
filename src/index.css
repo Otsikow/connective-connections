@@ -2,20 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* ===============================
+   CONNECTIVE DESIGN SYSTEM
+   =============================== */
+
+/* All colors use HSL format for easier theming.
+   Dark mode uses a sleek professional palette.
 */
 
 @layer base {
   :root {
-    /* Connective Brand Colors */
+    /* Brand Colors */
     --ocean-teal: 174 65% 48%;
     --warm-coral: 14 100% 70%;
     --soft-cream: 30 100% 97%;
     --charcoal: 0 0% 17%;
     --cream-bg: 30 100% 97%;
-    
-    /* Core Design System */
+
+    /* Core Palette */
     --background: 30 100% 97%;
     --foreground: 0 0% 17%;
 
@@ -49,31 +53,49 @@ All colors MUST be HSL.
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(174 65% 48%), hsl(174 70% 58%));
     --gradient-warm: linear-gradient(135deg, hsl(14 100% 70%), hsl(25 100% 75%));
-    
+
     /* Shadows */
     --shadow-soft: 0 4px 20px -2px hsl(174 65% 48% / 0.15);
     --shadow-card: 0 2px 12px -2px hsl(0 0% 0% / 0.08);
-    
+
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
-    --background: 0 0% 10%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 14%;
-    --card-foreground: 0 0% 98%;
+    /* Professional Dark Mode Palette */
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 14%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 14%;
+    --popover-foreground: 210 40% 98%;
+
     --primary: 174 65% 48%;
-    --primary-foreground: 0 0% 100%;
+    /* Improve contrast on vibrant surfaces in dark mode by using a dark foreground */
+    --primary-foreground: 0 0% 8%;
+
     --secondary: 14 100% 70%;
-    --secondary-foreground: 0 0% 17%;
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 174 65% 48%;
-    --accent-foreground: 0 0% 100%;
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 174 60% 50%;
+    --accent-foreground: 0 0% 8%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 217 33% 22%;
+    --input: 217 33% 22%;
     --ring: 174 65% 48%;
+
+    /* Dark Mode Shadows */
+    --shadow-soft: 0 4px 20px -2px hsl(174 65% 48% / 0.25);
+    --shadow-card: 0 2px 16px -2px hsl(0 0% 0% / 0.4);
   }
 }
 
@@ -84,5 +106,167 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
+
+  ::selection {
+    background-color: hsl(var(--primary) / 0.35);
+    color: hsl(var(--foreground));
+  }
+
+  .dark ::selection {
+    background-color: hsl(var(--primary) / 0.55);
+    color: hsl(var(--foreground));
+  }
+
+  /* Subtle glow effects for dark mode */
+  .dark {
+    --glow-primary: 0 0 20px hsl(174 65% 48% / 0.15);
+    --glow-secondary: 0 0 20px hsl(14 100% 70% / 0.15);
+  }
+
+  /* Enhanced card appearance */
+  .dark .card,
+  .dark [class*="card"] {
+    background: linear-gradient(135deg, hsl(222 47% 14%) 0%, hsl(222 47% 12%) 100%);
+    border-color: hsl(217 33% 25%);
+  }
+
+  /* Subtle backdrop blur for modals */
+  .dark .backdrop-blur {
+    backdrop-filter: blur(20px) saturate(180%);
+  }
+
+  /* Inputs and selects */
+  .dark input:not([type="checkbox"]):not([type="radio"]),
+  .dark textarea,
+  .dark select {
+    background: hsl(222 47% 16%);
+    border-color: hsl(217 33% 25%);
+    transition: all 0.2s ease;
+  }
+
+  .dark input:focus:not([type="checkbox"]):not([type="radio"]),
+  .dark textarea:focus,
+  .dark select:focus {
+    background: hsl(222 47% 18%);
+    border-color: hsl(174 65% 48%);
+    box-shadow: 0 0 0 3px hsl(174 65% 48% / 0.15);
+  }
+
+  /* Buttons */
+  .dark button:not(.ghost):not(.outline) {
+    box-shadow: 0 2px 8px -2px hsl(0 0% 0% / 0.3);
+  }
+
+  .dark button:hover:not(.ghost):not(.outline) {
+    box-shadow: 0 4px 12px -2px hsl(0 0% 0% / 0.4);
+  }
+}
+
+/* ===============================
+   ANIMATION UTILITIES
+   =============================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideOutLeft {
+  to {
+    transform: translateX(-100%) rotate(-30deg);
+    opacity: 0;
+  }
+}
+
+@keyframes slideOutRight {
+  to {
+    transform: translateX(100%) rotate(30deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* Animation Classes */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide-out-left {
+  animation: slideOutLeft 0.3s ease-in forwards;
+}
+
+.animate-slide-out-right {
+  animation: slideOutRight 0.3s ease-in forwards;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
 }

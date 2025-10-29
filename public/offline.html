@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Connective — Offline</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #0f172a;
+        color: #f8fafc;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 2rem;
+        text-align: center;
+        background: radial-gradient(circle at top, rgba(68, 51, 122, 0.85), rgba(15, 23, 42, 0.95));
+      }
+      main {
+        max-width: 28rem;
+        background: rgba(15, 23, 42, 0.85);
+        padding: 2.5rem 2rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(14px);
+      }
+      img {
+        width: 160px;
+        max-width: 100%;
+        display: block;
+        margin: 0 auto 1.5rem;
+      }
+      h1 {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+      }
+      p {
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+      }
+      button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        border: none;
+        border-radius: 999px;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #44337a, #6d28d9);
+        color: #fff;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      button:active,
+      button:focus-visible,
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px rgba(109, 40, 217, 0.35);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img src="/connective-logo.svg" alt="Connective logo" width="160" height="160" />
+      <h1>You&apos;re currently offline</h1>
+      <p>
+        Connective still works without a connection. Some actions may sync once
+        you&apos;re back online. Try reconnecting or reload when you have signal.
+      </p>
+      <button type="button" onclick="window.location.reload()">Try again</button>
+    </main>
+  </body>
+</html>

@@ -14,7 +14,113 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      group_members: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      groups: {
+        Row: {
+          category: string
+          created_at: string
+          creator_id: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_premium: boolean
+          location: string | null
+          name: string
+          next_meeting: string | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          creator_id?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_premium?: boolean
+          location?: string | null
+          name: string
+          next_meeting?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          creator_id?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_premium?: boolean
+          location?: string | null
+          name?: string
+          next_meeting?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          monthly_connections: number
+          monthly_event_joins: number
+          role: string
+          subscription_expires: string | null
+          subscription_tier: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id: string
+          monthly_connections?: number
+          monthly_event_joins?: number
+          role?: string
+          subscription_expires?: string | null
+          subscription_tier?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          monthly_connections?: number
+          monthly_event_joins?: number
+          role?: string
+          subscription_expires?: string | null
+          subscription_tier?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
