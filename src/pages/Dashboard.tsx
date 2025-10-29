@@ -37,6 +37,12 @@ import {
   Clock,
   MapPin,
   Star,
+  Gift,
+  Crown,
+  Flame,
+  ArrowRight,
+  Medal,
+  type LucideIcon,
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
 
@@ -161,6 +167,57 @@ const Dashboard = () => {
     },
     {
       label: "Members engaging in 3+ events convert to hosts 3.2x faster.",
+    },
+  ];
+
+  const loyaltySnapshot = {
+    currentTier: "Trailblazer",
+    points: 1420,
+    nextTier: "Luminary",
+    nextTierPoints: 1500,
+    renewsOn: "Nov 30",
+    streakMonths: 4,
+  };
+
+  const pointsToNextTier = Math.max(loyaltySnapshot.nextTierPoints - loyaltySnapshot.points, 0);
+
+  const loyaltyBenefits: {
+    title: string;
+    description: string;
+    icon: LucideIcon;
+  }[] = [
+    {
+      title: "Concierge planning",
+      description: "Quarterly strategy session to co-design signature experiences.",
+      icon: Crown,
+    },
+    {
+      title: "Guest passes",
+      description: "Bring two complimentary guests to curated salons each month.",
+      icon: Gift,
+    },
+    {
+      title: "Spotlight feature",
+      description: "Personalized feature in the community digest to grow your circle.",
+      icon: Medal,
+    },
+  ];
+
+  const loyaltyBoosts = [
+    {
+      title: "Host an intimate mastermind",
+      points: "+180 pts",
+      helper: "Drives repeat engagement for founders in your cohort.",
+    },
+    {
+      title: "Refer a culture builder",
+      points: "+90 pts",
+      helper: "Earn bonuses when your referral attends their first salon.",
+    },
+    {
+      title: "Share a 24-hour recap",
+      points: "+40 pts",
+      helper: "Keeps momentum high with quick reflection prompts.",
     },
   ];
 
@@ -342,6 +399,117 @@ const Dashboard = () => {
             <CardFooter>
               <Button variant="ghost" className="ml-auto rounded-full" onClick={() => navigate("/messages")}>
                 Mark steps complete
+              </Button>
+            </CardFooter>
+          </Card>
+        </section>
+
+        <section className="grid gap-6 lg:grid-cols-3">
+          <Card className="border-border/60 lg:col-span-2">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <CardTitle className="text-2xl">Subscriber loyalty rewards</CardTitle>
+                  <CardDescription>
+                    Keep your most invested members engaged with experiential perks.
+                  </CardDescription>
+                </div>
+                <Badge variant="outline" className="rounded-full border-primary/40 text-primary">
+                  <Flame className="mr-1 h-3.5 w-3.5" /> {loyaltySnapshot.streakMonths}-month streak
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-4 rounded-2xl border border-primary/30 bg-primary/5 p-5">
+                  <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
+                    <Badge className="rounded-full bg-primary text-primary-foreground">
+                      {loyaltySnapshot.currentTier} tier
+                    </Badge>
+                    <span>Renews {loyaltySnapshot.renewsOn}</span>
+                  </div>
+                  <div>
+                    <p className="text-4xl font-bold text-primary">
+                      {loyaltySnapshot.points.toLocaleString()} pts
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {pointsToNextTier} pts to {loyaltySnapshot.nextTier}
+                    </p>
+                  </div>
+                  <Progress
+                    value={(loyaltySnapshot.points / loyaltySnapshot.nextTierPoints) * 100}
+                    className="h-2"
+                  />
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>0</span>
+                    <span>{loyaltySnapshot.nextTierPoints} pts</span>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  {loyaltyBenefits.map((benefit) => (
+                    <div
+                      key={benefit.title}
+                      className="flex items-start gap-3 rounded-xl bg-muted/60 p-4"
+                    >
+                      <div className="rounded-full bg-primary/10 p-2 text-primary">
+                        <benefit.icon className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">{benefit.title}</p>
+                        <p className="text-xs text-muted-foreground">{benefit.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex items-center justify-between gap-4">
+              <p className="text-xs text-muted-foreground">
+                Reward drops every month your streak stays active—keep momentum with surprise experiences.
+              </p>
+              <Button
+                className="gap-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
+                onClick={() => navigate("/profile")}
+              >
+                Redeem a reward
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </CardFooter>
+          </Card>
+
+          <Card className="border-border/60">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-2xl">Bonus point boosts</CardTitle>
+              <CardDescription>Unlock accelerated rewards with these actions.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between rounded-2xl bg-muted/70 p-4">
+                <div>
+                  <p className="text-sm font-semibold">Engagement streak</p>
+                  <p className="text-xs text-muted-foreground">
+                    Complete any 2 actions this week for a 1.3x multiplier.
+                  </p>
+                </div>
+                <div className="rounded-full bg-primary/10 p-3 text-primary">
+                  <Gift className="h-5 w-5" />
+                </div>
+              </div>
+              {loyaltyBoosts.map((boost) => (
+                <div key={boost.title} className="flex items-start gap-3">
+                  <div className="mt-1 h-2 w-2 rounded-full bg-primary" />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium">{boost.title}</p>
+                      <span className="text-xs font-semibold text-primary">{boost.points}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{boost.helper}</p>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+            <CardFooter>
+              <Button variant="ghost" className="ml-auto rounded-full" onClick={() => navigate("/community")}>
+                View loyalty playbook
               </Button>
             </CardFooter>
           </Card>
