@@ -97,40 +97,6 @@ export default function Profile() {
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const [isPortalLoading, setIsPortalLoading] = useState(false);
 
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const billingStatus = params.get("billing");
-    if (!billingStatus) return;
-
-    switch (billingStatus) {
-      case "success":
-        toast({
-          title: "Payment successful",
-          description: "Thanks for supporting Connective! Your plan is active.",
-        });
-        break;
-      case "updated":
-        toast({
-          title: "Subscription updated",
-          description: "Your billing preferences have been saved.",
-        });
-        break;
-      case "cancel":
-        toast({
-          title: "Checkout canceled",
-          description: "No charges were made. You can upgrade again anytime.",
-          variant: "destructive",
-        });
-        break;
-      case "plans":
-        showConnectionUpgradePrompt();
-        break;
-      default:
-        break;
-    }
-    navigate("/profile", { replace: true });
-  }, [location.search, navigate, showConnectionUpgradePrompt, toast]);
-
   const formattedExpiration = useMemo(
     () => (subscriptionExpires ? formatDate(subscriptionExpires) : null),
     [subscriptionExpires]
@@ -168,6 +134,40 @@ export default function Profile() {
   const showEventUpgradePrompt = useCallback(() => {
     openUpgrade({ message: "Join or host more events with a paid plan", highlightTier: "standard" });
   }, [openUpgrade]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const billingStatus = params.get("billing");
+    if (!billingStatus) return;
+
+    switch (billingStatus) {
+      case "success":
+        toast({
+          title: "Payment successful",
+          description: "Thanks for supporting Connective! Your plan is active.",
+        });
+        break;
+      case "updated":
+        toast({
+          title: "Subscription updated",
+          description: "Your billing preferences have been saved.",
+        });
+        break;
+      case "cancel":
+        toast({
+          title: "Checkout canceled",
+          description: "No charges were made. You can upgrade again anytime.",
+          variant: "destructive",
+        });
+        break;
+      case "plans":
+        showConnectionUpgradePrompt();
+        break;
+      default:
+        break;
+    }
+    navigate("/profile", { replace: true });
+  }, [location.search, navigate, showConnectionUpgradePrompt, toast]);
 
   const handleCheckout = async (targetTier: "standard" | "pro") => {
     if (!hasStripeConfig()) {
