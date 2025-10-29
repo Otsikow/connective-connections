@@ -2,33 +2,101 @@ import { useNavigate } from "react-router-dom";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import {
   ArrowRight,
-  Calendar,
+  CalendarDays,
   Crown,
   HeartHandshake,
   MessageCircle,
+  MessagesSquare,
   ShieldCheck,
   Sparkles,
+  Users,
+  UserPlus,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import eventsImage from "@/assets/onboarding-1.png";
+import connectionsImage from "@/assets/onboarding-2.png";
+import groupsImage from "@/assets/onboarding-3.png";
+
+const heroHighlights = [
+  {
+    icon: CalendarDays,
+    title: "World-class events",
+    description:
+      "Join salons, retreats, and masterminds hosted by tastemakers in every major innovation hub.",
+  },
+  {
+    icon: Users,
+    title: "Find your circle",
+    description:
+      "Discover people who match your energy with chemistry scores and curated introductions.",
+  },
+  {
+    icon: MessagesSquare,
+    title: "Always-on chats",
+    description:
+      "Drop into themed channels and keep the momentum going long after the event ends.",
+  },
+  {
+    icon: UserPlus,
+    title: "Launch private groups",
+    description:
+      "Spin up your own mastermind or interest club with moderation tools built for leaders.",
+  },
+];
 
 const premiumHighlights = [
   {
     icon: Sparkles,
-    title: "Intelligent matching",
+    title: "Concierge onboarding",
     description:
-      "Meet the people you will genuinely vibe with using AI-assisted chemistry scores.",
+      "Get a tailored welcome plan and handpicked member intros from our community team.",
   },
   {
     icon: HeartHandshake,
-    title: "Community-first events",
+    title: "Verified hosts",
     description:
-      "Unlock curated gatherings hosted weekly across 25+ cities worldwide.",
+      "Every experience is led by trusted facilitators who champion safe, inclusive spaces.",
   },
   {
     icon: MessageCircle,
-    title: "Deeper conversations",
+    title: "Guided conversations",
     description:
-      "Break the ice with guided prompts and shared interests that get past small talk fast.",
+      "Arrive prepared with prompts, conversation starters, and curated follow-up connections.",
+  },
+];
+
+const capabilityCards = [
+  {
+    title: "Signature events calendar",
+    description:
+      "Reserve your spot at invite-only gatherings designed to stretch your thinking and grow your network.",
+    icon: CalendarDays,
+    image: eventsImage,
+    badge: "Events",
+  },
+  {
+    title: "Find friends with intent",
+    description:
+      "Match with founders, creatives, and operators who mirror your pace and passions.",
+    icon: Users,
+    image: connectionsImage,
+    badge: "Connections",
+  },
+  {
+    title: "Meaningful chats",
+    description:
+      "Drop into moderated channels that keep ideas flowing between IRL meetups.",
+    icon: MessagesSquare,
+    image: connectionsImage,
+    badge: "Chats",
+  },
+  {
+    title: "Create your own groups",
+    description:
+      "Build private spaces, set the vibe, and invite collaborators to grow alongside you.",
+    icon: UserPlus,
+    image: groupsImage,
+    badge: "Groups",
   },
 ];
 
@@ -106,21 +174,20 @@ const Splash = () => {
         </header>
 
         {/* Main Hero */}
-        <main className="grid flex-1 gap-16 pt-20 lg:grid-cols-[minmax(0,1fr)_420px] lg:pt-28">
+        <main className="grid flex-1 gap-16 pt-20 lg:grid-cols-[minmax(0,1fr)_480px] lg:pt-28">
           <section className="max-w-2xl space-y-10">
             <div className="space-y-6">
               <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-amber-200/90">
                 <Crown className="h-3.5 w-3.5" /> Pro perks unlocked
               </span>
               <h1 className="text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
-                Elevate your connections experience with curated communities and
-                unforgettable events.
+                Elevate your connections experience with curated communities,
+                unforgettable events, and friends who get you.
               </h1>
               <p className="text-lg text-slate-300 sm:text-xl">
-                Connective is the members-only platform designed to help
-                leaders, creators, and connectors build meaningful relationships
-                in real life. Discover experiences tailored to your ambitions
-                and passions.
+                Connective is the members-only platform designed to help leaders, creators, and connectors build meaningful
+                relationships in real life. Discover experiences tailored to your ambitions, then keep the momentum going with
+                dynamic chats and private groups.
               </p>
             </div>
 
@@ -141,56 +208,172 @@ const Splash = () => {
               </button>
             </div>
 
+            <div className="grid gap-4 sm:grid-cols-2">
+              {heroHighlights.map((item) => (
+                <div
+                  key={item.title}
+                  className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-lg shadow-black/10 backdrop-blur"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-300/20 text-amber-200">
+                      <item.icon className="h-5 w-5" />
+                    </div>
+                    <p className="text-base font-semibold text-white">{item.title}</p>
+                  </div>
+                  <p className="mt-3 text-sm text-slate-300">{item.description}</p>
+                </div>
+              ))}
+            </div>
           </section>
 
-          {/* Sidebar (Pro perks) */}
-          <aside className="relative">
+          {/* Visualized experience highlights */}
+          <section className="relative">
             <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/20 via-white/10 to-transparent blur-2xl" />
-            <div className="relative space-y-6 rounded-3xl border border-white/15 bg-slate-900/60 p-8 shadow-2xl shadow-black/30 backdrop-blur-xl">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm uppercase tracking-[0.3em] text-amber-200/90">
-                    Pro perks
+            <div className="relative grid gap-5 rounded-3xl border border-white/10 bg-slate-900/60 p-6 shadow-2xl shadow-black/30 backdrop-blur-xl">
+              <div className="group relative overflow-hidden rounded-3xl border border-white/10 bg-slate-950/60 sm:col-span-2">
+                <img
+                  src={eventsImage}
+                  alt="Members gathered at an immersive Connective rooftop event"
+                  className="h-64 w-full object-cover transition duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+                <div className="absolute inset-x-6 bottom-6 space-y-2 text-left">
+                  <span className="inline-flex items-center rounded-full bg-amber-400/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-slate-900">
+                    Events
+                  </span>
+                  <p className="text-xl font-semibold text-white">Immersive rooftop salons every week</p>
+                  <p className="text-sm text-slate-200">
+                    Secure your spot at curated gatherings that pair bold ideas with unforgettable venues.
                   </p>
-                  <h2 className="mt-2 text-2xl font-semibold text-white">
-                    Unlock the full experience
-                  </h2>
-                </div>
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 text-slate-900 shadow-lg shadow-amber-500/40">
-                  <Crown className="h-7 w-7" />
                 </div>
               </div>
 
-              <div className="space-y-5">
+              <div className="group relative overflow-hidden rounded-3xl border border-white/10 bg-slate-950/60 p-6">
+                <img
+                  src={connectionsImage}
+                  alt="Two new friends connecting through the Connective app"
+                  className="absolute inset-0 h-full w-full object-cover opacity-50 transition duration-700 group-hover:scale-110 group-hover:opacity-60"
+                />
+                <div className="relative space-y-3">
+                  <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-amber-200/90">
+                    Find friends
+                  </span>
+                  <p className="text-lg font-semibold text-white">Chemistry scores that match your vibe</p>
+                  <p className="text-sm text-slate-200">
+                    Swipe less, connect faster with intros curated around what matters to you.
+                  </p>
+                </div>
+              </div>
+
+              <div className="group relative overflow-hidden rounded-3xl border border-white/10 bg-slate-950/60 p-6">
+                <img
+                  src={connectionsImage}
+                  alt="Connective members chatting in a group thread"
+                  className="absolute inset-0 h-full w-full object-cover opacity-40 transition duration-700 group-hover:scale-110 group-hover:opacity-55"
+                />
+                <div className="relative space-y-3">
+                  <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-amber-200/90">
+                    Chats
+                  </span>
+                  <p className="text-lg font-semibold text-white">Keep the conversation flowing</p>
+                  <p className="text-sm text-slate-200">
+                    Drop into curated channels for travel hacks, deal flow, wellness rituals, and more.
+                  </p>
+                </div>
+              </div>
+
+              <div className="group relative overflow-hidden rounded-3xl border border-white/10 bg-slate-950/60 p-6 sm:col-span-2">
+                <img
+                  src={groupsImage}
+                  alt="A host facilitating a private Connective mastermind"
+                  className="absolute inset-0 h-full w-full object-cover opacity-50 transition duration-700 group-hover:scale-110 group-hover:opacity-60"
+                />
+                <div className="relative space-y-3">
+                  <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-amber-200/90">
+                    Groups
+                  </span>
+                  <p className="text-lg font-semibold text-white">Launch a space that feels like yours</p>
+                  <p className="text-sm text-slate-200">
+                    Host masterminds, creator labs, or neighborhood crews with tools that make moderating effortless.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+
+        <section className="mt-24 space-y-12">
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            {capabilityCards.map((card) => (
+              <div
+                key={card.title}
+                className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/20 backdrop-blur"
+              >
+                <img
+                  src={card.image}
+                  alt={card.title}
+                  className="absolute inset-0 h-full w-full object-cover opacity-40 transition duration-700 group-hover:scale-110 group-hover:opacity-55"
+                />
+                <div className="relative flex h-full flex-col justify-between gap-6">
+                  <span className="inline-flex w-fit items-center rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-amber-200/90">
+                    {card.badge}
+                  </span>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-300/20 text-amber-200">
+                        <card.icon className="h-5 w-5" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-white">{card.title}</h3>
+                    </div>
+                    <p className="text-sm text-slate-200">{card.description}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid gap-8 lg:grid-cols-[1.4fr_minmax(0,1fr)]">
+            <div className="space-y-6 rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/20 backdrop-blur">
+              <div>
+                <p className="text-xs uppercase tracking-[0.3em] text-amber-200/80">Membership designed for momentum</p>
+                <h2 className="mt-3 text-3xl font-semibold text-white">Everything you need to build deeper connections</h2>
+                <p className="mt-3 text-sm text-slate-200">
+                  From the first hello to your next big collaboration, Connective gives you the structure, support, and
+                  storytelling to grow relationships that matter.
+                </p>
+              </div>
+              <div className="grid gap-5 sm:grid-cols-2">
                 {premiumHighlights.map((item) => (
-                  <div
-                    key={item.title}
-                    className="flex gap-4 rounded-2xl border border-white/10 bg-white/5 p-4"
-                  >
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-300/20 text-amber-200">
-                      <item.icon className="h-6 w-6" />
+                  <div key={item.title} className="rounded-2xl border border-white/10 bg-slate-950/60 p-5">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-300/20 text-amber-200">
+                      <item.icon className="h-5 w-5" />
                     </div>
-                    <div>
-                      <p className="text-base font-semibold text-white">
-                        {item.title}
-                      </p>
-                      <p className="text-sm text-slate-300">
-                        {item.description}
-                      </p>
-                    </div>
+                    <p className="mt-4 text-base font-semibold text-white">{item.title}</p>
+                    <p className="mt-2 text-sm text-slate-300">{item.description}</p>
                   </div>
                 ))}
               </div>
+            </div>
 
-              <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-amber-400/20 via-orange-400/10 to-transparent p-6 text-sm text-slate-200">
-                <p className="font-semibold text-white">Trust &amp; safety comes first</p>
-                <p className="mt-2 flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-amber-200/80">
-                  <ShieldCheck className="h-4 w-4" /> Verified hosts • Moderated communities
+            <div className="flex flex-col justify-between gap-6 rounded-3xl border border-white/10 bg-gradient-to-br from-amber-400/20 via-orange-400/10 to-yellow-300/20 p-8 text-slate-900 shadow-2xl shadow-amber-200/20">
+              <div>
+                <p className="text-xs uppercase tracking-[0.4em] text-slate-900/70">Built with trust</p>
+                <h3 className="mt-3 text-2xl font-semibold text-slate-900">Safety and belonging on every level</h3>
+                <p className="mt-3 text-sm text-slate-800">
+                  Verified hosts, moderation tools, and real human support ensure that every introduction feels intentional and
+                  safe.
                 </p>
               </div>
+              <div className="flex items-center gap-3 rounded-2xl bg-white/80 px-5 py-4 text-slate-900 shadow-lg shadow-amber-200/40">
+                <ShieldCheck className="h-8 w-8 text-amber-500" />
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.3em]">Verified &amp; curated</p>
+                  <p className="text-xs text-slate-700">Background checks • Code of conduct • Dedicated community team</p>
+                </div>
+              </div>
             </div>
-          </aside>
-        </main>
+          </div>
+        </section>
 
         {/* Testimonials + Why Choose */}
         <section className="mt-24 grid gap-8 lg:grid-cols-[1.6fr_1fr]">
@@ -200,40 +383,31 @@ const Splash = () => {
             </h3>
             <div className="mt-6 grid gap-6 sm:grid-cols-2">
               <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-6">
-                <Calendar className="h-6 w-6 text-amber-200" />
-                <h4 className="mt-4 text-lg font-semibold text-white">
-                  Curated calendar
-                </h4>
+                <CalendarDays className="h-6 w-6 text-amber-200" />
+                <h4 className="mt-4 text-lg font-semibold text-white">Curated event programming</h4>
                 <p className="mt-2 text-sm text-slate-300">
-                  Attend premium salons, masterminds, and city adventures
-                  tailored to your ambitions every week.
+                  From supper clubs to venture salons, every experience is intentionally crafted to spark meaningful collisions.
                 </p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-6">
-                <MessageCircle className="h-6 w-6 text-amber-200" />
-                <h4 className="mt-4 text-lg font-semibold text-white">
-                  Real relationships
-                </h4>
+                <Users className="h-6 w-6 text-amber-200" />
+                <h4 className="mt-4 text-lg font-semibold text-white">Find aligned friends faster</h4>
                 <p className="mt-2 text-sm text-slate-300">
-                  Spark deeper conversations before you even arrive with immersive prompts and shared passions.
+                  Priority introductions and shared affinities help you build a circle that feels like home.
                 </p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-6">
-                <HeartHandshake className="h-6 w-6 text-amber-200" />
-                <h4 className="mt-4 text-lg font-semibold text-white">
-                  Global host network
-                </h4>
+                <MessagesSquare className="h-6 w-6 text-amber-200" />
+                <h4 className="mt-4 text-lg font-semibold text-white">Chats with real momentum</h4>
                 <p className="mt-2 text-sm text-slate-300">
-                  Access vetted hosts and members across innovation hubs spanning the US, Europe, and Asia.
+                  Curated channels and guided prompts keep conversations rich long after the night ends.
                 </p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-6">
-                <Sparkles className="h-6 w-6 text-amber-200" />
-                <h4 className="mt-4 text-lg font-semibold text-white">
-                  Moments that stay with you
-                </h4>
+                <UserPlus className="h-6 w-6 text-amber-200" />
+                <h4 className="mt-4 text-lg font-semibold text-white">Create bespoke groups</h4>
                 <p className="mt-2 text-sm text-slate-300">
-                  From rooftop tastings to immersive retreats, every event is designed to create lasting memories.
+                  Launch masterminds, studios, or neighborhood collectives with tools built for intentional hosts.
                 </p>
               </div>
             </div>
