@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 import {
   Card,
@@ -44,6 +45,7 @@ interface Profile {
 const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  usePageTitle("Admin Command Center");
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [profiles, setProfiles] = useState<Profile[]>([]);

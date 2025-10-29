@@ -26,6 +26,7 @@ import {
   Users,
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const vibeTags = [
   "Cozy", "High-Energy", "Thoughtful", "Hands-on", "Outdoors", "Wellness",
@@ -35,6 +36,7 @@ const vibeTags = [
 const HostEvent = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  usePageTitle("Host Experience Blueprint");
 
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({

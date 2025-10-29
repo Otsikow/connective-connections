@@ -18,9 +18,11 @@ import {
   Users,
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const HostDashboard = () => {
   const navigate = useNavigate();
+  usePageTitle("Host Dashboard");
 
   const stats = [
     {

@@ -20,6 +20,7 @@ import {
   upcomingEvents,
   events as allEvents,
 } from "@/data/events";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const formatEventDateTime = (isoDate: string) =>
   new Intl.DateTimeFormat("en-US", {
@@ -45,6 +46,7 @@ const categorySummaries = (() => {
 
 const Events = () => {
   const navigate = useNavigate();
+  usePageTitle("Experiences & Events");
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredEvents = useMemo(() => {

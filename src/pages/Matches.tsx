@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { SwipeCard } from "@/components/SwipeCard";
 import BackButton from "@/components/BackButton";
 import { useSubscription } from "@/hooks/useSubscription";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 interface Profile {
   id: string;
@@ -181,6 +182,7 @@ const Matches = () => {
   const [likedProfiles, setLikedProfiles] = useState<string[]>([]);
   const [showMatchModal, setShowMatchModal] = useState(false);
   const { attemptConnection } = useSubscription();
+  usePageTitle("Your Matches");
 
   const handleSwipeComplete = useCallback(
     (direction: "left" | "right") => {

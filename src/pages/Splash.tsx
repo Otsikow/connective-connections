@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import {
   ArrowRight,
   Calendar,
@@ -51,6 +52,7 @@ const testimonials = [
 
 const Splash = () => {
   const navigate = useNavigate();
+  usePageTitle("Welcome to Connective Connections");
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-slate-950 text-slate-100">
