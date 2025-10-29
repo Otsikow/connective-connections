@@ -109,6 +109,16 @@
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
+  ::selection {
+    background-color: hsl(var(--primary) / 0.35);
+    color: hsl(var(--foreground));
+  }
+
+  .dark ::selection {
+    background-color: hsl(var(--primary) / 0.55);
+    color: hsl(var(--foreground));
+  }
+
   /* Subtle glow effects for dark mode */
   .dark {
     --glow-primary: 0 0 20px hsl(174 65% 48% / 0.15);
