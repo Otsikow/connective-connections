@@ -160,6 +160,17 @@ const Home = () => {
     },
   ];
 
+  const query = searchQuery.trim().toLowerCase();
+  const filteredMatches = matches.filter((match) =>
+    [match.name, match.interests, match.distance].some((field) => field.toLowerCase().includes(query)),
+  );
+  const filteredEvents = events.filter((event) =>
+    [event.title, event.location, event.date].some((field) => field.toLowerCase().includes(query)),
+  );
+  const filteredCommunities = communities.filter((community) =>
+    [community.name, community.description, community.members].some((field) => field.toLowerCase().includes(query)),
+  );
+
   return (
     <div className="min-h-screen bg-background pb-24 sm:pb-28">
       {/* Header */}
@@ -243,8 +254,136 @@ const Home = () => {
           <TabsTrigger value="events" className="rounded-full data-[state=active]:bg-[#E8B956] data-[state=active]:text-black">Events</TabsTrigger>
         </TabsList>
 
-        {/* Content for matches, groups, events — unchanged */}
-        {/* (Keep same as before — matches carousel, groups list, events cards) */}
+        <TabsContent value="matches" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Your Matches</h2>
+            <Button variant="ghost" className="rounded-full text-sm" onClick={() => navigate("/matches")}>
+              View all
+            </Button>
+          </div>
+          {filteredMatches.length ? (
+            <Carousel className="w-full">
+              <CarouselContent className="-ml-2">
+                {filteredMatches.map((match, index) => (
+                  <CarouselItem key={`${match.name}-${index}`} className="pl-2 basis-full xs:basis-1/2 lg:basis-1/3">
+                    <Card className="border-border/60 bg-background/80 backdrop-blur-sm">
+                      <CardContent className="p-4 space-y-4">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-14 w-14">
+                            <AvatarImage src={match.avatar} alt={match.name} />
+                            <AvatarFallback>{match.name[0]}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <h3 className="font-semibold text-base">{match.name}</h3>
+                            <p className="text-sm text-muted-foreground">{match.age} • {match.distance}</p>
+                          </div>
+                        </div>
+                        <div className="rounded-2xl bg-muted/60 px-3 py-2 text-sm text-muted-foreground">
+                          <span className="font-medium text-foreground">Shared interests:</span> {match.interests}
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <Button
+                            size="sm"
+                            className="rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black"
+                            onClick={() => navigate("/messages")}
+                          >
+                            Say hi
+                          </Button>
+                          <Button size="sm" variant="ghost" className="rounded-full" onClick={() => navigate("/matches")}>
+                            View profile
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <div className="hidden sm:flex gap-2 justify-end pr-2">
+                <CarouselPrevious className="relative translate-x-0" />
+                <CarouselNext className="relative translate-x-0" />
+              </div>
+            </Carousel>
+          ) : (
+            <p className="text-sm text-muted-foreground">No matches found. Try adjusting your search.</p>
+          )}
+        </TabsContent>
+
+        <TabsContent value="groups" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Discover Communities</h2>
+            <Button variant="ghost" className="rounded-full text-sm" onClick={() => navigate("/community")}>
+              Explore more
+            </Button>
+          </div>
+          <div className="space-y-3">
+            {filteredCommunities.length ? (
+              filteredCommunities.map((community, index) => (
+                <Card key={`${community.name}-${index}`} className="border-border/60 bg-background/80 backdrop-blur-sm">
+                  <CardContent className="p-4 flex items-center gap-4">
+                    <div className="h-16 w-16 rounded-2xl bg-muted/70" aria-hidden="true" />
+                    <div className="flex-1 space-y-1">
+                      <h3 className="font-semibold text-base">{community.name}</h3>
+                      <p className="text-sm text-muted-foreground">{community.description}</p>
+                      <p className="text-xs text-muted-foreground">{community.members}</p>
+                    </div>
+                    <Button
+                      size="icon"
+                      className="rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black"
+                      onClick={() => navigate("/community")}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground">No groups match your search right now.</p>
+            )}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="events" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Upcoming Events</h2>
+            <Button variant="ghost" className="rounded-full text-sm" onClick={() => navigate("/events")}>
+              Browse all
+            </Button>
+          </div>
+          <div className="space-y-4">
+            {filteredEvents.length ? (
+              filteredEvents.map((event) => (
+                <Card key={event.id} className="overflow-hidden border-border/60 bg-background/80 backdrop-blur-sm">
+                  <div className="h-36 bg-muted/70" aria-hidden="true" />
+                  <CardContent className="p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-base">{event.title}</h3>
+                      <Badge className="rounded-full bg-[#E8B956]/20 text-[#E8B956]">{event.attendees} attending</Badge>
+                    </div>
+                    <div className="space-y-1 text-sm text-muted-foreground">
+                      <p>{event.date}</p>
+                      <p className="flex items-center gap-1">
+                        <MapPin className="h-4 w-4" /> {event.location}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        className="flex-1 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black"
+                        onClick={() => navigate(`/events/${event.id}`)}
+                      >
+                        Join event
+                      </Button>
+                      <Button variant="outline" className="rounded-full" onClick={() => navigate("/events")}>
+                        More info
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground">No events found. Try searching for another interest.</p>
+            )}
+          </div>
+        </TabsContent>
       </Tabs>
 
       {/* Safety Tips */}
