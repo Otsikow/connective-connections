@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -25,12 +26,31 @@ import {
   Calendar as CalendarIcon,
   MapPin,
   Users,
+  Crown,
+  Sparkles,
+  X,
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
 
 const Home = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [showPremiumReminder, setShowPremiumReminder] = useState(true);
+
+  const premiumBenefits = [
+    {
+      title: "Priority matching",
+      description: "Be featured to the most compatible connections first.",
+    },
+    {
+      title: "Unlimited introductions",
+      description: "Start as many conversations as you like every day.",
+    },
+    {
+      title: "Exclusive experiences",
+      description: "Unlock premium-only events and curated community drops.",
+    },
+  ];
 
   const matches = [
     { name: "Jessica", age: 28, interests: "Hiking, Painting", avatar: "/placeholder.svg", distance: "2 miles away" },
@@ -138,6 +158,59 @@ const Home = () => {
           />
         </div>
       </div>
+
+      {/* Premium Subscription Banner */}
+      {showPremiumReminder && (
+        <div className="px-4 sm:px-6 pt-4">
+          <Card className="relative overflow-hidden border-none bg-gradient-to-r from-[#3b1d59] via-[#5b2c83] to-[#8c4fcf] text-white shadow-lg">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.2),_transparent_55%)]" />
+            <CardContent className="relative p-6 sm:p-8">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-white/20 text-white border-white/30 px-3 py-1 text-xs uppercase tracking-wide">
+                      Premium Perks
+                    </Badge>
+                    <Crown className="h-5 w-5 text-amber-200" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-semibold">Elevate your connections experience</h2>
+                    <p className="text-sm sm:text-base text-white/80 mt-1">
+                      Subscribe to unlock the full suite of features designed to help you find meaningful relationships faster.
+                    </p>
+                  </div>
+                  <ul className="grid gap-2 sm:grid-cols-3">
+                    {premiumBenefits.map((benefit) => (
+                      <li key={benefit.title} className="flex items-start gap-2 text-sm text-white/80">
+                        <Sparkles className="mt-1 h-4 w-4 flex-shrink-0 text-amber-200" />
+                        <span>
+                          <span className="font-semibold text-white">{benefit.title}:</span> {benefit.description}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="flex w-full flex-col gap-3 sm:w-auto sm:items-end">
+                  <Button
+                    size="lg"
+                    className="bg-white text-[#3b1d59] hover:bg-white/90 rounded-full px-6"
+                    onClick={() => navigate("/profile")}
+                  >
+                    Explore Premium
+                  </Button>
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-1 text-xs text-white/70 hover:text-white sm:text-sm"
+                    onClick={() => setShowPremiumReminder(false)}
+                  >
+                    <X className="h-3.5 w-3.5" /> Dismiss reminder
+                  </button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Tabs Section */}
       <Tabs defaultValue="matches" className="w-full px-4 sm:px-6 py-6 space-y-6">
