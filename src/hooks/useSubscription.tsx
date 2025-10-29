@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import type { PostgrestError } from "@supabase/supabase-js";
 
-export type SubscriptionTier = Tables<"profiles">["subscription_tier"];
+export type SubscriptionTier = "basic" | "standard" | "pro";
 
 type UsageAction = "connection" | "event";
 

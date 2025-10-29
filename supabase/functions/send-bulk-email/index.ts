@@ -129,7 +129,7 @@ serve(async (req: Request) => {
     // Fetch all user emails (excluding admins)
     const { data: profiles, error: fetchError } = await supabaseAdmin
       .from("profiles")
-      .select("email")
+      .select("id, email, full_name")
       .neq("role", "admin")
       .not("email", "is", null);
 

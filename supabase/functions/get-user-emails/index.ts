@@ -36,7 +36,7 @@ async function verifyAdminRole(authHeader: string): Promise<boolean> {
                    user.app_metadata?.role === 'admin' ||
                    user.email?.endsWith('@admin.connective.com')
     
-    return isAdmin
+    return Boolean(isAdmin)
   } catch (error) {
     console.error('Error verifying admin role:', error)
     return false

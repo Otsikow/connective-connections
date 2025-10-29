@@ -191,7 +191,7 @@ serve(async (req) => {
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
         customerId = typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id ?? null;
-        const line = invoice.lines.data.find((item) => item.price?.type === "recurring") ?? invoice.lines.data[0];
+        const line = invoice.lines.data.find((item: Stripe.InvoiceLineItem) => item.price?.type === "recurring") ?? invoice.lines.data[0];
         const priceId = line?.price?.id ?? null;
         tier = determineTierFromPrice(priceId);
         periodEndIso = toIsoFromEpoch(line?.period?.end ?? invoice.period_end);
@@ -260,7 +260,7 @@ serve(async (req) => {
     const shouldResetUsage =
       !previousExpiration || (nextExpiration && previousExpiration <= now);
 
-    await updateProfileSubscription(userId, customerId, tier, periodEndIso, shouldResetUsage);
+    await updateProfileSubscription(userId, customerId, tier, periodEndIso, Boolean(shouldResetUsage));
 
     return new Response(JSON.stringify({ received: true, tier }), {
       status: 200,
