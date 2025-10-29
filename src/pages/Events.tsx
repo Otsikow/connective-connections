@@ -206,7 +206,7 @@ const Events = () => {
                     ))}
                   </div>
                   <Button
-                    className="w-full rounded-full bg-primary text-white hover:bg-primary/80"
+                    className="w-full rounded-full bg-primary text-white hover:bg-primary/80 dark:text-black"
                     onClick={() => navigate(`/events/${featuredEvent.id}`)}
                   >
                     View experience details
@@ -325,7 +325,7 @@ const Events = () => {
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button
-                className="rounded-full bg-primary text-white hover:bg-primary/80"
+                className="rounded-full bg-primary text-white hover:bg-primary/80 dark:text-black"
                 onClick={() => navigate("/host/create-event")}
               >
                 Start a new event
