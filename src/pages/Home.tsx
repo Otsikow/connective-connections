@@ -53,7 +53,7 @@ const Home = () => {
     },
     {
       title: "Exclusive experiences",
-      description: "Unlock premium-only events and curated community drops.",
+      description: "Unlock pro-only events and curated community drops.",
     },
   ];
 
@@ -183,7 +183,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Premium Banner */}
+      {/* Pro Banner */}
       {showPremiumReminder && (
         <div className="px-4 sm:px-6 pt-4">
           <Card className="relative overflow-hidden border-none bg-gradient-to-r from-[#3b1d59] via-[#5b2c83] to-[#8c4fcf] text-white shadow-lg">
@@ -193,7 +193,7 @@ const Home = () => {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <Badge className="bg-white/20 text-white border-white/30 px-3 py-1 text-xs uppercase tracking-wide">
-                      Premium Perks
+                      Pro Perks
                     </Badge>
                     <Crown className="h-5 w-5 text-amber-200" />
                   </div>
@@ -220,7 +220,7 @@ const Home = () => {
                     className="bg-white text-[#3b1d59] hover:bg-white/90 rounded-full px-6"
                     onClick={() => navigate("/profile")}
                   >
-                    Explore Premium
+                    Explore Pro
                   </Button>
                   <button
                     onClick={() => setShowPremiumReminder(false)}

@@ -7,6 +7,7 @@ export interface EventHost {
 
 export interface EventData {
   id: string;
+  slug: string;
   title: string;
   description: string;
   startDateTime: string;
@@ -20,9 +21,16 @@ export interface EventData {
   featured?: boolean;
 }
 
+const createSlug = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
 export const events: EventData[] = [
   {
     id: "101",
+    slug: createSlug("Sunset Rooftop Social"),
     title: "Sunset Rooftop Social",
     description:
       "Unwind with curated connections, live acoustic music, and locally sourced bites as the sun sets over the skyline.",
@@ -43,6 +51,7 @@ export const events: EventData[] = [
   },
   {
     id: "1",
+    slug: createSlug("Neighborhood Coffee Crawl"),
     title: "Neighborhood Coffee Crawl",
     description:
       "Discover hidden gem cafés with fellow coffee lovers and enjoy curated tastings at every stop.",
@@ -56,6 +65,7 @@ export const events: EventData[] = [
   },
   {
     id: "2",
+    slug: createSlug("Cooking Class: Italian Cuisine"),
     title: "Cooking Class: Italian Cuisine",
     description:
       "Learn authentic Italian cooking techniques with Chef Marco. Includes a 3-course meal tasting.",
@@ -69,6 +79,7 @@ export const events: EventData[] = [
   },
   {
     id: "3",
+    slug: createSlug("Mindful Morning Yoga"),
     title: "Mindful Morning Yoga",
     description:
       "Start your day with a calm, energizing yoga flow and guided meditation session led by Sarah Johnson.",
@@ -82,6 +93,7 @@ export const events: EventData[] = [
   },
   {
     id: "4",
+    slug: createSlug("Creative Coding Jam"),
     title: "Creative Coding Jam",
     description:
       "Collaborate with other makers to build playful prototypes in an evening of guided creative coding prompts.",
@@ -95,6 +107,7 @@ export const events: EventData[] = [
   },
   {
     id: "5",
+    slug: createSlug("Friendsgiving Potluck"),
     title: "Friendsgiving Potluck",
     description:
       "Share family recipes, connect with new friends, and celebrate gratitude with a cozy communal dinner.",
@@ -108,6 +121,7 @@ export const events: EventData[] = [
   },
   {
     id: "6",
+    slug: createSlug("Trailblazers Hiking Crew"),
     title: "Trailblazers Hiking Crew",
     description:
       "Hit the trails with fellow adventurers for a sunrise hike followed by a guided mindfulness cool-down.",
@@ -121,6 +135,7 @@ export const events: EventData[] = [
   },
   {
     id: "7",
+    slug: createSlug("Pitch & Pint Night"),
     title: "Pitch & Pint Night",
     description:
       "Meet founders, investors, and developers at this monthly networking event for tech professionals.",
@@ -134,6 +149,7 @@ export const events: EventData[] = [
   },
   {
     id: "8",
+    slug: createSlug("Community Brunch & Networking"),
     title: "Community Brunch & Networking",
     description:
       "Connect with local creators and entrepreneurs over a curated brunch experience and facilitated conversations.",
@@ -151,5 +167,22 @@ export const featuredEvent = events.find((event) => event.featured) ?? events[0]
 
 export const upcomingEvents = events.filter((event) => !event.featured);
 
-export const getEventById = (id: string) =>
-  events.find((event) => event.id === id);
+export const getEventById = (identifier: string) => {
+  const normalizedIdentifier = createSlug(identifier);
+
+  return events.find((event) => {
+    if (event.id === identifier || event.slug === identifier) {
+      return true;
+    }
+
+    const normalizedId = createSlug(event.id);
+    const normalizedSlug = createSlug(event.slug);
+    const normalizedTitle = createSlug(event.title);
+
+    return (
+      normalizedIdentifier === normalizedId ||
+      normalizedIdentifier === normalizedSlug ||
+      normalizedIdentifier === normalizedTitle
+    );
+  });
+};

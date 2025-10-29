@@ -1,6 +1,6 @@
 -- Add subscription tracking columns to profiles
 ALTER TABLE public.profiles
-  ADD COLUMN IF NOT EXISTS subscription_tier TEXT NOT NULL DEFAULT 'free',
+  ADD COLUMN IF NOT EXISTS subscription_tier TEXT NOT NULL DEFAULT 'basic',
   ADD COLUMN IF NOT EXISTS monthly_connections INTEGER NOT NULL DEFAULT 0,
   ADD COLUMN IF NOT EXISTS monthly_event_joins INTEGER NOT NULL DEFAULT 0,
   ADD COLUMN IF NOT EXISTS subscription_expires TIMESTAMPTZ;
@@ -9,14 +9,20 @@ ALTER TABLE public.profiles
 ALTER TABLE public.profiles DROP CONSTRAINT IF EXISTS profiles_subscription_tier_check;
 ALTER TABLE public.profiles
   ADD CONSTRAINT profiles_subscription_tier_check
-  CHECK (subscription_tier IN ('free', 'mid', 'premium'));
+  CHECK (subscription_tier IN ('basic', 'standard', 'pro'));
 
 -- Ensure existing rows have consistent values
 UPDATE public.profiles
-SET subscription_tier = COALESCE(subscription_tier, 'free'),
+SET subscription_tier = CASE subscription_tier
+      WHEN 'free' THEN 'basic'
+      WHEN 'mid' THEN 'standard'
+      WHEN 'premium' THEN 'pro'
+      ELSE COALESCE(subscription_tier, 'basic')
+    END,
     monthly_connections = COALESCE(monthly_connections, 0),
     monthly_event_joins = COALESCE(monthly_event_joins, 0)
 WHERE subscription_tier IS NULL
+   OR subscription_tier IN ('free', 'mid', 'premium')
    OR monthly_connections IS NULL
    OR monthly_event_joins IS NULL;
 
@@ -32,8 +38,8 @@ BEGIN
   SET monthly_connections = 0,
       monthly_event_joins = 0,
       updated_at = now()
-  WHERE monthly_connections <> 0
-     OR monthly_event_joins <> 0;
+  WHERE subscription_tier IN ('basic', 'standard')
+    AND (monthly_connections <> 0 OR monthly_event_joins <> 0);
 END;
 $$;
 

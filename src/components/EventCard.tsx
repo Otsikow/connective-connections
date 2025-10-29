@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 export interface Event {
   id: string;
+  slug?: string;
   title: string;
   description: string;
   bannerImage: string;
@@ -40,7 +41,7 @@ export const EventCard = ({ event }: EventCardProps) => {
   return (
     <Card 
       className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
-      onClick={() => navigate(`/events/${event.id}`)}
+      onClick={() => navigate(`/events/${event.slug ?? event.id}`)}
     >
       <div className="relative h-48 overflow-hidden">
         <img

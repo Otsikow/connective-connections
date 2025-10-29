@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.42.3";
 import Stripe from "https://esm.sh/stripe@16.6.0?target=deno";
 
-type SubscriptionTier = "free" | "mid" | "premium";
+type SubscriptionTier = "basic" | "standard" | "pro";
 
 type ProfileRecord = {
   id: string;
@@ -19,20 +19,20 @@ const corsHeaders = {
 };
 
 const tierPriceLookup = {
-  mid: [
-    Deno.env.get("STRIPE_MID_MONTHLY_PRICE_ID") ?? "connective_mid_monthly",
-    Deno.env.get("STRIPE_MID_YEARLY_PRICE_ID") ?? "connective_mid_yearly",
+  standard: [
+    Deno.env.get("STRIPE_STANDARD_MONTHLY_PRICE_ID") ?? "connective_standard_monthly",
+    Deno.env.get("STRIPE_STANDARD_YEARLY_PRICE_ID") ?? "connective_standard_yearly",
   ],
-  premium: [
-    Deno.env.get("STRIPE_PREMIUM_MONTHLY_PRICE_ID") ?? "connective_premium_monthly",
-    Deno.env.get("STRIPE_PREMIUM_YEARLY_PRICE_ID") ?? "connective_premium_yearly",
+  pro: [
+    Deno.env.get("STRIPE_PRO_MONTHLY_PRICE_ID") ?? "connective_pro_monthly",
+    Deno.env.get("STRIPE_PRO_YEARLY_PRICE_ID") ?? "connective_pro_yearly",
   ],
 };
 
 const determineTierFromPrice = (priceId?: string | null): SubscriptionTier | null => {
   if (!priceId) return null;
-  if (tierPriceLookup.mid.includes(priceId)) return "mid";
-  if (tierPriceLookup.premium.includes(priceId)) return "premium";
+  if (tierPriceLookup.standard.includes(priceId)) return "standard";
+  if (tierPriceLookup.pro.includes(priceId)) return "pro";
   return null;
 };
 
@@ -206,8 +206,8 @@ serve(async (req) => {
           : subscription.customer?.id ?? null;
         const priceId = subscription.items.data[0]?.price?.id ?? null;
         tier = event.type === "customer.subscription.deleted"
-          ? "free"
-          : determineTierFromPrice(priceId) ?? "free";
+          ? "basic"
+          : determineTierFromPrice(priceId) ?? "basic";
         periodEndIso =
           event.type === "customer.subscription.deleted"
             ? new Date().toISOString()
@@ -237,14 +237,14 @@ serve(async (req) => {
     const profile = profileResult.profile;
 
     if (event.type === "customer.subscription.deleted") {
-      await updateProfileSubscription(userId, customerId, "free", periodEndIso, false);
+      await updateProfileSubscription(userId, customerId, "basic", periodEndIso, false);
       return new Response(JSON.stringify({ received: true }), {
         status: 200,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
-    if (!tier || tier === "free") {
+    if (!tier || tier === "basic") {
       console.warn("stripe-webhook:unknown-tier", { eventType: event.type });
       return new Response(JSON.stringify({ received: true, skipped: "unknown-tier" }), {
         status: 200,

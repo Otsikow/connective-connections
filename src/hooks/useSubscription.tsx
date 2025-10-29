@@ -21,10 +21,17 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-type SubscriptionTier = Tables<"profiles">["subscription_tier"];
+export type SubscriptionTier = Tables<"profiles">["subscription_tier"];
 
 type UsageAction = "connection" | "event";
-type UpgradeReason = "connections" | "events";
+
+type UpgradeHighlightTier = Extract<SubscriptionTier, "standard" | "pro">;
+
+type UpgradePrompt = {
+  message: string;
+  title?: string;
+  highlightTier?: UpgradeHighlightTier;
+};
 
 type SubscriptionContextValue = {
   tier: SubscriptionTier;
@@ -35,7 +42,8 @@ type SubscriptionContextValue = {
   attemptConnection: () => Promise<boolean>;
   attemptEventJoin: () => Promise<boolean>;
   refresh: () => Promise<void>;
-  openUpgrade: (reason: UpgradeReason) => void;
+  openUpgrade: (prompt: UpgradePrompt) => void;
+  requireProFeature: () => boolean;
 };
 
 const SubscriptionContext = createContext<SubscriptionContextValue | undefined>(
@@ -43,13 +51,13 @@ const SubscriptionContext = createContext<SubscriptionContextValue | undefined>(
 );
 
 const limitByTier: Record<SubscriptionTier, { connection: number; event: number }> = {
-  free: { connection: 1, event: 1 },
-  mid: { connection: 10, event: Number.POSITIVE_INFINITY },
-  premium: { connection: Number.POSITIVE_INFINITY, event: Number.POSITIVE_INFINITY },
+  basic: { connection: 1, event: 1 },
+  standard: { connection: 10, event: Number.POSITIVE_INFINITY },
+  pro: { connection: Number.POSITIVE_INFINITY, event: Number.POSITIVE_INFINITY },
 };
 
 const defaultProfileState = {
-  tier: "free" as SubscriptionTier,
+  tier: "basic" as SubscriptionTier,
   monthlyConnections: 0,
   monthlyEventJoins: 0,
   subscriptionExpires: null as Date | null,
@@ -61,7 +69,7 @@ type ProfileUsage = Pick<
 >;
 
 const normalizeProfileUsage = (profile?: ProfileUsage | null) => ({
-  tier: profile?.subscription_tier ?? "free",
+  tier: profile?.subscription_tier ?? "basic",
   monthlyConnections: profile?.monthly_connections ?? 0,
   monthlyEventJoins: profile?.monthly_event_joins ?? 0,
   subscriptionExpires: profile?.subscription_expires
@@ -77,10 +85,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
     ...defaultProfileState,
     isLoading: true,
   });
-  const [upgradeModal, setUpgradeModal] = useState<{
-    open: boolean;
-    reason: UpgradeReason | null;
-  }>({ open: false, reason: null });
+  const [upgradePrompt, setUpgradePrompt] = useState<UpgradePrompt | null>(null);
 
   const fetchProfile = useCallback(async () => {
     setState((previous) => ({ ...previous, isLoading: true }));
@@ -160,12 +165,12 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
     fetchProfile();
   }, [fetchProfile]);
 
-  const openUpgrade = useCallback((reason: UpgradeReason) => {
-    setUpgradeModal({ open: true, reason });
+  const openUpgrade = useCallback((prompt: UpgradePrompt) => {
+    setUpgradePrompt(prompt);
   }, []);
 
   const closeUpgrade = useCallback(() => {
-    setUpgradeModal({ open: false, reason: null });
+    setUpgradePrompt(null);
   }, []);
 
   const recordUsage = useCallback(
@@ -186,7 +191,27 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       const limit = action === "connection" ? limits.connection : limits.event;
 
       if (Number.isFinite(limit) && usage >= limit) {
-        openUpgrade(action === "connection" ? "connections" : "events");
+        if (tier === "basic" && action === "connection") {
+          openUpgrade({
+            message: "Connect more friends with a paid plan",
+            highlightTier: "standard",
+          });
+        } else if (tier === "standard" && action === "connection") {
+          openUpgrade({
+            message: "Upgrade to Premium for unlimited connections",
+            highlightTier: "pro",
+          });
+        } else if (tier === "basic" && action === "event") {
+          openUpgrade({
+            message: "Join or host more events with a paid plan",
+            highlightTier: "standard",
+          });
+        } else {
+          openUpgrade({
+            message: "Upgrade to keep your momentum going",
+            highlightTier: "pro",
+          });
+        }
         return false;
       }
 
@@ -233,6 +258,18 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
 
   const attemptEventJoin = useCallback(() => recordUsage("event"), [recordUsage]);
 
+  const requireProFeature = useCallback(() => {
+    if (state.tier !== "pro") {
+      openUpgrade({
+        message: "This feature is only available to Premium users",
+        highlightTier: "pro",
+      });
+      return false;
+    }
+
+    return true;
+  }, [openUpgrade, state.tier]);
+
   const handleUpgradeNavigate = useCallback(() => {
     closeUpgrade();
     navigate("/profile?billing=plans");
@@ -249,12 +286,14 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       attemptEventJoin,
       refresh: fetchProfile,
       openUpgrade,
+      requireProFeature,
     }),
     [
       attemptConnection,
       attemptEventJoin,
       fetchProfile,
       openUpgrade,
+      requireProFeature,
       state.monthlyConnections,
       state.monthlyEventJoins,
       state.subscriptionExpires,
@@ -267,8 +306,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
     <SubscriptionContext.Provider value={contextValue}>
       {children}
       <SubscriptionUpgradeDialog
-        open={upgradeModal.open}
-        reason={upgradeModal.reason}
+        prompt={upgradePrompt}
         onClose={closeUpgrade}
         onUpgrade={handleUpgradeNavigate}
       />
@@ -277,35 +315,54 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
 };
 
 type UpgradeDialogProps = {
-  open: boolean;
-  reason: UpgradeReason | null;
+  prompt: UpgradePrompt | null;
   onClose: () => void;
   onUpgrade: () => void;
 };
 
 const SubscriptionUpgradeDialog = ({
-  open,
-  reason,
+  prompt,
   onClose,
   onUpgrade,
 }: UpgradeDialogProps) => {
+  const open = Boolean(prompt);
+  const title = prompt?.title ?? "Upgrade to keep the momentum going";
   const message =
-    reason === "events"
-      ? "Join unlimited events and unlock premium-only gatherings with our paid plans."
-      : "Make more meaningful connections every month with our paid plans.";
+    prompt?.message ??
+    "Unlock richer connection features and more flexibility with our paid plans.";
+
+  const highlight = prompt?.highlightTier;
+
+  const highlightCopy = highlight === "pro"
+    ? {
+        heading: "Pro unlocks full access",
+        description:
+          "Unlimited connections, AI-powered suggestions, priority visibility, and advanced analytics across the app.",
+      }
+    : {
+        heading: "Standard scales your reach",
+        description:
+          "Connect up to 10 new friends every month and join unlimited events with concierge support when you need it.",
+      };
 
   return (
     <Dialog open={open} onOpenChange={(value) => (value ? undefined : onClose())}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Upgrade to keep the momentum going</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{message}</DialogDescription>
         </DialogHeader>
         <div className="space-y-3 text-sm text-muted-foreground">
+          {highlight && (
+            <div className="rounded-xl border border-dashed border-primary/40 bg-primary/5 p-4 text-left">
+              <p className="text-sm font-semibold text-primary">{highlightCopy.heading}</p>
+              <p className="mt-1 text-xs text-primary/80">{highlightCopy.description}</p>
+            </div>
+          )}
           <p>
-            Mid-tier members can connect up to 10 new friends each month and join unlimited
-            events. Premium members get concierge introductions, unlimited connections, and
-            exclusive salons.
+            Basic members can make one new friend connection and join one event per month. Standard
+            raises the cap to 10 monthly introductions with unlimited events, while Pro removes all
+            limits and unlocks premium-only experiences.
           </p>
         </div>
         <DialogFooter className="flex flex-col sm:flex-row sm:justify-between sm:space-x-2">

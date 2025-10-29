@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Card,
@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import BackButton from "@/components/BackButton";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription, type SubscriptionTier } from "@/hooks/useSubscription";
 import {
   createStripeBillingPortalSession,
   createStripeCheckoutSession,
@@ -31,8 +31,7 @@ import {
 } from "lucide-react";
 
 type BillingCadence = "monthly" | "yearly";
-type SubscriptionTier = "free" | "mid" | "premium";
-type PlanKey = "free" | "mid" | "premium";
+type PlanKey = "basic" | "standard" | "pro";
 
 type PlanFeature = {
   icon: ReactNode;
@@ -40,42 +39,42 @@ type PlanFeature = {
 };
 
 const PLAN_LIMITS: Record<SubscriptionTier, { connections: number; events: number }> = {
-  free: { connections: 1, events: 1 },
-  mid: { connections: 10, events: Number.POSITIVE_INFINITY },
-  premium: { connections: Number.POSITIVE_INFINITY, events: Number.POSITIVE_INFINITY },
+  basic: { connections: 1, events: 1 },
+  standard: { connections: 10, events: Number.POSITIVE_INFINITY },
+  pro: { connections: Number.POSITIVE_INFINITY, events: Number.POSITIVE_INFINITY },
 };
 
 const PLAN_NAMES: Record<PlanKey, string> = {
-  free: "Free",
-  mid: "Community Plus",
-  premium: "Premium",
+  basic: "Basic (Free)",
+  standard: "Standard",
+  pro: "Pro (Premium)",
 };
 
 const PLAN_FEATURES: Record<PlanKey, PlanFeature[]> = {
-  free: [
+  basic: [
     { icon: <Users className="h-4 w-4 text-emerald-500" />, label: "1 new friend connection every month" },
     { icon: <Calendar className="h-4 w-4 text-emerald-500" />, label: "Join 1 curated community event" },
   ],
-  mid: [
+  standard: [
     { icon: <Users className="h-4 w-4 text-amber-500" />, label: "Up to 10 new friend connections monthly" },
     { icon: <Calendar className="h-4 w-4 text-amber-500" />, label: "Unlimited event hosting & joining" },
     { icon: <ShieldCheck className="h-4 w-4 text-amber-500" />, label: "Priority support & trust verification" },
   ],
-  premium: [
-    { icon: <Sparkles className="h-4 w-4 text-sky-500" />, label: "Unlimited connections and invitations" },
-    { icon: <Calendar className="h-4 w-4 text-sky-500" />, label: "Concierge introductions to curated salons" },
-    { icon: <ShieldCheck className="h-4 w-4 text-sky-500" />, label: "Host concierge & exclusive drops" },
+  pro: [
+    { icon: <Sparkles className="h-4 w-4 text-sky-500" />, label: "Unlimited connections, events, and invites" },
+    { icon: <Zap className="h-4 w-4 text-sky-500" />, label: "AI suggestions, analytics, and priority visibility" },
+    { icon: <ShieldCheck className="h-4 w-4 text-sky-500" />, label: "Concierge hosting support & premium drops" },
   ],
 };
 
 const PLAN_PRICING = {
-  mid: {
-    monthly: { label: "$15 / month", priceId: STRIPE_PRICE_IDS.midMonthly },
-    yearly: { label: "$150 / year", priceId: STRIPE_PRICE_IDS.midYearly, helper: "Two months free" },
+  standard: {
+    monthly: { label: "$15 / month", priceId: STRIPE_PRICE_IDS.standardMonthly },
+    yearly: { label: "$150 / year", priceId: STRIPE_PRICE_IDS.standardYearly, helper: "Two months free" },
   },
-  premium: {
-    monthly: { label: "$30 / month", priceId: STRIPE_PRICE_IDS.premiumMonthly },
-    yearly: { label: "$300 / year", priceId: STRIPE_PRICE_IDS.premiumYearly, helper: "Save 17% annually" },
+  pro: {
+    monthly: { label: "$30 / month", priceId: STRIPE_PRICE_IDS.proMonthly },
+    yearly: { label: "$300 / year", priceId: STRIPE_PRICE_IDS.proYearly, helper: "Save 17% annually" },
   },
 };
 
@@ -124,13 +123,13 @@ export default function Profile() {
         });
         break;
       case "plans":
-        openUpgrade("connections");
+        showConnectionUpgradePrompt();
         break;
       default:
         break;
     }
     navigate("/profile", { replace: true });
-  }, [location.search, navigate, openUpgrade, toast]);
+  }, [location.search, navigate, showConnectionUpgradePrompt, toast]);
 
   const formattedExpiration = useMemo(
     () => (subscriptionExpires ? formatDate(subscriptionExpires) : null),
@@ -156,7 +155,21 @@ export default function Profile() {
       ? `${usage} of ${limit} used this month`
       : `Unlimited — ${usage} used`;
 
-  const handleCheckout = async (targetTier: "mid" | "premium") => {
+  const showConnectionUpgradePrompt = useCallback(() => {
+    const highlightTier = tier === "standard" ? "pro" : "standard";
+    const message =
+      tier === "standard"
+        ? "Upgrade to Premium for unlimited connections"
+        : "Connect more friends with a paid plan";
+
+    openUpgrade({ message, highlightTier });
+  }, [openUpgrade, tier]);
+
+  const showEventUpgradePrompt = useCallback(() => {
+    openUpgrade({ message: "Join or host more events with a paid plan", highlightTier: "standard" });
+  }, [openUpgrade]);
+
+  const handleCheckout = async (targetTier: "standard" | "pro") => {
     if (!hasStripeConfig()) {
       toast({
         title: "Stripe not configured",
@@ -269,7 +282,7 @@ export default function Profile() {
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row">
-              {tier !== "free" ? (
+              {tier !== "basic" ? (
                 <Button
                   onClick={handleManageSubscription}
                   disabled={isPortalLoading}
@@ -280,7 +293,7 @@ export default function Profile() {
                 </Button>
               ) : (
                 <Button
-                  onClick={() => handleCheckout("mid")}
+                  onClick={() => handleCheckout("standard")}
                   disabled={isCheckoutLoading}
                 >
                   {isCheckoutLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -310,7 +323,7 @@ export default function Profile() {
                   <Button
                     variant="link"
                     className="px-0 text-sm"
-                    onClick={() => openUpgrade("connections")}
+                    onClick={showConnectionUpgradePrompt}
                   >
                     See upgrade options
                   </Button>
@@ -337,7 +350,7 @@ export default function Profile() {
                   <Button
                     variant="link"
                     className="px-0 text-sm"
-                    onClick={() => openUpgrade("events")}
+                    onClick={showEventUpgradePrompt}
                   >
                     Unlock more events
                   </Button>
@@ -375,16 +388,16 @@ export default function Profile() {
           <CardContent className="grid gap-6 lg:grid-cols-3">
             {(Object.keys(PLAN_NAMES) as PlanKey[]).map((planKey) => {
               const isCurrentPlan = tier === planKey;
-              const pricing = PLAN_PRICING[planKey as "mid" | "premium"]?.[billingCadence];
+              const pricing = planKey === "basic" ? null : PLAN_PRICING[planKey][billingCadence];
               const helper = pricing?.helper;
 
               return (
                 <div
                   key={planKey}
                   className={`flex flex-col rounded-2xl border border-border/60 bg-card/80 p-6 shadow-sm ${
-                    planKey === "premium"
+                    planKey === "pro"
                       ? "ring-2 ring-sky-500/40"
-                      : planKey === "mid"
+                      : planKey === "standard"
                       ? "ring-1 ring-amber-400/40"
                       : ""
                   }`}
@@ -393,7 +406,7 @@ export default function Profile() {
                     <p className="text-sm font-medium text-muted-foreground">
                       {PLAN_NAMES[planKey]}
                     </p>
-                    {planKey === "mid" && (
+                    {planKey === "standard" && (
                       <Badge
                         variant="outline"
                         className="border-amber-400/60 bg-amber-500/10 text-amber-600"
@@ -401,24 +414,24 @@ export default function Profile() {
                         Most popular
                       </Badge>
                     )}
-                    {planKey === "premium" && (
+                    {planKey === "pro" && (
                       <Badge
                         variant="outline"
                         className="border-sky-400/60 bg-sky-500/10 text-sky-600"
                       >
-                        Hosts love this
+                        Unlimited access
                       </Badge>
                     )}
                   </div>
 
                   <div className="mb-6 space-y-1">
                     <p className="text-2xl font-semibold">
-                      {pricing?.label ?? (planKey === "free" ? "$0 / month" : "Contact support")}
+                      {pricing?.label ?? "$0 / month"}
                     </p>
                     {helper && <p className="text-sm text-primary">{helper}</p>}
-                    {planKey === "free" && (
+                    {planKey === "basic" && (
                       <p className="text-sm text-muted-foreground">
-                        Perfect for exploring Connective.
+                        Perfect for exploring Connective at your own pace.
                       </p>
                     )}
                   </div>
@@ -433,19 +446,19 @@ export default function Profile() {
                   </div>
 
                   <div className="mt-6">
-                    {planKey === "free" ? (
+                    {planKey === "basic" ? (
                       <Button
                         variant="outline"
                         className="w-full"
-                        onClick={() => openUpgrade("connections")}
+                        onClick={showConnectionUpgradePrompt}
                       >
-                        Explore premium perks
+                        Explore paid plans
                       </Button>
                     ) : (
                       <Button
                         className="w-full"
                         disabled={isCurrentPlan || isCheckoutLoading}
-                        onClick={() => handleCheckout(planKey as "mid" | "premium")}
+                        onClick={() => handleCheckout(planKey)}
                       >
                         {isCurrentPlan
                           ? "Current plan"
@@ -479,7 +492,7 @@ export default function Profile() {
               <Button
                 variant="link"
                 className="px-0 text-sm"
-                onClick={() => openUpgrade("connections")}
+                onClick={showConnectionUpgradePrompt}
               >
                 Plan comparison
               </Button>
@@ -487,15 +500,15 @@ export default function Profile() {
             <div className="rounded-xl border border-primary/10 bg-background/80 p-4">
               <p className="font-medium">Hosting regularly?</p>
               <p className="text-sm text-muted-foreground">
-                Premium members unlock concierge help and guaranteed placement in featured events.
+                Pro members unlock concierge help, analytics, and guaranteed placement in featured events.
               </p>
               <Button
                 variant="link"
                 className="px-0 text-sm"
-                onClick={() => handleCheckout("premium")}
-                disabled={tier === "premium" || isCheckoutLoading}
+                onClick={() => handleCheckout("pro")}
+                disabled={tier === "pro" || isCheckoutLoading}
               >
-                {tier === "premium" ? "Already premium" : "Try premium"}
+                {tier === "pro" ? "Already Pro" : "Try Pro"}
               </Button>
             </div>
           </CardContent>

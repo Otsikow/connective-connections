@@ -25,7 +25,7 @@ export type Database = {
           website: string | null
           role: string | null
           stripe_customer_id: string | null
-          subscription_tier: "free" | "mid" | "premium"
+          subscription_tier: "basic" | "standard" | "pro"
           monthly_connections: number
           monthly_event_joins: number
           subscription_expires: string | null
@@ -40,7 +40,7 @@ export type Database = {
           website?: string | null
           role?: string | null
           stripe_customer_id?: string | null
-          subscription_tier?: "free" | "mid" | "premium"
+          subscription_tier?: "basic" | "standard" | "pro"
           monthly_connections?: number
           monthly_event_joins?: number
           subscription_expires?: string | null
@@ -55,7 +55,7 @@ export type Database = {
           website?: string | null
           role?: string | null
           stripe_customer_id?: string | null
-          subscription_tier?: "free" | "mid" | "premium"
+          subscription_tier?: "basic" | "standard" | "pro"
           monthly_connections?: number
           monthly_event_joins?: number
           subscription_expires?: string | null
