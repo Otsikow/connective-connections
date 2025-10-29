@@ -24,6 +24,11 @@ export type Database = {
           username: string | null
           website: string | null
           role: string | null
+          stripe_customer_id: string | null
+          subscription_tier: "free" | "mid" | "premium"
+          monthly_connections: number
+          monthly_event_joins: number
+          subscription_expires: string | null
         }
         Insert: {
           id: string
@@ -34,6 +39,11 @@ export type Database = {
           username?: string | null
           website?: string | null
           role?: string | null
+          stripe_customer_id?: string | null
+          subscription_tier?: "free" | "mid" | "premium"
+          monthly_connections?: number
+          monthly_event_joins?: number
+          subscription_expires?: string | null
         }
         Update: {
           id?: string
@@ -44,6 +54,11 @@ export type Database = {
           username?: string | null
           website?: string | null
           role?: string | null
+          stripe_customer_id?: string | null
+          subscription_tier?: "free" | "mid" | "premium"
+          monthly_connections?: number
+          monthly_event_joins?: number
+          subscription_expires?: string | null
         }
       }
       groups: {

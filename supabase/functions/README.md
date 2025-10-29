@@ -56,6 +56,24 @@ Fetches a user's email address from auth. Requires admin authentication.
 - Returns 403 for authorization errors
 - Returns 404 if user not found
 
+### stripe-webhook
+Processes Stripe billing events and updates subscription state on the `profiles` table.
+
+**Endpoint:** `POST /functions/v1/stripe-webhook`
+
+**Events handled:**
+- `checkout.session.completed`
+- `invoice.payment_succeeded`
+- `customer.subscription.updated`
+- `customer.subscription.deleted`
+
+**Behavior:**
+- Syncs the customer to the matching `profiles.stripe_customer_id`
+- Updates `subscription_tier`, `subscription_expires`, and usage counters
+- Resets monthly counters when a lapsed subscription becomes active again
+
+> ℹ️ Configure the secret via `STRIPE_WEBHOOK_SECRET` in your Supabase function settings.
+
 ## Deployment
 
 ```bash

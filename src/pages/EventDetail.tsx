@@ -13,6 +13,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, CalendarPlus, MapPin, Users } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import { getEventById, upcomingEvents, EventData } from "@/data/events";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useToast } from "@/hooks/use-toast";
 
 const formatEventDateRange = (startIso: string, endIso: string) => {
   const start = new Date(startIso);
@@ -79,6 +81,8 @@ const getGoogleCalendarUrl = (event: EventData) => {
 const EventDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const { attemptEventJoin } = useSubscription();
+  const { toast } = useToast();
 
   const event = id ? getEventById(id) : undefined;
   const recommendedEvents = upcomingEvents
@@ -124,6 +128,18 @@ const EventDetail = () => {
         .slice(0, 2)
         .toUpperCase()
     : "CC";
+
+  const handleJoinExperience = async () => {
+    const allowed = await attemptEventJoin();
+    if (!allowed) {
+      return;
+    }
+
+    toast({
+      title: "You're in!",
+      description: "We saved your spot. Check your inbox for event details.",
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -227,7 +243,11 @@ const EventDetail = () => {
                   )}
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <Button size="lg" className="rounded-full bg-primary text-white hover:bg-primary/80">
+                  <Button
+                    size="lg"
+                    className="rounded-full bg-primary text-white hover:bg-primary/80"
+                    onClick={handleJoinExperience}
+                  >
                     Join the experience
                   </Button>
                   <Button asChild variant="outline" size="lg" className="rounded-full">

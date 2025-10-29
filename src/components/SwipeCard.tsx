@@ -23,10 +23,17 @@ interface SwipeCardProps {
   profile: Profile;
   onSwipe: (direction: "left" | "right") => void;
   onConnect: () => void;
+  onAttemptConnect: () => Promise<boolean>;
   isActive: boolean;
 }
 
-export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardProps) => {
+export const SwipeCard = ({
+  profile,
+  onSwipe,
+  onConnect,
+  onAttemptConnect,
+  isActive,
+}: SwipeCardProps) => {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
@@ -45,14 +52,25 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
     setDragOffset({ x: deltaX, y: deltaY });
   };
 
-  const handleEnd = () => {
+  const handleEnd = async () => {
     if (!isDragging || !isActive) return;
     setIsDragging(false);
 
     const threshold = 100;
     if (Math.abs(dragOffset.x) > threshold) {
-      triggerHaptic(dragOffset.x > 0 ? "success" : "warning");
-      onSwipe(dragOffset.x > 0 ? "right" : "left");
+      const direction = dragOffset.x > 0 ? "right" : "left";
+      if (direction === "right") {
+        const allowed = await onAttemptConnect();
+        if (allowed) {
+          triggerHaptic("success");
+          onSwipe("right");
+        } else {
+          triggerHaptic("warning");
+        }
+      } else {
+        triggerHaptic("warning");
+        onSwipe("left");
+      }
     } else {
       triggerHaptic("light");
     }
@@ -70,7 +88,7 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
   };
 
   const handleMouseUp = () => {
-    handleEnd();
+    void handleEnd();
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -84,7 +102,7 @@ export const SwipeCard = ({ profile, onSwipe, onConnect, isActive }: SwipeCardPr
   };
 
   const handleTouchEnd = () => {
-    handleEnd();
+    void handleEnd();
   };
 
   const rotation = dragOffset.x * 0.1;

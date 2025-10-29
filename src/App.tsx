@@ -7,6 +7,7 @@ import { PageTransition } from "@/components/PageTransition";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { SubscriptionProvider } from "@/hooks/useSubscription";
 
 // Pages
 import Splash from "./pages/Splash";
@@ -213,7 +214,9 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <AppContent />
+          <SubscriptionProvider>
+            <AppContent />
+          </SubscriptionProvider>
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>

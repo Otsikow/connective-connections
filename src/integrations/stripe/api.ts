@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import {
   STRIPE_FUNCTION_URL,
-  STRIPE_PREMIUM_PRICE_ID,
+  STRIPE_DEFAULT_PRICE_ID,
   STRIPE_DEFAULT_SUCCESS_PATH,
   STRIPE_DEFAULT_CANCEL_PATH,
   STRIPE_DEFAULT_PORTAL_RETURN_PATH,
@@ -28,7 +28,7 @@ export const createStripeCheckoutSession = async (
     throw new Error("Stripe function URL is not configured");
   }
 
-  const priceId = payload.priceId ?? STRIPE_PREMIUM_PRICE_ID;
+  const priceId = payload.priceId ?? STRIPE_DEFAULT_PRICE_ID;
   if (!priceId) {
     throw new Error("A Stripe price ID is required to start checkout");
   }
