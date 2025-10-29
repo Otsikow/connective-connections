@@ -19,10 +19,7 @@ import { CreateGroupDialog } from "@/components/CreateGroupDialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
-
-type GroupWithMembers = Tables<"groups"> & {
-  memberCount: number;
-};
+import { fallbackGroups, type GroupWithMembers } from "@/data/groups";
 
 type SupabaseGroupResponse = Tables<"groups"> & {
   group_members?: { count: number }[];
@@ -38,9 +35,24 @@ const Community = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [groups, setGroups] = useState<GroupWithMembers[]>([]);
 
+  const isSupabaseConfigured = Boolean(
+    import.meta.env.VITE_SUPABASE_URL &&
+      import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+  );
+
   const fetchGroups = useCallback(async () => {
     setIsLoading(true);
     setErrorMessage(null);
+
+    if (!isSupabaseConfigured) {
+      setGroups(fallbackGroups);
+      toast({
+        title: "Offline preview",
+        description: "Showing featured community groups while we finish setup.",
+      });
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const { data, error } = await supabase
@@ -60,20 +72,16 @@ const Community = () => {
       setGroups(mappedGroups ?? []);
     } catch (error: unknown) {
       console.error("Error loading groups:", error);
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Unable to load groups. Please try again.";
-      setErrorMessage(message);
+      setGroups(fallbackGroups);
       toast({
-        title: "Error",
-        description: message,
-        variant: "destructive",
+        title: "Offline preview",
+        description:
+          "We couldn't load live groups, so we're showing featured communities instead.",
       });
     } finally {
       setIsLoading(false);
     }
-  }, [toast]);
+  }, [isSupabaseConfigured, toast]);
 
   useEffect(() => {
     void fetchGroups();
