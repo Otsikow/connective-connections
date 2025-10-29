@@ -78,7 +78,7 @@ const Admin = () => {
           console.error("Error loading profile role:", profileError);
         }
 
-        if (!profile || profile.role !== "admin") {
+        if (!profile || (profile as { role: string | null }).role !== "admin") {
           setError("Access denied: admin only");
           setLoading(false);
           return;

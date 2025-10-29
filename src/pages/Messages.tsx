@@ -52,7 +52,7 @@ const Messages = () => {
   const { encrypt, decrypt, isReady: isEncryptionReady, error: encryptionError } =
     useEndToEndEncryption(conversationId);
 
-  type ParticipantInfo = EventItem["participants"][number] | EventItem["host"];
+  type ParticipantInfo = (EventItem["participants"][number] | EventItem["host"]) & { id?: string };
 
   const displayedParticipants = useMemo<ParticipantInfo[]>(() => {
     if (groupEvent) {

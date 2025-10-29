@@ -132,7 +132,7 @@ export const CreateGroupDialog = ({ open, onOpenChange, onGroupCreated }: Create
           image_url: formData.imageUrl || null,
           is_premium: false,
           creator_id: user.id
-        })
+        } as any)
         .select()
         .single();
 
