@@ -63,24 +63,28 @@ const journeyHighlights = [
     title: "Membership concierge",
     description:
       "A dedicated team architecting your first 90 days with white-glove onboarding and bespoke pathways.",
+    image: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     icon: Brain,
     title: "Neuroscience-backed matching",
     description:
       "Proprietary chemistry scores align energy, intention, and ambition for every member introduction.",
+    image: "https://images.unsplash.com/photo-1554328222-26301362453d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     icon: Compass,
     title: "Intention frameworks",
     description:
       "Curated prompts, ritualized check-ins, and thematic salons keep every interaction purposeful.",
+    image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     icon: MessageCircle,
     title: "Integrated follow-ups",
     description:
       "Momentum continues with guided recaps, warm referrals, and digital salons between in-person gatherings.",
+    image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
 ];
 
@@ -287,12 +291,15 @@ const Splash = () => {
             {journeyHighlights.map((highlight) => (
               <div
                 key={highlight.title}
-                className="flex h-full flex-col gap-4 rounded-3xl border border-gray-800/60 bg-[#1e293b]/80 p-6 text-left"
+                className="flex h-full flex-col rounded-3xl border border-gray-800/60 bg-[#1e293b]/80 text-left overflow-hidden"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#fbbf24]/15 text-[#fde68a]">
-                  <highlight.icon className="h-6 w-6" />
-                </div>
-                <div className="space-y-2">
+                <img
+                  src={highlight.image}
+                  alt={highlight.title}
+                  className="h-40 w-full object-cover"
+                  loading="lazy"
+                />
+                <div className="space-y-2 p-6">
                   <h3 className="text-lg font-semibold text-white">{highlight.title}</h3>
                   <p className="text-sm text-gray-300">{highlight.description}</p>
                 </div>
