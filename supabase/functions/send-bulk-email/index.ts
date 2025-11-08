@@ -3,10 +3,16 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.42.3";
 import { z } from "https://esm.sh/zod@3.25.76";
 
-// --- Zod Schema for request body ---
+// --- Zod Schema for request body with improved validation ---
 const BodySchema = z.object({
-  subject: z.string().min(3, { message: "Subject must be at least 3 characters" }),
-  message: z.string().min(10, { message: "Message must be at least 10 characters" }),
+  subject: z.string()
+    .trim()
+    .min(3, { message: "Subject must be at least 3 characters" })
+    .max(200, { message: "Subject must be under 200 characters" }),
+  message: z.string()
+    .trim()
+    .min(10, { message: "Message must be at least 10 characters" })
+    .max(5000, { message: "Message must be under 5000 characters" }),
 });
 
 // --- CORS headers ---
@@ -22,7 +28,7 @@ interface UserProfile {
   full_name?: string;
 }
 
-// --- Verify admin role ---
+// --- Verify admin role using secure has_role function ---
 async function verifyAdminRole(authHeader: string): Promise<boolean> {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -37,12 +43,17 @@ async function verifyAdminRole(authHeader: string): Promise<boolean> {
       return false;
     }
 
-    const role =
-      user.user_metadata?.role ||
-      user.app_metadata?.role ||
-      (user.email?.endsWith("@admin.connective.com") ? "admin" : "user");
+    const { data: isAdmin, error: roleError } = await supabase.rpc('has_role', {
+      _user_id: user.id,
+      _role: 'admin'
+    });
 
-    return role === "admin";
+    if (roleError) {
+      console.error("Role check error:", roleError);
+      return false;
+    }
+
+    return Boolean(isAdmin);
   } catch (err) {
     console.error("Error verifying admin role:", err);
     return false;
@@ -133,11 +144,10 @@ serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Fetch all user emails (excluding admins)
+    // Fetch all user emails
     const { data: profiles, error: fetchError } = await supabaseAdmin
       .from("profiles")
       .select("id, email, full_name")
-      .neq("role", "admin")
       .not("email", "is", null);
 
     if (fetchError) {
@@ -172,10 +182,13 @@ serve(async (req: Request) => {
       }
     );
   } catch (err) {
-    console.error("send-bulk-email error:", err);
+    console.error("[BULK_EMAIL_ERR]", {
+      error: err instanceof Error ? err.message : String(err),
+      timestamp: new Date().toISOString()
+    });
     return new Response(
       JSON.stringify({
-        error: err instanceof Error ? err.message : "Internal server error",
+        error: "Unable to send bulk email. Please try again later.",
       }),
       {
         status: 500,

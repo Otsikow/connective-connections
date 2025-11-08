@@ -2,10 +2,10 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { z } from 'https://esm.sh/zod@3.25.76'
 
-// Schema for query parameters
+// Schema for query parameters with max limit
 const QuerySchema = z.object({
-  limit: z.string().optional().default('100').transform(Number).pipe(
-    z.number().int().min(1, { message: 'Limit must be at least 1' })
+  limit: z.string().optional().default('50').transform(Number).pipe(
+    z.number().int().min(1, { message: 'Limit must be at least 1' }).max(100, { message: 'Limit cannot exceed 100' })
   ),
   offset: z.string().optional().default('0').transform(Number).pipe(
     z.number().int().min(0, { message: 'Offset must be non-negative' })
@@ -23,29 +23,34 @@ interface UserEmail {
   full_name?: string
 }
 
-// Admin role check function
+// Admin role check function using secure has_role
 async function verifyAdminRole(authHeader: string): Promise<boolean> {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
     
-    const supabase = createClient(supabaseUrl, supabaseServiceKey)
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    })
     
-    // Extract token from Authorization header
-    const token = authHeader.replace('Bearer ', '')
-    
-    // Verify the JWT token and get user info
-    const { data: { user }, error } = await supabase.auth.getUser(token)
+    // Get authenticated user
+    const { data: { user }, error } = await supabase.auth.getUser()
     
     if (error || !user) {
       console.error('Auth error:', error)
       return false
     }
     
-    // Check if user has admin role
-    const isAdmin = user.user_metadata?.role === 'admin' || 
-                   user.app_metadata?.role === 'admin' ||
-                   user.email?.endsWith('@admin.connective.com')
+    // Check if user has admin role using secure function
+    const { data: isAdmin, error: roleError } = await supabase.rpc('has_role', {
+      _user_id: user.id,
+      _role: 'admin'
+    })
+    
+    if (roleError) {
+      console.error('Role check error:', roleError)
+      return false
+    }
     
     return Boolean(isAdmin)
   } catch (error) {
@@ -152,9 +157,12 @@ serve(async (req) => {
     )
 
   } catch (error) {
-    console.error('Error in get-user-emails function:', error)
+    console.error('[GET_EMAILS_ERR]', {
+      error: error instanceof Error ? error.message : String(error),
+      timestamp: new Date().toISOString()
+    })
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
+      JSON.stringify({ error: 'Unable to process request' }),
       { 
         status: 500, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 

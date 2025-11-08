@@ -101,17 +101,21 @@ const Admin = () => {
           return;
         }
 
-        const { data: profile, error: profileError } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", user.id)
-          .maybeSingle();
+        // Verify admin role using secure has_role function
+        const { data: isAdmin, error: roleError } = await supabase
+          .rpc("has_role", {
+            _user_id: user.id,
+            _role: "admin",
+          });
 
-        if (profileError) {
-          console.error("Error loading profile role:", profileError);
+        if (roleError) {
+          console.error("Error checking admin role:", roleError);
+          setError("Failed to verify admin status");
+          setLoading(false);
+          return;
         }
 
-        if (!profile || (profile as { role: string | null }).role !== "admin") {
+        if (!isAdmin) {
           setError("Access denied: admin only");
           setLoading(false);
           return;
@@ -136,7 +140,7 @@ const Admin = () => {
       setLoading(true);
       const { data, error: profilesError } = await supabase
         .from("profiles")
-        .select("id, full_name, created_at, role")
+        .select("id, full_name, created_at, email")
         .order("created_at", { ascending: false });
 
       if (profilesError) {
@@ -148,8 +152,8 @@ const Admin = () => {
           id: profile.id,
           full_name: profile.full_name,
           created_at: profile.created_at ?? null,
-          role: profile.role ?? "user",
-          email: null,
+          role: "user", // Role now managed via user_roles table
+          email: profile.email || null,
         }))
       );
     } catch (err) {

@@ -57,18 +57,17 @@ serve(async (req) => {
       )
     }
 
-    // CRITICAL: Check if the user has admin role
-    const { data: profile, error: profileError } = await supabaseClient
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
+    // CRITICAL: Check if the user has admin role using secure has_role function
+    const { data: isAdmin, error: roleError } = await supabaseClient
+      .rpc('has_role', {
+        _user_id: user.id,
+        _role: 'admin'
+      })
 
-    if (profileError || !profile || profile.role !== 'admin') {
+    if (roleError || !isAdmin) {
       return new Response(
         JSON.stringify({ 
-          error: 'Unauthorized: Admin privileges required',
-          details: 'Only administrators can access user emails'
+          error: 'Unauthorized: Admin privileges required'
         }),
         { 
           status: 403, 
@@ -106,8 +105,9 @@ serve(async (req) => {
     const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.getUserById(userId)
 
     if (authError) {
+      console.error('[GET_EMAIL_ERR]', { userId, error: authError.message });
       return new Response(
-        JSON.stringify({ error: 'Failed to fetch user', details: authError.message }),
+        JSON.stringify({ error: 'Unable to fetch user information' }),
         { 
           status: 404, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -128,9 +128,12 @@ serve(async (req) => {
     )
 
   } catch (error) {
-    console.error('Error in get-user-email function:', error)
+    console.error('[GET_EMAIL_ERR]', {
+      error: error instanceof Error ? error.message : String(error),
+      timestamp: new Date().toISOString()
+    })
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Internal server error' }),
+      JSON.stringify({ error: 'Unable to process request' }),
       { 
         status: 500, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 

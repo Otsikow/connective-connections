@@ -14,7 +14,7 @@ import { BottomNav } from "@/components/BottomNav";
 import Splash from "./pages/Splash";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
-import ForgotPassword from "./pages/ForgotPassword";
+
 import ProfileSetup from "./pages/ProfileSetup";
 import Home from "./pages/Home";
 import Matches from "./pages/Matches";
@@ -49,14 +49,6 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <Splash />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/forgot-password"
-          element={
-            <PageTransition>
-              <ForgotPassword />
             </PageTransition>
           }
         />
