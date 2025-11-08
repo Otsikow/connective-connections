@@ -48,21 +48,15 @@ const AuthCallback = () => {
     }
 
     const exchangeSession = async () => {
-      // Only exchange the code for a session if there's no active session
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) {
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
+      const { error } = await supabase.auth.exchangeCodeForSession(code);
 
-        if (error) {
-          toast({
-            title: "Authentication error",
-            description: error.message ?? "Unable to complete sign in.",
-          });
-          navigate("/login", { replace: true });
-          return;
-        }
+      if (error) {
+        toast({
+          title: "Authentication error",
+          description: error.message ?? "Unable to complete sign in.",
+        });
+        navigate("/login", { replace: true });
+        return;
       }
 
       navigate(nextPath, { replace: true });
