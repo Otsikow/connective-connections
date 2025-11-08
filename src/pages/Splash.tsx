@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import {
+  useNavigate,
   ArrowRight,
   Brain,
   CalendarDays,
@@ -18,6 +19,7 @@ import {
   UserCheck,
 } from "lucide-react";
 import experienceImage from "@/assets/onboarding-1.png";
+import { Logo } from "@/components/Logo";
 
 const experienceCards = [
   {
@@ -139,8 +141,25 @@ const Splash = () => {
         <div className="absolute bottom-[-20%] right-[-5%] h-[30rem] w-[30rem] rounded-full bg-[#a855f7]/20 blur-[140px]" />
       </div>
 
-      <div className="relative mx-auto flex min-h-screen max-w-4xl flex-col px-6 pb-24 pt-16 sm:px-10 lg:px-0">
+      <div className="relative mx-auto flex min-h-screen max-w-4xl flex-col px-6 pb-24 pt-32 sm:px-10 lg:px-0">
         <header className="flex flex-col items-center text-center">
+          <div className="absolute top-0 flex w-full items-center justify-between px-6 py-4 sm:px-10 lg:px-0">
+            <Logo size="sm" tagline="By Connective" taglineClassName="hidden sm:inline-flex" />
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigate("/login")}
+                className="text-sm font-semibold text-gray-300 transition hover:text-white"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => navigate("/signup")}
+                className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-white/20"
+              >
+                Sign Up
+              </button>
+            </div>
+          </div>
           <span className="inline-flex items-center gap-2 rounded-full border border-[#fbbf24]/40 bg-[#f59e0b]/10 px-4 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.35em] text-[#fde68a]">
             Connective Connections
           </span>
