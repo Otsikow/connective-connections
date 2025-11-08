@@ -11,6 +11,45 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// --- Verify admin role and return user ID ---
+async function verifyAdminRole(
+  authHeader: string
+): Promise<{ isAdmin: boolean; userId: string | null }> {
+  try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+    if (error || !user) {
+      console.error("Auth error:", error);
+      return { isAdmin: false, userId: null };
+    }
+
+    const { data: isAdmin, error: roleError } = await supabase.rpc(
+      "is_admin",
+      {
+        user_id: user.id,
+      }
+    );
+
+    if (roleError) {
+      console.error("Role check error:", roleError);
+      return { isAdmin: false, userId: user.id };
+    }
+
+    return { isAdmin: Boolean(isAdmin), userId: user.id };
+  } catch (err) {
+    console.error("Error verifying admin role:", err);
+    return { isAdmin: false, userId: null };
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -18,60 +57,27 @@ serve(async (req) => {
   }
 
   try {
-    // CRITICAL: Verify the request has an authorization header
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
       return new Response(
         JSON.stringify({ error: 'Missing authorization header' }),
-        { 
-          status: 401, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       )
     }
 
-    // Create a Supabase client with the auth header to verify the user
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: authHeader },
-        },
-      }
-    )
+    const { isAdmin, userId: adminUserId } = await verifyAdminRole(authHeader);
 
-    // CRITICAL: Verify the user is authenticated
-    const {
-      data: { user },
-      error: userError,
-    } = await supabaseClient.auth.getUser()
-
-    if (userError || !user) {
+    if (!isAdmin || !adminUserId) {
       return new Response(
-        JSON.stringify({ error: 'Invalid authentication' }),
-        { 
-          status: 401, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      )
-    }
-
-    // CRITICAL: Check if the user has admin role using secure has_role function
-    const { data: isAdmin, error: roleError } = await supabaseClient
-      .rpc('has_role', {
-        _user_id: user.id,
-        _role: 'admin'
-      })
-
-    if (roleError || !isAdmin) {
-      return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: 'Unauthorized: Admin privileges required'
         }),
-        { 
-          status: 403, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       )
     }
@@ -101,6 +107,13 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     )
+
+    // Log the admin action
+    await supabaseAdmin.from("admin_audit_log").insert({
+      admin_id: adminUserId,
+      action: "get_user_email",
+      target_user_id: userId,
+    });
 
     const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.getUserById(userId)
 
