@@ -1,5 +1,16 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { z } from 'https://esm.sh/zod@3.25.76'
+
+// Schema for query parameters
+const QuerySchema = z.object({
+  limit: z.string().optional().default('100').transform(Number).pipe(
+    z.number().int().min(1, { message: 'Limit must be at least 1' })
+  ),
+  offset: z.string().optional().default('0').transform(Number).pipe(
+    z.number().int().min(0, { message: 'Offset must be non-negative' })
+  ),
+});
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -79,10 +90,24 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Parse query parameters
+    // Validate and parse query parameters
     const url = new URL(req.url)
-    const limit = parseInt(url.searchParams.get('limit') || '100')
-    const offset = parseInt(url.searchParams.get('offset') || '0')
+    const query = Object.fromEntries(url.searchParams.entries())
+    const validationResult = QuerySchema.safeParse(query)
+
+    if (!validationResult.success) {
+      return new Response(
+        JSON.stringify({
+          error: 'Invalid query parameters',
+          details: validationResult.error.flatten().fieldErrors,
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
+    }
+    const { limit, offset } = validationResult.data
 
     // Fetch user emails with pagination
     const { data: users, error: usersError } = await supabase
