@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import VideoRecorder from "@/components/VideoRecorder";
 
 const HostDashboard = () => {
   const navigate = useNavigate();
@@ -187,6 +188,20 @@ const HostDashboard = () => {
               ))}
             </tbody>
           </table>
+        </CardContent>
+      </Card>
+
+      <Card className="border-border/50 shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            Record a Video Message
+          </CardTitle>
+          <CardDescription>
+            Record a video message for your attendees.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <VideoRecorder />
         </CardContent>
       </Card>
 
