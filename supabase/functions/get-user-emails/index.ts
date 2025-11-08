@@ -23,39 +23,42 @@ interface UserEmail {
   full_name?: string
 }
 
-// Admin role check function using secure has_role
-async function verifyAdminRole(authHeader: string): Promise<boolean> {
+// --- Verify admin role and return user ID ---
+async function verifyAdminRole(
+  authHeader: string
+): Promise<{ isAdmin: boolean; userId: string | null }> {
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
-    
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } }
-    })
-    
-    // Get authenticated user
-    const { data: { user }, error } = await supabase.auth.getUser()
-    
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
     if (error || !user) {
-      console.error('Auth error:', error)
-      return false
+      console.error("Auth error:", error);
+      return { isAdmin: false, userId: null };
     }
-    
-    // Check if user has admin role using secure function
-    const { data: isAdmin, error: roleError } = await supabase.rpc('has_role', {
-      _user_id: user.id,
-      _role: 'admin'
-    })
-    
+
+    const { data: isAdmin, error: roleError } = await supabase.rpc(
+      "is_admin",
+      {
+        user_id: user.id,
+      }
+    );
+
     if (roleError) {
-      console.error('Role check error:', roleError)
-      return false
+      console.error("Role check error:", roleError);
+      return { isAdmin: false, userId: user.id };
     }
-    
-    return Boolean(isAdmin)
-  } catch (error) {
-    console.error('Error verifying admin role:', error)
-    return false
+
+    return { isAdmin: Boolean(isAdmin), userId: user.id };
+  } catch (err) {
+    console.error("Error verifying admin role:", err);
+    return { isAdmin: false, userId: null };
   }
 }
 
@@ -79,13 +82,13 @@ serve(async (req) => {
     }
 
     // Verify admin role
-    const isAdmin = await verifyAdminRole(authHeader)
-    if (!isAdmin) {
+    const { isAdmin, userId } = await verifyAdminRole(authHeader)
+    if (!isAdmin || !userId) {
       return new Response(
         JSON.stringify({ error: 'Admin access required' }),
-        { 
-          status: 403, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       )
     }
@@ -94,6 +97,12 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
+    // Log the admin action
+    await supabase.from("admin_audit_log").insert({
+      admin_id: userId,
+      action: "get_user_emails",
+    });
 
     // Validate and parse query parameters
     const url = new URL(req.url)
