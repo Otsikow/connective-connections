@@ -320,7 +320,10 @@ const Home = () => {
                 <CarouselContent>
                   {upcomingEvents.map((event) => (
                     <CarouselItem key={event.id} className="md:basis-1/2">
-                      <div className="overflow-hidden rounded-3xl border border-white/70 bg-white/95 shadow-[0_15px_35px_-20px_rgba(148,163,184,0.5)] backdrop-blur-sm dark:border-slate-800/70 dark:bg-slate-900">
+                      <div
+                        className="overflow-hidden rounded-3xl border border-white/70 bg-white/95 shadow-[0_15px_35px_-20px_rgba(148,163,184,0.5)] backdrop-blur-sm dark:border-slate-800/70 dark:bg-slate-900 cursor-pointer hover:border-primary/80"
+                        onClick={() => handleNavigate(`/events/${event.id}`)}
+                      >
                         <div className="relative h-48 w-full overflow-hidden">
                           <img
                             src={event.image}
@@ -358,7 +361,10 @@ const Home = () => {
                             <Button
                               size="sm"
                               className="rounded-full bg-[#f7c145] px-5 text-black shadow-sm hover:bg-[#f3b52a]"
-                              onClick={() => handleNavigate(`/events/${event.id}`)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleNavigate(`/events/${event.id}`)
+                              }}
                             >
                               Join Event
                             </Button>
