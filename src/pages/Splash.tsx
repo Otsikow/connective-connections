@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useSubscription } from "@/hooks/useSubscription";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import {
   ArrowRight,
@@ -134,7 +135,10 @@ const membershipBenefits = [
 
 const Splash = () => {
   const navigate = useNavigate();
+  const { isLoading, userId } = useSubscription();
   usePageTitle("Connective Connections | Exclusive Membership");
+
+  const showAuthButtons = !isLoading && !userId;
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#0f172a] text-white">
@@ -148,20 +152,22 @@ const Splash = () => {
         <header className="flex flex-col items-center text-center">
           <div className="absolute top-0 flex w-full items-center justify-between px-6 py-4 sm:px-10 lg:px-0">
             <Logo size="sm" tagline="By Connective" taglineClassName="hidden sm:inline-flex" />
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate("/login")}
-                className="text-sm font-semibold text-gray-300 transition hover:text-white"
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => navigate("/signup")}
-                className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-white/20"
-              >
-                Sign Up
-              </button>
-            </div>
+            {showAuthButtons && (
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => navigate("/login")}
+                  className="text-sm font-semibold text-gray-300 transition hover:text-white"
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => navigate("/signup")}
+                  className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-white/20"
+                >
+                  Sign Up
+                </button>
+              </div>
+            )}
           </div>
           <span className="inline-flex items-center gap-2 rounded-full border border-[#fbbf24]/40 bg-[#f59e0b]/10 px-4 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.35em] text-[#fde68a]">
             Connective Connections
