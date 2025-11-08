@@ -32,7 +32,7 @@ interface Profile {
   full_name: string | null;
   created_at: string | null;
   email?: string | null;
-  role: string | null;
+  roles: string[];
   loading?: boolean;
 }
 
@@ -86,7 +86,6 @@ const Admin = () => {
     },
   ];
 
-  // ✅ Verify current user is admin
   useEffect(() => {
     const verifyAdmin = async () => {
       try {
@@ -101,7 +100,6 @@ const Admin = () => {
           return;
         }
 
-        // Verify admin role using secure has_role function
         const { data: isAdmin, error: roleError } = await supabase
           .rpc("has_role", {
             _user_id: user.id,
@@ -134,13 +132,12 @@ const Admin = () => {
     verifyAdmin();
   }, []);
 
-  // ✅ Load user profiles
   const loadProfiles = async () => {
     try {
       setLoading(true);
       const { data, error: profilesError } = await supabase
         .from("profiles")
-        .select("id, full_name, created_at, email")
+        .select("id, full_name, created_at, email, user_roles(role)")
         .order("created_at", { ascending: false });
 
       if (profilesError) {
@@ -152,7 +149,8 @@ const Admin = () => {
           id: profile.id,
           full_name: profile.full_name,
           created_at: profile.created_at ?? null,
-          role: "user", // Role now managed via user_roles table
+          // @ts-ignore
+          roles: profile.user_roles.map((r) => r.role) ?? [],
           email: profile.email || null,
         }))
       );
@@ -168,7 +166,50 @@ const Admin = () => {
     }
   };
 
-  // ✅ Securely fetch a user’s email through Edge Function
+  const handleRoleChange = async (
+    userId: string,
+    role: string,
+    action: "assign" | "revoke"
+  ) => {
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not logged in");
+
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/manage-user-role`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ userId, role, action }),
+        }
+      );
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update role");
+
+      toast({
+        title: "Success",
+        description: data.message || `Role ${action === "assign" ? "assigned" : "revoked"}.`,
+      });
+
+      await loadProfiles();
+    } catch (err: unknown) {
+      console.error("Role change error:", err);
+      const description =
+        err instanceof Error ? err.message : "Failed to update role";
+      toast({
+        title: "Error",
+        description,
+        variant: "destructive",
+      });
+    }
+  };
+
   const fetchUserEmail = async (userId: string, index: number) => {
     try {
       setProfiles((prev) =>
@@ -208,7 +249,6 @@ const Admin = () => {
     }
   };
 
-  // ✅ Send bulk email through Edge Function
   const handleSendBulkEmail = async () => {
     if (!emailSubject.trim() || !emailMessage.trim()) {
       toast({
@@ -261,7 +301,6 @@ const Admin = () => {
     }
   };
 
-  // 🌀 Loading screen
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -270,7 +309,6 @@ const Admin = () => {
       </div>
     );
 
-  // 🚫 Access Denied
   if (error || !isAdmin)
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -290,10 +328,8 @@ const Admin = () => {
       </div>
     );
 
-  // ✅ Main Admin Panel
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Header */}
       <div className="bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between sticky top-0 z-10">
         <BackButton fallbackPath="/home" />
         <h1 className="text-lg font-semibold flex items-center gap-2">
@@ -303,7 +339,6 @@ const Admin = () => {
       </div>
 
       <div className="p-4 sm:p-6 space-y-6">
-        {/* Core Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {adminMetrics.map(({ title, value, icon: Icon, valueClass }) => (
             <Card key={title}>
@@ -319,7 +354,6 @@ const Admin = () => {
           ))}
         </div>
 
-        {/* Platform Reach */}
         <Card className="border-dashed">
           <CardHeader>
             <CardTitle className="text-base font-semibold text-muted-foreground">
@@ -346,7 +380,6 @@ const Admin = () => {
           </CardContent>
         </Card>
 
-        {/* Bulk Email */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -385,7 +418,6 @@ const Admin = () => {
           </CardContent>
         </Card>
 
-        {/* User Management */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -394,22 +426,25 @@ const Admin = () => {
           </CardHeader>
           <CardContent>
             <div className="rounded-md border overflow-x-auto">
-              <Table className="min-w-[600px]">
+              <Table className="min-w-[700px]">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Role</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Joined</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {profiles.map((profile, index) => (
+                  {profiles.map((profile, index) => {
+                    const isProfileAdmin = profile.roles.includes("admin");
+                    return (
                     <TableRow key={profile.id}>
                       <TableCell>{profile.full_name || "N/A"}</TableCell>
                       <TableCell>
-                        <Badge variant={profile.role === "admin" ? "default" : "secondary"}>
-                          {(profile.role ?? "user").toUpperCase()}
+                        <Badge variant={isProfileAdmin ? "default" : "secondary"}>
+                          {isProfileAdmin ? "ADMIN" : "USER"}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -432,8 +467,31 @@ const Admin = () => {
                           ? new Date(profile.created_at).toLocaleDateString()
                           : "Unknown"}
                       </TableCell>
+                      <TableCell className="text-right">
+                        {isProfileAdmin ? (
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() =>
+                              handleRoleChange(profile.id, "admin", "revoke")
+                            }
+                          >
+                            Revoke Admin
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              handleRoleChange(profile.id, "admin", "assign")
+                            }
+                          >
+                            Make Admin
+                          </Button>
+                        )}
+                      </TableCell>
                     </TableRow>
-                  ))}
+                  )})}
                 </TableBody>
               </Table>
             </div>
