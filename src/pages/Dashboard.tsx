@@ -47,6 +47,7 @@ import {
 import BackButton from "@/components/BackButton";
 import { useSubscription } from "@/hooks/useSubscription";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import PartnerIntelligenceAssistant from "@/components/PartnerIntelligenceAssistant";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -268,6 +269,10 @@ const Dashboard = () => {
             </Button>
           </div>
         </div>
+
+        <section>
+          <PartnerIntelligenceAssistant />
+        </section>
 
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {statCards.map((stat) => (
