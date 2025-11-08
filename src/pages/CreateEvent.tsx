@@ -15,6 +15,9 @@ import {
   Loader2,
   Sparkles,
   Wand2,
+  Palette,
+  Megaphone,
+  NotebookPen,
 } from "lucide-react";
 
 import {
@@ -50,8 +53,10 @@ import {
   CoverStyle,
   generateEventCoverImage,
 } from "@/lib/cover-generator";
+import { motion } from "framer-motion";
 import BackButton from "@/components/BackButton";
 import { usePageTitle } from "@/hooks/usePageTitle";
+
 
 interface AgendaItem {
   id: string;
@@ -423,186 +428,19 @@ const CreateEvent = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <BackButton
-              fallbackPath="/host-dashboard"
-              className="mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-border/60 px-4 py-2 text-sm hover:bg-muted"
-            >
-              Back
-            </BackButton>
-            <h1 className="text-3xl font-bold tracking-tight">Create a Hosted Experience</h1>
-            <p className="mt-2 max-w-2xl text-muted-foreground">
-              Craft a memorable gathering, add your signature touches, and publish it for the right
-              guests. We'll guide you through the essentials.
-            </p>
-          </div>
-          <div className="flex items-center gap-4 rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-4">
-            <ShieldCheck className="h-10 w-10 text-primary" />
-            <div>
-              <p className="font-semibold">Quality host checklist</p>
-              <p className="text-sm text-muted-foreground">
-                Events that complete every step convert 3× more bookings.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.75fr)_minmax(0,1fr)]">
-          <Card className="overflow-hidden border border-dashed border-primary/30 bg-card/60 shadow-sm">
-            <CardHeader className="space-y-1">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Sparkles className="h-4 w-4 text-primary" />
-                Experience cover designer
-              </CardTitle>
-              <CardDescription>
-                Generate on-brand artwork instantly or upload your own image.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="relative aspect-[1200/630] w-full overflow-hidden rounded-3xl border border-border/60 bg-muted/30">
-                {coverPreview ? (
-                  <img
-                    src={coverPreview}
-                    alt="Generated event cover preview"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center p-6 text-center text-sm text-muted-foreground">
-                    <p>
-                      Your generated artwork will appear here. Use your event title, description, and tags to
-                      guide the design.
-                    </p>
-                  </div>
-                )}
-              </div>
-              <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
-                <span>
-                  {coverPreview
-                    ? `Using the ${COVER_STYLE_CONFIG[coverStyle].label} palette.`
-                    : "Choose a palette below and we’ll render a share-ready image."}
-                </span>
-                {coverPreview && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setCoverPreview(null)}
-                    className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground"
-                  >
-                    Remove image
-                  </Button>
-                )}
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Button
-                  type="button"
-                  onClick={handleGenerateCover}
-                  disabled={isGeneratingCover}
-                  className="w-full justify-center gap-2"
-                >
-                  {isGeneratingCover ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Designing cover…
-                    </>
-                  ) : (
-                    <>
-                      <Wand2 className="h-4 w-4" />
-                      {coverPreview ? "Generate new variation" : "Generate cover"}
-                    </>
-                  )}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => coverInputRef.current?.click()}
-                  className="w-full justify-center gap-2"
-                >
-                  <Upload className="h-4 w-4" />
-                  Upload image
-                </Button>
-                <input
-                  ref={coverInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleCoverUpload}
-                  className="hidden"
-                />
-              </div>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm font-medium">Palette</p>
-                  <p className="text-xs text-muted-foreground">
-                    Select a visual mood to influence lighting and accents.
-                  </p>
-                </div>
-                <RadioGroup
-                  value={coverStyle}
-                  onValueChange={(value) => setCoverStyle(value as CoverStyle)}
-                  className="grid gap-3 md:grid-cols-2"
-                >
-                  {coverStyleEntries.map(([styleId, meta]) => (
-                    <label
-                      key={styleId}
-                      htmlFor={`cover-style-${styleId}`}
-                      className={cn(
-                        "relative flex cursor-pointer flex-col gap-3 rounded-2xl border bg-background/80 p-4 transition-all",
-                        coverStyle === styleId
-                          ? "border-primary shadow-[0_0_0_1px_rgba(99,102,241,0.35)]"
-                          : "border-border/60 hover:border-primary/40"
-                      )}
-                    >
-                      <RadioGroupItem value={styleId} id={`cover-style-${styleId}`} className="sr-only" />
-                      <div
-                        className="h-16 w-full rounded-xl border border-white/20 shadow-inner"
-                        style={{
-                          backgroundImage: `linear-gradient(135deg, ${meta.previewGradient[0]}, ${meta.previewGradient[1]}, ${meta.previewGradient[2]})`,
-                        }}
-                      />
-                      <div className="space-y-1">
-                        <p className="text-sm font-semibold">{meta.label}</p>
-                        <p className="text-xs leading-relaxed text-muted-foreground">{meta.description}</p>
-                      </div>
-                      {coverStyle === styleId && (
-                        <span className="absolute right-4 top-4 inline-flex h-2 w-2 rounded-full bg-primary shadow-[0_0_0_4px_rgba(99,102,241,0.35)]" />
-                      )}
-                    </label>
-                  ))}
-                </RadioGroup>
-              </div>
-            </CardContent>
-          </Card>
-          <div className="space-y-4">
-            <Card className="border-dashed border-muted-foreground/40 bg-muted/20">
-              <CardHeader>
-                <CardTitle className="text-base font-semibold">Pro tips</CardTitle>
-                <CardDescription>Use your event details to get the strongest results.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• Finalise the title and description for richer mood text.</li>
-                  <li>• Add tags like “immersive” or “wine tasting” to influence the keyword pills.</li>
-                  <li>• Upload a custom image anytime if you prefer your own photography.</li>
-                </ul>
-              </CardContent>
-            </Card>
-            <Card className="bg-background/80">
-              <CardHeader>
-                <CardTitle className="text-base font-semibold">Why this works</CardTitle>
-                <CardDescription>
-                  The artwork is rendered locally with curated palettes, so it never fails because of external services.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm text-muted-foreground">
-                <p>No API keys required—everything runs in the browser.</p>
-                <p>Generated images are 1200×630, perfect for event pages and social sharing.</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-4 py-8 sm:px-6">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="mx-auto flex w-full max-w-6xl flex-col gap-12"
+      >
+        <BackButton
+          fallbackPath="/host-dashboard"
+          className="w-fit gap-2 rounded-full bg-white/10 px-4 py-2 text-slate-200 shadow-sm backdrop-blur transition-colors"
+        >
+          Back
+        </BackButton>
 
         <div className="mt-12 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <div className="space-y-6">
@@ -717,8 +555,7 @@ const CreateEvent = () => {
                 </div>
               </CardContent>
             </Card>
-
-            <Card className="border border-dashed border-primary/20 bg-card/80">
+             <Card className="border border-dashed border-primary/20 bg-card/80">
               <CardHeader>
                 <CardTitle className="text-lg">Format & location</CardTitle>
                 <CardDescription>
@@ -832,7 +669,6 @@ const CreateEvent = () => {
                 )}
               </CardContent>
             </Card>
-
             <Card className="border border-dashed border-primary/20 bg-card/80">
               <CardHeader>
                 <CardTitle className="text-lg">Schedule & investment</CardTitle>
@@ -948,7 +784,6 @@ const CreateEvent = () => {
                 )}
               </CardContent>
             </Card>
-
             <Card className="border border-dashed border-primary/20 bg-card/80">
               <CardHeader>
                 <CardTitle className="text-lg">Experience flow</CardTitle>
@@ -1040,7 +875,6 @@ const CreateEvent = () => {
                 </Button>
               </CardContent>
             </Card>
-
             <Card className="border border-dashed border-primary/20 bg-card/80">
               <CardHeader>
                 <CardTitle className="text-lg">Ticketing</CardTitle>
@@ -1139,7 +973,6 @@ const CreateEvent = () => {
                 )}
               </CardContent>
             </Card>
-
             <Card className="border border-dashed border-primary/20 bg-card/80">
               <CardHeader>
                 <CardTitle className="text-lg">Host touchpoints</CardTitle>
@@ -1208,8 +1041,7 @@ const CreateEvent = () => {
                 </div>
               </CardFooter>
             </Card>
-          </div>
-
+        </div>
           <div className="space-y-6">
             <Card className="border border-dashed border-primary/30 bg-card/70">
               <CardHeader>
@@ -1317,7 +1149,22 @@ const CreateEvent = () => {
             </Card>
           </div>
         </div>
-      </div>
+      </motion.div>
+    </main>
+  );
+};
+
+
+interface SnapshotItemProps {
+  label: string;
+  value: string;
+}
+
+const SnapshotItem = ({ label, value }: SnapshotItemProps) => {
+  return (
+    <div className="rounded-2xl border border-dashed border-[#e7d4bc] bg-white/70 p-4 transition-colors dark:border-white/10 dark:bg-slate-900/60">
+      <p className="text-xs font-semibold uppercase tracking-wide text-[#b58a57] transition-colors dark:text-amber-200">{label}</p>
+      <p className="mt-1 text-sm text-[#604527] transition-colors dark:text-slate-300">{value}</p>
     </div>
   );
 };
