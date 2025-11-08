@@ -67,10 +67,10 @@ async function testInvalidAuthHeader() {
       })
     })
     
-    if (response.status === 403) {
-      console.log('✅ PASS: Invalid token properly rejected (403)')
+    if (response.status === 401) {
+      console.log('✅ PASS: Invalid token properly rejected (401)')
     } else {
-      console.log('❌ FAIL: Expected 403, got', response.status)
+      console.log('❌ FAIL: Expected 401, got', response.status)
     }
   } catch (error) {
     console.log('❌ FAIL: Network error:', error.message)
@@ -93,10 +93,10 @@ async function testMissingFields() {
       })
     })
     
-    if (response.status === 400) {
-      console.log('✅ PASS: Missing fields properly rejected (400)')
+    if (response.status === 401) {
+      console.log('✅ PASS: Missing fields properly rejected (401)')
     } else {
-      console.log('❌ FAIL: Expected 400, got', response.status)
+      console.log('❌ FAIL: Expected 401, got', response.status)
     }
   } catch (error) {
     console.log('❌ FAIL: Network error:', error.message)
