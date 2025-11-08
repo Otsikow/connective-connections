@@ -117,7 +117,8 @@ const Login = () => {
             {featureHighlights.map((feature) => (
               <div
                 key={feature}
-                className="flex items-start gap-3 rounded-2xl border border-black/5 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5"
+                className="flex cursor-pointer items-start gap-3 rounded-2xl border border-black/5 bg-white/80 p-4 shadow-sm backdrop-blur transition-all hover:border-black/10 hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:hover:border-white/20"
+                onClick={() => navigate("/signup")}
               >
                 <div className="mt-1 h-2 w-2 rounded-full bg-[#E8B956]" />
                 <p className="text-base text-slate-700 dark:text-slate-200">
