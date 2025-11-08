@@ -36,6 +36,7 @@ type UpgradePrompt = {
 };
 
 type SubscriptionContextValue = {
+  userId: string | null;
   tier: SubscriptionTier;
   monthlyConnections: number;
   monthlyEventJoins: number;
@@ -366,6 +367,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
 
   const contextValue = useMemo<SubscriptionContextValue>(
     () => ({
+      userId,
       tier: state.tier,
       monthlyConnections: state.monthlyConnections,
       monthlyEventJoins: state.monthlyEventJoins,
