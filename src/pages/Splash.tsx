@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import {
-  useNavigate,
   ArrowRight,
   Brain,
   CalendarDays,
