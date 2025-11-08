@@ -1,21 +1,28 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.42.3";
 import Stripe from "https://esm.sh/stripe@16.6.0?target=deno";
+import { z } from "https://esm.sh/zod@3.25.76";
 
-type CheckoutMode = "payment" | "subscription";
-
-type CheckoutRequest = {
-  priceId?: string;
-  quantity?: number;
-  mode?: CheckoutMode;
-  successUrl?: string;
-  cancelUrl?: string;
-  metadata?: Record<string, string>;
-  customerId?: string;
-  customerEmail?: string;
-  returnUrl?: string;
-  action?: "checkout" | "billing_portal";
-};
+const CheckoutRequestSchema = z.object({
+  priceId: z.string().optional(),
+  quantity: z.number().int().min(1).optional().default(1),
+  mode: z.enum(["payment", "subscription"]).optional().default("subscription"),
+  successUrl: z.string().url().optional(),
+  cancelUrl: z.string().url().optional(),
+  metadata: z.record(z.string()).optional(),
+  customerId: z.string().optional(),
+  customerEmail: z.string().email().optional(),
+  returnUrl: z.string().url().optional(),
+  action: z.enum(["checkout", "billing_portal"]).optional().default("checkout"),
+}).refine(data => {
+    if (data.action === 'checkout') {
+      return !!data.successUrl && !!data.cancelUrl;
+    }
+    return true;
+}, {
+    message: "successUrl and cancelUrl are required for checkout action",
+    path: ["successUrl", "cancelUrl"],
+});
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -81,8 +88,20 @@ serve(async (req: Request) => {
       );
     }
 
-    const body: CheckoutRequest = await req.json();
-    const action = body.action ?? "checkout";
+    const body = await req.json();
+    const validation = CheckoutRequestSchema.safeParse(body);
+
+    if (!validation.success) {
+      return jsonResponse(
+        {
+          error: "Invalid request body",
+          details: validation.error.flatten().fieldErrors,
+        },
+        { status: 400 },
+      );
+    }
+
+    const { action, ...checkoutData } = validation.data;
 
     const stripe = new Stripe(stripeSecret, {
       apiVersion: "2024-10-28",
@@ -94,8 +113,8 @@ serve(async (req: Request) => {
       : null;
 
     const ensureCustomer = async (): Promise<string | null> => {
-      if (body.customerId) {
-        return body.customerId;
+      if (checkoutData.customerId) {
+        return checkoutData.customerId;
       }
 
       if (user.user_metadata?.stripe_customer_id) {
@@ -114,7 +133,7 @@ serve(async (req: Request) => {
         }
       }
 
-      const email = body.customerEmail ?? user.email ?? undefined;
+      const email = checkoutData.customerEmail ?? user.email ?? undefined;
       let customerId: string | null = null;
 
       if (email) {
@@ -129,7 +148,7 @@ serve(async (req: Request) => {
 
       if (!customerId) {
         const customer = await stripe.customers.create({
-          email: body.customerEmail ?? user.email ?? undefined,
+          email: checkoutData.customerEmail ?? user.email ?? undefined,
           name: user.user_metadata?.full_name,
           metadata: {
             supabaseUserId: user.id,
@@ -149,7 +168,7 @@ serve(async (req: Request) => {
     };
 
     if (action === "billing_portal") {
-      const returnUrl = body.returnUrl ?? req.headers.get("Origin") ?? "";
+      const returnUrl = checkoutData.returnUrl ?? req.headers.get("Origin") ?? "";
       const customerId = await ensureCustomer();
 
       if (!customerId) {
@@ -167,7 +186,7 @@ serve(async (req: Request) => {
       return jsonResponse({ url: portalSession.url });
     }
 
-    const priceId = body.priceId ?? Deno.env.get("STRIPE_DEFAULT_PRICE_ID");
+    const priceId = checkoutData.priceId ?? Deno.env.get("STRIPE_DEFAULT_PRICE_ID");
     if (!priceId) {
       return jsonResponse(
         { error: "Stripe price identifier is required" },
@@ -175,38 +194,27 @@ serve(async (req: Request) => {
       );
     }
 
-    const successUrl = body.successUrl;
-    const cancelUrl = body.cancelUrl;
-
-    if (!successUrl || !cancelUrl) {
-      return jsonResponse(
-        {
-          error:
-            "Both successUrl and cancelUrl must be provided for checkout sessions",
-        },
-        { status: 400 },
-      );
-    }
+    const { successUrl, cancelUrl } = checkoutData;
 
     const customerId = await ensureCustomer();
 
     const session = await stripe.checkout.sessions.create({
-      mode: body.mode ?? "subscription",
+      mode: checkoutData.mode,
       line_items: [
         {
           price: priceId,
-          quantity: body.quantity ?? 1,
+          quantity: checkoutData.quantity,
         },
       ],
-      success_url: successUrl,
-      cancel_url: cancelUrl,
+      success_url: successUrl!,
+      cancel_url: cancelUrl!,
       allow_promotion_codes: true,
       client_reference_id: user.id,
       customer: customerId ?? undefined,
-      customer_email: body.customerEmail ?? user.email ?? undefined,
+      customer_email: checkoutData.customerEmail ?? user.email ?? undefined,
       metadata: {
         supabase_user_id: user.id,
-        ...body.metadata,
+        ...checkoutData.metadata,
       },
     });
 

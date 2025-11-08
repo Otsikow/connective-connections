@@ -165,7 +165,10 @@ const Events = () => {
               transition={{ duration: 0.4, delay: 0.1 }}
               className="self-stretch"
             >
-              <Card className="h-full border-border/60 shadow-lg shadow-primary/10">
+              <Card
+                className="h-full border-border/60 shadow-lg shadow-primary/10 cursor-pointer hover:border-primary/80"
+                onClick={() => navigate(`/events/${featuredEvent.slug}`)}
+              >
                 <CardHeader className="space-y-2 pb-4">
                   <Badge className="w-fit rounded-full bg-amber-500/10 text-amber-600">
                     Featured
@@ -237,7 +240,10 @@ const Events = () => {
                   </div>
                   <Button
                     className="w-full rounded-full bg-primary text-white hover:bg-primary/80 dark:text-black"
-                    onClick={() => navigate(`/events/${featuredEvent.slug}`)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/events/${featuredEvent.slug}`);
+                    }}
                   >
                     View experience details
                   </Button>

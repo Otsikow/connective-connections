@@ -1,6 +1,13 @@
 // supabase/functions/send-bulk-email/index.ts
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.42.3";
+import { z } from "https://esm.sh/zod@3.25.76";
+
+// --- Zod Schema for request body ---
+const BodySchema = z.object({
+  subject: z.string().min(3, { message: "Subject must be at least 3 characters" }),
+  message: z.string().min(10, { message: "Message must be at least 10 characters" }),
+});
 
 // --- CORS headers ---
 const corsHeaders = {
@@ -8,12 +15,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
 };
-
-// --- Interfaces ---
-interface BulkEmailRequest {
-  subject: string;
-  message: string;
-}
 
 interface UserProfile {
   id: string;
@@ -108,17 +109,23 @@ serve(async (req: Request) => {
       );
     }
 
-    // Parse request body
-    const { subject, message }: BulkEmailRequest = await req.json();
-    if (!subject || !message) {
+    // Validate and parse request body
+    const body = await req.json();
+    const validationResult = BodySchema.safeParse(body);
+
+    if (!validationResult.success) {
       return new Response(
-        JSON.stringify({ error: "Subject and message are required" }),
+        JSON.stringify({
+          error: "Invalid request body",
+          details: validationResult.error.flatten().fieldErrors,
+        }),
         {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
       );
     }
+    const { subject, message } = validationResult.data;
 
     // Create Supabase admin client
     const supabaseAdmin = createClient(
