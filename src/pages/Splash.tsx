@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import {
   ArrowRight,
@@ -25,6 +26,10 @@ const experienceCards = [
     description:
       "Weekly gatherings curated for candid conversation and co-creation with founders, creatives, and investors.",
     detail: "Hosted in penthouses, ateliers, and private clubs across 12 global cities.",
+    cta: {
+      label: "Explore salons",
+      path: "/events",
+    },
   },
   {
     icon: Map,
@@ -32,6 +37,10 @@ const experienceCards = [
     description:
       "Immersive weekends designed for restoration, collaboration, and unlocking your next chapter together.",
     detail: "From Napa estates to coastal hideaways, every itinerary is handcrafted.",
+    cta: {
+      label: "Discover retreats",
+      path: "/events",
+    },
   },
   {
     icon: Users2,
@@ -39,6 +48,10 @@ const experienceCards = [
     description:
       "Curated matches backed by neuroscience ensure every connection has the potential to become transformational.",
     detail: "Receive warm intros, mastermind circles, and follow-up playbooks each month.",
+    cta: {
+      label: "Start connecting",
+      path: "/signup",
+    },
   },
 ];
 
@@ -202,19 +215,28 @@ const Splash = () => {
             {experienceCards.map((card) => (
               <div
                 key={card.title}
-                className="rounded-3xl border border-gray-800/70 bg-[#1e293b]/80 p-8 shadow-[0_25px_60px_-40px_rgba(15,23,42,0.8)]"
+                className="flex flex-col rounded-3xl border border-gray-800/70 bg-[#1e293b]/80 p-8 shadow-[0_25px_60px_-40px_rgba(15,23,42,0.8)]"
               >
                 <div className="flex items-start gap-5">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fbbf24]/15 text-[#fde68a]">
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#fbbf24]/15 text-[#fde68a]">
                     <card.icon className="h-6 w-6" />
                   </div>
-                  <div className="space-y-3 text-left">
+                  <div className="flex-grow space-y-3 text-left">
                     <div>
                       <h3 className="text-lg font-semibold text-white">{card.title}</h3>
-                      <p className="mt-3 text-sm text-gray-300">{card.description}</p>
+                      <p className="mt-2 text-sm text-gray-300">{card.description}</p>
                     </div>
                     <p className="text-xs uppercase tracking-[0.35em] text-gray-500">{card.detail}</p>
                   </div>
+                </div>
+                <div className="mt-6 flex justify-end">
+                  <Button
+                    variant="ghost"
+                    className="inline-flex items-center gap-2 rounded-full text-sm font-semibold text-[#fde68a] hover:bg-[#fbbf24]/20 hover:text-[#fde68a]"
+                    onClick={() => navigate(card.cta.path)}
+                  >
+                    {card.cta.label} <ArrowRight className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             ))}
