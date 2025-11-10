@@ -9,6 +9,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SubscriptionProvider } from "@/hooks/useSubscription";
 import { BottomNav } from "@/components/BottomNav";
+import { Footer } from "@/components/Footer";
 
 // Pages
 import Splash from "./pages/Splash";
@@ -32,6 +33,10 @@ import HostCreateExperience from "./pages/HostCreateExperience";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback";
+import Privacy from "./pages/legal/Privacy";
+import Terms from "./pages/legal/Terms";
+import Accessibility from "./pages/legal/Accessibility";
+import Cookies from "./pages/legal/Cookies";
 
 const queryClient = new QueryClient();
 
@@ -207,6 +212,38 @@ const AnimatedRoutes = () => {
           }
         />
         <Route
+          path="/privacy"
+          element={
+            <PageTransition>
+              <Privacy />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/terms"
+          element={
+            <PageTransition>
+              <Terms />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/accessibility"
+          element={
+            <PageTransition>
+              <Accessibility />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/cookies"
+          element={
+            <PageTransition>
+              <Cookies />
+            </PageTransition>
+          }
+        />
+        <Route
           path="*"
           element={
             <PageTransition>
@@ -231,6 +268,7 @@ const AppContent = () => {
       {showThemeToggle && <ThemeToggle />}
       <div className="pb-24 md:pb-0">
         <AnimatedRoutes />
+        <Footer />
       </div>
       <BottomNav currentPath={location.pathname} />
     </>
