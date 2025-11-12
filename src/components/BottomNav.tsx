@@ -33,8 +33,13 @@ export const BottomNav = ({ currentPath }: BottomNavProps) => {
   };
 
   return (
-    <nav className="fixed inset-x-0 bottom-4 z-50 flex justify-center px-4 md:hidden">
-      <div className="flex h-[4.5rem] w-full max-w-xl items-center justify-between gap-1 rounded-[36px] border border-border/40 bg-card/90 px-3 py-2 shadow-[0_30px_60px_-35px_rgba(188,150,82,0.6)] backdrop-blur-xl supports-[backdrop-filter]:bg-card/80">
+    <nav
+      className="fixed inset-x-0 bottom-0 z-50 flex justify-center px-3 pt-2"
+      style={{
+        paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 0.75rem)",
+      }}
+    >
+      <div className="flex w-full max-w-3xl items-center justify-between gap-2 rounded-[32px] border border-border/40 bg-card/95 px-3 py-2 shadow-[0_30px_60px_-35px_rgba(188,150,82,0.6)] backdrop-blur-xl supports-[backdrop-filter]:bg-card/85">
         {navItems.map(({ icon: Icon, label, path }) => {
           const isActive =
             activePath === path || activePath.startsWith(`${path}/`);
@@ -44,7 +49,7 @@ export const BottomNav = ({ currentPath }: BottomNavProps) => {
               key={path}
               type="button"
               onClick={() => handleNavClick(path)}
-              className={`relative flex h-14 flex-1 flex-col items-center justify-center gap-1 rounded-[28px] px-2 text-[11px] font-semibold uppercase tracking-[0.08em] transition-all ${
+              className={`relative flex min-w-[56px] flex-1 flex-col items-center justify-center gap-1 rounded-[24px] px-2 text-[10px] font-semibold uppercase leading-tight tracking-[0.08em] transition-all ${
                 isActive
                   ? "bg-card/80 text-foreground shadow-[0_24px_55px_-32px_rgba(188,150,82,0.6)]"
                   : "text-foreground/60 hover:text-foreground"
@@ -64,7 +69,7 @@ export const BottomNav = ({ currentPath }: BottomNavProps) => {
               >
                 <Icon size={22} strokeWidth={isActive ? 2.4 : 2} />
               </motion.div>
-              <span className="leading-none">{label}</span>
+              <span className="text-center leading-tight">{label}</span>
               {isActive && (
                 <motion.div
                   className="absolute bottom-2 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[hsl(var(--primary))]"
