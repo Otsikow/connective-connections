@@ -12,90 +12,90 @@
 
 @layer base {
   :root {
-    /* Brand Colors */
-    --ocean-teal: 174 65% 48%;
-    --warm-coral: 14 100% 70%;
-    --soft-cream: 30 100% 97%;
-    --charcoal: 0 0% 17%;
-    --cream-bg: 30 100% 97%;
+    /* Brand Accents */
+    --sunrise-gold: 43 95% 64%;
+    --sunset-amber: 36 96% 70%;
+    --blush-haze: 18 60% 95%;
+    --ink: 229 33% 15%;
 
     /* Core Palette */
-    --background: 30 100% 97%;
-    --foreground: 0 0% 17%;
+    --background: 39 56% 94%;
+    --foreground: 229 33% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 17%;
+    --card-foreground: 229 33% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 17%;
+    --popover-foreground: 229 33% 15%;
 
-    --primary: 174 65% 48%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 43 95% 64%;
+    --primary-foreground: 27 35% 18%;
 
-    --secondary: 14 100% 70%;
-    --secondary-foreground: 0 0% 17%;
+    --secondary: 34 54% 90%;
+    --secondary-foreground: 229 33% 20%;
 
-    --muted: 30 20% 90%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 30 32% 88%;
+    --muted-foreground: 27 18% 38%;
 
-    --accent: 174 65% 48%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 37 90% 72%;
+    --accent-foreground: 30 40% 16%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 30% 88%;
-    --input: 30 30% 88%;
-    --ring: 174 65% 48%;
+    --border: 32 32% 85%;
+    --input: 32 32% 85%;
+    --ring: 43 95% 64%;
 
-    --radius: 1rem;
+    --radius: 1.75rem;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(174 65% 48%), hsl(174 70% 58%));
-    --gradient-warm: linear-gradient(135deg, hsl(14 100% 70%), hsl(25 100% 75%));
+    --gradient-primary: linear-gradient(135deg, hsl(43 95% 64%), hsl(36 96% 70%));
+    --gradient-warm: linear-gradient(155deg, hsl(37 90% 72%), hsl(43 95% 64%));
+    --app-gradient: radial-gradient(circle at 10% 20%, hsl(42 64% 96%), hsl(37 60% 90%));
 
     /* Shadows */
-    --shadow-soft: 0 4px 20px -2px hsl(174 65% 48% / 0.15);
-    --shadow-card: 0 2px 12px -2px hsl(0 0% 0% / 0.08);
+    --shadow-soft: 0 20px 60px -35px hsl(33 52% 40% / 0.55);
+    --shadow-card: 0 25px 60px -30px hsl(36 60% 40% / 0.45);
 
     /* Transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
-    /* Professional Dark Mode Palette */
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
+    /* Nocturnal palette with warm accents */
+    --background: 229 33% 8%;
+    --foreground: 36 58% 92%;
 
-    --card: 222 47% 14%;
-    --card-foreground: 210 40% 98%;
+    --card: 229 33% 12%;
+    --card-foreground: 36 58% 92%;
 
-    --popover: 222 47% 14%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 229 33% 12%;
+    --popover-foreground: 36 58% 92%;
 
-    --primary: 174 65% 48%;
-    /* Improve contrast on vibrant surfaces in dark mode by using a dark foreground */
-    --primary-foreground: 0 0% 8%;
+    --primary: 43 95% 64%;
+    --primary-foreground: 229 33% 12%;
 
-    --secondary: 14 100% 70%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 229 33% 18%;
+    --secondary-foreground: 43 95% 90%;
 
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 228 28% 18%;
+    --muted-foreground: 36 36% 78%;
 
-    --accent: 174 60% 50%;
-    --accent-foreground: 0 0% 8%;
+    --accent: 40 82% 62%;
+    --accent-foreground: 229 33% 12%;
+    --ink: 229 33% 12%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 217 33% 22%;
-    --input: 217 33% 22%;
-    --ring: 174 65% 48%;
+    --border: 229 33% 22%;
+    --input: 229 33% 22%;
+    --ring: 43 95% 64%;
 
     /* Dark Mode Shadows */
-    --shadow-soft: 0 4px 20px -2px hsl(174 65% 48% / 0.25);
-    --shadow-card: 0 2px 16px -2px hsl(0 0% 0% / 0.4);
+    --shadow-soft: 0 24px 50px -30px hsl(42 80% 60% / 0.35);
+    --shadow-card: 0 20px 50px -30px hsl(229 60% 5% / 0.7);
   }
 }
 
@@ -106,7 +106,14 @@
 
   body {
     @apply bg-background text-foreground;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    background-image: var(--app-gradient);
+    background-attachment: fixed;
+    background-size: cover;
+    transition: background 0.45s ease, color 0.45s ease;
+  }
+
+  .dark body {
+    background-image: radial-gradient(circle at 20% 10%, hsl(229 33% 12%), hsl(229 33% 6%));
   }
 
   ::selection {
@@ -120,10 +127,10 @@
   }
 
   /* Subtle glow effects for dark mode */
-  .dark {
-    --glow-primary: 0 0 20px hsl(174 65% 48% / 0.15);
-    --glow-secondary: 0 0 20px hsl(14 100% 70% / 0.15);
-  }
+    .dark {
+      --glow-primary: 0 0 28px hsl(43 95% 64% / 0.18);
+      --glow-secondary: 0 0 28px hsl(37 90% 72% / 0.18);
+    }
 
   /* Enhanced card appearance */
   .dark .card,
