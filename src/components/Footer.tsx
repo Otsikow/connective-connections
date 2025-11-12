@@ -27,12 +27,12 @@ import {
   ShieldCheck,
   Sparkles,
   Stars,
-  Tiktok,
   Twitter,
   User,
   Users,
   Youtube,
 } from "lucide-react";
+import { SiTiktok } from "react-icons/si";
 import { Logo } from "@/components/Logo";
 import { cn } from "@/lib/utils";
 
@@ -226,7 +226,7 @@ const socialLinks: ExternalFooterLink[] = [
   {
     label: "TikTok",
     href: "https://www.tiktok.com/@connective",
-    icon: Tiktok,
+    icon: SiTiktok as any,
     external: true,
   },
   {
