@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { motion } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Home, Calendar, MessageSquare, User, Users } from "lucide-react";
@@ -27,17 +28,19 @@ export const BottomNav = ({ currentPath }: BottomNavProps) => {
   const activePath = currentPath || location.pathname;
 
   const handleNavClick = (path: string) => {
-    triggerHaptic('selection');
+    triggerHaptic("selection");
     navigate(path);
+  };
+
+  const navStyles: CSSProperties = {
+    paddingBottom: "env(safe-area-inset-bottom, 0px)",
   };
 
   return (
     <nav
       aria-label="Primary navigation"
       className="fixed inset-x-0 bottom-0 z-50 px-3 pt-2"
-      style={{
-        paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 0.75rem)",
-      }}
+      style={navStyles}
     >
       <div className="mx-auto w-full max-w-4xl rounded-[30px] border border-border/40 bg-card/95 p-1.5 shadow-[0_30px_60px_-35px_rgba(188,150,82,0.6)] backdrop-blur-xl supports-[backdrop-filter]:bg-card/85">
         <div className="flex w-full items-stretch gap-1 overflow-x-auto px-0.5 py-0.5 scrollbar-none sm:gap-1.5 sm:px-1">
