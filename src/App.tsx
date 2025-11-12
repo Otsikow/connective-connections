@@ -264,9 +264,18 @@ const AppContent = () => {
   const showThemeToggle = location.pathname === "/";
 
   return (
-    <div className="relative flex min-h-screen flex-col">
+    <div
+      className="relative flex min-h-screen flex-col"
+      style={{ "--bottom-nav-height": "5.75rem" }}
+    >
       {showThemeToggle && <ThemeToggle />}
-      <main className="flex-1 pb-[calc(5.75rem+env(safe-area-inset-bottom,0px))]">
+      <main
+        className="flex-1"
+        style={{
+          paddingBottom:
+            "calc(var(--bottom-nav-height, 5.75rem) + env(safe-area-inset-bottom, 0px))",
+        }}
+      >
         <AnimatedRoutes />
         <Footer />
       </main>
