@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import {
   Carousel,
   CarouselContent,
@@ -20,7 +21,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertTriangle, ArrowRight, MessageCircle, MapPin, PlayCircle, Send, Sparkles, Star, Calendar } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowRight,
+  MessageCircle,
+  MapPin,
+  PlayCircle,
+  Send,
+  Sparkles,
+  Star,
+  Calendar,
+  Users,
+} from "lucide-react";
 import BackButton from "@/components/BackButton";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
@@ -266,6 +278,17 @@ const Home = () => {
                 onClick={() => handleNavigate("/splash")}
               >
                 <PlayCircle className="mr-2 h-5 w-5" /> Watch walkthrough
+              </Button>
+              <Button
+                size="lg"
+                variant="ghost"
+                className={cn(
+                  "rounded-full border border-[#f7c145]/40 bg-white/85 text-slate-700 shadow-sm hover:bg-[#fff4d6]",
+                  "dark:border-[#f7c145]/40 dark:bg-slate-900/70 dark:text-slate-200 dark:hover:bg-slate-900",
+                )}
+                onClick={() => handleNavigate("/community")}
+              >
+                <Users className="mr-2 h-5 w-5" /> Explore community
               </Button>
             </div>
           </div>
