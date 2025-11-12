@@ -264,14 +264,14 @@ const AppContent = () => {
   const showThemeToggle = location.pathname === "/";
 
   return (
-    <>
+    <div className="relative flex min-h-screen flex-col">
       {showThemeToggle && <ThemeToggle />}
-      <div className="pb-24 md:pb-0">
+      <main className="flex-1 pb-[calc(5.75rem+env(safe-area-inset-bottom,0px))]">
         <AnimatedRoutes />
         <Footer />
-      </div>
+      </main>
       <BottomNav currentPath={location.pathname} />
-    </>
+    </div>
   );
 };
 
