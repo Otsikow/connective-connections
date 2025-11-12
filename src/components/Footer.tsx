@@ -1,22 +1,37 @@
 import { Link } from "react-router-dom";
 import {
-  CalendarCheck,
-  Home,
-  MessageSquare,
-  Sparkles,
-  Users,
-  MapPin,
-  Mail,
-  ShieldCheck,
-  User,
-  ClipboardPen,
+  Accessibility,
+  ArrowUpRight,
+  BookOpen,
   Building2,
+  CalendarCheck,
+  CalendarPlus,
+  Clock3,
+  Cookie,
+  Facebook,
+  Globe,
+  Handshake,
   Headphones,
-  LucideIcon,
+  Home,
   Instagram,
+  LifeBuoy,
   Linkedin,
-  Youtube,
+  LucideIcon,
+  Mail,
+  MapPin,
+  Megaphone,
+  MessageCircle,
+  MessageSquare,
+  Phone,
+  Shield,
+  ShieldCheck,
+  Sparkles,
+  Stars,
+  Tiktok,
   Twitter,
+  User,
+  Users,
+  Youtube,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { cn } from "@/lib/utils";
@@ -41,43 +56,56 @@ type FooterLink = InternalFooterLink | ExternalFooterLink;
 
 const navSections: { title: string; links: FooterLink[] }[] = [
   {
-    title: "Platform",
+    title: "Discover",
     links: [
       {
         label: "Home",
         to: "/home",
         icon: Home,
-        description: "Personalized concierge and upcoming spotlights.",
+        description: "Personal concierge with curated spotlights and highlights.",
       },
       {
         label: "Events",
         to: "/events",
         icon: CalendarCheck,
-        description: "Curated gatherings and immersive experiences.",
-      },
-      {
-        label: "Matches",
-        to: "/matches",
-        icon: Users,
-        description: "Thoughtful introductions powered by our matching engine.",
-      },
-      {
-        label: "Friend Finder",
-        to: "/friend-finder",
-        icon: Sparkles,
-        description: "Find kindred spirits around shared passions.",
+        description: "Attend salon dinners, immersive retreats, and pop-up gatherings.",
       },
       {
         label: "Community",
         to: "/community",
         icon: MessageSquare,
-        description: "Member forums, micro-communities, and conversations.",
+        description: "Join conversations, masterminds, and private cohorts.",
+      },
+      {
+        label: "Friend Finder",
+        to: "/friend-finder",
+        icon: Sparkles,
+        description: "Meet members nearby who share your passions and ambitions.",
+      },
+      {
+        label: "Stories",
+        href: "https://stories.connective.app",
+        icon: BookOpen,
+        description: "Spotlights on members and hosts shaping the Connective world.",
+        external: true,
       },
     ],
   },
   {
-    title: "Members",
+    title: "Membership",
     links: [
+      {
+        label: "Matches",
+        to: "/matches",
+        icon: Users,
+        description: "Thoughtful introductions crafted by our relationship engine.",
+      },
+      {
+        label: "Messages",
+        to: "/messages",
+        icon: MessageCircle,
+        description: "Stay in touch with your circle and coordinate next meetups.",
+      },
       {
         label: "Profile",
         to: "/profile",
@@ -87,20 +115,45 @@ const navSections: { title: string; links: FooterLink[] }[] = [
       {
         label: "Dashboard",
         to: "/dashboard",
-        icon: ClipboardPen,
-        description: "Insights, membership status, and premium upgrades.",
+        icon: Stars,
+        description: "Track invitations, membership status, and unlock upgrades.",
       },
       {
-        label: "Host Hub",
+        label: "Member Guidelines",
+        href: "https://connective.app/guidelines",
+        icon: Shield,
+        description: "Our code of belonging for an inclusive, respectful community.",
+        external: true,
+      },
+    ],
+  },
+  {
+    title: "Hosts & Partners",
+    links: [
+      {
+        label: "Host Dashboard",
         to: "/host-dashboard",
         icon: Building2,
         description: "Tools for approved hosts and experience designers.",
       },
       {
+        label: "Create an Experience",
+        to: "/host/create-experience",
+        icon: Sparkles,
+        description: "Design bespoke journeys in collaboration with our team.",
+      },
+      {
         label: "Create an Event",
         to: "/host/create-event",
-        icon: Sparkles,
-        description: "Submit a new gathering for the curation team.",
+        icon: CalendarPlus,
+        description: "Submit a new gathering for the curation committee.",
+      },
+      {
+        label: "Partnerships",
+        href: "mailto:partnerships@connective.app",
+        icon: Handshake,
+        description: "Co-create experiences with brands and cultural institutions.",
+        external: true,
       },
     ],
   },
@@ -124,8 +177,15 @@ const navSections: { title: string; links: FooterLink[] }[] = [
       {
         label: "Press Inquiries",
         href: "mailto:press@connective.app",
-        icon: Mail,
+        icon: Megaphone,
         description: "Connect with our communications team.",
+        external: true,
+      },
+      {
+        label: "Help Center",
+        href: "https://help.connective.app",
+        icon: LifeBuoy,
+        description: "Guides, FAQs, and tips for making the most of Connective.",
         external: true,
       },
     ],
@@ -135,26 +195,44 @@ const navSections: { title: string; links: FooterLink[] }[] = [
 const socialLinks: ExternalFooterLink[] = [
   {
     label: "LinkedIn",
-    href: "https://www.linkedin.com/",
+    href: "https://www.linkedin.com/company/connective",
     icon: Linkedin,
     external: true,
   },
   {
     label: "Instagram",
-    href: "https://www.instagram.com/",
+    href: "https://www.instagram.com/connective",
     icon: Instagram,
     external: true,
   },
   {
     label: "YouTube",
-    href: "https://www.youtube.com/",
+    href: "https://www.youtube.com/@connective",
     icon: Youtube,
     external: true,
   },
   {
     label: "X",
-    href: "https://x.com/",
+    href: "https://x.com/connective",
     icon: Twitter,
+    external: true,
+  },
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/connective",
+    icon: Facebook,
+    external: true,
+  },
+  {
+    label: "TikTok",
+    href: "https://www.tiktok.com/@connective",
+    icon: Tiktok,
+    external: true,
+  },
+  {
+    label: "Website",
+    href: "https://connective.app",
+    icon: Globe,
     external: true,
   },
 ];
@@ -168,9 +246,18 @@ const contactDetails: (
     label: "Operating globally with hubs in New York, London, and Singapore.",
   },
   {
+    icon: Phone,
+    label: "+1 (844) 555-0199",
+    href: "tel:+18445550199",
+  },
+  {
     icon: Mail,
     label: "hello@connective.app",
     href: "mailto:hello@connective.app",
+  },
+  {
+    icon: Clock3,
+    label: "Member services available Monday to Saturday, 8am – 10pm local time.",
   },
   {
     icon: ShieldCheck,
@@ -178,10 +265,61 @@ const contactDetails: (
   },
 ];
 
+const legalLinks: { to: string; label: string; icon: LucideIcon }[] = [
+  { to: "/privacy", label: "Privacy", icon: Shield },
+  { to: "/terms", label: "Terms", icon: BookOpen },
+  { to: "/accessibility", label: "Accessibility", icon: Accessibility },
+  { to: "/cookies", label: "Cookies", icon: Cookie },
+];
+
 export const Footer = () => {
   return (
-    <footer className="border-t border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto w-full max-w-7xl px-6 py-16 lg:px-8">
+    <footer className="relative isolate overflow-hidden border-t border-border/60 bg-gradient-to-b from-background via-background/95 to-background">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-amber-300/15 via-transparent to-transparent"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-32 top-1/3 h-64 w-64 rounded-full bg-amber-400/10 blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-24 bottom-12 h-72 w-72 rounded-full bg-amber-300/10 blur-3xl"
+      />
+      <div className="relative mx-auto w-full max-w-7xl px-6 py-16 lg:px-8">
+        <div className="mb-16 rounded-3xl border border-white/10 bg-card/70 p-8 shadow-[0_25px_60px_-35px_rgba(251,191,36,0.55)] backdrop-blur">
+          <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-3">
+              <span className="text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground/80">
+                Join the community
+              </span>
+              <h2 className="max-w-xl text-2xl font-semibold text-foreground sm:text-3xl">
+                Hospitality reimagined for leaders, creators, and innovators who value meaningful connection.
+              </h2>
+              <p className="max-w-xl text-sm text-muted-foreground">
+                Apply to the private membership or collaborate with our team to craft unforgettable experiences for your
+                community.
+              </p>
+            </div>
+            <div className="flex flex-col gap-4 sm:flex-row">
+              <Link
+                to="/signup"
+                className="inline-flex items-center justify-center rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background shadow-lg shadow-amber-500/30 transition hover:-translate-y-0.5 hover:bg-foreground/90"
+              >
+                Become a member
+              </Link>
+              <a
+                href="mailto:partnerships@connective.app"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-border/80 px-5 py-3 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:border-foreground/80 hover:text-foreground"
+              >
+                Partner with us
+                <ArrowUpRight className="h-4 w-4" />
+              </a>
+            </div>
+          </div>
+        </div>
+
         <div className="grid gap-12 lg:grid-cols-[1.75fr_1fr_1fr_1fr]">
           <div className="space-y-8">
             <Logo size="sm" tagline="Where meaningful connections begin" showGlow={false} />
@@ -282,10 +420,9 @@ export const Footer = () => {
         <div className="mt-12 flex flex-col gap-4 border-t border-border pt-6 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} Connective Connections. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            <FooterLegalLink to="/privacy" label="Privacy" />
-            <FooterLegalLink to="/terms" label="Terms" />
-            <FooterLegalLink to="/accessibility" label="Accessibility" />
-            <FooterLegalLink to="/cookies" label="Cookies" />
+            {legalLinks.map((link) => (
+              <FooterLegalLink key={link.label} {...link} />
+            ))}
           </div>
         </div>
       </div>
@@ -296,23 +433,32 @@ export const Footer = () => {
 interface FooterLegalLinkProps {
   to: string;
   label: string;
+  icon: LucideIcon;
 }
 
-const FooterLegalLink = ({ to, label }: FooterLegalLinkProps) => {
+const FooterLegalLink = ({ to, label, icon: Icon }: FooterLegalLinkProps) => {
   const isInternal = to.startsWith("/");
-  const classes = cn("transition-colors hover:text-foreground");
+  const classes = cn(
+    "inline-flex items-center gap-1.5 text-xs font-medium transition-colors hover:text-foreground"
+  );
+  const content = (
+    <>
+      <Icon className="h-3.5 w-3.5" />
+      <span>{label}</span>
+    </>
+  );
 
   if (isInternal) {
     return (
       <Link to={to} className={classes}>
-        {label}
+        {content}
       </Link>
     );
   }
 
   return (
     <a href={to} className={classes} target="_blank" rel="noreferrer">
-      {label}
+      {content}
     </a>
   );
 };
