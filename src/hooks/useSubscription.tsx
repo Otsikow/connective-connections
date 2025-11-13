@@ -37,6 +37,8 @@ type UpgradePrompt = {
 
 type SubscriptionContextValue = {
   userId: string | null;
+  fullName: string | null;
+  email: string | null;
   tier: SubscriptionTier;
   monthlyConnections: number;
   monthlyEventJoins: number;
@@ -64,11 +66,19 @@ const defaultProfileState = {
   monthlyConnections: 0,
   monthlyEventJoins: 0,
   subscriptionExpires: null as Date | null,
+  fullName: null as string | null,
+  email: null as string | null,
 };
 
 type ProfileUsage = Pick<
   Tables<"profiles">,
-  "subscription_tier" | "monthly_connections" | "monthly_event_joins" | "subscription_expires"
+  |
+    "subscription_tier"
+    | "monthly_connections"
+    | "monthly_event_joins"
+    | "subscription_expires"
+    | "full_name"
+    | "email"
 >;
 
 const normalizeProfileUsage = (profile?: ProfileUsage | null) => ({
@@ -78,6 +88,8 @@ const normalizeProfileUsage = (profile?: ProfileUsage | null) => ({
   subscriptionExpires: profile?.subscription_expires
     ? new Date(profile.subscription_expires)
     : null,
+  fullName: profile?.full_name ?? null,
+  email: profile?.email ?? null,
 });
 
 export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
@@ -160,7 +172,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
           const { data: profile, error } = await supabase
             .from("profiles")
             .select(
-              "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires",
+              "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires, full_name, email",
             )
             .eq("id", id)
             .maybeSingle();
@@ -185,7 +197,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
                 .from("profiles")
                 .insert([{ id }])
                 .select(
-                  "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires",
+                  "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires, full_name, email",
                 )
                 .maybeSingle();
 
@@ -340,7 +352,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
         })
         .eq("id", userId)
         .select(
-          "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires",
+          "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires, full_name, email",
         )
         .maybeSingle();
 
@@ -391,6 +403,8 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
   const contextValue = useMemo<SubscriptionContextValue>(
     () => ({
       userId,
+      fullName: state.fullName,
+      email: state.email,
       tier: state.tier,
       monthlyConnections: state.monthlyConnections,
       monthlyEventJoins: state.monthlyEventJoins,
@@ -408,6 +422,9 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       fetchProfile,
       openUpgrade,
       requireProFeature,
+      userId,
+      state.fullName,
+      state.email,
       state.monthlyConnections,
       state.monthlyEventJoins,
       state.subscriptionExpires,

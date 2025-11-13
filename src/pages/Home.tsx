@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Carousel,
   CarouselContent,
@@ -35,6 +36,7 @@ import {
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useSubscription } from "@/hooks/useSubscription";
 
 type Feature = {
   value: string;
@@ -47,12 +49,52 @@ type Feature = {
   spotlight: { avatar: string; name: string; tagline: string };
 };
 
+const deriveInitials = (fullName?: string | null, email?: string | null) => {
+  const normalizedName = fullName?.trim();
+  if (normalizedName) {
+    const parts = normalizedName.split(/\s+/).filter(Boolean);
+    if (parts.length === 1) {
+      return parts[0].charAt(0).toUpperCase();
+    }
+    const first = parts[0]?.charAt(0) ?? "";
+    const last = parts[parts.length - 1]?.charAt(0) ?? "";
+    const combined = `${first}${last}`;
+    if (combined.trim()) {
+      return combined.toUpperCase();
+    }
+  }
+
+  const identifier = email?.split("@")[0]?.trim();
+  if (identifier) {
+    const segments = identifier.split(/[._-]+/).filter(Boolean);
+    if (segments.length === 1) {
+      const segment = segments[0];
+      if (segment.length >= 2) {
+        return segment.slice(0, 2).toUpperCase();
+      }
+      return segment.charAt(0).toUpperCase();
+    }
+    const first = segments[0]?.charAt(0) ?? "";
+    const last = segments[segments.length - 1]?.charAt(0) ?? "";
+    const combined = `${first}${last}`;
+    if (combined.trim()) {
+      return combined.toUpperCase();
+    }
+  }
+
+  return "U";
+};
+
 const Home = () => {
   const navigate = useNavigate();
   usePageTitle("Member Home");
   const [activeFeature, setActiveFeature] = useState("friends");
   const [showSubscribePrompt, setShowSubscribePrompt] = useState(false);
   const isSubscribed = false;
+  const { fullName, email } = useSubscription();
+
+  const userInitials = useMemo(() => deriveInitials(fullName, email), [fullName, email]);
+  const avatarAltText = fullName ? `${fullName}'s profile avatar` : "User profile avatar";
 
   const features: Feature[] = useMemo(
     () => [
@@ -239,15 +281,22 @@ const Home = () => {
             >
               Join now
             </Button>
-            <Avatar
-              className="h-10 w-10 cursor-pointer ring-2 ring-[#f7c145]/80 ring-offset-2 ring-offset-white transition-shadow hover:shadow-lg dark:ring-[#f4c96c]/90 dark:ring-offset-slate-950"
-              onClick={() => navigate("/profile")}
-            >
-              <AvatarImage src="/placeholder.svg" alt="User" />
-              <AvatarFallback className="bg-gradient-to-br from-[#f7c145] via-[#f3b52a] to-[#e89c1f] text-sm font-bold uppercase text-white shadow-sm dark:from-slate-700 dark:via-slate-700 dark:to-slate-600 dark:text-white">
-                U
-              </AvatarFallback>
-            </Avatar>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Avatar
+                  className="h-10 w-10 cursor-pointer ring-2 ring-[#f7c145]/80 ring-offset-2 ring-offset-white transition-shadow hover:shadow-lg dark:ring-[#f4c96c]/90 dark:ring-offset-slate-950"
+                  onClick={() => navigate("/profile")}
+                >
+                  <AvatarImage src="/placeholder.svg" alt={avatarAltText} />
+                  <AvatarFallback className="bg-gradient-to-br from-[#f7c145] via-[#f3b52a] to-[#e89c1f] text-sm font-bold uppercase text-white shadow-sm dark:from-slate-700 dark:via-slate-700 dark:to-slate-600 dark:text-white">
+                    {userInitials}
+                  </AvatarFallback>
+                </Avatar>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" align="center">
+                View Profile
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
       </header>
