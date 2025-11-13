@@ -12,11 +12,11 @@ import {
   HeadphonesIcon,
   MessageSquare,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import heroBackground from "@/assets/hero-background.jpg";
 import coffeeLover from "@/assets/coffee-lover.jpg";
 import bookChat from "@/assets/book-chat.jpg";
-import fitnessPartner from "@/assets/fitness-partner.jpg";
 import coffeeCrawl from "@/assets/coffee-crawl.jpg";
 import cookingClass from "@/assets/cooking-class.jpg";
 import memberSarah from "@/assets/member-sarah.jpg";
@@ -33,14 +33,10 @@ const Index = () => {
   const heroOverlayGradient = isDark
     ? "linear-gradient(rgba(11, 14, 23, 0.9) 0%, rgba(11, 14, 23, 0.6) 50%, rgba(11, 14, 23, 1) 100%)"
     : "linear-gradient(rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.8) 50%, rgba(241, 245, 249, 0.95) 100%)";
-  const friendFinderOverlay = isDark
-    ? "linear-gradient(0deg, rgba(15, 23, 42, 0.7) 0%, rgba(15, 23, 42, 0.1) 100%)"
-    : "linear-gradient(0deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.25) 100%)";
   const secondaryTextClass = isDark ? "text-slate-400" : "text-slate-600";
   const surfaceClass = isDark
     ? "rounded-xl border border-white/10 bg-white/5"
     : "rounded-xl border border-slate-200 bg-white shadow-sm";
-  const overlayTextClass = isDark ? "text-white" : "text-slate-900";
   const brandTitleClass = cn(
     "text-4xl font-extrabold",
     isDark
@@ -62,6 +58,44 @@ const Index = () => {
   const joinSectionBackground = isDark
     ? "linear-gradient(to top, rgba(125, 92, 255, 0.2), rgb(11, 14, 23))"
     : "linear-gradient(to top, rgba(125, 92, 255, 0.15), rgb(248, 250, 252))";
+  const friendPreviewProfiles = [
+    {
+      id: "noah",
+      name: "Noah Alvarez",
+      age: 29,
+      location: "Capitol Hill • 1.2 mi",
+      image: coffeeLover,
+      compatibility: "92% match",
+      highlights: ["Sunrise hikes", "Weekend brunch club"],
+    },
+    {
+      id: "amira",
+      name: "Amira Chen",
+      age: 32,
+      location: "Ballard • 3.4 mi",
+      image: memberSarah,
+      compatibility: "88% match",
+      highlights: ["Supper club host", "Storytelling nights"],
+    },
+    {
+      id: "darius",
+      name: "Darius Kaur",
+      age: 34,
+      location: "South Lake • 0.9 mi",
+      image: memberDavid,
+      compatibility: "85% match",
+      highlights: ["Language exchange", "Sunday soccer"],
+    },
+    {
+      id: "lucia",
+      name: "Lucia Romero",
+      age: 27,
+      location: "Fremont • 2.1 mi",
+      image: bookChat,
+      compatibility: "90% match",
+      highlights: ["Indie film club", "Plant swaps"],
+    },
+  ];
 
   return (
     <div
@@ -83,18 +117,25 @@ const Index = () => {
           </h1>
           <div className="space-y-4">
             <h2 className="text-3xl sm:text-5xl font-black leading-tight tracking-tight">
-              Elevate your connections experience with curated communities and unforgettable events.
+              Find your next favorite people and build memories together.
             </h2>
             <p className={cn("text-base sm:text-lg font-medium", secondaryTextClass)}>
-              Where real friendships and meaningful experiences begin.
+              Friend Finder matches you with nearby members who share your energy, interests, and pace so every introduction feels natural.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button
-              onClick={() => navigate("/signup")}
+              onClick={() => navigate("/friend-finder")}
               className="w-full sm:w-auto bg-[#F8D57E] hover:bg-[#e8c56e] text-slate-950 font-bold shadow-[0_0_10px_rgba(248,213,126,0.4),0_0_20px_rgba(248,213,126,0.3),0_0_30px_rgba(248,213,126,0.2)] hover:scale-105 transition-transform"
             >
-              Start your membership
+              Find friends now
+            </Button>
+            <Button
+              onClick={() => navigate("/signup")}
+              variant="outline"
+              className={outlineButtonClass}
+            >
+              Become a member
             </Button>
             <Button
               onClick={() => navigate("/host-dashboard")}
@@ -116,76 +157,82 @@ const Index = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div
-            className={cn(
-              "relative rounded-xl overflow-hidden aspect-[3/4] bg-cover bg-center border",
-              isDark ? "border-white/10" : "border-slate-200",
-            )}
-            style={{ backgroundImage: `${friendFinderOverlay}, url(${coffeeLover})` }}
-          >
-            <div className="absolute bottom-0 left-0 right-0 p-4">
-              <p className={cn("text-lg font-bold", overlayTextClass)}>
-                Meet Coffee Lovers in Your City ☕
-              </p>
-            </div>
-          </div>
-          <div
-            className={cn(
-              "relative rounded-xl overflow-hidden aspect-[3/4] bg-cover bg-center border",
-              isDark ? "border-white/10" : "border-slate-200",
-            )}
-            style={{ backgroundImage: `${friendFinderOverlay}, url(${bookChat})` }}
-          >
-            <div className="absolute bottom-0 left-0 right-0 p-4">
-              <p className={cn("text-lg font-bold", overlayTextClass)}>
-                Join a Book Chat in Your Neighborhood 📚
-              </p>
-            </div>
-          </div>
-          <div
-            className={cn(
-              "relative rounded-xl overflow-hidden aspect-[3/4] bg-cover bg-center border",
-              isDark ? "border-white/10" : "border-slate-200",
-            )}
-            style={{ backgroundImage: `${friendFinderOverlay}, url(${fitnessPartner})` }}
-          >
-            <div className="absolute bottom-0 left-0 right-0 p-4">
-              <p className={cn("text-lg font-bold", overlayTextClass)}>
-                Find a Fitness Partner This Weekend 🏃
-              </p>
-            </div>
+        <div className="overflow-hidden">
+          <div className="flex gap-4 overflow-x-auto pb-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            {friendPreviewProfiles.map((profile) => (
+              <div
+                key={profile.id}
+                className={cn(
+                  "group relative flex w-64 shrink-0 flex-col overflow-hidden rounded-3xl border backdrop-blur transition-transform duration-200 hover:-translate-y-1",
+                  isDark
+                    ? "border-white/10 bg-white/5 shadow-[0_20px_40px_rgba(15,23,42,0.45)]"
+                    : "border-slate-200 bg-white shadow-[0_20px_40px_rgba(15,23,42,0.08)]",
+                )}
+              >
+                <div className="relative h-72 w-full overflow-hidden">
+                  <img
+                    src={profile.image}
+                    alt={profile.name}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <div className="absolute top-4 right-4">
+                    <Badge className="rounded-full bg-[#F8D57E] text-slate-950 shadow">
+                      {profile.compatibility}
+                    </Badge>
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <h3 className="text-lg font-semibold text-white">
+                      {profile.name} · {profile.age}
+                    </h3>
+                    <p className="text-sm text-white/80">{profile.location}</p>
+                  </div>
+                </div>
+                <div className="space-y-3 p-4">
+                  <p className={cn("text-sm", secondaryTextClass)}>
+                    Curated by Friend Finder
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {profile.highlights.map((highlight) => (
+                      <Badge
+                        key={highlight}
+                        variant="secondary"
+                        className="rounded-full bg-muted text-xs"
+                      >
+                        {highlight}
+                      </Badge>
+                    ))}
+                  </div>
+                  <Button
+                    onClick={() => navigate(`/friend-finder?focus=${profile.id}`)}
+                    className="w-full rounded-full bg-[#F8D57E] text-slate-950 hover:bg-[#e8c56e]"
+                  >
+                    View profile preview
+                  </Button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="flex justify-center mt-8">
+        <div className="flex flex-col items-center gap-6 mt-10">
+          <div className="flex flex-wrap justify-center gap-3 text-xs uppercase tracking-wide text-muted-foreground">
+            <span className="rounded-full border border-dashed border-[#F8D57E]/60 px-4 py-2 text-[0.7rem] font-semibold">
+              Verified members
+            </span>
+            <span className="rounded-full border border-dashed border-[#F8D57E]/60 px-4 py-2 text-[0.7rem] font-semibold">
+              Local introductions
+            </span>
+            <span className="rounded-full border border-dashed border-[#F8D57E]/60 px-4 py-2 text-[0.7rem] font-semibold">
+              Safety-first design
+            </span>
+          </div>
           <Button
             onClick={() => navigate("/friend-finder")}
-            className="bg-[#F8D57E] hover:bg-[#e8c56e] text-slate-950 font-bold shadow-[0_0_10px_rgba(248,213,126,0.4)] hover:scale-105 transition-transform"
+            className="rounded-full bg-[#F8D57E] px-8 text-slate-950 font-semibold shadow-[0_0_12px_rgba(248,213,126,0.35)] hover:bg-[#e8c56e] hover:shadow-[0_10px_30px_rgba(248,213,126,0.25)] transition-all"
           >
-            Try Friend Finder
+            Launch Friend Finder
           </Button>
-        </div>
-
-        <div className="grid grid-cols-3 gap-4 mt-12 text-center">
-          <div className="flex flex-col items-center gap-2">
-            <div className="h-12 w-12 rounded-full flex items-center justify-center border border-[#F8D57E] shadow-[0_0_8px_rgba(248,213,126,0.2)]">
-              <ShieldCheck className="text-[#F8D57E] h-6 w-6" />
-            </div>
-            <p className={cn("text-sm font-medium", secondaryTextClass)}>Verified</p>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="h-12 w-12 rounded-full flex items-center justify-center border border-[#F8D57E] shadow-[0_0_8px_rgba(248,213,126,0.2)]">
-              <MapPin className="text-[#F8D57E] h-6 w-6" />
-            </div>
-            <p className={cn("text-sm font-medium", secondaryTextClass)}>Nearby</p>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="h-12 w-12 rounded-full flex items-center justify-center border border-[#F8D57E] shadow-[0_0_8px_rgba(248,213,126,0.2)]">
-              <CheckCircle2 className="text-[#F8D57E] h-6 w-6" />
-            </div>
-            <p className={cn("text-sm font-medium", secondaryTextClass)}>Safe Connections</p>
-          </div>
         </div>
       </div>
 
