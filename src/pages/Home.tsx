@@ -478,7 +478,7 @@ const Home = () => {
 
       {/* Floating CTA */}
       <Button
-        className="fixed bottom-20 right-4 z-40 flex items-center gap-2 rounded-full bg-[#f7c145] px-5 py-3 text-sm font-semibold text-black shadow-lg hover:bg-[#f3b52a]"
+        className="fixed bottom-[6.5rem] right-4 z-40 flex items-center gap-2 rounded-full bg-[#f7c145] px-5 py-3 text-sm font-semibold text-black shadow-lg hover:bg-[#f3b52a] md:bottom-20"
         onClick={() => handleNavigate("/host/create-event")}
       >
         <Send className="h-4 w-4" /> Host an experience
