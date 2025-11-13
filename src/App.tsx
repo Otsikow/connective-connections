@@ -1,3 +1,4 @@
+import { type CSSProperties, useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -7,9 +8,10 @@ import { PageTransition } from "@/components/PageTransition";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { SubscriptionProvider } from "@/hooks/useSubscription";
+import { SubscriptionProvider, useSubscription } from "@/hooks/useSubscription";
 import { BottomNav } from "@/components/BottomNav";
 import { Footer } from "@/components/Footer";
+import { LoadingScreen } from "@/components/LoadingScreen";
 
 // Pages
 import Splash from "./pages/Splash";
@@ -262,12 +264,31 @@ const AnimatedRoutes = () => {
 const AppContent = () => {
   const location = useLocation();
   const showThemeToggle = location.pathname === "/";
+  const { isLoading: isSubscriptionLoading } = useSubscription();
+  const [isBooting, setIsBooting] = useState(true);
+  const [hasCompletedInitialLoad, setHasCompletedInitialLoad] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setIsBooting(false), 500);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!isSubscriptionLoading && !hasCompletedInitialLoad) {
+      const timer = window.setTimeout(() => setHasCompletedInitialLoad(true), 250);
+      return () => window.clearTimeout(timer);
+    }
+    return undefined;
+  }, [hasCompletedInitialLoad, isSubscriptionLoading]);
+
+  const showLoadingScreen = isBooting || !hasCompletedInitialLoad;
 
   return (
     <div
       className="relative flex min-h-screen flex-col"
-      style={{ "--bottom-nav-height": "5.75rem" } as React.CSSProperties}
+      style={{ "--bottom-nav-height": "5.75rem" } as CSSProperties}
     >
+      <LoadingScreen show={showLoadingScreen} />
       {showThemeToggle && <ThemeToggle />}
       <main
         className="flex-1"
