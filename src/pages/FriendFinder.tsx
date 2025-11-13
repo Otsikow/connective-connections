@@ -1,10 +1,5 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { CalendarCheck, Sparkles, Users } from "lucide-react";
+import { CalendarCheck, MapPin, Sparkles, Users } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
@@ -464,98 +459,128 @@ const FriendFinder = () => {
         </Card>
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold">Matches picked for you</h2>
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="space-y-1">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                Swipe through curated introductions
+              </p>
+              <h2 className="text-2xl font-semibold">Matches picked for you</h2>
               <p className="text-sm text-muted-foreground">
-                Compatibility scores blend your interests, rhythm, and group
-                preferences.
+                Profiles blend shared interests, mutual connections, and your
+                preferred vibe for quick chemistry checks.
               </p>
             </div>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
-              className="hidden text-xs font-medium text-muted-foreground sm:inline-flex"
+              className="w-full rounded-full border-border/60 text-xs font-medium text-muted-foreground hover:bg-muted lg:w-auto"
               onClick={() => navigate("/matches")}
             >
-              View full matcher
+              View full matcher workspace
             </Button>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2">
             {filteredProfiles.map((profile) => (
-              <Card key={profile.id} className="border border-border/60">
-                <CardHeader className="flex flex-row items-start gap-4 pb-4">
-                  <Avatar className="h-14 w-14">
-                    <AvatarImage src={profile.photo} alt={profile.name} />
-                    <AvatarFallback>
-                      {profile.name
-                        .split(" ")
-                        .map((part) => part[0])
-                        .join("")}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 space-y-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-base font-semibold">
-                        {profile.name} · {profile.age}
-                      </h3>
-                      <Badge className="rounded-full bg-emerald-500/15 text-emerald-600">
-                        {profile.compatibility}% match
+              <Card
+                key={profile.id}
+                className="group overflow-hidden border border-border/60 bg-card/70 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-[#E8B956]/80"
+              >
+                <div className="relative aspect-[4/5] w-full overflow-hidden">
+                  <img
+                    src={profile.photo}
+                    alt={profile.name}
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+                  <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                    <Badge className="rounded-full bg-[#E8B956] text-black shadow-sm">
+                      {profile.compatibility}% match
+                    </Badge>
+                    {profile.badges.map((badge) => (
+                      <Badge
+                        key={badge}
+                        variant="secondary"
+                        className="rounded-full bg-background/70 text-foreground backdrop-blur"
+                      >
+                        {badge}
                       </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {profile.location}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {profile.badges.map((badge) => (
-                        <Badge
-                          key={badge}
-                          variant="outline"
-                          className="rounded-full border-dashed"
-                        >
-                          {badge}
-                        </Badge>
-                      ))}
+                    ))}
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <div className="flex items-end justify-between gap-3">
+                      <div>
+                        <h3 className="text-xl font-semibold text-white">
+                          {profile.name}
+                        </h3>
+                        <p className="text-sm text-white/80">
+                          {profile.age} · {profile.location}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1 rounded-full bg-black/40 px-3 py-1 text-xs text-white shadow">
+                        <MapPin className="h-3.5 w-3.5" />
+                        Nearby
+                      </div>
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
+                </div>
+
+                <CardContent className="space-y-4 p-5">
                   <p className="text-sm text-muted-foreground">
                     {profile.introduction}
                   </p>
 
-                  <div className="space-y-3 rounded-xl bg-muted/50 p-4">
-                    <div className="flex items-center justify-between text-xs font-medium uppercase text-muted-foreground">
-                      <span>Connection fit</span>
-                      <span>{profile.compatibility}%</span>
-                    </div>
-                    <Progress value={profile.compatibility} className="h-2" />
-                    <div className="flex flex-wrap gap-2 text-xs">
-                      {profile.sharedInterests.map((interest) => (
-                        <Badge
-                          key={interest}
-                          className="rounded-full bg-background text-muted-foreground"
-                        >
-                          {interest}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="grid gap-3 text-xs text-muted-foreground sm:grid-cols-2">
-                    <div className="space-y-1">
-                      <p className="font-medium text-foreground">Highlights</p>
-                      <ul className="space-y-1">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold uppercase text-muted-foreground">
+                        Highlights
+                      </p>
+                      <ul className="space-y-2 text-sm text-foreground">
                         {profile.highlights.map((highlight) => (
-                          <li key={highlight} className="leading-relaxed">
-                            • {highlight}
+                          <li key={highlight} className="flex items-start gap-2">
+                            <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[#E8B956]" />
+                            <span>{highlight}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold uppercase text-muted-foreground">
+                        Shared interests
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {profile.sharedInterests.map((interest) => (
+                          <Badge
+                            key={interest}
+                            variant="secondary"
+                            className="rounded-full bg-muted text-foreground"
+                          >
+                            {interest}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-1">
-                      <p className="font-medium text-foreground">
+                      <p className="text-xs font-semibold uppercase text-muted-foreground">
+                        Availability
+                      </p>
+                      <p className="text-sm font-medium text-foreground">
+                        {profile.availability === "flexible"
+                          ? "Flexible schedule"
+                          : profile.availability === "mornings"
+                            ? "Early mornings"
+                            : profile.availability === "weekends"
+                              ? "Weekends"
+                              : "Weeknights"}
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold uppercase text-muted-foreground">
                         Preferred formats
                       </p>
                       <div className="flex flex-wrap gap-2">
@@ -563,19 +588,20 @@ const FriendFinder = () => {
                           <Badge
                             key={format}
                             variant="secondary"
-                            className="rounded-full bg-[#E8B956]/15 text-[#C48F21]"
+                            className="rounded-full bg-[#E8B956]/20 text-[#C48F21]"
                           >
                             {format}
                           </Badge>
                         ))}
                       </div>
-                      <p className="text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         {profile.mutualConnections} mutual introductions
                       </p>
                     </div>
                   </div>
                 </CardContent>
-                <CardFooter className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+
+                <CardFooter className="flex flex-col gap-3 border-t border-border/60 bg-muted/40 p-5 sm:flex-row sm:items-center sm:justify-between">
                   <Button
                     variant="outline"
                     className="w-full rounded-full border-border/70"
@@ -593,7 +619,6 @@ const FriendFinder = () => {
               </Card>
             ))}
           </div>
-
           {filteredProfiles.length === 0 && (
             <Card className="border border-dashed border-border/60">
               <CardContent className="py-10 text-center text-sm text-muted-foreground">
