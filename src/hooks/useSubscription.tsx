@@ -140,80 +140,103 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
 
     setState((previous) => ({ ...previous, isLoading: true }));
 
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession();
-
-    if (!isMountedRef.current) return;
-
-    if (sessionError || !session?.user) {
-      handleSignedOut();
-      return;
-    }
-
-    setUserId(session.user.id);
-
-    const loadProfile = async (id: string) => {
-      const { data: profile, error } = await supabase
-        .from("profiles")
-        .select(
-          "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires",
-        )
-        .eq("id", id)
-        .maybeSingle();
+    try {
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
 
       if (!isMountedRef.current) return;
 
-      if (error) {
-        if (isAuthorizationError(error)) {
-          console.warn("subscription:profile-unauthorized", error);
-          handleSignedOut();
-          return;
-        }
-
-        console.error("subscription:profile", error);
-        resetProfileState();
+      if (sessionError || !session?.user) {
+        handleSignedOut();
         return;
       }
 
-      if (!profile) {
-        const { data: inserted, error: insertError } = await supabase
-          .from("profiles")
-          .insert([{ id }])
-          .select(
-            "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires",
-          )
-          .maybeSingle();
+      setUserId(session.user.id);
 
-        if (!isMountedRef.current) return;
+      const loadProfile = async (id: string) => {
+        try {
+          const { data: profile, error } = await supabase
+            .from("profiles")
+            .select(
+              "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires",
+            )
+            .eq("id", id)
+            .maybeSingle();
 
-        if (insertError) {
-          if (isAuthorizationError(insertError)) {
-            console.warn("subscription:create-profile-unauthorized", insertError);
-            handleSignedOut();
+          if (!isMountedRef.current) return;
+
+          if (error) {
+            if (isAuthorizationError(error)) {
+              console.warn("subscription:profile-unauthorized", error);
+              handleSignedOut();
+              return;
+            }
+
+            console.error("subscription:profile", error);
+            resetProfileState();
             return;
           }
 
-          console.error("subscription:create-profile", insertError);
-          toast({
-            title: "Unable to prepare profile",
-            description:
-              "We couldn't create your profile record. Please contact support if this continues.",
-            variant: "destructive",
-          });
+          if (!profile) {
+            try {
+              const { data: inserted, error: insertError } = await supabase
+                .from("profiles")
+                .insert([{ id }])
+                .select(
+                  "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires",
+                )
+                .maybeSingle();
+
+              if (!isMountedRef.current) return;
+
+              if (insertError) {
+                if (isAuthorizationError(insertError)) {
+                  console.warn("subscription:create-profile-unauthorized", insertError);
+                  handleSignedOut();
+                  return;
+                }
+
+                console.error("subscription:create-profile", insertError);
+                toast({
+                  title: "Unable to prepare profile",
+                  description:
+                    "We couldn't create your profile record. Please contact support if this continues.",
+                  variant: "destructive",
+                });
+                resetProfileState();
+                return;
+              }
+
+              handleProfileLoaded(inserted);
+              return;
+            } catch (insertException) {
+              console.error("subscription:create-profile-exception", insertException);
+              toast({
+                title: "Unable to prepare profile",
+                description:
+                  "We couldn't create your profile record. Please contact support if this continues.",
+                variant: "destructive",
+              });
+              resetProfileState();
+              return;
+            }
+          }
+
+          handleProfileLoaded(profile);
+        } catch (profileException) {
+          console.error("subscription:profile-exception", profileException);
           resetProfileState();
-          return;
         }
+      };
 
-        handleProfileLoaded(inserted);
-        return;
-      }
-
-      handleProfileLoaded(profile);
-    };
-
-    await loadProfile(session.user.id);
+      await loadProfile(session.user.id);
+    } catch (sessionException) {
+      console.error("subscription:session", sessionException);
+      if (!isMountedRef.current) return;
+      resetProfileState();
+    }
   }, [
     handleProfileLoaded,
     handleSignedOut,
