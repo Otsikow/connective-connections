@@ -1,19 +1,46 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" role="img" aria-labelledby="title desc">
   <title id="title">Connective brand artwork</title>
   <desc id="desc">Gradient orb with interlocking conversation marks forming the letter C</desc>
+  <style>
+    :root {
+      --orb-start: #ede9fe;
+      --orb-mid: #a855f7;
+      --orb-end: #312e81;
+      --beam-start: #fbbf24;
+      --beam-end: #f97316;
+      --loop-start: #f8fafc;
+      --loop-end: #e2e8f0;
+      --accent: #facc15;
+      --shadow: rgba(15, 23, 42, 0.28);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --orb-start: #0f172a;
+        --orb-mid: #1d4ed8;
+        --orb-end: #020617;
+        --beam-start: #38bdf8;
+        --beam-end: #fcd34d;
+        --loop-start: #f8fafc;
+        --loop-end: #cbd5f5;
+        --accent: #fde047;
+        --shadow: rgba(15, 23, 42, 0.12);
+      }
+    }
+  </style>
   <defs>
     <radialGradient id="orb" cx="50%" cy="30%" r="75%">
-      <stop offset="0%" stop-color="#ede9fe" stop-opacity="0.92" />
-      <stop offset="45%" stop-color="#a855f7" stop-opacity="0.96" />
-      <stop offset="100%" stop-color="#312e81" />
+      <stop offset="0%" stop-color="var(--orb-start)" stop-opacity="0.92" />
+      <stop offset="45%" stop-color="var(--orb-mid)" stop-opacity="0.96" />
+      <stop offset="100%" stop-color="var(--orb-end)" />
     </radialGradient>
     <linearGradient id="beam" x1="18%" y1="18%" x2="82%" y2="82%">
-      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.95" />
-      <stop offset="100%" stop-color="#f97316" stop-opacity="0.65" />
+      <stop offset="0%" stop-color="var(--beam-start)" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="var(--beam-end)" stop-opacity="0.65" />
     </linearGradient>
     <linearGradient id="loop" x1="10%" y1="10%" x2="90%" y2="90%">
-      <stop offset="0%" stop-color="#f8fafc" />
-      <stop offset="100%" stop-color="#e2e8f0" />
+      <stop offset="0%" stop-color="var(--loop-start)" />
+      <stop offset="100%" stop-color="var(--loop-end)" />
     </linearGradient>
     <filter id="soft" x="-10%" y="-10%" width="120%" height="120%">
       <feGaussianBlur stdDeviation="18" result="blur" />
@@ -38,10 +65,10 @@
     stroke-linecap="round"
     stroke-linejoin="round"
   />
-  <circle cx="446" cy="420" r="34" fill="#facc15" />
-  <circle cx="650" cy="628" r="34" fill="#facc15" />
+  <circle cx="446" cy="420" r="34" fill="var(--accent)" />
+  <circle cx="650" cy="628" r="34" fill="var(--accent)" />
   <path
     d="M386 636c-34 0-62 28-62 62v36c0 16-13 28-28 28-10 0-18 8-18 18s8 18 18 18h90c34 0 62-28 62-62v-38c0-34-28-62-62-62z"
-    fill="rgba(15,23,42,0.28)"
+    fill="var(--shadow)"
   />
 </svg>

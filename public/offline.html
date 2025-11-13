@@ -67,7 +67,10 @@
   </head>
   <body>
     <main>
-      <img src="/connective-logo.svg" alt="Connective logo" width="160" height="160" />
+      <picture>
+        <source srcset="/connective-logo-dark.svg" media="(prefers-color-scheme: dark)" />
+        <img src="/connective-logo-light.svg" alt="Connective logo" width="160" height="160" />
+      </picture>
       <h1>You&apos;re currently offline</h1>
       <p>
         Connective still works without a connection. Some actions may sync once
