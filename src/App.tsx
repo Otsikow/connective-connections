@@ -97,6 +97,7 @@ const AppContent = () => {
   const location = useLocation();
   const showThemeToggle = location.pathname === "/";
   const { isLoading: isSubscriptionLoading } = useSubscription();
+  const showFooter = location.pathname === "/home";
 
   const [isBooting, setIsBooting] = useState(true);
   const [hasCompletedInitialLoad, setHasCompletedInitialLoad] = useState(false);
@@ -152,7 +153,7 @@ const AppContent = () => {
         }}
       >
         <AnimatedRoutes />
-        <Footer />
+        {showFooter && <Footer />}
       </main>
 
       <BottomNav currentPath={location.pathname} />
