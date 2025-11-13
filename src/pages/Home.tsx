@@ -244,7 +244,7 @@ const Home = () => {
               onClick={() => navigate("/profile")}
             >
               <AvatarImage src="/placeholder.svg" alt="User" />
-              <AvatarFallback className="bg-gradient-to-br from-white via-[#f8edd6] to-[#f2d7ff] text-sm font-semibold uppercase text-slate-900 dark:from-slate-800 dark:via-slate-800 dark:to-slate-700 dark:text-white">
+              <AvatarFallback className="bg-gradient-to-br from-[#f7c145] via-[#f3b52a] to-[#e89c1f] text-sm font-semibold uppercase text-slate-900 dark:from-slate-700 dark:via-slate-700 dark:to-slate-600 dark:text-white">
                 U
               </AvatarFallback>
             </Avatar>
