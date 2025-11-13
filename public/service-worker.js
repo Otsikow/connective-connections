@@ -10,8 +10,6 @@ const APP_SHELL_FILES = [
   "/favicon.ico",
   "/pwa-icon.svg",
   "/connective-logo.svg",
-  "/connective-logo-light.svg",
-  "/connective-logo-dark.svg",
   "/placeholder.svg"
 ];
 

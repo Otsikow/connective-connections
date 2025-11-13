@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils";
-import logoLight from "@/assets/connective-logo-light.svg";
-import logoDark from "@/assets/connective-logo-dark.svg";
+import logoImage from "@/assets/connective-logo.png";
 
 interface LogoProps {
   className?: string;
@@ -29,14 +28,11 @@ export const Logo = ({
         <div className="pointer-events-none absolute -inset-x-6 -inset-y-4 -z-10 rounded-[2.75rem] bg-gradient-to-r from-amber-400/40 via-yellow-400/25 to-orange-400/35 blur-3xl" />
       )}
       <div className="relative inline-flex items-center">
-        <picture>
-          <source srcSet={logoDark} media="(prefers-color-scheme: dark)" />
-          <img
-            src={logoLight}
-            alt="Connective"
-            className={cn("object-contain w-auto", sizeMap[size])}
-          />
-        </picture>
+        <img
+          src={logoImage}
+          alt="Connective"
+          className={cn("object-contain", sizeMap[size])}
+        />
       </div>
       {tagline && (
         <span
