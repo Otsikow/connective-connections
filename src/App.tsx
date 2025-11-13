@@ -17,7 +17,6 @@ import { LoadingScreen } from "@/components/LoadingScreen";
 import Splash from "./pages/Splash";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
-
 import ProfileSetup from "./pages/ProfileSetup";
 import Home from "./pages/Home";
 import Matches from "./pages/Matches";
@@ -42,247 +41,97 @@ import Cookies from "./pages/legal/Cookies";
 
 const queryClient = new QueryClient();
 
-/**
- * Handles animated page transitions
- */
+/* ------------------------------------------------------------ */
+/* Animated Routes */
+/* ------------------------------------------------------------ */
 const AnimatedRoutes = () => {
   const location = useLocation();
 
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route
-          path="/"
-          element={
-            <PageTransition>
-              <Splash />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <PageTransition>
-              <Signup />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <PageTransition>
-              <Login />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/profile-setup"
-          element={
-            <PageTransition>
-              <ProfileSetup />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/auth/callback"
-          element={
-            <PageTransition>
-              <AuthCallback />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/home"
-          element={
-            <PageTransition>
-              <Home />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/events"
-          element={
-            <PageTransition>
-              <Events />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/events/:eventId"
-          element={
-            <PageTransition>
-              <EventDetail />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/host/create-event"
-          element={
-            <PageTransition>
-              <CreateEvent />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/matches"
-          element={
-            <PageTransition>
-              <Matches />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/friend-finder"
-          element={
-            <PageTransition>
-              <FriendFinder />
-            </PageTransition>
-          }
-        />
-        {/* Keep legacy messages route for bottom nav compatibility */}
-        <Route
-          path="/messages"
-          element={
-            <PageTransition>
-              <Messages />
-            </PageTransition>
-          }
-        />
-        {/* Dynamic chat route per match */}
-        <Route
-          path="/messages/:id"
-          element={
-            <PageTransition>
-              <Messages />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/community"
-          element={
-            <PageTransition>
-              <Community />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <PageTransition>
-              <Profile />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <PageTransition>
-              <Admin />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/host-dashboard"
-          element={
-            <PageTransition>
-              <HostDashboard />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/host/create-experience"
-          element={
-            <PageTransition>
-              <HostCreateExperience />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/host/event"
-          element={
-            <PageTransition>
-              <HostEvent />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <PageTransition>
-              <Dashboard />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/privacy"
-          element={
-            <PageTransition>
-              <Privacy />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/terms"
-          element={
-            <PageTransition>
-              <Terms />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/accessibility"
-          element={
-            <PageTransition>
-              <Accessibility />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/cookies"
-          element={
-            <PageTransition>
-              <Cookies />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="*"
-          element={
-            <PageTransition>
-              <NotFound />
-            </PageTransition>
-          }
-        />
+
+        <Route path="/" element={<PageTransition><Splash /></PageTransition>} />
+        <Route path="/signup" element={<PageTransition><Signup /></PageTransition>} />
+        <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
+        <Route path="/profile-setup" element={<PageTransition><ProfileSetup /></PageTransition>} />
+        <Route path="/auth/callback" element={<PageTransition><AuthCallback /></PageTransition>} />
+
+        <Route path="/home" element={<PageTransition><Home /></PageTransition>} />
+        <Route path="/events" element={<PageTransition><Events /></PageTransition>} />
+        <Route path="/events/:eventId" element={<PageTransition><EventDetail /></PageTransition>} />
+        <Route path="/host/create-event" element={<PageTransition><CreateEvent /></PageTransition>} />
+
+        <Route path="/matches" element={<PageTransition><Matches /></PageTransition>} />
+        <Route path="/friend-finder" element={<PageTransition><FriendFinder /></PageTransition>} />
+
+        {/* Legacy + Dynamic Messages */}
+        <Route path="/messages" element={<PageTransition><Messages /></PageTransition>} />
+        <Route path="/messages/:id" element={<PageTransition><Messages /></PageTransition>} />
+
+        <Route path="/community" element={<PageTransition><Community /></PageTransition>} />
+        <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
+        <Route path="/admin" element={<PageTransition><Admin /></PageTransition>} />
+        <Route path="/host-dashboard" element={<PageTransition><HostDashboard /></PageTransition>} />
+        <Route path="/host/create-experience" element={<PageTransition><HostCreateExperience /></PageTransition>} />
+        <Route path="/host/event" element={<PageTransition><HostEvent /></PageTransition>} />
+        <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
+
+        {/* Legal */}
+        <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />
+        <Route path="/terms" element={<PageTransition><Terms /></PageTransition>} />
+        <Route path="/accessibility" element={<PageTransition><Accessibility /></PageTransition>} />
+        <Route path="/cookies" element={<PageTransition><Cookies /></PageTransition>} />
+
+        {/* 404 */}
+        <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
     </AnimatePresence>
   );
 };
 
-/**
- * Core app layout with theme toggle and bottom navigation
- */
+/* ------------------------------------------------------------ */
+/* App Content Layout */
+/* ------------------------------------------------------------ */
 const AppContent = () => {
   const location = useLocation();
   const showThemeToggle = location.pathname === "/";
   const { isLoading: isSubscriptionLoading } = useSubscription();
+
   const [isBooting, setIsBooting] = useState(true);
   const [hasCompletedInitialLoad, setHasCompletedInitialLoad] = useState(false);
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "auto" });
-  }, [location.pathname]);
-
+  /* Smooth initial boot delay */
   useEffect(() => {
     const timer = window.setTimeout(() => setIsBooting(false), 500);
     return () => window.clearTimeout(timer);
   }, []);
 
+  /* Scroll restore on route change */
   useEffect(() => {
-    if (!isSubscriptionLoading && !hasCompletedInitialLoad) {
-      const timer = window.setTimeout(() => setHasCompletedInitialLoad(true), 250);
-      return () => window.clearTimeout(timer);
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [location.pathname]);
+
+  /* Subscription loading handling */
+  useEffect(() => {
+    if (hasCompletedInitialLoad) return;
+
+    const fallbackTimer = window.setTimeout(() => {
+      setHasCompletedInitialLoad(true);
+    }, 1500);
+
+    if (!isSubscriptionLoading) {
+      const readyTimer = window.setTimeout(() => {
+        setHasCompletedInitialLoad(true);
+      }, 200);
+
+      return () => {
+        clearTimeout(fallbackTimer);
+        clearTimeout(readyTimer);
+      };
     }
-    return undefined;
+
+    return () => clearTimeout(fallbackTimer);
   }, [hasCompletedInitialLoad, isSubscriptionLoading]);
 
   const showLoadingScreen = isBooting || !hasCompletedInitialLoad;
@@ -294,6 +143,7 @@ const AppContent = () => {
     >
       <LoadingScreen show={showLoadingScreen} />
       {showThemeToggle && <ThemeToggle />}
+
       <main
         className="flex-1"
         style={{
@@ -304,14 +154,15 @@ const AppContent = () => {
         <AnimatedRoutes />
         <Footer />
       </main>
+
       <BottomNav currentPath={location.pathname} />
     </div>
   );
 };
 
-/**
- * Root App component
- */
+/* ------------------------------------------------------------ */
+/* Root App Component */
+/* ------------------------------------------------------------ */
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="light">
