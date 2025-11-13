@@ -11,9 +11,13 @@ import {
   UserCheck,
   HeadphonesIcon,
   MessageSquare,
+  HeartHandshake,
+  CalendarCheck,
+  Smile,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+
 import heroBackground from "@/assets/hero-background.jpg";
 import coffeeLover from "@/assets/coffee-lover.jpg";
 import bookChat from "@/assets/book-chat.jpg";
@@ -21,43 +25,50 @@ import coffeeCrawl from "@/assets/coffee-crawl.jpg";
 import cookingClass from "@/assets/cooking-class.jpg";
 import memberSarah from "@/assets/member-sarah.jpg";
 import memberDavid from "@/assets/member-david.jpg";
+
 import { useTheme } from "@/components/ThemeProvider";
 import { cn } from "@/lib/utils";
 
 const Index = () => {
   const navigate = useNavigate();
   usePageTitle("Connective - Curated Communities & Events");
+
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
   const heroOverlayGradient = isDark
-    ? "linear-gradient(rgba(11, 14, 23, 0.9) 0%, rgba(11, 14, 23, 0.6) 50%, rgba(11, 14, 23, 1) 100%)"
-    : "linear-gradient(rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.8) 50%, rgba(241, 245, 249, 0.95) 100%)";
+    ? "linear-gradient(rgba(11,14,23,0.9) 0%, rgba(11,14,23,0.6) 50%, rgba(11,14,23,1) 100%)"
+    : "linear-gradient(rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.8) 50%, rgba(241,245,249,0.95) 100%)";
+
+  const friendFinderOverlay = isDark
+    ? "linear-gradient(0deg, rgba(15,23,42,0.7) 0%, rgba(15,23,42,0.1) 100%)"
+    : "linear-gradient(0deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.2) 100%)";
+
   const secondaryTextClass = isDark ? "text-slate-400" : "text-slate-600";
+  const overlayTextClass = isDark ? "text-white" : "text-slate-900";
+
   const surfaceClass = isDark
     ? "rounded-xl border border-white/10 bg-white/5"
     : "rounded-xl border border-slate-200 bg-white shadow-sm";
-  const brandTitleClass = cn(
-    "text-4xl font-extrabold",
-    isDark
-      ? "text-[hsl(var(--primary))] drop-shadow-[0_0_10px_rgba(248,213,126,0.6)]"
-      : "text-[hsl(var(--primary-foreground))]",
-  );
+
   const outlineButtonClass = cn(
     "w-full sm:w-auto",
     isDark
       ? "border-slate-600 text-white hover:bg-white/10"
       : "border-slate-300 text-slate-900 hover:bg-slate-100",
   );
+
   const joinOutlineButtonClass = cn(
     "w-full",
     isDark
       ? "border-slate-600 text-white hover:bg-white/10"
       : "border-slate-300 text-slate-900 hover:bg-slate-100",
   );
+
   const joinSectionBackground = isDark
-    ? "linear-gradient(to top, rgba(125, 92, 255, 0.2), rgb(11, 14, 23))"
-    : "linear-gradient(to top, rgba(125, 92, 255, 0.15), rgb(248, 250, 252))";
+    ? "linear-gradient(to top, rgba(125,92,255,0.2), rgb(11,14,23))"
+    : "linear-gradient(to top, rgba(125,92,255,0.15), rgb(248,250,252))";
+
   const friendPreviewProfiles = [
     {
       id: "noah",
@@ -106,30 +117,42 @@ const Index = () => {
           : "from-white via-slate-50 to-slate-100 text-slate-900",
       )}
     >
-      {/* Hero Section */}
+      {/* ---------------------------------------------------------------- */}
+      {/* HERO SECTION — C1 (Modern Hero First, Original Badge After) */}
+      {/* ---------------------------------------------------------------- */}
       <div
         className="relative min-h-screen flex items-center justify-center p-4 text-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `${heroOverlayGradient}, url(${heroBackground})` }}
+        style={{
+          backgroundImage: `${heroOverlayGradient}, url(${heroBackground})`,
+        }}
       >
-        <div className="max-w-4xl mx-auto space-y-8">
-          <h1 className={brandTitleClass}>
-            Connective
+        <div className="max-w-4xl mx-auto space-y-10">
+
+          {/* Modern Hero Headline */}
+          <h1 className="text-3xl sm:text-5xl font-black leading-tight tracking-tight">
+            Find your next favorite people and build memories together.
           </h1>
-          <div className="space-y-4">
-            <h2 className="text-3xl sm:text-5xl font-black leading-tight tracking-tight">
-              Find your next favorite people and build memories together.
-            </h2>
-            <p className={cn("text-base sm:text-lg font-medium", secondaryTextClass)}>
-              Friend Finder matches you with nearby members who share your energy, interests, and pace so every introduction feels natural.
-            </p>
+
+          <p className={cn("text-base sm:text-lg font-medium max-w-2xl mx-auto", secondaryTextClass)}>
+            Friend Finder introduces you to nearby people who share your energy, interests, and pace —
+            then gives you the tools and small-group meetups to make those friendships real.
+          </p>
+
+          {/* Original Small Badge AFTER Modern Headline */}
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#F8D57E]/20 px-4 py-1 text-sm font-semibold text-[#F8D57E] shadow-sm">
+            <HeartHandshake className="h-4 w-4" />
+            Made for building real friendships
           </div>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+
+          {/* CTA Buttons */}
+          <div className="grid gap-3 sm:grid-cols-[auto_auto] justify-center">
             <Button
               onClick={() => navigate("/friend-finder")}
-              className="w-full sm:w-auto bg-[#F8D57E] hover:bg-[#e8c56e] text-slate-950 font-bold shadow-[0_0_10px_rgba(248,213,126,0.4),0_0_20px_rgba(248,213,126,0.3),0_0_30px_rgba(248,213,126,0.2)] hover:scale-105 transition-transform"
+              className="w-full sm:w-auto bg-[#F8D57E] hover:bg-[#e8c56e] text-slate-950 font-bold shadow-[0_0_12px_rgba(248,213,126,0.45)] hover:scale-105 transition-transform"
             >
               Find friends now
             </Button>
+
             <Button
               onClick={() => navigate("/signup")}
               variant="outline"
@@ -137,26 +160,38 @@ const Index = () => {
             >
               Become a member
             </Button>
-            <Button
-              onClick={() => navigate("/host-dashboard")}
-              variant="outline"
-              className={outlineButtonClass}
-            >
-              Host an experience
-            </Button>
+          </div>
+
+          {/* Stats Row */}
+          <div
+            className={cn(
+              "mx-auto flex flex-col gap-4 rounded-2xl px-6 py-5 sm:flex-row sm:items-center sm:gap-8",
+              isDark ? "bg-white/5 border border-white/10" : "bg-white/80 border border-white shadow-lg",
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <Smile className="h-8 w-8 text-[#F8D57E]" />
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-widest text-[#F8D57E]">
+                  Friendship outcomes
+                </p>
+                <p className="text-lg font-bold">
+                  92% of members meet someone they hang out with monthly
+                </p>
+              </div>
+            </div>
+
+            <p className={cn("text-sm", secondaryTextClass)}>
+              Every introduction is vetted, safe, and designed to move offline naturally.
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Friend Finder Section */}
-      <div className="px-4 py-16 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center space-y-4 mb-12">
-          <h2 className="text-3xl font-bold">Find Real Friends Near You</h2>
-          <p className={cn("text-base max-w-xl mx-auto", secondaryTextClass)}>
-            Discover people who share your energy, interests, and location. Connect effortlessly for real-life meetups.
-          </p>
-        </div>
-
+      {/* ---------------------------------------------------------------- */}
+      {/* FRIEND PREVIEW SLIDER (from Option A) */}
+      {/* ---------------------------------------------------------------- */}
+      <div className="px-4 pt-16 pb-12 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="overflow-hidden">
           <div className="flex gap-4 overflow-x-auto pb-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             {friendPreviewProfiles.map((profile) => (
@@ -172,15 +207,16 @@ const Index = () => {
                 <div className="relative h-72 w-full overflow-hidden">
                   <img
                     src={profile.image}
-                    alt={profile.name}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+
                   <div className="absolute top-4 right-4">
                     <Badge className="rounded-full bg-[#F8D57E] text-slate-950 shadow">
                       {profile.compatibility}
                     </Badge>
                   </div>
+
                   <div className="absolute bottom-0 left-0 right-0 p-4">
                     <h3 className="text-lg font-semibold text-white">
                       {profile.name} · {profile.age}
@@ -188,10 +224,10 @@ const Index = () => {
                     <p className="text-sm text-white/80">{profile.location}</p>
                   </div>
                 </div>
+
                 <div className="space-y-3 p-4">
-                  <p className={cn("text-sm", secondaryTextClass)}>
-                    Curated by Friend Finder
-                  </p>
+                  <p className={cn("text-sm", secondaryTextClass)}>Curated by Friend Finder</p>
+
                   <div className="flex flex-wrap gap-2">
                     {profile.highlights.map((highlight) => (
                       <Badge
@@ -203,6 +239,7 @@ const Index = () => {
                       </Badge>
                     ))}
                   </div>
+
                   <Button
                     onClick={() => navigate(`/friend-finder?focus=${profile.id}`)}
                     className="w-full rounded-full bg-[#F8D57E] text-slate-950 hover:bg-[#e8c56e]"
@@ -214,64 +251,128 @@ const Index = () => {
             ))}
           </div>
         </div>
-
-        <div className="flex flex-col items-center gap-6 mt-10">
-          <div className="flex flex-wrap justify-center gap-3 text-xs uppercase tracking-wide text-muted-foreground">
-            <span className="rounded-full border border-dashed border-[#F8D57E]/60 px-4 py-2 text-[0.7rem] font-semibold">
-              Verified members
-            </span>
-            <span className="rounded-full border border-dashed border-[#F8D57E]/60 px-4 py-2 text-[0.7rem] font-semibold">
-              Local introductions
-            </span>
-            <span className="rounded-full border border-dashed border-[#F8D57E]/60 px-4 py-2 text-[0.7rem] font-semibold">
-              Safety-first design
-            </span>
-          </div>
-          <Button
-            onClick={() => navigate("/friend-finder")}
-            className="rounded-full bg-[#F8D57E] px-8 text-slate-950 font-semibold shadow-[0_0_12px_rgba(248,213,126,0.35)] hover:bg-[#e8c56e] hover:shadow-[0_10px_30px_rgba(248,213,126,0.25)] transition-all"
-          >
-            Launch Friend Finder
-          </Button>
-        </div>
       </div>
 
-      {/* Feature Grid Section */}
+      {/* ---------------------------------------------------------------- */}
+      {/* FRIEND FINDER STEPS (from Option B) */}
+      {/* ---------------------------------------------------------------- */}
       <div className="px-4 py-16 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className={cn("flex flex-col gap-4 p-6", surfaceClass)}>
-            <Sparkles className="text-[#F8D57E] h-8 w-8" />
-            <h3 className="text-xl font-bold">World-Class Events</h3>
+        <div className="text-center space-y-4 mb-12">
+          <h2 className="text-3xl font-bold">We help you make friends that last</h2>
+          <p className={cn("text-base max-w-2xl mx-auto", secondaryTextClass)}>
+            Share who you are, get quality introductions, and join curated hangouts built for real
+            connection.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+          {/* Step 1 */}
+          <div className={cn("p-6 text-left space-y-3", surfaceClass)}>
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F8D57E]/20 text-[#F8D57E]">
+              <Users className="h-6 w-6" />
+            </div>
+            <h3 className="text-xl font-semibold">Tell us about your vibe</h3>
             <p className={secondaryTextClass}>
-              Access exclusive gatherings curated by experts and community leaders.
+              Interests, social energy, pace — everything that makes a friendship click.
             </p>
           </div>
-          <div className={cn("flex flex-col gap-4 p-6", surfaceClass)}>
-            <Users className="text-[#F8D57E] h-8 w-8" />
-            <h3 className="text-xl font-bold">Find Your Circle</h3>
+
+          {/* Step 2 */}
+          <div className={cn("p-6 text-left space-y-3", surfaceClass)}>
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F8D57E]/20 text-[#F8D57E]">
+              <HeartHandshake className="h-6 w-6" />
+            </div>
+            <h3 className="text-xl font-semibold">Match with nearby friends</h3>
             <p className={secondaryTextClass}>
-              Connect with like-minded people in communities based on shared interests.
+              Smart matching based on compatibility, interests, and shared rhythms.
             </p>
           </div>
-          <div className={cn("flex flex-col gap-4 p-6", surfaceClass)}>
-            <MessageCircle className="text-[#F8D57E] h-8 w-8" />
-            <h3 className="text-xl font-bold">Always-On Chats</h3>
+
+          {/* Step 3 */}
+          <div className={cn("p-6 text-left space-y-3", surfaceClass)}>
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F8D57E]/20 text-[#F8D57E]">
+              <CalendarCheck className="h-6 w-6" />
+            </div>
+            <h3 className="text-xl font-semibold">Meet up with confidence</h3>
             <p className={secondaryTextClass}>
-              Stay connected with your groups and friends through private chats.
+              Small hangouts designed to make “hello” feel easy, natural, and pressure-free.
             </p>
-          </div>
-          <div className={cn("flex flex-col gap-4 p-6", surfaceClass)}>
-            <UserCheck className="text-[#F8D57E] h-8 w-8" />
-            <h3 className="text-xl font-bold">Launch Private Groups</h3>
-            <p className={secondaryTextClass}>Create your own space for your passions, projects, or friends.</p>
           </div>
         </div>
       </div>
 
-      {/* Trust & Safety Section */}
+      {/* ---------------------------------------------------------------- */}
+      {/* FRIEND FINDER CARDS GRID */}
+      {/* ---------------------------------------------------------------- */}
+      <div className="px-4 pb-16 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+          {/* Coffee Lovers */}
+          <div
+            className={cn(
+              "relative rounded-xl overflow-hidden aspect-[3/4] bg-cover bg-center border",
+              isDark ? "border-white/10" : "border-slate-200",
+            )}
+            style={{ backgroundImage: `${friendFinderOverlay}, url(${coffeeLover})` }}
+          >
+            <div className="absolute bottom-0 left-0 right-0 p-4">
+              <p className={cn("text-lg font-semibold", overlayTextClass)}>
+                Brew up a coffee buddy date ☕
+              </p>
+              <p className={cn("text-sm", overlayTextClass)}>
+                14 locals matched this week.
+              </p>
+            </div>
+          </div>
+
+          {/* Book Chat */}
+          <div
+            className={cn(
+              "relative rounded-xl overflow-hidden aspect-[3/4] bg-cover bg-center border",
+              isDark ? "border-white/10" : "border-slate-200",
+            )}
+            style={{ backgroundImage: `${friendFinderOverlay}, url(${bookChat})` }}
+          >
+            <div className="absolute bottom-0 left-0 right-0 p-4">
+              <p className={cn("text-lg font-semibold", overlayTextClass)}>
+                Join a local book club 📚
+              </p>
+              <p className={cn("text-sm", overlayTextClass)}>
+                6 people discussing new reads nearby.
+              </p>
+            </div>
+          </div>
+
+          {/* Fitness Partner */}
+          <div
+            className={cn(
+              "relative rounded-xl overflow-hidden aspect-[3/4] bg-cover bg-center border",
+              isDark ? "border-white/10" : "border-slate-200",
+            )}
+            style={{
+              backgroundImage: `${friendFinderOverlay}, url(${coffeeLover})`,
+            }}
+          >
+            <div className="absolute bottom-0 left-0 right-0 p-4">
+              <p className={cn("text-lg font-semibold", overlayTextClass)}>
+                Link up with a workout buddy 🏃‍♂️
+              </p>
+              <p className={cn("text-sm", overlayTextClass)}>
+                Plan runs, hikes, or gym sessions together.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* TRUST & SAFETY */}
+      {/* ---------------------------------------------------------------- */}
       <div className="px-4 py-16 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
-        <h2 className="text-3xl font-bold mb-4">Your Trust and Safety is Our Priority</h2>
+        <h2 className="text-3xl font-bold mb-4">Friendship is better when you feel safe</h2>
+
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-12">
+          {/* Concierge */}
           <div className="flex flex-col items-center gap-3">
             <div
               className={cn(
@@ -281,11 +382,13 @@ const Index = () => {
             >
               <HeadphonesIcon className="text-[#F8D57E] h-8 w-8" />
             </div>
-            <h3 className="text-lg font-bold mt-2">Concierge Onboarding</h3>
+            <h3 className="text-lg font-bold mt-2">Concierge onboarding</h3>
             <p className={cn("text-sm", secondaryTextClass)}>
-              A personalized setup experience to ensure you feel welcome and ready.
+              A real human guides your first steps.
             </p>
           </div>
+
+          {/* Verified */}
           <div className="flex flex-col items-center gap-3">
             <div
               className={cn(
@@ -295,11 +398,13 @@ const Index = () => {
             >
               <ShieldCheck className="text-[#F8D57E] h-8 w-8" />
             </div>
-            <h3 className="text-lg font-bold mt-2">Verified Hosts</h3>
+            <h3 className="text-lg font-bold mt-2">Verified hosts</h3>
             <p className={cn("text-sm", secondaryTextClass)}>
-              All event hosts are vetted to guarantee high-quality, safe experiences.
+              Hangouts led by vetted, welcoming hosts.
             </p>
           </div>
+
+          {/* Guided Chat */}
           <div className="flex flex-col items-center gap-3">
             <div
               className={cn(
@@ -309,20 +414,28 @@ const Index = () => {
             >
               <MessageSquare className="text-[#F8D57E] h-8 w-8" />
             </div>
-            <h3 className="text-lg font-bold mt-2">Guided Conversations</h3>
+            <h3 className="text-lg font-bold mt-2">Guided conversations</h3>
             <p className={cn("text-sm", secondaryTextClass)}>
-              Tools and prompts to help break the ice and foster deeper connections.
+              Icebreakers that make talking feel natural.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Upcoming Experiences Section */}
+      {/* ---------------------------------------------------------------- */}
+      {/* UPCOMING EXPERIENCES */}
+      {/* ---------------------------------------------------------------- */}
       <div className="px-4 py-16 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-8">Upcoming Experiences</h2>
+        <h2 className="text-3xl font-bold text-center mb-8">Upcoming friend-making hangouts</h2>
+
         <div className="flex flex-col gap-6">
+
+          {/* Coffee Crawl */}
           <div className={cn("flex flex-col gap-4 p-4", surfaceClass)}>
-            <img src={coffeeCrawl} alt="Barista making latte art" className="h-40 w-full rounded-lg object-cover" />
+            <img
+              src={coffeeCrawl}
+              className="h-40 w-full rounded-lg object-cover"
+            />
             <div className="space-y-2">
               <h3 className="text-xl font-bold">Neighborhood Coffee Crawl ☕</h3>
               <div className={cn("flex items-center gap-2 text-sm", secondaryTextClass)}>
@@ -332,17 +445,26 @@ const Index = () => {
                 <span>Downtown</span>
               </div>
               <div className="flex flex-wrap gap-2">
-                <span className="rounded-full bg-[#F8D57E]/20 px-3 py-1 text-xs font-medium text-[#F8D57E]">Social</span>
-                <span className="rounded-full bg-[#F8D57E]/20 px-3 py-1 text-xs font-medium text-[#F8D57E]">Food & Drink</span>
+                <span className="rounded-full bg-[#F8D57E]/20 px-3 py-1 text-xs font-medium text-[#F8D57E]">
+                  Social
+                </span>
+                <span className="rounded-full bg-[#F8D57E]/20 px-3 py-1 text-xs font-medium text-[#F8D57E]">
+                  Food & Drink
+                </span>
               </div>
+              <p className={cn("text-sm", secondaryTextClass)}>
+                A relaxed Saturday café stroll with curated matches.
+              </p>
             </div>
-            <Button variant="secondary" className="w-full">
-              View Details
-            </Button>
+            <Button variant="secondary" className="w-full">View Details</Button>
           </div>
 
+          {/* Cooking Class */}
           <div className={cn("flex flex-col gap-4 p-4", surfaceClass)}>
-            <img src={cookingClass} alt="Chef plating pasta dish" className="h-40 w-full rounded-lg object-cover" />
+            <img
+              src={cookingClass}
+              className="h-40 w-full rounded-lg object-cover"
+            />
             <div className="space-y-2">
               <h3 className="text-xl font-bold">Cooking Class: Italian Cuisine 🍝</h3>
               <div className={cn("flex items-center gap-2 text-sm", secondaryTextClass)}>
@@ -352,44 +474,74 @@ const Index = () => {
                 <span>North End</span>
               </div>
               <div className="flex flex-wrap gap-2">
-                <span className="rounded-full bg-[#F8D57E]/20 px-3 py-1 text-xs font-medium text-[#F8D57E]">Workshop</span>
-                <span className="rounded-full bg-[#F8D57E]/20 px-3 py-1 text-xs font-medium text-[#F8D57E]">Food & Drink</span>
+                <span className="rounded-full bg-[#F8D57E]/20 px-3 py-1 text-xs font-medium text-[#F8D57E]">
+                  Workshop
+                </span>
+                <span className="rounded-full bg-[#F8D57E]/20 px-3 py-1 text-xs font-medium text-[#F8D57E]">
+                  Food & Drink
+                </span>
               </div>
+              <p className={cn("text-sm", secondaryTextClass)}>
+                Cook, taste, and build a connection with another member.
+              </p>
             </div>
-            <Button variant="secondary" className="w-full">
-              View Details
-            </Button>
+            <Button variant="secondary" className="w-full">View Details</Button>
           </div>
+
         </div>
       </div>
 
-      {/* Member Stories Section */}
+      {/* ---------------------------------------------------------------- */}
+      {/* MEMBER STORIES */}
+      {/* ---------------------------------------------------------------- */}
       <div className="px-4 py-16 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-8">Member Stories</h2>
+        <h2 className="text-3xl font-bold text-center mb-8">Member friendship stories</h2>
+
         <div className="flex flex-col gap-8">
+
+          {/* Sarah */}
           <div className={cn("p-6 text-center", surfaceClass)}>
-            <img src={memberSarah} alt="Portrait of Sarah" className="mx-auto h-16 w-16 rounded-full object-cover mb-4" />
+            <img
+              src={memberSarah}
+              className="mx-auto h-16 w-16 rounded-full object-cover mb-4"
+            />
             <p className={cn("italic", secondaryTextClass)}>
-              "I've met some of my closest friends through Connective. The events are always top-notch and attract the most interesting people."
+              “I joined hoping to find one person to explore the city with.  
+              Now I have a group chat, weekly plans, and four new friends.”
             </p>
-            <p className="mt-4 font-bold">- Sarah L.</p>
+            <p className="mt-4 font-bold">— Sarah L.</p>
           </div>
+
+          {/* David */}
           <div className={cn("p-6 text-center", surfaceClass)}>
-            <img src={memberDavid} alt="Portrait of David" className="mx-auto h-16 w-16 rounded-full object-cover mb-4" />
+            <img
+              src={memberDavid}
+              className="mx-auto h-16 w-16 rounded-full object-cover mb-4"
+            />
             <p className={cn("italic", secondaryTextClass)}>
-              "As a busy professional, it's hard to make meaningful connections. This app changed everything. It's more than just networking; it's about real friendship."
+              “The introductions feel intentional.  
+              My first match is now my climbing partner —  
+              we even host monthly meetups together.”
             </p>
-            <p className="mt-4 font-bold">- David Chen</p>
+            <p className="mt-4 font-bold">— David Chen</p>
           </div>
+
         </div>
       </div>
 
-      {/* Join Section */}
-      <div className="px-4 pt-24 pb-16 text-center" style={{ background: joinSectionBackground }}>
+      {/* ---------------------------------------------------------------- */}
+      {/* JOIN SECTION */}
+      {/* ---------------------------------------------------------------- */}
+      <div
+        className="px-4 pt-24 pb-16 text-center"
+        style={{ background: joinSectionBackground }}
+      >
         <div className="max-w-lg mx-auto space-y-6">
+
           <h2 className="text-3xl font-bold leading-tight">
-            Join the most intentional community of leaders, innovators, and connectors.
+            Join the friend-making app built for adults who want more real-life connection.
           </h2>
+
           <div className="flex flex-col gap-3">
             <Button
               onClick={() => navigate("/signup")}
@@ -397,6 +549,7 @@ const Index = () => {
             >
               Become a member
             </Button>
+
             <Button
               onClick={() => navigate("/login")}
               variant="outline"
@@ -405,8 +558,10 @@ const Index = () => {
               I already have an account
             </Button>
           </div>
+
         </div>
       </div>
+
     </div>
   );
 };
