@@ -269,6 +269,10 @@ const AppContent = () => {
   const [hasCompletedInitialLoad, setHasCompletedInitialLoad] = useState(false);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [location.pathname]);
+
+  useEffect(() => {
     const timer = window.setTimeout(() => setIsBooting(false), 500);
     return () => window.clearTimeout(timer);
   }, []);
