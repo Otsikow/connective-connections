@@ -266,7 +266,7 @@ const AppContent = () => {
   return (
     <div
       className="relative flex min-h-screen flex-col"
-      style={{ "--bottom-nav-height": "5.75rem" }}
+      style={{ "--bottom-nav-height": "5.75rem" } as React.CSSProperties}
     >
       {showThemeToggle && <ThemeToggle />}
       <main

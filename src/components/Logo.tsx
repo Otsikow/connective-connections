@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import logoImage from "@/assets/connective-logo.png";
 
 interface LogoProps {
   className?: string;
@@ -9,9 +10,9 @@ interface LogoProps {
 }
 
 const sizeMap: Record<NonNullable<LogoProps["size"]>, string> = {
-  sm: "text-[1.75rem]",
-  md: "text-[2.25rem]",
-  lg: "text-[2.75rem]",
+  sm: "h-8",
+  md: "h-10",
+  lg: "h-14",
 };
 
 export const Logo = ({
@@ -19,26 +20,19 @@ export const Logo = ({
   size = "md",
   tagline,
   taglineClassName,
-  showGlow = true,
+  showGlow = false,
 }: LogoProps) => {
   return (
     <div className={cn("relative inline-flex flex-col items-start", className)}>
       {showGlow && (
         <div className="pointer-events-none absolute -inset-x-6 -inset-y-4 -z-10 rounded-[2.75rem] bg-gradient-to-r from-amber-400/40 via-yellow-400/25 to-orange-400/35 blur-3xl" />
       )}
-      <div className="relative inline-flex items-center rounded-[2.5rem] bg-gradient-to-r from-slate-950/85 via-slate-900/60 to-slate-950/85 px-6 py-3 shadow-[0_22px_55px_rgba(17,24,39,0.55)] ring-1 ring-white/10">
-        <span
-          className={cn(
-            "inline-block bg-gradient-to-b from-[#FFF9C4] via-[#F6C445] to-[#D98F17] bg-clip-text font-black tracking-tight text-transparent drop-shadow-[0_9px_28px_rgba(229,180,74,0.55)]",
-            sizeMap[size],
-          )}
-          style={{
-            textShadow:
-              "0 12px 28px rgba(229, 180, 74, 0.35), 0 0 14px rgba(255, 239, 186, 0.65), 0 0 2px rgba(255, 255, 255, 0.75)",
-          }}
-        >
-          Connective
-        </span>
+      <div className="relative inline-flex items-center">
+        <img
+          src={logoImage}
+          alt="Connective"
+          className={cn("object-contain", sizeMap[size])}
+        />
       </div>
       {tagline && (
         <span
