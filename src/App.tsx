@@ -269,16 +269,33 @@ const AppContent = () => {
   const [hasCompletedInitialLoad, setHasCompletedInitialLoad] = useState(false);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setIsBooting(false), 500);
+    const timer = window.setTimeout(() => setIsBooting(false), 250);
     return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    if (!isSubscriptionLoading && !hasCompletedInitialLoad) {
-      const timer = window.setTimeout(() => setHasCompletedInitialLoad(true), 250);
-      return () => window.clearTimeout(timer);
+    if (hasCompletedInitialLoad) {
+      return undefined;
     }
-    return undefined;
+
+    const fallbackTimer = window.setTimeout(() => {
+      setHasCompletedInitialLoad(true);
+    }, 1500);
+
+    if (!isSubscriptionLoading) {
+      const readyTimer = window.setTimeout(() => {
+        setHasCompletedInitialLoad(true);
+      }, 200);
+
+      return () => {
+        window.clearTimeout(fallbackTimer);
+        window.clearTimeout(readyTimer);
+      };
+    }
+
+    return () => {
+      window.clearTimeout(fallbackTimer);
+    };
   }, [hasCompletedInitialLoad, isSubscriptionLoading]);
 
   const showLoadingScreen = isBooting || !hasCompletedInitialLoad;
