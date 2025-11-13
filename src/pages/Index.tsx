@@ -41,6 +41,12 @@ const Index = () => {
     ? "rounded-xl border border-white/10 bg-white/5"
     : "rounded-xl border border-slate-200 bg-white shadow-sm";
   const overlayTextClass = isDark ? "text-white" : "text-slate-900";
+  const brandTitleClass = cn(
+    "text-4xl font-extrabold",
+    isDark
+      ? "text-[hsl(var(--primary))] drop-shadow-[0_0_10px_rgba(248,213,126,0.6)]"
+      : "text-[hsl(var(--primary-foreground))]",
+  );
   const outlineButtonClass = cn(
     "w-full sm:w-auto",
     isDark
@@ -72,7 +78,7 @@ const Index = () => {
         style={{ backgroundImage: `${heroOverlayGradient}, url(${heroBackground})` }}
       >
         <div className="max-w-4xl mx-auto space-y-8">
-          <h1 className="text-4xl font-extrabold text-[#F8D57E] drop-shadow-[0_0_10px_rgba(248,213,126,0.6)]">
+          <h1 className={brandTitleClass}>
             Connective
           </h1>
           <div className="space-y-4">
