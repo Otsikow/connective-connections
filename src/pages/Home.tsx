@@ -239,9 +239,14 @@ const Home = () => {
             >
               Join now
             </Button>
-            <Avatar className="h-10 w-10 cursor-pointer" onClick={() => navigate("/profile")}>
+            <Avatar
+              className="h-10 w-10 cursor-pointer ring-2 ring-[#f7c145]/80 ring-offset-2 ring-offset-white transition-shadow hover:shadow-lg dark:ring-[#f4c96c]/90 dark:ring-offset-slate-950"
+              onClick={() => navigate("/profile")}
+            >
               <AvatarImage src="/placeholder.svg" alt="User" />
-              <AvatarFallback>U</AvatarFallback>
+              <AvatarFallback className="bg-gradient-to-br from-white via-[#f8edd6] to-[#f2d7ff] text-sm font-semibold uppercase text-slate-900 dark:from-slate-800 dark:via-slate-800 dark:to-slate-700 dark:text-white">
+                U
+              </AvatarFallback>
             </Avatar>
           </div>
         </div>
