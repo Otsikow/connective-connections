@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import {
   Avatar,
@@ -474,14 +474,14 @@ const Home = () => {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setShowAuthPrompt(false);
-                navigate("/login", { state: { next: pendingPath ?? undefined } });
-              }}
-            >
-              Sign in
+            <Button asChild variant="ghost">
+              <Link
+                to="/login"
+                state={{ next: pendingPath ?? undefined }}
+                onClick={() => setShowAuthPrompt(false)}
+              >
+                Sign in
+              </Link>
             </Button>
             <Button
               className="bg-[#f7c145] text-black"
