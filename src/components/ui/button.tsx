@@ -69,15 +69,18 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       );
     }
 
+    const { disabled, ...restProps } = props;
+    
     return (
       <motion.button
         ref={ref}
         type={type}
         className={classes}
-        whileHover={props.disabled ? undefined : { scale: 1.02, translateY: -1 }}
-        whileTap={props.disabled ? undefined : { scale: 0.97 }}
+        disabled={disabled}
+        whileHover={disabled ? undefined : { scale: 1.02, translateY: -1 }}
+        whileTap={disabled ? undefined : { scale: 0.97 }}
         onClick={handleClick}
-        {...props}
+        {...(restProps as any)}
       >
         {children}
       </motion.button>
