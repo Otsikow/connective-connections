@@ -15,7 +15,6 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselItem, CarouselContent, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import {
@@ -27,16 +26,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-import {
-  Sparkles,
-  PlayCircle,
-  Users,
-  Calendar,
-  MapPin,
-  Send,
-} from "lucide-react";
+import { Sparkles, PlayCircle, Users, Send } from "lucide-react";
 
-import BackButton from "@/components/BackButton";
 import { useSubscription } from "@/hooks/useSubscription";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { generateAvatarUrl } from "@/lib/avatar";
@@ -199,13 +190,12 @@ const Home = () => {
   //     RENDER
   // ------------------------ //
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 pb-28">
+    <div className="min-h-screen bg-white pb-28 dark:bg-slate-950">
 
-      {/* HEADER */}
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b bg-white p-4 dark:bg-slate-900">
-        <div className="flex items-center gap-3">
-          <BackButton fallbackPath="/" className="hidden sm:inline-flex" />
-          <div className="flex items-center gap-2">
+      <div className="mx-auto w-full max-w-5xl space-y-10 px-4 py-8">
+
+        <div className="flex items-center justify-between gap-6">
+          <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#fce8b8]">
               <Sparkles className="h-5 w-5 text-[#c27b1b]" />
             </div>
@@ -214,35 +204,14 @@ const Home = () => {
               <h1 className="text-lg font-bold text-slate-900 dark:text-white">Connective</h1>
             </div>
           </div>
+
+          {isAuthenticated && (
+            <Avatar className="h-10 w-10 cursor-pointer" onClick={() => navigate("/profile")}>
+              <AvatarImage src={userAvatarUrl} />
+              <AvatarFallback>{userInitials}</AvatarFallback>
+            </Avatar>
+          )}
         </div>
-
-        {!isAuthenticated ? (
-          <div className="flex gap-2">
-            <Button variant="ghost" onClick={() => navigate("/login")}>Sign in</Button>
-            <Button
-              className="bg-[#f7c145] text-black"
-              onClick={() => {
-                setPendingPath(null);
-                setShowAuthPrompt(true);
-              }}
-            >
-              Join now
-            </Button>
-          </div>
-        ) : (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Avatar className="h-10 w-10 cursor-pointer" onClick={() => navigate("/profile")}>
-                <AvatarImage src={userAvatarUrl} />
-                <AvatarFallback>{userInitials}</AvatarFallback>
-              </Avatar>
-            </TooltipTrigger>
-            <TooltipContent>View profile</TooltipContent>
-          </Tooltip>
-        )}
-      </header>
-
-      <div className="mx-auto w-full max-w-5xl px-4 py-8 space-y-10">
 
         {/* HERO */}
         <section className="rounded-3xl border bg-white p-6 shadow dark:bg-slate-900">
