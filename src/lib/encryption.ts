@@ -49,11 +49,44 @@ const fromBase64 = (value: string): Uint8Array => {
   throw new Error("No base64 decoder available");
 };
 
-const getStorage = () => {
-  if (typeof localStorage === "undefined") {
-    throw new Error("Local storage is not available");
+type StorageAdapter = Pick<Storage, "getItem" | "setItem" | "removeItem">;
+
+const createMemoryStorage = (): StorageAdapter => {
+  const store = new Map<string, string>();
+  return {
+    getItem: (key) => (store.has(key) ? store.get(key)! : null),
+    setItem: (key, value) => {
+      store.set(key, value);
+    },
+    removeItem: (key) => {
+      store.delete(key);
+    },
+  };
+};
+
+const safeLocalStorage = (): StorageAdapter | null => {
+  if (typeof window === "undefined" || typeof window.localStorage === "undefined") {
+    return null;
   }
-  return localStorage;
+
+  try {
+    const testKey = `${STORAGE_PREFIX}__test__`;
+    window.localStorage.setItem(testKey, "1");
+    window.localStorage.removeItem(testKey);
+    return window.localStorage;
+  } catch (error) {
+    console.warn("Local storage is not accessible, falling back to in-memory storage.", error);
+    return null;
+  }
+};
+
+let storageAdapter: StorageAdapter | null = null;
+
+const getStorage = (): StorageAdapter => {
+  if (!storageAdapter) {
+    storageAdapter = safeLocalStorage() ?? createMemoryStorage();
+  }
+  return storageAdapter;
 };
 
 export const isWebCryptoAvailable = () => {
