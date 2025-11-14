@@ -112,7 +112,7 @@ const Events = () => {
               transition={{ duration: 0.4 }}
               className="space-y-6"
             >
-              <Badge className="w-fit rounded-full bg-primary/10 px-4 py-1 text-sm font-semibold text-primary">
+              <Badge className="w-fit rounded-full bg-primary/10 px-4 py-1 text-sm font-semibold text-primary-foreground">
                 Discover experiences
               </Badge>
               <h1 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
@@ -154,7 +154,7 @@ const Events = () => {
                   <Badge
                     key={category.label}
                     variant="secondary"
-                    className="rounded-full border border-primary/10 bg-primary/5 text-primary"
+                    className="rounded-full border border-primary/10 bg-primary/5 text-primary-foreground"
                   >
                     {category.label}
                     <span className="ml-2 rounded-full bg-primary/10 px-2 text-xs font-medium">
