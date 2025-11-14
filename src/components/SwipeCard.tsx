@@ -205,7 +205,7 @@ export const SwipeCard = ({
                 {profile.distance && <span className="flex items-center gap-1">• {profile.distance} away</span>}
                 {profile.availability && (
                   <span className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-[#E8B956]" />
+                    <Clock className="w-3.5 h-3.5 text-[hsl(var(--highlight-text))]" />
                     {profile.availability}
                   </span>
                 )}
@@ -257,7 +257,7 @@ export const SwipeCard = ({
           {/* CTA Button */}
           <Button
             onClick={onConnect}
-            className="w-full h-12 sm:h-14 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black font-semibold gap-2 text-base sm:text-lg shadow-lg shadow-[#E8B956]/40"
+            className="w-full sm:h-14 gap-2 text-base sm:text-lg"
           >
             <Coffee className="w-4 h-4 sm:w-5 sm:h-5" />
             Let's grab coffee!

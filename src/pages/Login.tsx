@@ -105,7 +105,7 @@ const Login = () => {
           className="flex-1"
         >
           <div className="inline-flex items-center rounded-full bg-white/80 px-3 py-1 text-sm shadow-sm backdrop-blur dark:bg-white/10">
-            <Sparkles className="mr-2 h-4 w-4 text-[#E8B956]" />
+            <Sparkles className="mr-2 h-4 w-4 text-[hsl(var(--highlight-text))]" />
             <span className="text-slate-900 dark:text-slate-100">
               Reconnect with your people
             </span>
@@ -125,7 +125,7 @@ const Login = () => {
                 className="flex cursor-pointer items-start gap-3 rounded-2xl border border-black/5 bg-white/80 p-4 shadow-sm backdrop-blur transition-all hover:border-black/10 hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:hover:border-white/20"
                 onClick={() => navigate("/signup")}
               >
-                <div className="mt-1 h-2 w-2 rounded-full bg-[#E8B956]" />
+                <div className="mt-1 h-2 w-2 rounded-full bg-[hsl(var(--highlight-text))]" />
                 <p className="text-base text-slate-700 dark:text-slate-200">
                   {feature}
                 </p>
@@ -159,7 +159,7 @@ const Login = () => {
                 New to Connective?{" "}
                 <Link
                   to="/signup"
-                  className="font-medium text-[#E8B956] hover:underline"
+                  className="font-medium text-[hsl(var(--highlight-text))] hover:underline"
                 >
                   Create an account
                 </Link>
@@ -244,7 +244,7 @@ const Login = () => {
                 </label>
                 <Link
                   to="/forgot-password"
-                  className="font-medium text-[#E8B956] hover:underline"
+                  className="font-medium text-[hsl(var(--highlight-text))] hover:underline"
                 >
                   Forgot password?
                 </Link>
@@ -252,7 +252,7 @@ const Login = () => {
 
               <Button
                 type="submit"
-                className="h-12 w-full rounded-xl bg-[#E8B956] text-base font-semibold text-black hover:bg-[#d8a74c] dark:text-black"
+                className="w-full"
                 disabled={isLoading}
               >
                 {isLoading ? "Signing in..." : "Sign in"}

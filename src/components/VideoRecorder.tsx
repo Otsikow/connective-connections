@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { Button } from '@/components/ui/button';
 import { useSubscription } from '@/hooks/useSubscription';
 
 const VideoRecorder = () => {
@@ -70,9 +71,11 @@ const VideoRecorder = () => {
       <video ref={videoRef} autoPlay muted playsInline></video>
       <div>
         {!isRecording ? (
-          <button onClick={handleStartRecording}>Start Recording</button>
+          <Button onClick={handleStartRecording}>Start Recording</Button>
         ) : (
-          <button onClick={handleStopRecording}>Stop Recording</button>
+          <Button onClick={handleStopRecording} variant="outline">
+            Stop Recording
+          </Button>
         )}
       </div>
       {videoURL && (

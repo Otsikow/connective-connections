@@ -338,7 +338,7 @@ const Matches = () => {
                 <div className="flex gap-4 items-center">
                   <Button
                     onClick={handleLike}
-                    className="flex-1 h-14 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-charcoal font-semibold gap-2"
+                    className="flex-1 h-14 gap-2 text-[hsl(var(--primary-foreground))]"
                   >
                     <Sparkles className="w-5 h-5" /> Let's grab coffee!
                   </Button>
@@ -461,7 +461,7 @@ const Matches = () => {
       {showMatchModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
           <div className="bg-background rounded-3xl p-8 max-w-sm mx-4 text-center space-y-4">
-            <div className="w-20 h-20 bg-gradient-to-br from-[#E8B956] to-[#d9a840] rounded-full mx-auto flex items-center justify-center">
+          <div className="w-20 h-20 bg-[linear-gradient(135deg,hsl(var(--primary)),hsl(var(--accent)))] rounded-full mx-auto flex items-center justify-center">
               <Heart className="w-10 h-10 text-white fill-white" />
             </div>
             <h2 className="text-2xl font-bold">It's a Match!</h2>

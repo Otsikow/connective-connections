@@ -15,6 +15,7 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { generateAvatarUrl } from "@/lib/avatar";
 import { ToastAction } from "@/components/ui/toast";
 import { useSubscription } from "@/hooks/useSubscription";
+import { cn } from "@/lib/utils";
 
 type SupabaseGroupResponse = Tables<"groups"> & {
   group_members?: { count: number }[];
@@ -184,7 +185,7 @@ const Community = () => {
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Users className="text-[#E8B956]" size={24} />
+          <Users className="text-[hsl(var(--highlight-text))]" size={24} />
           <h1 className="text-xl font-bold">Community Groups</h1>
         </div>
 
@@ -200,11 +201,11 @@ const Community = () => {
       <div className="px-6 py-6 space-y-6">
         {/* Create Group Button */}
         <Button
-          className={`flex h-12 w-full items-center justify-center gap-2 rounded-full font-semibold transition-colors ${
-            isChatLocked
-              ? "bg-muted text-muted-foreground hover:bg-muted"
-              : "bg-[#E8B956] text-black hover:bg-[#d9a840]"
-          }`}
+          variant={isChatLocked ? "outline" : "default"}
+          className={cn(
+            "flex h-12 w-full items-center justify-center gap-2 font-semibold transition-colors",
+            isChatLocked && "text-muted-foreground"
+          )}
           onClick={handleCreateGroupClick}
         >
           <Crown size={20} />
@@ -265,8 +266,8 @@ const Community = () => {
                     />
                   </div>
                 ) : (
-                  <div className="h-48 bg-gradient-to-br from-[#E8B956]/20 to-[#E8B956]/5 flex items-center justify-center">
-                    <Users size={64} className="text-[#E8B956]/30" />
+                  <div className="h-48 bg-gradient-to-br from-[hsl(var(--primary))]/20 to-[hsl(var(--accent))]/10 flex items-center justify-center">
+                    <Users size={64} className="text-[hsl(var(--highlight-text))]/30" />
                   </div>
                 )}
 
@@ -303,11 +304,11 @@ const Community = () => {
                   </div>
 
                   <Button
-                    className={`flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-colors ${
-                      isChatLocked
-                        ? "bg-muted text-muted-foreground hover:bg-muted"
-                        : "bg-[#E8B956] text-black hover:bg-[#d9a840]"
-                    }`}
+                    variant={isChatLocked ? "outline" : "default"}
+                    className={cn(
+                      "flex w-full items-center justify-center gap-2 font-semibold transition-colors",
+                      isChatLocked && "text-muted-foreground"
+                    )}
                     onClick={() => handleJoinChat(group.id)}
                   >
                     <MessageSquare size={18} />
