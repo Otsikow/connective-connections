@@ -231,9 +231,10 @@ export const MessageInput = ({
         <Button
           onClick={() => void handleSend()}
           disabled={isDisabled || !message.trim()}
-          className="h-10 w-10 rounded-full bg-[#E8B956] hover:bg-[#d9a840] p-0 disabled:opacity-50"
+          size="icon"
+          className="h-10 w-10 p-0 text-[hsl(var(--primary-foreground))]"
         >
-          <Send className="w-4 h-4 text-black" />
+          <Send className="w-4 h-4" />
         </Button>
       </div>
 

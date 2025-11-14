@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { Sparkles, MessageCircle } from "lucide-react";
 
 interface AIIcebreakersProps {
@@ -67,11 +68,10 @@ export const AIIcebreakers = ({ onSelectIcebreaker, className = "" }: AIIcebreak
             variant={selectedIndex === index ? "default" : "outline"}
             size="sm"
             onClick={() => handleSelect(suggestion, index)}
-            className={`h-8 px-3 text-xs whitespace-nowrap transition-all ${
-              selectedIndex === index
-                ? "bg-[#E8B956] text-black hover:bg-[#d9a840]"
-                : "hover:bg-muted"
-            }`}
+            className={cn(
+              "h-8 px-3 text-xs whitespace-nowrap transition-all",
+              selectedIndex === index ? "text-[hsl(var(--primary-foreground))]" : "hover:bg-muted"
+            )}
             disabled={selectedIndex === index}
           >
             <MessageCircle className="w-3 h-3 mr-1" />

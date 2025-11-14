@@ -26,6 +26,7 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { useSubscription } from "@/hooks/useSubscription";
+import { cn } from "@/lib/utils";
 
 interface FriendProfile {
   id: string;
@@ -382,7 +383,7 @@ const FriendFinder = () => {
         <Card className="border border-border/60 bg-card/80 backdrop-blur">
           <CardHeader className="space-y-2">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Sparkles className="h-4 w-4 text-[#E8B956]" />
+              <Sparkles className="h-4 w-4 text-[hsl(var(--highlight-text))]" />
               This week’s tailored intros
             </CardTitle>
             <CardDescription>
@@ -405,20 +406,19 @@ const FriendFinder = () => {
               Need a deeper dive?
               <Button
                 variant="link"
-                className="px-1 text-[#E8B956]"
+                className="px-1 text-[hsl(var(--highlight-text))]"
                 onClick={() => navigate("/matches")}
               >
                 Open Matches workspace
               </Button>
             </div>
             <Button
-              variant="ghost"
+              variant={isChatLocked ? "outline" : "default"}
               size="lg"
-              className={`flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-colors sm:w-auto ${
-                isChatLocked
-                  ? "bg-muted text-muted-foreground hover:bg-muted"
-                  : "bg-[#E8B956] text-black hover:bg-[#d9a840] [&_svg]:text-black"
-              }`}
+              className={cn(
+                "flex w-full items-center justify-center gap-2 font-semibold transition-colors sm:w-auto",
+                isChatLocked && "text-muted-foreground"
+              )}
               onClick={handleOpenMessages}
             >
               <MessageCircle className="h-4 w-4" />
@@ -461,11 +461,7 @@ const FriendFinder = () => {
                       key={filter}
                       variant={isActive ? "default" : "outline"}
                       size="sm"
-                      className={`rounded-full ${
-                        isActive
-                          ? "bg-[#E8B956] text-black hover:bg-[#d9a840]"
-                          : "border-border/60"
-                      }`}
+                      className={cn("rounded-full", !isActive && "border-border/60")}
                       onClick={() => toggleFilter(filter)}
                     >
                       {filter}
@@ -488,11 +484,7 @@ const FriendFinder = () => {
                         key={option.value}
                         size="sm"
                         variant={isActive ? "default" : "outline"}
-                        className={`rounded-full text-xs ${
-                          isActive
-                            ? "bg-[#E8B956] text-black hover:bg-[#d9a840]"
-                            : "border-border/60"
-                        }`}
+                        className={cn("rounded-full text-xs", !isActive && "border-border/60")}
                         onClick={() => setSelectedVibe(option.value)}
                       >
                         {option.label}
@@ -512,11 +504,7 @@ const FriendFinder = () => {
                         key={option.value}
                         size="sm"
                         variant={isActive ? "default" : "outline"}
-                        className={`rounded-full text-xs ${
-                          isActive
-                            ? "bg-[#E8B956] text-black hover:bg-[#d9a840]"
-                            : "border-border/60"
-                        }`}
+                        className={cn("rounded-full text-xs", !isActive && "border-border/60")}
                         onClick={() => setSelectedAvailability(option.value)}
                       >
                         {option.label}
@@ -556,15 +544,16 @@ const FriendFinder = () => {
                 {availableInterests.map((interest) => {
                   const isActive = selectedFilters.includes(interest);
                   return (
-                    <Badge
-                      key={interest}
-                      className={`cursor-pointer rounded-full px-3 py-1 text-xs transition-colors ${
-                        isActive
-                          ? "bg-[#E8B956] text-black"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                      onClick={() => toggleFilter(interest)}
-                    >
+                  <Badge
+                    key={interest}
+                    className={cn(
+                      "cursor-pointer rounded-full px-3 py-1 text-xs transition-colors",
+                      isActive
+                        ? "bg-[linear-gradient(135deg,hsl(var(--primary)),hsl(var(--accent)))] text-[hsl(var(--primary-foreground))]"
+                        : "bg-muted text-muted-foreground"
+                    )}
+                    onClick={() => toggleFilter(interest)}
+                  >
                       {interest}
                     </Badge>
                   );
@@ -601,7 +590,7 @@ const FriendFinder = () => {
               <>
                 <Card
                   key={activeProfile.id}
-                  className="group overflow-hidden border border-border/60 bg-card/70 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-[#E8B956]/80"
+                  className="group overflow-hidden border border-border/60 bg-card/70 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-[hsl(var(--accent))]/70"
                 >
                   <button
                     type="button"
@@ -614,11 +603,12 @@ const FriendFinder = () => {
                     }
                     aria-disabled={isLastProfile || !hasMultipleProfiles}
                     disabled={isLastProfile || !hasMultipleProfiles}
-                    className={`relative aspect-[4/5] w-full overflow-hidden text-left transition-transform duration-300 focus:outline-none ${
+                    className={cn(
+                      "relative aspect-[4/5] w-full overflow-hidden text-left transition-transform duration-300 focus:outline-none",
                       !isLastProfile && hasMultipleProfiles
-                        ? "cursor-pointer focus-visible:ring-2 focus-visible:ring-[#E8B956] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                        ? "cursor-pointer focus-visible:ring-2 focus-visible:ring-[hsl(var(--accent))] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                         : "cursor-default"
-                    }`}
+                    )}
                   >
                     <img
                       src={activeProfile.photo}
@@ -626,7 +616,7 @@ const FriendFinder = () => {
                       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                     <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                      <Badge className="rounded-full bg-[#E8B956] text-black shadow-sm">
+                      <Badge className="rounded-full bg-[linear-gradient(135deg,hsl(var(--primary)),hsl(var(--accent)))] text-[hsl(var(--primary-foreground))] shadow-sm">
                         {activeProfile.compatibility}% match
                       </Badge>
                       {activeProfile.badges.map((badge) => (
@@ -670,7 +660,7 @@ const FriendFinder = () => {
                         <ul className="space-y-2 text-sm text-foreground">
                           {activeProfile.highlights.map((highlight) => (
                             <li key={highlight} className="flex items-start gap-2">
-                              <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[#E8B956]" />
+                              <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[hsl(var(--highlight-text))]" />
                               <span>{highlight}</span>
                             </li>
                           ))}
@@ -720,7 +710,7 @@ const FriendFinder = () => {
                             <Badge
                               key={format}
                               variant="secondary"
-                              className="rounded-full bg-[#E8B956]/20 text-[#C48F21]"
+                              className="rounded-full bg-[hsl(var(--accent))]/15 text-[hsl(var(--highlight-text))]"
                             >
                               {format}
                             </Badge>
@@ -735,11 +725,11 @@ const FriendFinder = () => {
 
                   <CardFooter className="flex flex-col gap-3 border-t border-border/60 bg-muted/40 p-5 sm:flex-row sm:items-center sm:justify-between">
                     <Button
-                      className={`flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-colors ${
-                        isChatLocked
-                          ? "bg-muted text-muted-foreground hover:bg-muted"
-                          : "bg-[#E8B956] text-black hover:bg-[#d9a840]"
-                      }`}
+                      variant={isChatLocked ? "outline" : "default"}
+                      className={cn(
+                        "flex w-full items-center justify-center gap-2 font-semibold transition-colors",
+                        isChatLocked && "text-muted-foreground"
+                      )}
                       onClick={() => handleStartChat(activeProfile.id)}
                     >
                       <MessageCircle className="h-4 w-4" />
@@ -768,7 +758,7 @@ const FriendFinder = () => {
                     {activeProfileIndex + 1} of {filteredProfiles.length}
                   </div>
                   <Button
-                    className="w-full rounded-full bg-[#E8B956] text-black hover:bg-[#d9a840] sm:w-auto"
+                    className="w-full sm:w-auto"
                     onClick={handleNextProfile}
                     disabled={isLastProfile}
                   >
@@ -831,7 +821,7 @@ const FriendFinder = () => {
                         {event.description}
                       </p>
                     </div>
-                    <Badge className="rounded-full bg-[#E8B956]/20 text-[#C48F21]">
+                    <Badge className="rounded-full bg-[hsl(var(--accent))]/15 text-[hsl(var(--highlight-text))]">
                       Limited spots
                     </Badge>
                   </div>

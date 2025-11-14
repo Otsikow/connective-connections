@@ -85,13 +85,13 @@ function StepHeader({ step }: { step: number }) {
         <p className="text-sm font-medium text-muted-foreground">
           Step {step} of {SIGNUP_STEPS.length}
         </p>
-        <span className="text-sm font-semibold text-[#E8B956]">
+        <span className="text-sm font-semibold text-[hsl(var(--highlight-text))]">
           {SIGNUP_STEPS[stepIndex].title}
         </span>
       </div>
       <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
         <div
-          className="h-full bg-[#E8B956] transition-all duration-300"
+          className="h-full bg-[linear-gradient(135deg,hsl(var(--primary)),hsl(var(--accent)))] transition-all duration-300"
           style={{ width: `${Math.max(6, widthPercent)}%` }}
         />
       </div>
@@ -342,7 +342,7 @@ const Signup = () => {
                 <Button
                   onClick={goToNextStep}
                   disabled={!canContinue}
-                  className="w-full h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black font-semibold"
+                  className="w-full"
                 >
                   Continue
                 </Button>
@@ -416,7 +416,7 @@ const Signup = () => {
                     Back
                   </Button>
                   <Button
-                    className="flex-1 h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black font-semibold"
+                    className="flex-1"
                     onClick={goToNextStep}
                     disabled={!canContinue}
                   >
@@ -500,14 +500,14 @@ const Signup = () => {
                     I agree to the{" "}
                     <a
                       href="#"
-                      className="text-[#E8B956] font-medium underline-offset-4 hover:underline"
+                      className="text-[hsl(var(--highlight-text))] font-medium underline-offset-4 hover:underline"
                     >
                       Terms
                     </a>{" "}
                     and{" "}
                     <a
                       href="#"
-                      className="text-[#E8B956] font-medium underline-offset-4 hover:underline"
+                      className="text-[hsl(var(--highlight-text))] font-medium underline-offset-4 hover:underline"
                     >
                       Privacy Policy
                     </a>
@@ -520,7 +520,7 @@ const Signup = () => {
                     Back
                   </Button>
                   <Button
-                    className="h-12 rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black font-semibold flex-1"
+                    className="flex-1"
                     onClick={handleCreateAccount}
                     disabled={!canContinue || isSubmitting}
                   >
@@ -539,7 +539,7 @@ const Signup = () => {
                   state: { next: nextPath },
                 })
               }
-              className="text-[#E8B956] font-medium hover:underline"
+              className="text-[hsl(var(--highlight-text))] font-medium hover:underline"
             >
               Log in
             </button>

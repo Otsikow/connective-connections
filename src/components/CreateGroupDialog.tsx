@@ -281,11 +281,7 @@ export const CreateGroupDialog = ({ open, onOpenChange, onGroupCreated }: Create
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              className="bg-[#E8B956] hover:bg-[#d9a840] text-black"
-              disabled={isLoading}
-            >
+            <Button type="submit" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
