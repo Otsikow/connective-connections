@@ -12,6 +12,8 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { fallbackGroups, type GroupWithMembers } from "@/data/groups";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { ToastAction } from "@/components/ui/toast";
+import { useSubscription } from "@/hooks/useSubscription";
 
 type SupabaseGroupResponse = Tables<"groups"> & {
   group_members?: { count: number }[];
@@ -22,7 +24,9 @@ const Community = () => {
   const { toast } = useToast();
   usePageTitle("Community Hubs");
 
-  const [isPremium] = useState(true);
+  const { userId, tier, requireProFeature } = useSubscription();
+  const isPremiumMember = tier === "pro";
+  const isChatLocked = !userId || !isPremiumMember;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -98,6 +102,54 @@ const Community = () => {
     return `${groups.length} local group${groups.length === 1 ? "" : "s"} near you`;
   }, [groups.length, isLoading]);
 
+  const ensureChatAccess = useCallback(
+    (destination: string) => {
+      if (!userId) {
+        toast({
+          title: "Sign in to join chats",
+          description: "Log in or create a free account to message community groups.",
+          action: (
+            <ToastAction
+              altText="Sign in"
+              onClick={() => navigate("/login", { state: { next: destination } })}
+            >
+              Sign in
+            </ToastAction>
+          ),
+        });
+        return false;
+      }
+
+      if (!isPremiumMember) {
+        return requireProFeature();
+      }
+
+      return true;
+    },
+    [isPremiumMember, navigate, requireProFeature, toast, userId],
+  );
+
+  const handleJoinChat = useCallback(
+    (groupId: string) => {
+      const destination = `/messages/community/${groupId}`;
+      if (!ensureChatAccess(destination)) return;
+      navigate(destination);
+    },
+    [ensureChatAccess, navigate],
+  );
+
+  const handleCreateGroupClick = useCallback(() => {
+    const destination = "/community";
+    if (!ensureChatAccess(destination)) return;
+    setIsDialogOpen(true);
+  }, [ensureChatAccess]);
+
+  const createGroupLabel = !userId
+    ? "Sign in to create a group"
+    : isPremiumMember
+      ? "Create a Group"
+      : "Unlock premium groups";
+
   const getCategoryColor = (category: string) => {
     const categoryStyles: Record<string, string> = {
       "Book Club":
@@ -141,15 +193,17 @@ const Community = () => {
 
       <div className="px-6 py-6 space-y-6">
         {/* Premium Create Group Button */}
-        {isPremium && (
-          <Button
-            className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black font-semibold h-12 flex items-center justify-center gap-2"
-            onClick={() => setIsDialogOpen(true)}
-          >
-            <Crown size={20} />
-            Create a Group
-          </Button>
-        )}
+        <Button
+          className={`flex h-12 w-full items-center justify-center gap-2 rounded-full font-semibold transition-colors ${
+            isChatLocked
+              ? "bg-muted text-muted-foreground hover:bg-muted"
+              : "bg-[#E8B956] text-black hover:bg-[#d9a840]"
+          }`}
+          onClick={handleCreateGroupClick}
+        >
+          <Crown size={20} />
+          {createGroupLabel}
+        </Button>
 
         {/* Groups Info */}
         <div className="flex items-center justify-between">
@@ -242,11 +296,19 @@ const Community = () => {
                   </div>
 
                   <Button
-                    className="w-full rounded-full bg-[#E8B956] hover:bg-[#d9a840] text-black font-semibold"
-                    onClick={() => navigate(`/messages/community/${group.id}`)}
+                    className={`flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-colors ${
+                      isChatLocked
+                        ? "bg-muted text-muted-foreground hover:bg-muted"
+                        : "bg-[#E8B956] text-black hover:bg-[#d9a840]"
+                    }`}
+                    onClick={() => handleJoinChat(group.id)}
                   >
                     <MessageSquare size={18} className="mr-2" />
-                    Join Chat
+                    {!userId
+                      ? "Sign in to chat"
+                      : isPremiumMember
+                        ? "Join Chat"
+                        : "Join chat (Premium)"}
                   </Button>
                 </CardContent>
               </Card>

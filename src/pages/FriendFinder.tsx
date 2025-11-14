@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,12 +12,14 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { CalendarCheck, MapPin, Sparkles, Users } from "lucide-react";
+import { CalendarCheck, MapPin, MessageCircle, Sparkles, Users } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import { useSubscription } from "@/hooks/useSubscription";
 
 interface FriendProfile {
   id: string;
@@ -184,6 +186,8 @@ const availabilityOptions: Array<{
 const FriendFinder = () => {
   const navigate = useNavigate();
   usePageTitle("Friend Finder");
+  const { toast } = useToast();
+  const { userId, tier, requireProFeature } = useSubscription();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [selectedVibe, setSelectedVibe] = useState<FriendProfile["vibe"] | "all">(
@@ -253,6 +257,61 @@ const FriendFinder = () => {
     );
   };
 
+  const isProMember = tier === "pro";
+  const isChatLocked = !userId || !isProMember;
+  const primaryChatLabel = !userId
+    ? "Sign in to chat"
+    : isProMember
+      ? "Start an intro chat"
+      : "Unlock premium chat";
+  const cardChatLabel = !userId
+    ? "Sign in to chat"
+    : isProMember
+      ? "Message now"
+      : "Message (Premium)";
+
+  const ensureChatAccess = useCallback(
+    (destination: string) => {
+      if (!userId) {
+        toast({
+          title: "Sign in to start chatting",
+          description: "Create a free account or sign in to message members.",
+          action: (
+            <ToastAction
+              altText="Sign in"
+              onClick={() => navigate("/login", { state: { next: destination } })}
+            >
+              Sign in
+            </ToastAction>
+          ),
+        });
+        return false;
+      }
+
+      if (!isProMember) {
+        return requireProFeature();
+      }
+
+      return true;
+    },
+    [isProMember, navigate, requireProFeature, toast, userId],
+  );
+
+  const handleOpenMessages = useCallback(() => {
+    const destination = "/messages";
+    if (!ensureChatAccess(destination)) return;
+    navigate(destination);
+  }, [ensureChatAccess, navigate]);
+
+  const handleStartChat = useCallback(
+    (profileId: string) => {
+      const destination = `/messages/${profileId}`;
+      if (!ensureChatAccess(destination)) return;
+      navigate(destination);
+    },
+    [ensureChatAccess, navigate],
+  );
+
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border">
@@ -277,7 +336,7 @@ const FriendFinder = () => {
               This week’s tailored intros
             </CardTitle>
             <CardDescription>
-              These members mirror your interests and rhythm. Send an intro or
+              These members mirror your interests and rhythm. Start a chat or
               save them to Matches Pro to unlock extended insights.
             </CardDescription>
           </CardHeader>
@@ -303,10 +362,15 @@ const FriendFinder = () => {
               </Button>
             </div>
             <Button
-              className="w-full sm:w-auto bg-[#E8B956] text-black hover:bg-[#d9a840]"
-              onClick={() => navigate("/messages")}
+              className={`flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-colors sm:w-auto ${
+                isChatLocked
+                  ? "bg-muted text-muted-foreground hover:bg-muted"
+                  : "bg-[#E8B956] text-black hover:bg-[#d9a840]"
+              }`}
+              onClick={handleOpenMessages}
             >
-              Start an intro chat
+              <MessageCircle className="h-4 w-4" />
+              {primaryChatLabel}
             </Button>
           </CardFooter>
         </Card>
@@ -603,14 +667,19 @@ const FriendFinder = () => {
 
                 <CardFooter className="flex flex-col gap-3 border-t border-border/60 bg-muted/40 p-5 sm:flex-row sm:items-center sm:justify-between">
                   <Button
-                    variant="outline"
-                    className="w-full rounded-full border-border/70"
-                    onClick={() => navigate(`/messages/${profile.id}`)}
+                    className={`flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-colors ${
+                      isChatLocked
+                        ? "bg-muted text-muted-foreground hover:bg-muted"
+                        : "bg-[#E8B956] text-black hover:bg-[#d9a840]"
+                    }`}
+                    onClick={() => handleStartChat(profile.id)}
                   >
-                    Send an intro
+                    <MessageCircle className="h-4 w-4" />
+                    {cardChatLabel}
                   </Button>
                   <Button
-                    className="w-full rounded-full bg-[#E8B956] text-black hover:bg-[#d9a840]"
+                    variant="outline"
+                    className="w-full rounded-full border-border/70"
                     onClick={() => navigate(`/profile?focus=${profile.id}`)}
                   >
                     View full profile
