@@ -123,6 +123,12 @@ const Events = () => {
                 and leaders near you. Search by vibe, interest, or neighborhood
                 to discover your next great connection.
               </p>
+              <Button
+                className="w-full rounded-full bg-primary text-white hover:bg-primary/80 dark:text-black sm:w-auto"
+                onClick={() => navigate("/host/create-event")}
+              >
+                Host an experience
+              </Button>
               <div className="flex flex-col gap-4 sm:flex-row">
                 <form
                   className="relative flex-1"
