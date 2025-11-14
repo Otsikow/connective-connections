@@ -483,7 +483,10 @@ export default function Profile() {
                 <div className="flex flex-wrap gap-2 pt-2">
                   {focusAreas.length ? (
                     focusAreas.map((area) => (
-                      <Badge key={area} className="rounded-full bg-background/80 text-sm shadow-sm">
+                      <Badge
+                        key={area}
+                        className="rounded-full bg-background/80 text-sm shadow-sm text-black dark:text-amber-300"
+                      >
                         {area}
                       </Badge>
                     ))
