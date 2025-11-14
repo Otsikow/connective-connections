@@ -312,7 +312,7 @@ const Home = () => {
               Experience connections differently
             </Badge>
             <h2 className="text-3xl font-bold text-slate-900 sm:text-5xl dark:text-white">
-              A social universe built for discovering friends, experiences, and conversations that stick.
+              Built to help you find genuine friends first—and share the experiences and conversations that last.
             </h2>
             <p className="max-w-2xl text-base text-slate-600 sm:text-lg dark:text-slate-200">
               Connective helps you find people you vibe with, join curated events, and chat with natural prompts.
