@@ -412,10 +412,12 @@ const FriendFinder = () => {
               </Button>
             </div>
             <Button
+              variant="ghost"
+              size="lg"
               className={`flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-colors sm:w-auto ${
                 isChatLocked
                   ? "bg-muted text-muted-foreground hover:bg-muted"
-                  : "bg-[#E8B956] text-black hover:bg-[#d9a840]"
+                  : "bg-[#E8B956] text-black hover:bg-[#d9a840] [&_svg]:text-black"
               }`}
               onClick={handleOpenMessages}
             >
