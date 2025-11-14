@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, Sparkles } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
@@ -24,12 +24,19 @@ const featureHighlights = [
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   usePageTitle("Sign In to Connective Connections");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const locationState = location.state as { next?: string } | null;
+  const nextPath =
+    typeof locationState?.next === "string" && locationState.next.length > 0
+      ? locationState.next
+      : "/home";
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -54,7 +61,7 @@ const Login = () => {
         title: "Welcome back!",
         description: "You are now signed in to Connective.",
       });
-      navigate("/home");
+      navigate(nextPath);
     }
 
     setIsLoading(false);
@@ -71,9 +78,7 @@ const Login = () => {
     }
 
     try {
-      const redirectUrl = `${getSupabaseRedirectUrl("/auth/callback")}?next=${encodeURIComponent(
-        "/home",
-      )}`;
+      const redirectUrl = `${getSupabaseRedirectUrl("/auth/callback")}?next=${encodeURIComponent(nextPath)}`;
       await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
