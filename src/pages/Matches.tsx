@@ -169,14 +169,20 @@ const Matches = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4 flex items-center">
+      <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4 flex items-center gap-3">
         <button
           onClick={() => navigate(-1)}
           className="p-2 hover:bg-muted rounded-full transition-colors"
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-xl font-semibold ml-3">Friend Matches</h1>
+        <div className="ml-1">
+          <h1 className="text-xl font-semibold leading-tight">Friend Matches</h1>
+          <p className="text-sm text-muted-foreground">
+            Track introductions, coordinate meetups, and reflect on how each
+            connection went.
+          </p>
+        </div>
       </div>
 
       <Tabs defaultValue="discover" className="px-6 py-6">
