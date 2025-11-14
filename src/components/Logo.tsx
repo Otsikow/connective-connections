@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import logoLight from "@/assets/connective-logo-light.svg";
 import logoDark from "@/assets/connective-logo-dark.svg";
+import { useTheme } from "@/components/ThemeProvider";
 
 interface LogoProps {
   className?: string;
@@ -23,25 +24,29 @@ export const Logo = ({
   taglineClassName,
   showGlow = false,
 }: LogoProps) => {
+  const { theme } = useTheme();
+  const isDarkMode = theme === "dark";
+  const activeLogo = isDarkMode ? logoDark : logoLight;
+
   return (
     <div className={cn("relative inline-flex flex-col items-start", className)}>
       {showGlow && (
         <div className="pointer-events-none absolute -inset-x-6 -inset-y-4 -z-10 rounded-[2.75rem] bg-gradient-to-r from-amber-400/40 via-yellow-400/25 to-orange-400/35 blur-3xl" />
       )}
       <div className="relative inline-flex items-center">
-        <picture>
-          <source srcSet={logoDark} media="(prefers-color-scheme: dark)" />
-          <img
-            src={logoLight}
-            alt="Connective"
-            className={cn("object-contain w-auto", sizeMap[size])}
-          />
-        </picture>
+        <img
+          src={activeLogo}
+          alt="Connective"
+          className={cn("w-auto object-contain", sizeMap[size])}
+        />
       </div>
       {tagline && (
         <span
           className={cn(
-            "mt-2 inline-flex items-center gap-2 text-[0.7rem] font-medium uppercase tracking-[0.3em] text-primary sm:font-semibold sm:tracking-[0.45em] dark:text-[hsl(var(--primary))]",
+            "mt-2 inline-flex items-center gap-2 text-[0.7rem] font-medium uppercase tracking-[0.3em] sm:font-semibold sm:tracking-[0.45em]",
+            isDarkMode
+              ? "text-[hsl(var(--primary))]"
+              : "text-foreground/70",
             taglineClassName,
           )}
         >
