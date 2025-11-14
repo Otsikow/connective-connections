@@ -219,7 +219,13 @@ const Home = () => {
         {!isAuthenticated ? (
           <div className="flex gap-2">
             <Button variant="ghost" onClick={() => navigate("/login")}>Sign in</Button>
-            <Button className="bg-[#f7c145] text-black" onClick={() => navigate("/signup")}>
+            <Button
+              className="bg-[#f7c145] text-black"
+              onClick={() => {
+                setPendingPath(null);
+                setShowAuthPrompt(true);
+              }}
+            >
               Join now
             </Button>
           </div>
