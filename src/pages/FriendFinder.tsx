@@ -1,4 +1,10 @@
-import { useCallback, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type KeyboardEvent,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -197,6 +203,7 @@ const FriendFinder = () => {
     FriendProfile["availability"] | "any"
   >("any");
   const [onlyInPerson, setOnlyInPerson] = useState(false);
+  const [activeProfileIndex, setActiveProfileIndex] = useState(0);
 
   const availableInterests = useMemo(
     () =>
@@ -249,12 +256,55 @@ const FriendFinder = () => {
     });
   }, [searchTerm, selectedFilters, selectedVibe, selectedAvailability, onlyInPerson]);
 
+  useEffect(() => {
+    setActiveProfileIndex(0);
+  }, [filteredProfiles]);
+
   const toggleFilter = (value: string) => {
     setSelectedFilters((prev) =>
       prev.includes(value)
         ? prev.filter((filter) => filter !== value)
         : [...prev, value],
     );
+  };
+
+  const activeProfile = filteredProfiles[activeProfileIndex];
+  const isFirstProfile = activeProfileIndex === 0;
+  const isLastProfile =
+    filteredProfiles.length === 0 ||
+    activeProfileIndex === filteredProfiles.length - 1;
+  const hasMultipleProfiles = filteredProfiles.length > 1;
+
+  const handleNextProfile = () => {
+    setActiveProfileIndex((prev) => {
+      if (filteredProfiles.length === 0 || prev >= filteredProfiles.length - 1) {
+        return prev;
+      }
+
+      return prev + 1;
+    });
+  };
+
+  const handlePreviousProfile = () => {
+    setActiveProfileIndex((prev) => {
+      if (filteredProfiles.length === 0 || prev <= 0) {
+        return prev;
+      }
+
+      return prev - 1;
+    });
+  };
+
+  const handleCardAdvance = () => {
+    if (!hasMultipleProfiles || isLastProfile) return;
+    handleNextProfile();
+  };
+
+  const handleCardKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleCardAdvance();
+    }
   };
 
   const isProMember = tier === "pro";
@@ -544,158 +594,201 @@ const FriendFinder = () => {
             </Button>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
-            {filteredProfiles.map((profile) => (
-              <Card
-                key={profile.id}
-                className="group overflow-hidden border border-border/60 bg-card/70 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-[#E8B956]/80"
-              >
-                <div className="relative aspect-[4/5] w-full overflow-hidden">
-                  <img
-                    src={profile.photo}
-                    alt={profile.name}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
-                  <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                    <Badge className="rounded-full bg-[#E8B956] text-black shadow-sm">
-                      {profile.compatibility}% match
-                    </Badge>
-                    {profile.badges.map((badge) => (
-                      <Badge
-                        key={badge}
-                        variant="secondary"
-                        className="rounded-full bg-background/70 text-foreground backdrop-blur"
-                      >
-                        {badge}
+          <div className="space-y-4">
+            {activeProfile ? (
+              <>
+                <Card
+                  key={activeProfile.id}
+                  className="group overflow-hidden border border-border/60 bg-card/70 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-[#E8B956]/80"
+                >
+                  <button
+                    type="button"
+                    onClick={handleCardAdvance}
+                    onKeyDown={handleCardKeyDown}
+                    aria-label={
+                      !isLastProfile && hasMultipleProfiles
+                        ? "Reveal the next introduction"
+                        : "Profile preview"
+                    }
+                    aria-disabled={isLastProfile || !hasMultipleProfiles}
+                    disabled={isLastProfile || !hasMultipleProfiles}
+                    className={`relative aspect-[4/5] w-full overflow-hidden text-left transition-transform duration-300 focus:outline-none ${
+                      !isLastProfile && hasMultipleProfiles
+                        ? "cursor-pointer focus-visible:ring-2 focus-visible:ring-[#E8B956] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                        : "cursor-default"
+                    }`}
+                  >
+                    <img
+                      src={activeProfile.photo}
+                      alt={activeProfile.name}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                      <Badge className="rounded-full bg-[#E8B956] text-black shadow-sm">
+                        {activeProfile.compatibility}% match
                       </Badge>
-                    ))}
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <div className="flex items-end justify-between gap-3">
-                      <div>
-                        <h3 className="text-xl font-semibold text-white">
-                          {profile.name}
-                        </h3>
-                        <p className="text-sm text-white/80">
-                          {profile.age} · {profile.location}
+                      {activeProfile.badges.map((badge) => (
+                        <Badge
+                          key={badge}
+                          variant="secondary"
+                          className="rounded-full bg-background/70 text-foreground backdrop-blur"
+                        >
+                          {badge}
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4">
+                      <div className="flex items-end justify-between gap-3">
+                        <div>
+                          <h3 className="text-xl font-semibold text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.45)]">
+                            {activeProfile.name}
+                          </h3>
+                          <p className="text-sm text-white drop-shadow-[0_3px_10px_rgba(0,0,0,0.45)]">
+                            {activeProfile.age} · {activeProfile.location}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-1 rounded-full bg-black/40 px-3 py-1 text-xs text-white shadow">
+                          <MapPin className="h-3.5 w-3.5" />
+                          Nearby
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+
+                  <CardContent className="space-y-4 p-5">
+                    <p className="text-sm text-muted-foreground">
+                      {activeProfile.introduction}
+                    </p>
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <p className="text-xs font-semibold uppercase text-muted-foreground">
+                          Highlights
+                        </p>
+                        <ul className="space-y-2 text-sm text-foreground">
+                          {activeProfile.highlights.map((highlight) => (
+                            <li key={highlight} className="flex items-start gap-2">
+                              <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[#E8B956]" />
+                              <span>{highlight}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-xs font-semibold uppercase text-muted-foreground">
+                          Shared interests
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {activeProfile.sharedInterests.map((interest) => (
+                            <Badge
+                              key={interest}
+                              variant="secondary"
+                              className="rounded-full bg-muted text-foreground"
+                            >
+                              {interest}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-1">
+                        <p className="text-xs font-semibold uppercase text-muted-foreground">
+                          Availability
+                        </p>
+                        <p className="text-sm font-medium text-foreground">
+                          {activeProfile.availability === "flexible"
+                            ? "Flexible schedule"
+                            : activeProfile.availability === "mornings"
+                              ? "Early mornings"
+                              : activeProfile.availability === "weekends"
+                                ? "Weekends"
+                                : "Weeknights"}
                         </p>
                       </div>
-                      <div className="flex items-center gap-1 rounded-full bg-black/40 px-3 py-1 text-xs text-white shadow">
-                        <MapPin className="h-3.5 w-3.5" />
-                        Nearby
+                      <div className="space-y-2">
+                        <p className="text-xs font-semibold uppercase text-muted-foreground">
+                          Preferred formats
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {activeProfile.socialFormats.map((format) => (
+                            <Badge
+                              key={format}
+                              variant="secondary"
+                              className="rounded-full bg-[#E8B956]/20 text-[#C48F21]"
+                            >
+                              {format}
+                            </Badge>
+                          ))}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {activeProfile.mutualConnections} mutual introductions
+                        </p>
                       </div>
                     </div>
-                  </div>
-                </div>
+                  </CardContent>
 
-                <CardContent className="space-y-4 p-5">
-                  <p className="text-sm text-muted-foreground">
-                    {profile.introduction}
-                  </p>
+                  <CardFooter className="flex flex-col gap-3 border-t border-border/60 bg-muted/40 p-5 sm:flex-row sm:items-center sm:justify-between">
+                    <Button
+                      className={`flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-colors ${
+                        isChatLocked
+                          ? "bg-muted text-muted-foreground hover:bg-muted"
+                          : "bg-[#E8B956] text-black hover:bg-[#d9a840]"
+                      }`}
+                      onClick={() => handleStartChat(activeProfile.id)}
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                      {cardChatLabel}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full rounded-full border-border/70"
+                      onClick={() => navigate(`/profile?focus=${activeProfile.id}`)}
+                    >
+                      View full profile
+                    </Button>
+                  </CardFooter>
+                </Card>
 
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <p className="text-xs font-semibold uppercase text-muted-foreground">
-                        Highlights
-                      </p>
-                      <ul className="space-y-2 text-sm text-foreground">
-                        {profile.highlights.map((highlight) => (
-                          <li key={highlight} className="flex items-start gap-2">
-                            <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[#E8B956]" />
-                            <span>{highlight}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-xs font-semibold uppercase text-muted-foreground">
-                        Shared interests
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {profile.sharedInterests.map((interest) => (
-                          <Badge
-                            key={interest}
-                            variant="secondary"
-                            className="rounded-full bg-muted text-foreground"
-                          >
-                            {interest}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="space-y-1">
-                      <p className="text-xs font-semibold uppercase text-muted-foreground">
-                        Availability
-                      </p>
-                      <p className="text-sm font-medium text-foreground">
-                        {profile.availability === "flexible"
-                          ? "Flexible schedule"
-                          : profile.availability === "mornings"
-                            ? "Early mornings"
-                            : profile.availability === "weekends"
-                              ? "Weekends"
-                              : "Weeknights"}
-                      </p>
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-xs font-semibold uppercase text-muted-foreground">
-                        Preferred formats
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {profile.socialFormats.map((format) => (
-                          <Badge
-                            key={format}
-                            variant="secondary"
-                            className="rounded-full bg-[#E8B956]/20 text-[#C48F21]"
-                          >
-                            {format}
-                          </Badge>
-                        ))}
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        {profile.mutualConnections} mutual introductions
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-
-                <CardFooter className="flex flex-col gap-3 border-t border-border/60 bg-muted/40 p-5 sm:flex-row sm:items-center sm:justify-between">
-                  <Button
-                    className={`flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-colors ${
-                      isChatLocked
-                        ? "bg-muted text-muted-foreground hover:bg-muted"
-                        : "bg-[#E8B956] text-black hover:bg-[#d9a840]"
-                    }`}
-                    onClick={() => handleStartChat(profile.id)}
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                    {cardChatLabel}
-                  </Button>
+                <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
                   <Button
                     variant="outline"
-                    className="w-full rounded-full border-border/70"
-                    onClick={() => navigate(`/profile?focus=${profile.id}`)}
+                    className="w-full rounded-full border-border/70 sm:w-auto"
+                    onClick={handlePreviousProfile}
+                    disabled={isFirstProfile}
                   >
-                    View full profile
+                    Previous introduction
                   </Button>
-                </CardFooter>
+                  <div className="text-xs uppercase tracking-[0.32em] text-muted-foreground">
+                    {activeProfileIndex + 1} of {filteredProfiles.length}
+                  </div>
+                  <Button
+                    className="w-full rounded-full bg-[#E8B956] text-black hover:bg-[#d9a840] sm:w-auto"
+                    onClick={handleNextProfile}
+                    disabled={isLastProfile}
+                  >
+                    Next introduction
+                  </Button>
+                </div>
+                <p className="text-center text-xs text-muted-foreground">
+                  {isLastProfile
+                    ? "You're viewing the final introduction for now."
+                    : "Click the photo or use Next to reveal another profile."}
+                </p>
+              </>
+            ) : (
+              <Card className="border border-dashed border-border/60">
+                <CardContent className="py-10 text-center text-sm text-muted-foreground">
+                  We couldn’t find an exact match. Relax filters or explore the
+                  Matches workspace for more intros.
+                </CardContent>
               </Card>
-            ))}
+            )}
           </div>
-          {filteredProfiles.length === 0 && (
-            <Card className="border border-dashed border-border/60">
-              <CardContent className="py-10 text-center text-sm text-muted-foreground">
-                We couldn’t find an exact match. Relax filters or explore the
-                Matches workspace for more intros.
-              </CardContent>
-            </Card>
-          )}
+
         </div>
 
         <Card className="border border-border/60">
