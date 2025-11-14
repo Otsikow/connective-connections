@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { fallbackGroups, type GroupWithMembers } from "@/data/groups";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { generateAvatarUrl } from "@/lib/avatar";
 import { ToastAction } from "@/components/ui/toast";
 import { useSubscription } from "@/hooks/useSubscription";
 
@@ -27,13 +28,15 @@ const Community = () => {
   const { userId, tier, requireProFeature } = useSubscription();
   const isPremiumMember = tier === "pro";
   const isChatLocked = !userId || !isPremiumMember;
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [groups, setGroups] = useState<GroupWithMembers[]>([]);
 
   const isSupabaseConfigured = Boolean(
-    import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+    import.meta.env.VITE_SUPABASE_URL &&
+      import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
   );
 
   const fetchGroups = useCallback(async () => {
@@ -58,16 +61,14 @@ const Community = () => {
 
       if (error) throw error;
 
-      const mappedGroups = (data as SupabaseGroupResponse[] | null)?.map(
-        (group) => ({
-          ...group,
-          memberCount: group.group_members?.[0]?.count ?? 1,
-        })
-      );
+      const mapped = (data as SupabaseGroupResponse[] | null)?.map((g) => ({
+        ...g,
+        memberCount: g.group_members?.[0]?.count ?? 1,
+      }));
 
-      setGroups(mappedGroups ?? []);
-    } catch (error: unknown) {
-      console.error("Error loading groups:", error);
+      setGroups(mapped ?? []);
+    } catch (err) {
+      console.error("Error loading groups:", err);
       setGroups(fallbackGroups);
       toast({
         title: "Offline preview",
@@ -107,7 +108,8 @@ const Community = () => {
       if (!userId) {
         toast({
           title: "Sign in to join chats",
-          description: "Log in or create a free account to message community groups.",
+          description:
+            "Log in or create a free account to message community groups.",
           action: (
             <ToastAction
               altText="Sign in"
@@ -126,32 +128,32 @@ const Community = () => {
 
       return true;
     },
-    [isPremiumMember, navigate, requireProFeature, toast, userId],
+    [isPremiumMember, navigate, requireProFeature, toast, userId]
   );
 
   const handleJoinChat = useCallback(
     (groupId: string) => {
-      const destination = `/messages/community/${groupId}`;
-      if (!ensureChatAccess(destination)) return;
-      navigate(destination);
+      const dest = `/messages/community/${groupId}`;
+      if (!ensureChatAccess(dest)) return;
+      navigate(dest);
     },
-    [ensureChatAccess, navigate],
+    [ensureChatAccess, navigate]
   );
 
   const handleCreateGroupClick = useCallback(() => {
-    const destination = "/community";
-    if (!ensureChatAccess(destination)) return;
+    const dest = "/community";
+    if (!ensureChatAccess(dest)) return;
     setIsDialogOpen(true);
   }, [ensureChatAccess]);
 
   const createGroupLabel = !userId
     ? "Sign in to create a group"
     : isPremiumMember
-      ? "Create a Group"
-      : "Unlock premium groups";
+    ? "Create a Group"
+    : "Unlock premium groups";
 
   const getCategoryColor = (category: string) => {
-    const categoryStyles: Record<string, string> = {
+    const styles: Record<string, string> = {
       "Book Club":
         "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
       "Hiking Team":
@@ -168,11 +170,11 @@ const Community = () => {
         "bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300",
       Music:
         "bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300",
-      Other:
-        "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
+      Other: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
     };
+
     return (
-      categoryStyles[category] ??
+      styles[category] ??
       "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
     );
   };
@@ -185,14 +187,18 @@ const Community = () => {
           <Users className="text-[#E8B956]" size={24} />
           <h1 className="text-xl font-bold">Community Groups</h1>
         </div>
-        <Avatar className="w-10 h-10 cursor-pointer" onClick={() => navigate("/profile")}>
-          <AvatarImage src="/placeholder.svg" />
+
+        <Avatar
+          className="w-10 h-10 cursor-pointer"
+          onClick={() => navigate("/profile")}
+        >
+          <AvatarImage src={generateAvatarUrl("community header member")} />
           <AvatarFallback>JD</AvatarFallback>
         </Avatar>
       </div>
 
       <div className="px-6 py-6 space-y-6">
-        {/* Premium Create Group Button */}
+        {/* Create Group Button */}
         <Button
           className={`flex h-12 w-full items-center justify-center gap-2 rounded-full font-semibold transition-colors ${
             isChatLocked
@@ -205,28 +211,23 @@ const Community = () => {
           {createGroupLabel}
         </Button>
 
-        {/* Groups Info */}
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">{groupsLabel}</p>
-        </div>
+        {/* Groups Label */}
+        <p className="text-sm text-muted-foreground">{groupsLabel}</p>
 
-        {/* Groups List */}
+        {/* Groups */}
         <div className="space-y-4">
-          {isLoading && (
-            <>
-              {[...Array(3)].map((_, index) => (
-                <Card key={`skeleton-${index}`} className="border-border overflow-hidden">
-                  <Skeleton className="h-48 w-full" />
-                  <CardContent className="p-4 space-y-3">
-                    <Skeleton className="h-6 w-3/4" />
-                    <Skeleton className="h-4 w-1/3" />
-                    <Skeleton className="h-20 w-full" />
-                    <Skeleton className="h-10 w-full rounded-full" />
-                  </CardContent>
-                </Card>
-              ))}
-            </>
-          )}
+          {isLoading &&
+            [...Array(3)].map((_, index) => (
+              <Card key={index} className="border-border overflow-hidden">
+                <Skeleton className="h-48 w-full" />
+                <CardContent className="p-4 space-y-3">
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-1/3" />
+                  <Skeleton className="h-20 w-full" />
+                  <Skeleton className="h-10 w-full rounded-full" />
+                </CardContent>
+              </Card>
+            ))}
 
           {!isLoading && errorMessage && (
             <Card className="border-destructive/20 bg-destructive/5">
@@ -240,9 +241,11 @@ const Community = () => {
             <Card className="border-dashed border-border bg-muted/30">
               <CardContent className="p-6 text-center space-y-2">
                 <Users size={40} className="mx-auto text-muted-foreground" />
-                <p className="font-semibold">Be the first to start a group in your area</p>
+                <p className="font-semibold">
+                  Be the first to start a group in your area
+                </p>
                 <p className="text-sm text-muted-foreground">
-                  Tap the Create a Group button to bring people together around a shared interest.
+                  Tap the Create a Group button to bring people together.
                 </p>
               </CardContent>
             </Card>
@@ -252,14 +255,13 @@ const Community = () => {
             !errorMessage &&
             groups.map((group) => (
               <Card key={group.id} className="border-border overflow-hidden">
-                {/* Group Image */}
+                {/* Image */}
                 {group.image_url ? (
                   <div className="h-48 w-full overflow-hidden">
                     <img
                       src={group.image_url}
                       alt={group.name}
                       className="h-full w-full object-cover"
-                      loading="lazy"
                     />
                   </div>
                 ) : (
@@ -271,11 +273,13 @@ const Community = () => {
                 <CardContent className="p-4 space-y-4">
                   <div className="flex items-start justify-between gap-2">
                     <div className="space-y-1">
-                      <h3 className="font-bold text-lg leading-tight">{group.name}</h3>
+                      <h3 className="font-bold text-lg">{group.name}</h3>
+
                       <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <Users size={16} />
-                          {group.memberCount} member{group.memberCount === 1 ? "" : "s"}
+                          {group.memberCount} member
+                          {group.memberCount === 1 ? "" : "s"}
                         </span>
                         <span className="flex items-center gap-1">
                           <MapPin size={16} />
@@ -283,14 +287,17 @@ const Community = () => {
                         </span>
                       </div>
                     </div>
+
                     <Badge className={getCategoryColor(group.category)} variant="secondary">
                       {group.category}
                     </Badge>
                   </div>
 
-                  <p className="text-sm text-muted-foreground">{group.description}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {group.description}
+                  </p>
 
-                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                  <div className="flex items-center gap-2 text-sm font-medium">
                     <Calendar size={16} />
                     {nextMeetingLabel(group.next_meeting)}
                   </div>
@@ -303,12 +310,12 @@ const Community = () => {
                     }`}
                     onClick={() => handleJoinChat(group.id)}
                   >
-                    <MessageSquare size={18} className="mr-2" />
+                    <MessageSquare size={18} />
                     {!userId
                       ? "Sign in to chat"
                       : isPremiumMember
-                        ? "Join Chat"
-                        : "Join chat (Premium)"}
+                      ? "Join Chat"
+                      : "Join chat (Premium)"}
                   </Button>
                 </CardContent>
               </Card>
@@ -316,7 +323,7 @@ const Community = () => {
         </div>
       </div>
 
-      {/* Create Group Dialog */}
+      {/* Dialog */}
       <CreateGroupDialog
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}

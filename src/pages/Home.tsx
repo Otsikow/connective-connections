@@ -37,6 +37,7 @@ import {
 import BackButton from "@/components/BackButton";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useSubscription } from "@/hooks/useSubscription";
+import { generateAvatarUrl } from "@/lib/avatar";
 
 type Feature = {
   value: string;
@@ -97,6 +98,8 @@ const Home = () => {
 
   const userInitials = useMemo(() => deriveInitials(fullName, email), [fullName, email]);
   const avatarAltText = fullName ? `${fullName}'s profile avatar` : "User profile avatar";
+  const userAvatarSeed = fullName ?? email ?? userId ?? "connective-member";
+  const userAvatarUrl = generateAvatarUrl(userAvatarSeed);
 
   const features: Feature[] = useMemo(
     () => [
@@ -110,7 +113,7 @@ const Home = () => {
         cta: { label: "Browse matches", path: "/friend-finder", requiresAuth: true },
         secondaryCta: { label: "Build profile", path: "/profile" },
         spotlight: {
-          avatar: "/placeholder.svg",
+          avatar: generateAvatarUrl("Jordan hiking spotlight"),
           name: "Jordan",
           tagline: "Met three new hiking buddies",
         },
@@ -125,7 +128,7 @@ const Home = () => {
         cta: { label: "View events", path: "/events", requiresAuth: true },
         secondaryCta: { label: "Host an event", path: "/host/create-event" },
         spotlight: {
-          avatar: "/placeholder.svg",
+          avatar: generateAvatarUrl("Lucia poetry spotlight"),
           name: "Lucia",
           tagline: "Hosts a monthly poetry circle",
         },
@@ -145,7 +148,7 @@ const Home = () => {
         },
         secondaryCta: { label: "Preview groups", path: "/community" },
         spotlight: {
-          avatar: "/placeholder.svg",
+          avatar: generateAvatarUrl("Priya storytellers spotlight"),
           name: "Priya",
           tagline: "Joined the storytellers collective",
         },
@@ -165,7 +168,7 @@ const Home = () => {
         },
         secondaryCta: { label: "See how it works", path: "/splash" },
         spotlight: {
-          avatar: "/placeholder.svg",
+          avatar: generateAvatarUrl("Miguel chats spotlight"),
           name: "Miguel",
           tagline: "Had 5 new chats last weekend",
         },
@@ -303,7 +306,7 @@ const Home = () => {
                   className="h-10 w-10 cursor-pointer ring-2 ring-[#f7c145]/80 ring-offset-2 ring-offset-white transition-shadow hover:shadow-lg dark:ring-[#f4c96c]/90 dark:ring-offset-slate-950"
                   onClick={() => navigate("/profile")}
                 >
-                  <AvatarImage src="/placeholder.svg" alt={avatarAltText} />
+                  <AvatarImage src={userAvatarUrl} alt={avatarAltText} />
                   <AvatarFallback className="bg-gradient-to-br from-[#f7c145] via-[#f3b52a] to-[#e89c1f] text-sm font-bold uppercase text-white shadow-sm dark:from-slate-700 dark:via-slate-700 dark:to-slate-600 dark:text-white">
                     {userInitials}
                   </AvatarFallback>
@@ -407,7 +410,7 @@ const Home = () => {
                   <CardTitle>{selectedFeature.title}</CardTitle>
                   <CardDescription>{selectedFeature.description}</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
                   <Button
                     className="rounded-full bg-[#f7c145] text-black shadow-sm hover:bg-[#f3b52a]"
                     onClick={(event) => {
@@ -420,6 +423,23 @@ const Home = () => {
                   >
                     {selectedFeature.cta.label}
                   </Button>
+                  <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white/80 px-4 py-3 text-left shadow-sm transition dark:border-slate-800/70 dark:bg-slate-900/70">
+                    <Avatar className="h-12 w-12 ring-2 ring-white/80 dark:ring-slate-950/80">
+                      <AvatarImage
+                        src={selectedFeature.spotlight.avatar}
+                        alt={`${selectedFeature.spotlight.name} spotlight profile`}
+                      />
+                      <AvatarFallback>{selectedFeature.spotlight.name[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-0.5">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                        {selectedFeature.spotlight.name}
+                      </p>
+                      <p className="text-xs text-slate-600 dark:text-slate-300">
+                        {selectedFeature.spotlight.tagline}
+                      </p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -538,7 +558,7 @@ const Home = () => {
                 <p className="text-lg font-medium text-slate-800 dark:text-slate-100">“{t.quote}”</p>
                 <div className="flex items-center gap-3">
                   <Avatar className="h-12 w-12">
-                    <AvatarImage src="/placeholder.svg" />
+                    <AvatarImage src={generateAvatarUrl(`${t.author} testimonial`)} alt={`${t.author} testimonial avatar`} />
                     <AvatarFallback>{t.author[0]}</AvatarFallback>
                   </Avatar>
                   <div>
