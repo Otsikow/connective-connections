@@ -47,6 +47,7 @@ import {
 import BackButton from "@/components/BackButton";
 import { useSubscription } from "@/hooks/useSubscription";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { generateAvatarUrl } from "@/lib/avatar";
 import PartnerIntelligenceAssistant from "@/components/PartnerIntelligenceAssistant";
 
 const Dashboard = () => {
@@ -155,19 +156,19 @@ const Dashboard = () => {
   const vipMembers = [
     {
       name: "Jessica Kim",
-      avatar: "/placeholder.svg",
+      avatar: generateAvatarUrl("Jessica Kim dashboard"),
       interest: "Creative Tech",
       engagement: "12 events",
     },
     {
       name: "Omar Singh",
-      avatar: "/placeholder.svg",
+      avatar: generateAvatarUrl("Omar Singh dashboard"),
       interest: "Wellness & Mindfulness",
       engagement: "9 events",
     },
     {
       name: "Lina Torres",
-      avatar: "/placeholder.svg",
+      avatar: generateAvatarUrl("Lina Torres dashboard"),
       interest: "Community Building",
       engagement: "Top host mentor",
     },

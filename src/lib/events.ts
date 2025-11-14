@@ -1,3 +1,7 @@
+import { generateAvatarUrl } from "./avatar";
+
+const avatar = (seed: string) => generateAvatarUrl(`event-${seed}`);
+
 export type EventInterest =
   | "Tech"
   | "Fitness"
@@ -50,8 +54,9 @@ export const sampleEvents: EventItem[] = [
     date: new Date().toISOString().slice(0, 10),
     startTime: "06:00",
     endTime: "09:00",
-    bannerUrl: "/placeholder.svg",
-    host: { name: "Lena Park", avatarUrl: "/placeholder.svg" },
+    bannerUrl:
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+    host: { name: "Lena Park", avatarUrl: avatar("Lena Park") },
     interest: "Outdoors",
     distanceKm: 8.4,
     priceTier: "Free",
@@ -63,9 +68,9 @@ export const sampleEvents: EventItem[] = [
       city: "Asheville",
     },
     participants: [
-      { id: "u1", name: "Ava", avatarUrl: "/placeholder.svg" },
-      { id: "u2", name: "Noah", avatarUrl: "/placeholder.svg" },
-      { id: "u3", name: "Mia", avatarUrl: "/placeholder.svg" },
+      { id: "u1", name: "Ava", avatarUrl: avatar("Ava hike") },
+      { id: "u2", name: "Noah", avatarUrl: avatar("Noah hike") },
+      { id: "u3", name: "Mia", avatarUrl: avatar("Mia hike") },
     ],
     rules: [
       "Be on time at the trailhead",
@@ -81,8 +86,9 @@ export const sampleEvents: EventItem[] = [
       "Hands-on session to learn basic latte art pours. Equipment provided, includes one free drink.",
     date: new Date(Date.now() + 24 * 3600 * 1000).toISOString().slice(0, 10),
     startTime: "14:00",
-    bannerUrl: "/placeholder.svg",
-    host: { name: "Cafe Mondo", avatarUrl: "/placeholder.svg" },
+    bannerUrl:
+      "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80",
+    host: { name: "Cafe Mondo", avatarUrl: avatar("Cafe Mondo") },
     interest: "Food",
     distanceKm: 2.1,
     priceTier: "Standard",
@@ -90,8 +96,8 @@ export const sampleEvents: EventItem[] = [
     deposit: 5,
     location: { address: "123 Bean St, Portland, OR", lat: 45.5152, lng: -122.6784, city: "Portland" },
     participants: [
-      { id: "u4", name: "Liam", avatarUrl: "/placeholder.svg" },
-      { id: "u5", name: "Emma", avatarUrl: "/placeholder.svg" },
+      { id: "u4", name: "Liam", avatarUrl: avatar("Liam latte") },
+      { id: "u5", name: "Emma", avatarUrl: avatar("Emma latte") },
     ],
     rules: ["No-shows forfeit deposit", "Arrive 10 minutes early"],
     refundPolicy:
@@ -104,8 +110,9 @@ export const sampleEvents: EventItem[] = [
       "Casual outdoor coding hangout. Bring your laptop; power banks recommended. Lightning talks welcome!",
     date: new Date().toISOString().slice(0, 10),
     startTime: "17:30",
-    bannerUrl: "/placeholder.svg",
-    host: { name: "Tech Crew", avatarUrl: "/placeholder.svg" },
+    bannerUrl:
+      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=1200&q=80",
+    host: { name: "Tech Crew", avatarUrl: avatar("Tech Crew") },
     interest: "Tech",
     distanceKm: 5.7,
     priceTier: "Premium",
@@ -113,10 +120,10 @@ export const sampleEvents: EventItem[] = [
     deposit: 10,
     location: { address: "Riverside Park, Austin, TX", lat: 30.2672, lng: -97.7431, city: "Austin" },
     participants: [
-      { id: "u6", name: "Olivia", avatarUrl: "/placeholder.svg" },
-      { id: "u7", name: "Ethan", avatarUrl: "/placeholder.svg" },
-      { id: "u8", name: "Sophia", avatarUrl: "/placeholder.svg" },
-      { id: "u9", name: "Jack", avatarUrl: "/placeholder.svg" },
+      { id: "u6", name: "Olivia", avatarUrl: avatar("Olivia tech") },
+      { id: "u7", name: "Ethan", avatarUrl: avatar("Ethan tech") },
+      { id: "u8", name: "Sophia", avatarUrl: avatar("Sophia tech") },
+      { id: "u9", name: "Jack", avatarUrl: avatar("Jack tech") },
     ],
     rules: ["Be respectful", "Keep talks under 5 minutes", "Clean up after"],
     refundPolicy: "Refunds up to 12h before start. After that, deposit is non-refundable.",

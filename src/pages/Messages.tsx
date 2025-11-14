@@ -43,6 +43,7 @@ import { useEndToEndEncryption } from "@/hooks/useEndToEndEncryption";
 import { useSubscription } from "@/hooks/useSubscription";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { cn } from "@/lib/utils";
+import { generateAvatarUrl } from "@/lib/avatar";
 
 interface Message {
   id: number;
@@ -176,7 +177,7 @@ const Messages = () => {
         isPinned: true,
         tags: ["Verified", "Pro"],
         status: "Available now",
-        avatarUrl: "/placeholder.svg",
+        avatarUrl: generateAvatarUrl("Alex Doe messages"),
         initials: getInitials("Alex Doe"),
         responseTime: "Usually responds within 5 min",
         engagementScore: 92,
@@ -199,7 +200,7 @@ const Messages = () => {
         unreadCount: 2,
         tags: ["Follow-up"],
         status: "Waiting on your reply",
-        avatarUrl: "/placeholder.svg",
+        avatarUrl: generateAvatarUrl("Casey Wells messages"),
         initials: getInitials("Casey Wells"),
         responseTime: "Responds within 1 hr",
         engagementScore: 78,
@@ -222,7 +223,7 @@ const Messages = () => {
         unreadCount: 0,
         tags: ["Partner"],
         status: "Review the shared doc",
-        avatarUrl: "/placeholder.svg",
+        avatarUrl: generateAvatarUrl("Jamal Rivers messages"),
         initials: getInitials("Jamal Rivers"),
         responseTime: "Replies within 30 min",
         engagementScore: 84,
@@ -245,7 +246,7 @@ const Messages = () => {
         unreadCount: 1,
         tags: ["Request", "Pro"],
         status: "New request",
-        avatarUrl: "/placeholder.svg",
+        avatarUrl: generateAvatarUrl("Olivia Tran messages"),
         initials: getInitials("Olivia Tran"),
         responseTime: "Prefers video intros",
         engagementScore: 69,
@@ -266,7 +267,7 @@ const Messages = () => {
         unreadCount: 0,
         tags: ["Archived"],
         status: "Took a break",
-        avatarUrl: "/placeholder.svg",
+        avatarUrl: generateAvatarUrl("Renee Soto messages"),
         initials: getInitials("Renee Soto"),
         responseTime: "Replies within a day",
         engagementScore: 58,
