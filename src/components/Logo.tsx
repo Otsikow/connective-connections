@@ -41,7 +41,7 @@ export const Logo = ({
       {tagline && (
         <span
           className={cn(
-            "mt-2 inline-flex items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.45em] text-primary dark:text-[hsl(var(--primary))]",
+            "mt-2 inline-flex items-center gap-2 text-[0.7rem] font-medium uppercase tracking-[0.3em] text-primary sm:font-semibold sm:tracking-[0.45em] dark:text-[hsl(var(--primary))]",
             taglineClassName,
           )}
         >
