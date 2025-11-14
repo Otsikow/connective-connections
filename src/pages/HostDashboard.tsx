@@ -178,7 +178,7 @@ const HostDashboard = () => {
                       className={
                         event.status === "Completed"
                           ? "text-green-600 bg-green-500/10"
-                          : "text-yellow-600 bg-yellow-500/10"
+                          : "text-[hsl(var(--highlight-text))] bg-yellow-500/10"
                       }
                     >
                       {event.status}

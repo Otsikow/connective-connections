@@ -215,7 +215,7 @@ const Analytics = () => {
               Average Rating
             </CardTitle>
             <div className="h-10 w-10 rounded-full bg-yellow-500/10 flex items-center justify-center">
-              <Star className="h-5 w-5 text-yellow-600" />
+              <Star className="h-5 w-5 text-[hsl(var(--highlight-text))]" />
             </div>
           </CardHeader>
           <CardContent>
@@ -444,7 +444,7 @@ const Analytics = () => {
 
             <div className="flex items-start gap-4 p-5 rounded-xl border-2 border-yellow-500/20 bg-yellow-500/5 hover:bg-yellow-500/10 transition-colors">
               <div className="h-12 w-12 rounded-full bg-yellow-500/10 flex items-center justify-center ring-4 ring-yellow-500/10">
-                <Star className="h-6 w-6 text-yellow-600" />
+                <Star className="h-6 w-6 text-[hsl(var(--highlight-text))]" />
               </div>
               <div className="flex-1">
                 <h4 className="font-semibold mb-1 text-lg">Excellent Ratings</h4>

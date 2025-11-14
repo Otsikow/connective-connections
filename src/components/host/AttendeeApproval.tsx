@@ -69,7 +69,7 @@ const DepositManagement = () => {
         );
       case "pending":
         return (
-          <Badge className="bg-yellow-500/10 text-yellow-600 hover:bg-yellow-500/20">
+          <Badge className="bg-yellow-500/10 text-[hsl(var(--highlight-text))] hover:bg-yellow-500/20">
             <Clock className="mr-1 h-3 w-3" />
             Pending
           </Badge>
@@ -145,10 +145,10 @@ const DepositManagement = () => {
             </Card>
             <Card className="bg-yellow-500/5 border border-yellow-500/20 shadow-sm">
               <CardHeader className="pb-2">
-                <CardTitle className="text-yellow-700 text-sm">Pending</CardTitle>
+                <CardTitle className="text-[hsl(var(--highlight-text))] text-sm">Pending</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold text-yellow-700">${pendingTotal}</p>
+                <p className="text-2xl font-bold text-[hsl(var(--highlight-text))]">${pendingTotal}</p>
               </CardContent>
             </Card>
             <Card className="bg-red-500/5 border border-red-500/20 shadow-sm">
