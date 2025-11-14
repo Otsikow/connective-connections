@@ -28,25 +28,46 @@ export function ThemeProvider({
   storageKey = "connective-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-  );
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === "undefined") {
+      return defaultTheme;
+    }
+
+    const storedTheme = window.localStorage.getItem(storageKey) as Theme | null;
+    if (storedTheme) {
+      return storedTheme;
+    }
+
+    const prefersDark = window.matchMedia
+      ? window.matchMedia("(prefers-color-scheme: dark)").matches
+      : false;
+    return prefersDark ? "dark" : "light";
+  });
 
   useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
     root.classList.add(theme);
+    root.style.colorScheme = theme;
   }, [theme]);
 
   const value = {
     theme,
     setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(storageKey, theme);
+      }
       setTheme(theme);
     },
     toggleTheme: () => {
       const newTheme = theme === "light" ? "dark" : "light";
-      localStorage.setItem(storageKey, newTheme);
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(storageKey, newTheme);
+      }
       setTheme(newTheme);
     },
   };
