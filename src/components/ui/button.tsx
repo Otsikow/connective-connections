@@ -30,30 +30,59 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   asChild?: boolean;
   enableHaptic?: boolean;
 }
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
-  className,
-  variant,
-  size,
-  asChild = false,
-  enableHaptic = true,
-  onClick,
-  ...props
-}, ref) => {
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (enableHaptic && !props.disabled) {
-      triggerHaptic(variant === 'destructive' ? 'warning' : 'light');
-    }
-    onClick?.(e);
-  };
-  if (asChild) {
-    const Comp = Slot;
-    return <Comp className={cn(buttonVariants({
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      className,
       variant,
       size,
-      className
-    }))} ref={ref} onClick={handleClick} {...props} />;
-  }
-  return;
-});
+      asChild = false,
+      enableHaptic = true,
+      onClick,
+      children,
+      type = "button",
+      ...props
+    },
+    ref,
+  ) => {
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (enableHaptic && !props.disabled) {
+        triggerHaptic(variant === "destructive" ? "warning" : "light");
+      }
+      onClick?.(e);
+    };
+
+    const classes = cn(
+      buttonVariants({
+        variant,
+        size,
+        className,
+      }),
+    );
+
+    if (asChild) {
+      const Comp = Slot;
+      return (
+        <Comp className={classes} ref={ref} onClick={handleClick} {...props}>
+          {children}
+        </Comp>
+      );
+    }
+
+    return (
+      <motion.button
+        ref={ref}
+        type={type}
+        className={classes}
+        whileHover={props.disabled ? undefined : { scale: 1.02, translateY: -1 }}
+        whileTap={props.disabled ? undefined : { scale: 0.97 }}
+        onClick={handleClick}
+        {...props}
+      >
+        {children}
+      </motion.button>
+    );
+  },
+);
 Button.displayName = "Button";
 export { Button, buttonVariants };
