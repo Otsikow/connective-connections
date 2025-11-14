@@ -6,12 +6,12 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { PageTransition } from "@/components/PageTransition";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SubscriptionProvider, useSubscription } from "@/hooks/useSubscription";
 import { BottomNav } from "@/components/BottomNav";
 import { Footer } from "@/components/Footer";
 import { LoadingScreen } from "@/components/LoadingScreen";
+import { TopBar } from "@/components/TopBar";
 
 // Pages
 import Splash from "./pages/Splash";
@@ -95,7 +95,6 @@ const AnimatedRoutes = () => {
 /* ------------------------------------------------------------ */
 const AppContent = () => {
   const location = useLocation();
-  const showThemeToggle = location.pathname === "/";
   const { isLoading: isSubscriptionLoading } = useSubscription();
   const showFooter = location.pathname === "/home";
 
@@ -143,10 +142,10 @@ const AppContent = () => {
       style={{ "--bottom-nav-height": "5.75rem" } as CSSProperties}
     >
       <LoadingScreen show={showLoadingScreen} />
-      {showThemeToggle && <ThemeToggle />}
+      <TopBar />
 
       <main
-        className="flex-1"
+        className="flex-1 pt-20"
         style={{
           paddingBottom:
             "calc(var(--bottom-nav-height, 5.75rem) + env(safe-area-inset-bottom, 0px))",
