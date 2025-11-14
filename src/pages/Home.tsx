@@ -94,6 +94,7 @@ const Home = () => {
   const [pendingPath, setPendingPath] = useState<string | null>(null);
   const { userId, fullName, email, tier } = useSubscription();
   const isSubscribed = tier !== "basic";
+  const isAuthenticated = Boolean(userId);
 
   const userInitials = useMemo(() => deriveInitials(fullName, email), [fullName, email]);
   const avatarAltText = fullName ? `${fullName}'s profile avatar` : "User profile avatar";
@@ -288,31 +289,41 @@ const Home = () => {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" onClick={() => navigate("/login")}>
-              Log in
-            </Button>
-            <Button
-              className="rounded-full bg-[#f7c145] px-4 text-sm font-semibold text-black shadow-sm hover:bg-[#f3b52a]"
-              onClick={() => navigate("/signup")}
-            >
-              Join now
-            </Button>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Avatar
-                  className="h-10 w-10 cursor-pointer ring-2 ring-[#f7c145]/80 ring-offset-2 ring-offset-white transition-shadow hover:shadow-lg dark:ring-[#f4c96c]/90 dark:ring-offset-slate-950"
-                  onClick={() => navigate("/profile")}
+            {!isAuthenticated ? (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-sm font-semibold text-slate-700 hover:text-slate-900 dark:text-slate-200 dark:hover:text-white"
+                  onClick={() => navigate("/login")}
                 >
-                  <AvatarImage src="/placeholder.svg" alt={avatarAltText} />
-                  <AvatarFallback className="bg-gradient-to-br from-[#f7c145] via-[#f3b52a] to-[#e89c1f] text-sm font-bold uppercase text-white shadow-sm dark:from-slate-700 dark:via-slate-700 dark:to-slate-600 dark:text-white">
-                    {userInitials}
-                  </AvatarFallback>
-                </Avatar>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" align="center">
-                View Profile
-              </TooltipContent>
-            </Tooltip>
+                  Sign in
+                </Button>
+                <Button
+                  className="rounded-full bg-[#f7c145] px-4 text-sm font-semibold text-black shadow-sm hover:bg-[#f3b52a]"
+                  onClick={() => navigate("/signup")}
+                >
+                  Join now
+                </Button>
+              </>
+            ) : (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Avatar
+                    className="h-10 w-10 cursor-pointer ring-2 ring-[#f7c145]/80 ring-offset-2 ring-offset-white transition-shadow hover:shadow-lg dark:ring-[#f4c96c]/90 dark:ring-offset-slate-950"
+                    onClick={() => navigate("/profile")}
+                  >
+                    <AvatarImage src="/placeholder.svg" alt={avatarAltText} />
+                    <AvatarFallback className="bg-gradient-to-br from-[#f7c145] via-[#f3b52a] to-[#e89c1f] text-sm font-bold uppercase text-white shadow-sm dark:from-slate-700 dark:via-slate-700 dark:to-slate-600 dark:text-white">
+                      {userInitials}
+                    </AvatarFallback>
+                  </Avatar>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" align="center">
+                  View Profile
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
         </div>
       </header>
