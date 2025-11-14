@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RatingStars } from "@/components/RatingStars";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { generateAvatarUrl } from "@/lib/avatar";
 
 const formatEventDateRange = (startIso: string, endIso: string) => {
   const start = new Date(startIso);
@@ -103,7 +104,7 @@ const calculateBaseAverage = (reviews: EventReview[]) => {
 
 const currentReviewer = {
   name: "You",
-  avatar: "/placeholder.svg",
+  avatar: generateAvatarUrl("current event reviewer"),
 };
 
 const EventDetail = () => {

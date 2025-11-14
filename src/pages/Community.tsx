@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { fallbackGroups, type GroupWithMembers } from "@/data/groups";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { generateAvatarUrl } from "@/lib/avatar";
 
 type SupabaseGroupResponse = Tables<"groups"> & {
   group_members?: { count: number }[];
@@ -134,7 +135,7 @@ const Community = () => {
           <h1 className="text-xl font-bold">Community Groups</h1>
         </div>
         <Avatar className="w-10 h-10 cursor-pointer" onClick={() => navigate("/profile")}>
-          <AvatarImage src="/placeholder.svg" />
+          <AvatarImage src={generateAvatarUrl("community header member")} />
           <AvatarFallback>JD</AvatarFallback>
         </Avatar>
       </div>

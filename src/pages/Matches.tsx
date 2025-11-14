@@ -190,13 +190,13 @@ const Matches = () => {
           {currentIndex < profiles.length ? (
             <Card className="overflow-hidden border-border shadow-xl transition-all">
               <div className="h-80 bg-muted relative">
-                <Avatar className="w-28 h-28 absolute -bottom-14 left-6 ring-4 ring-card">
+                <Avatar className="w-28 h-28 absolute left-6 -bottom-14 sm:-bottom-16 md:bottom-6 ring-4 ring-card shadow-lg">
                   <AvatarImage src={currentProfile.photo} />
                   <AvatarFallback>{currentProfile.name[0]}</AvatarFallback>
                 </Avatar>
               </div>
 
-              <CardContent className="p-6 pt-20">
+              <CardContent className="p-6 pt-20 md:pt-12">
                 <div className="flex items-center gap-2 mb-1">
                   <h2 className="text-2xl font-bold">{currentProfile.name}</h2>
                   <span className="text-lg text-muted-foreground">
@@ -210,7 +210,7 @@ const Matches = () => {
                 </div>
 
                 {currentProfile.availability && (
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <p className="text-sm font-medium text-slate-600 mb-4 dark:text-slate-200">
                     {currentProfile.availability}
                   </p>
                 )}

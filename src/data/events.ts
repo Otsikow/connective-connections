@@ -1,3 +1,5 @@
+import { generateAvatarUrl } from "@/lib/avatar";
+
 export interface EventHost {
   name: string;
   avatar: string;
@@ -59,7 +61,7 @@ export const events: EventData[] = [
     tags: ["Premium", "Social", "Live Music"],
     host: {
       name: "Alicia Gomez",
-      avatar: "/placeholder.svg",
+      avatar: generateAvatarUrl("Alicia Gomez host"),
       role: "Community curator",
       experiencesHosted: 24,
     },
