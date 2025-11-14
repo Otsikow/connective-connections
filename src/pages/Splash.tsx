@@ -169,7 +169,7 @@ const Splash = () => {
               </div>
             )}
           </div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#fbbf24]/40 bg-[#f59e0b]/10 px-4 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.35em] text-[#fde68a]">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#fbbf24]/40 bg-[#f59e0b]/10 px-4 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.35em] text-[hsl(var(--highlight-text))]">
             Connective Connections
           </span>
           <p className="mt-6 text-xs font-semibold uppercase tracking-[0.5em] text-gray-400">
@@ -208,7 +208,7 @@ const Splash = () => {
             />
             <div className="absolute inset-0 flex flex-col justify-between p-8 sm:p-10">
               <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.35em] text-gray-300">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#f59e0b]/20 text-[#fde68a]">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#f59e0b]/20 text-[hsl(var(--highlight-text))]">
                   <Star className="h-4 w-4" />
                 </span>
                 Connection begins here
@@ -217,7 +217,7 @@ const Splash = () => {
                 <p className="text-sm uppercase tracking-[0.4em] text-gray-400">Immersive storytelling</p>
                 <button
                   onClick={() => navigate("/home")}
-                  className="inline-flex items-center gap-2 rounded-full border border-[#fcd34d]/40 bg-[#fbbf24]/10 px-6 py-2 text-sm font-semibold text-[#fde68a] transition hover:bg-[#fbbf24]/20"
+                  className="inline-flex items-center gap-2 rounded-full border border-[#fcd34d]/40 bg-[#fbbf24]/10 px-6 py-2 text-sm font-semibold text-[hsl(var(--highlight-text))] transition hover:bg-[#fbbf24]/20"
                 >
                   <Play className="h-4 w-4" /> Watch story
                 </button>
@@ -231,7 +231,7 @@ const Splash = () => {
 
         <section className="mt-20 space-y-8">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-[#fde68a]">Crafted experiences</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-[hsl(var(--highlight-text))]">Crafted experiences</p>
             <h2 className="mt-4 text-balance text-3xl font-semibold text-white sm:text-4xl">
               Curated experiences crafted for depth.
             </h2>
@@ -246,7 +246,7 @@ const Splash = () => {
                 className="flex flex-col rounded-3xl border border-gray-800/70 bg-[#1e293b]/80 p-8 shadow-[0_25px_60px_-40px_rgba(15,23,42,0.8)]"
               >
                 <div className="flex items-start gap-5">
-                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#fbbf24]/15 text-[#fde68a]">
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#fbbf24]/15 text-[hsl(var(--highlight-text))]">
                     <card.icon className="h-6 w-6" />
                   </div>
                   <div className="flex-grow space-y-3 text-left">
@@ -260,7 +260,7 @@ const Splash = () => {
                 <div className="mt-6 flex justify-end">
                   <Button
                     variant="ghost"
-                    className="inline-flex items-center gap-2 rounded-full text-sm font-semibold text-[#fde68a] hover:bg-[#fbbf24]/20 hover:text-[#fde68a]"
+                    className="inline-flex items-center gap-2 rounded-full text-sm font-semibold text-[hsl(var(--highlight-text))] hover:bg-[#fbbf24]/20 hover:text-[hsl(var(--highlight-text))]"
                     onClick={() => navigate(card.cta.path)}
                   >
                     {card.cta.label} <ArrowRight className="h-4 w-4" />
@@ -315,7 +315,7 @@ const Splash = () => {
 
         <section className="mt-24 space-y-10">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-[#fde68a]">Member stories</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-[hsl(var(--highlight-text))]">Member stories</p>
             <h2 className="mt-4 text-balance text-3xl font-semibold text-white sm:text-4xl">What members say.</h2>
             <p className="mt-4 text-pretty text-base text-gray-300">
               Intentionality meets momentum. Hear how Connective members translate chemistry into lasting impact.
@@ -345,7 +345,7 @@ const Splash = () => {
           <div className="overflow-hidden rounded-[2rem] border border-[#fbbf24]/40 bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-[#0f172a] p-[1px]">
             <div className="flex h-full w-full flex-col gap-10 rounded-[calc(theme(borderRadius.4xl)-1px)] bg-[#0f172a]/95 p-10">
               <div className="space-y-4">
-                <span className="inline-flex w-fit items-center gap-2 rounded-full border border-[#fbbf24]/30 bg-[#fbbf24]/10 px-4 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-[#fde68a]">
+                <span className="inline-flex w-fit items-center gap-2 rounded-full border border-[#fbbf24]/30 bg-[#fbbf24]/10 px-4 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-[hsl(var(--highlight-text))]">
                   Membership benefits
                 </span>
                 <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
@@ -359,7 +359,7 @@ const Splash = () => {
               <div className="grid gap-4 sm:grid-cols-2">
                 {membershipBenefits.map((benefit) => (
                   <div key={benefit} className="flex items-start gap-4 text-left">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#fbbf24]/15 text-[#fde68a]">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#fbbf24]/15 text-[hsl(var(--highlight-text))]">
                       <UserCheck className="h-5 w-5" />
                     </div>
                     <p className="text-sm text-gray-300">{benefit}</p>
