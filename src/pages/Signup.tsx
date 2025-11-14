@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -104,6 +104,7 @@ function StepHeader({ step }: { step: number }) {
 
 const Signup = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   usePageTitle("Create Your Connective Account");
   const [step, setStep] = useState(1);
@@ -120,6 +121,12 @@ const Signup = () => {
     bio: "",
     photoDataUrl: "",
   });
+
+  const locationState = location.state as { next?: string } | null;
+  const nextPath =
+    typeof locationState?.next === "string" && locationState.next.length > 0
+      ? locationState.next
+      : "/profile-setup";
 
   const contactValue = authTab === "email" ? data.email.trim() : data.phone.trim();
   const passwordIsStrong = data.password.length >= 8;
@@ -181,7 +188,7 @@ const Signup = () => {
         });
 
         if (signUpData.session) {
-          navigate("/profile-setup");
+          navigate(nextPath);
         }
       } else {
         const { data: signUpData, error } = await supabase.auth.signUp({
@@ -200,7 +207,7 @@ const Signup = () => {
         });
 
         if (signUpData.session) {
-          navigate("/profile-setup");
+          navigate(nextPath);
         }
       }
     } catch (error) {
@@ -527,7 +534,11 @@ const Signup = () => {
           <p className="text-center text-sm text-muted-foreground mt-10">
             Already have an account?{" "}
             <button
-              onClick={() => navigate("/login")}
+              onClick={() =>
+                navigate("/login", {
+                  state: { next: nextPath },
+                })
+              }
               className="text-[#E8B956] font-medium hover:underline"
             >
               Log in

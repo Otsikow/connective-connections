@@ -44,7 +44,7 @@ type Feature = {
   description: string;
   highlight: string;
   accent: string;
-  cta: { label: string; path: string; requiresSubscription?: boolean };
+  cta: { label: string; path: string; requiresSubscription?: boolean; requiresAuth?: boolean };
   secondaryCta?: { label: string; path: string };
   spotlight: { avatar: string; name: string; tagline: string };
 };
@@ -90,8 +90,10 @@ const Home = () => {
   usePageTitle("Member Home");
   const [activeFeature, setActiveFeature] = useState("friends");
   const [showSubscribePrompt, setShowSubscribePrompt] = useState(false);
-  const isSubscribed = false;
-  const { fullName, email } = useSubscription();
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [pendingPath, setPendingPath] = useState<string | null>(null);
+  const { userId, fullName, email, tier } = useSubscription();
+  const isSubscribed = tier !== "basic";
 
   const userInitials = useMemo(() => deriveInitials(fullName, email), [fullName, email]);
   const avatarAltText = fullName ? `${fullName}'s profile avatar` : "User profile avatar";
@@ -105,7 +107,7 @@ const Home = () => {
           "Tell us what lights you up and our matcher introduces you to people already on your wavelength.",
         highlight: "12 new connections matched for you this week.",
         accent: "bg-emerald-500/15 text-emerald-500",
-        cta: { label: "Browse matches", path: "/friend-finder" },
+        cta: { label: "Browse matches", path: "/friend-finder", requiresAuth: true },
         secondaryCta: { label: "Build profile", path: "/profile" },
         spotlight: {
           avatar: "/placeholder.svg",
@@ -120,7 +122,7 @@ const Home = () => {
           "Curated gatherings, classes, and adventures hosted by our community. Save your spot before they fill up!",
         highlight: "Over 120 experiences this month in your area.",
         accent: "bg-indigo-500/15 text-indigo-500",
-        cta: { label: "View events", path: "/events" },
+        cta: { label: "View events", path: "/events", requiresAuth: true },
         secondaryCta: { label: "Host an event", path: "/host/create-event" },
         spotlight: {
           avatar: "/placeholder.svg",
@@ -139,6 +141,7 @@ const Home = () => {
           label: "Explore communities",
           path: "/community",
           requiresSubscription: true,
+          requiresAuth: true,
         },
         secondaryCta: { label: "Preview groups", path: "/community" },
         spotlight: {
@@ -158,6 +161,7 @@ const Home = () => {
           label: "Open messages",
           path: "/messages",
           requiresSubscription: true,
+          requiresAuth: true,
         },
         secondaryCta: { label: "See how it works", path: "/splash" },
         spotlight: {
@@ -245,7 +249,19 @@ const Home = () => {
   const selectedFeature =
     features.find((feature) => feature.value === activeFeature) ?? features[0];
 
-  const handleNavigate = (path: string, requiresSubscription?: boolean) => {
+  const handleNavigate = (
+    path: string,
+    options?: { requiresSubscription?: boolean; requiresAuth?: boolean },
+  ) => {
+    const requiresSubscription = options?.requiresSubscription;
+    const requiresAuth = options?.requiresAuth;
+
+    if (requiresAuth && !userId) {
+      setPendingPath(path);
+      setShowAuthPrompt(true);
+      return;
+    }
+
     if (requiresSubscription && !isSubscribed) {
       setShowSubscribePrompt(true);
       return;
@@ -340,7 +356,7 @@ const Home = () => {
                   "rounded-full border border-[#f7c145]/40 bg-white/85 text-slate-700 shadow-sm hover:bg-[#fff4d6]",
                   "dark:border-[#f7c145]/40 dark:bg-slate-900/70 dark:text-slate-200 dark:hover:bg-slate-900",
                 )}
-                onClick={() => handleNavigate("/community")}
+                onClick={() => handleNavigate("/community", { requiresAuth: true })}
               >
                 <Users className="mr-2 h-5 w-5" /> Explore community
               </Button>
@@ -364,7 +380,26 @@ const Home = () => {
               ))}
             </TabsList>
             <TabsContent value={selectedFeature.value} className="mt-6">
-              <Card className="border border-white/70 bg-white/95 p-6 shadow-[0_20px_45px_-25px_rgba(148,163,184,0.6)] dark:border-slate-800/70 dark:bg-slate-950/80">
+              <Card
+                role="button"
+                tabIndex={0}
+                className="border border-white/70 bg-white/95 p-6 shadow-[0_20px_45px_-25px_rgba(148,163,184,0.6)] transition-transform duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f7c145] focus-visible:ring-offset-2 dark:border-slate-800/70 dark:bg-slate-950/80 hover:-translate-y-0.5 hover:shadow-[0_30px_60px_-32px_rgba(148,163,184,0.7)] cursor-pointer"
+                onClick={() =>
+                  handleNavigate(selectedFeature.cta.path, {
+                    requiresSubscription: selectedFeature.cta.requiresSubscription,
+                    requiresAuth: selectedFeature.cta.requiresAuth,
+                  })
+                }
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    handleNavigate(selectedFeature.cta.path, {
+                      requiresSubscription: selectedFeature.cta.requiresSubscription,
+                      requiresAuth: selectedFeature.cta.requiresAuth,
+                    });
+                  }
+                }}
+              >
                 <CardHeader>
                   <Badge className={`w-fit rounded-full px-3 py-1 text-xs font-semibold shadow-sm ${selectedFeature.accent}`}>
                     {selectedFeature.highlight}
@@ -375,7 +410,13 @@ const Home = () => {
                 <CardContent>
                   <Button
                     className="rounded-full bg-[#f7c145] text-black shadow-sm hover:bg-[#f3b52a]"
-                    onClick={() => handleNavigate(selectedFeature.cta.path, selectedFeature.cta.requiresSubscription)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleNavigate(selectedFeature.cta.path, {
+                        requiresSubscription: selectedFeature.cta.requiresSubscription,
+                        requiresAuth: selectedFeature.cta.requiresAuth,
+                      });
+                    }}
                   >
                     {selectedFeature.cta.label}
                   </Button>
@@ -399,7 +440,9 @@ const Home = () => {
                     <CarouselItem key={event.id} className="md:basis-1/2">
                       <div
                         className="overflow-hidden rounded-3xl border border-white/70 bg-white/95 shadow-[0_15px_35px_-20px_rgba(148,163,184,0.5)] backdrop-blur-sm dark:border-slate-800/70 dark:bg-slate-900 cursor-pointer hover:border-primary/80"
-                        onClick={() => handleNavigate(`/events/${event.id}`)}
+                        onClick={() =>
+                          handleNavigate(`/events/${event.id}`, { requiresAuth: true })
+                        }
                       >
                         <div className="relative h-48 w-full overflow-hidden">
                           <img
@@ -440,7 +483,7 @@ const Home = () => {
                               className="rounded-full bg-[#f7c145] px-5 text-black shadow-sm hover:bg-[#f3b52a]"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleNavigate(`/events/${event.id}`)
+                                handleNavigate(`/events/${event.id}`, { requiresAuth: true })
                               }}
                             >
                               Join Event
@@ -520,7 +563,10 @@ const Home = () => {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-3">
-            <Button className="rounded-full bg-[#f7c145] text-black shadow-sm hover:bg-[#f3b52a]" onClick={() => handleNavigate("/profile")}>
+            <Button
+              className="rounded-full bg-[#f7c145] text-black shadow-sm hover:bg-[#f3b52a]"
+              onClick={() => handleNavigate("/profile", { requiresAuth: true })}
+            >
               Subscribe now
             </Button>
             <Button variant="outline" className="rounded-full" onClick={() => setShowSubscribePrompt(false)}>
@@ -530,10 +576,72 @@ const Home = () => {
         </DialogContent>
       </Dialog>
 
+      <Dialog
+        open={showAuthPrompt}
+        onOpenChange={(open) => {
+          setShowAuthPrompt(open);
+          if (!open) {
+            setPendingPath(null);
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sign in to continue</DialogTitle>
+            <DialogDescription>
+              Create a free account or log in to join events, start chats, and make new connections.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-3 sm:justify-between">
+            <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={() => {
+                setShowAuthPrompt(false);
+                setPendingPath(null);
+              }}
+            >
+              Keep exploring
+            </Button>
+            <div className="flex flex-1 justify-end gap-3">
+              <Button
+                variant="ghost"
+                className="rounded-full"
+                onClick={() => {
+                  setShowAuthPrompt(false);
+                  if (pendingPath) {
+                    navigate("/login", { state: { next: pendingPath } });
+                  } else {
+                    navigate("/login");
+                  }
+                  setPendingPath(null);
+                }}
+              >
+                Sign in
+              </Button>
+              <Button
+                className="rounded-full bg-[#f7c145] text-black shadow-sm hover:bg-[#f3b52a]"
+                onClick={() => {
+                  setShowAuthPrompt(false);
+                  if (pendingPath) {
+                    navigate("/signup", { state: { next: pendingPath } });
+                  } else {
+                    navigate("/signup");
+                  }
+                  setPendingPath(null);
+                }}
+              >
+                Create account
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Floating CTA */}
       <Button
         className="fixed bottom-[6.5rem] right-4 z-40 flex items-center gap-2 rounded-full bg-[#f7c145] px-5 py-3 text-sm font-semibold text-black shadow-lg hover:bg-[#f3b52a] md:bottom-20"
-        onClick={() => handleNavigate("/host/create-event")}
+        onClick={() => handleNavigate("/host/create-event", { requiresAuth: true })}
       >
         <Send className="h-4 w-4" /> Host an experience
       </Button>
