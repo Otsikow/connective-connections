@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,6 +20,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useSubscription } from "@/hooks/useSubscription";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Badge } from "@/components/ui/badge";
+import {
+  fetchConnectionFeedback,
+  submitConnectionFeedback,
+} from "@/api/connection-feedback";
 
 interface Profile {
   id: string;
@@ -84,6 +88,7 @@ interface ConnectionFeedback {
   yourRating?: number;
   yourComment?: string;
   submitted?: boolean;
+  isSubmitting?: boolean;
 }
 
 const connectionFeedbackSeeds: ConnectionFeedback[] = [
@@ -116,6 +121,53 @@ const Matches = () => {
   const { attemptConnection } = useSubscription();
   const { toast } = useToast();
   usePageTitle("Your Matches");
+
+  useEffect(() => {
+    const loadExistingFeedback = async () => {
+      try {
+        const existing = await fetchConnectionFeedback();
+        if (existing.length === 0) return;
+
+        setConnectionFeedback((prev) => {
+          const updated = prev.map((cf) => {
+            const record = existing.find(
+              (item) => item.connection_identifier === cf.id,
+            );
+            if (!record) return cf;
+
+            return {
+              ...cf,
+              submitted: true,
+              yourRating: record.rating,
+              yourComment: record.comment ?? undefined,
+            };
+          });
+
+          const knownIds = new Set(prev.map((item) => item.id));
+          const additional = existing
+            .filter((item) => !knownIds.has(item.connection_identifier))
+            .map((item) => ({
+              id: item.connection_identifier,
+              name: item.connection_name,
+              avatar: "/placeholder.svg",
+              metAt: item.met_context ?? "Connected through Connective",
+              communityAverage: 4.8,
+              communityCount: 24,
+              yourRating: item.rating,
+              yourComment: item.comment ?? undefined,
+              submitted: true,
+              isSubmitting: false,
+            }));
+
+          return additional.length > 0 ? [...updated, ...additional] : updated;
+        });
+      } catch (error) {
+        console.error("Unable to load connection feedback", error);
+      }
+    };
+
+    void loadExistingFeedback();
+  }, []);
 
   const handleLike = useCallback(async () => {
     const canProceed = await attemptConnection();
@@ -155,16 +207,67 @@ const Matches = () => {
       prev.map((cf) => (cf.id === id ? { ...cf, yourComment: comment } : cf))
     );
 
-  const handleSubmitFeedback = (id: string) => {
+  const handleSubmitFeedback = async (id: string) => {
+    const feedback = connectionFeedback.find((cf) => cf.id === id);
+    if (!feedback?.yourRating) {
+      toast({
+        title: "Add a rating",
+        description: "Please rate your connection before submitting.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const trimmedComment =
+      feedback.yourComment?.trim() === ""
+        ? undefined
+        : feedback.yourComment?.trim();
+
     setConnectionFeedback((prev) =>
       prev.map((cf) =>
-        cf.id === id ? { ...cf, submitted: true } : cf
-      )
+        cf.id === id ? { ...cf, isSubmitting: true } : cf,
+      ),
     );
-    toast({
-      title: "Feedback submitted",
-      description: "Thank you for helping improve our community!",
-    });
+
+    try {
+      await submitConnectionFeedback({
+        connectionIdentifier: feedback.id,
+        connectionName: feedback.name,
+        metContext: feedback.metAt,
+        rating: feedback.yourRating,
+        comment: trimmedComment ?? null,
+      });
+
+      setConnectionFeedback((prev) =>
+        prev.map((cf) =>
+          cf.id === id
+            ? {
+                ...cf,
+                submitted: true,
+                isSubmitting: false,
+                yourComment: trimmedComment,
+              }
+            : cf,
+        ),
+      );
+
+      toast({
+        title: "Feedback submitted",
+        description: "Thank you for helping improve our community!",
+      });
+    } catch (error) {
+      console.error("Unable to submit connection feedback", error);
+      setConnectionFeedback((prev) =>
+        prev.map((cf) =>
+          cf.id === id ? { ...cf, isSubmitting: false } : cf,
+        ),
+      );
+      toast({
+        title: "Could not submit feedback",
+        description: error instanceof Error ? error.message : "Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -317,16 +420,36 @@ const Matches = () => {
                       />
                     </div>
                     <Button
-                      onClick={() => handleSubmitFeedback(cf.id)}
-                      disabled={!cf.yourRating}
+                      onClick={() => void handleSubmitFeedback(cf.id)}
+                      disabled={!cf.yourRating || cf.isSubmitting}
                       className="w-full"
                     >
-                      Submit Feedback
+                      {cf.isSubmitting ? "Submitting..." : "Submit Feedback"}
                     </Button>
                   </>
                 ) : (
-                  <div className="text-center py-4 text-muted-foreground">
-                    <p>✓ Feedback submitted - thank you!</p>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-muted-foreground">
+                        Feedback submitted
+                      </span>
+                      <Badge variant="secondary" className="text-xs">
+                        Thank you!
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <RatingStars rating={cf.yourRating || 0} />
+                      <span className="text-sm text-muted-foreground">
+                        {cf.yourRating?.toFixed(1)} / 5
+                      </span>
+                    </div>
+                    <div className="rounded-lg bg-muted/50 p-3">
+                      <p className="text-sm text-muted-foreground">
+                        {cf.yourComment?.trim()
+                          ? cf.yourComment
+                          : "Shared a rating without additional comments."}
+                      </p>
+                    </div>
                   </div>
                 )}
               </CardContent>
