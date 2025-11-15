@@ -178,20 +178,7 @@ const Home = () => {
 
       <div className="mx-auto w-full max-w-5xl space-y-10 px-4 py-8">
 
-        <div className="flex items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            
-            <div>
-              <p className="text-xs text-slate-500">Welcome to</p>
-              <h1 className="text-lg font-bold text-slate-900 dark:text-white">Connective</h1>
-            </div>
-          </div>
-
-          {isAuthenticated && <Avatar className="h-10 w-10 cursor-pointer" onClick={() => navigate("/profile")}>
-              <AvatarImage src={userAvatarUrl} />
-              <AvatarFallback>{userInitials}</AvatarFallback>
-            </Avatar>}
-        </div>
+        
 
         {/* HERO */}
         <section className="rounded-3xl border bg-white p-6 shadow dark:bg-slate-900">
