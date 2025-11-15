@@ -11,28 +11,39 @@ CREATE TABLE IF NOT EXISTS public.connection_feedback (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- Enable row level security to protect attendee feedback
 ALTER TABLE public.connection_feedback ENABLE ROW LEVEL SECURITY;
 
 -- Allow members to view their own feedback entries
+DROP POLICY IF EXISTS "Users can view their own connection feedback" ON public.connection_feedback;
 CREATE POLICY "Users can view their own connection feedback"
   ON public.connection_feedback
   FOR SELECT
   USING (auth.uid() = user_id);
 
 -- Allow members to insert feedback for themselves
+DROP POLICY IF EXISTS "Users can add connection feedback" ON public.connection_feedback;
 CREATE POLICY "Users can add connection feedback"
   ON public.connection_feedback
   FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
 -- Allow members to update feedback they previously shared
+DROP POLICY IF EXISTS "Users can update their connection feedback" ON public.connection_feedback;
 CREATE POLICY "Users can update their connection feedback"
   ON public.connection_feedback
   FOR UPDATE
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+-- Allow members to delete their own feedback if they change their mind
+DROP POLICY IF EXISTS "Users can delete their connection feedback" ON public.connection_feedback;
+CREATE POLICY "Users can delete their connection feedback"
+  ON public.connection_feedback
+  FOR DELETE
   USING (auth.uid() = user_id);
 
 -- Keep the updated_at column in sync automatically
+DROP TRIGGER IF EXISTS update_connection_feedback_updated_at ON public.connection_feedback;
 CREATE TRIGGER update_connection_feedback_updated_at
   BEFORE UPDATE ON public.connection_feedback
   FOR EACH ROW
