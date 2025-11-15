@@ -1,5 +1,11 @@
-import { useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import {
+  animate,
+  motion,
+  useMotionValue,
+  useMotionValueEvent,
+  useTransform,
+} from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,22 +40,60 @@ export const SwipeCard = ({
   onAttemptConnect,
   isActive,
 }: SwipeCardProps) => {
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const [swipeProgress, setSwipeProgress] = useState(0);
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const motionOpacity = useTransform(x, (value) =>
+    Math.max(0.35, 1 - Math.abs(value) / 320),
+  );
+  const rotate = useTransform(x, (value) => {
+    const clamped = Math.max(-16, Math.min(16, value * 0.06));
+    return clamped;
+  });
+  const focusOpacity = useMotionValue(isActive ? 1 : 0.55);
+  const combinedOpacity = useTransform([motionOpacity, focusOpacity], ([base, focus]) => base * focus);
+
+  useMotionValueEvent(x, "change", (latest) => {
+    setSwipeProgress(latest);
+  });
+
+  useEffect(() => {
+    const animation = animate(focusOpacity, isActive ? 1 : 0.55, {
+      duration: 0.28,
+      ease: [0.22, 1, 0.36, 1],
+    });
+    return () => {
+      animation.stop();
+    };
+  }, [focusOpacity, isActive]);
+
+  useEffect(() => {
+    x.set(0);
+    y.set(0);
+    setSwipeProgress(0);
+    setIsAnimatingOut(false);
+    setIsDragging(false);
+  }, [profile.id, x, y]);
+
   const handleStart = (clientX: number, clientY: number) => {
-    if (!isActive) return;
+    if (!isActive || isAnimatingOut) return;
+    x.stop();
+    y.stop();
     setIsDragging(true);
     setStartPos({ x: clientX, y: clientY });
   };
 
   const handleMove = (clientX: number, clientY: number) => {
-    if (!isDragging || !isActive) return;
+    if (!isDragging || !isActive || isAnimatingOut) return;
     const deltaX = clientX - startPos.x;
     const deltaY = clientY - startPos.y;
-    setDragOffset({ x: deltaX, y: deltaY });
+    x.set(deltaX);
+    y.set(deltaY);
   };
 
   const handleEnd = async () => {
@@ -57,25 +101,54 @@ export const SwipeCard = ({
     setIsDragging(false);
 
     const threshold = 100;
-    if (Math.abs(dragOffset.x) > threshold) {
-      const direction = dragOffset.x > 0 ? "right" : "left";
+    const currentX = x.get();
+    const currentY = y.get();
+
+    if (Math.abs(currentX) > threshold) {
+      const direction = currentX > 0 ? "right" : "left";
       if (direction === "right") {
         const allowed = await onAttemptConnect();
         if (allowed) {
           triggerHaptic("success");
+          await animateOffscreen("right", currentY);
           onSwipe("right");
         } else {
           triggerHaptic("warning");
+          await animateBackToCenter();
         }
       } else {
         triggerHaptic("warning");
+        await animateOffscreen("left", currentY);
         onSwipe("left");
       }
     } else {
       triggerHaptic("light");
+      await animateBackToCenter();
     }
+  };
 
-    setDragOffset({ x: 0, y: 0 });
+  const animateBackToCenter = async () => {
+    setIsAnimatingOut(false);
+    const springConfig = { type: "spring", stiffness: 320, damping: 26 } as const;
+    await Promise.all([
+      animate(x, 0, springConfig).finished,
+      animate(y, 0, springConfig).finished,
+    ]);
+    setSwipeProgress(0);
+  };
+
+  const animateOffscreen = async (
+    direction: "left" | "right",
+    currentY: number,
+  ) => {
+    setIsAnimatingOut(true);
+    const exitX = direction === "right" ? 620 : -620;
+    const exitSpring = { type: "spring", stiffness: 210, damping: 28 } as const;
+
+    await Promise.all([
+      animate(x, exitX, exitSpring).finished,
+      animate(y, currentY * 0.25, exitSpring).finished,
+    ]);
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -105,26 +178,32 @@ export const SwipeCard = ({
     void handleEnd();
   };
 
-  const rotation = dragOffset.x * 0.1;
-  const opacity = Math.max(0.3, 1 - Math.abs(dragOffset.x) / 300);
+  const showLike = swipeProgress > 50;
+  const showPass = swipeProgress < -50;
+  const isInteractable = isActive && !isAnimatingOut;
 
   return (
     <motion.div
       ref={cardRef}
       className={`absolute inset-0 flex items-stretch justify-center px-2 sm:px-4 swipe-card ${
-        isActive ? "cursor-grab active:cursor-grabbing" : "pointer-events-none"
+        isInteractable
+          ? "cursor-grab active:cursor-grabbing"
+          : "pointer-events-none"
       }`}
       style={{
-        transform: `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${rotation}deg)`,
-        opacity,
+        x,
+        y,
+        rotate,
+        opacity: combinedOpacity,
         zIndex: isActive ? 10 : 1,
       }}
       initial={{ scale: 0.95, opacity: 0 }}
       animate={{
-        scale: 1,
-        opacity: isActive ? 1 : 0.3,
+        scale: isActive ? 1 : 0.96,
+        filter: isActive ? "blur(0px)" : "blur(1px)",
         transition: { type: "spring", stiffness: 260, damping: 20 },
       }}
+      whileTap={isInteractable ? { scale: 0.98 } : undefined}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -166,7 +245,7 @@ export const SwipeCard = ({
 
           {/* Swipe Indicators */}
           <div className="absolute inset-0 pointer-events-none">
-            {dragOffset.x > 50 && (
+            {showLike && (
               <motion.div
                 className="absolute top-1/2 left-8 transform -translate-y-1/2"
                 initial={{ scale: 0 }}
@@ -178,7 +257,7 @@ export const SwipeCard = ({
                 </div>
               </motion.div>
             )}
-            {dragOffset.x < -50 && (
+            {showPass && (
               <motion.div
                 className="absolute top-1/2 right-8 transform -translate-y-1/2"
                 initial={{ scale: 0 }}
