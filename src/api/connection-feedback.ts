@@ -1,6 +1,3 @@
-import { isSupabaseConfigured, supabase } from "@/integrations/supabase/client";
-import type { Tables } from "@/integrations/supabase/types";
-
 export interface SubmitConnectionFeedbackInput {
   connectionIdentifier: string;
   connectionName: string;
@@ -9,82 +6,40 @@ export interface SubmitConnectionFeedbackInput {
   comment?: string | null;
 }
 
-export type ConnectionFeedbackRecord = Tables<"connection_feedback">;
+export interface ConnectionFeedbackRecord {
+  id: string;
+  user_id: string;
+  connection_identifier: string;
+  connection_name: string;
+  met_context: string | null;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+}
+
+// Store feedback in memory for now
+const feedbackStore: ConnectionFeedbackRecord[] = [];
 
 const createOfflineResponse = () => ({ id: `offline-${Date.now()}` });
 
 export const fetchConnectionFeedback = async (): Promise<ConnectionFeedbackRecord[]> => {
-  if (!isSupabaseConfigured) {
-    return [];
-  }
-
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError) {
-    throw userError;
-  }
-
-  if (!user) {
-    return [];
-  }
-
-  const { data, error } = await supabase
-    .from("connection_feedback")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    throw error;
-  }
-
-  return data ?? [];
+  return feedbackStore;
 };
 
 export const submitConnectionFeedback = async (
   input: SubmitConnectionFeedbackInput,
 ): Promise<{ id: string }> => {
-  if (!isSupabaseConfigured) {
-    console.info("Supabase is not configured. Capturing feedback locally only.");
-    return createOfflineResponse();
-  }
-
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError) {
-    throw userError;
-  }
-
-  if (!user) {
-    throw new Error("Please sign in to share connection feedback.");
-  }
-
-  const { data, error } = await supabase
-    .from("connection_feedback")
-    .insert({
-      user_id: user.id,
-      connection_identifier: input.connectionIdentifier,
-      connection_name: input.connectionName,
-      met_context: input.metContext ?? null,
-      rating: input.rating,
-      comment: input.comment ?? null,
-    })
-    .select("id")
-    .single();
-
-  if (error) {
-    throw error;
-  }
-
-  if (!data) {
-    throw new Error("Feedback submission did not return an identifier.");
-  }
-
-  return data;
+  const feedback: ConnectionFeedbackRecord = {
+    id: `feedback-${Date.now()}`,
+    user_id: 'local-user',
+    connection_identifier: input.connectionIdentifier,
+    connection_name: input.connectionName,
+    met_context: input.metContext ?? null,
+    rating: input.rating,
+    comment: input.comment ?? null,
+    created_at: new Date().toISOString(),
+  };
+  
+  feedbackStore.push(feedback);
+  return { id: feedback.id };
 };
