@@ -14,50 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      connection_feedback: {
-        Row: {
-          comment: string | null
-          connection_identifier: string
-          connection_name: string
-          created_at: string
-          id: string
-          met_context: string | null
-          rating: number
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          comment?: string | null
-          connection_identifier: string
-          connection_name: string
-          created_at?: string
-          id?: string
-          met_context?: string | null
-          rating: number
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          comment?: string | null
-          connection_identifier?: string
-          connection_name?: string
-          created_at?: string
-          id?: string
-          met_context?: string | null
-          rating?: number
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "connection_feedback_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       group_members: {
         Row: {
           group_id: string
