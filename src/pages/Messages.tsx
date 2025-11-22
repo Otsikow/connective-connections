@@ -870,7 +870,7 @@ const Messages = () => {
           </div>
         </aside>
 
-        <section className="flex-1 rounded-3xl border border-border bg-card/90 shadow-sm">
+        <section className="flex min-h-[calc(100vh-160px)] flex-1 flex-col overflow-hidden rounded-3xl border border-border bg-card/90 shadow-sm">
           <div className="border-b border-border/80 px-4 py-3">
             <div className="flex items-center gap-3">
               <BackButton fallbackPath="/messages" className="rounded-full" />
@@ -938,100 +938,103 @@ const Messages = () => {
             </div>
           )}
 
-          <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
-            <div className="flex justify-center">
-              {encryptionError ? (
-                <span className="text-sm text-destructive">Secure messaging unavailable</span>
-              ) : isEncryptionReady ? (
-                <Badge variant="outline" className="gap-1 text-xs text-muted-foreground">
-                  <Lock className="h-3 w-3" /> End-to-end encrypted
-                </Badge>
-              ) : (
-                <span className="text-xs text-muted-foreground">Initializing secure session...</span>
-              )}
-            </div>
+          <div className="flex flex-1 flex-col">
+            <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
+              <div className="flex justify-center">
+                {encryptionError ? (
+                  <span className="text-sm text-destructive">Secure messaging unavailable</span>
+                ) : isEncryptionReady ? (
+                  <Badge variant="outline" className="gap-1 text-xs text-muted-foreground">
+                    <Lock className="h-3 w-3" /> End-to-end encrypted
+                  </Badge>
+                ) : (
+                  <span className="text-xs text-muted-foreground">Initializing secure session...</span>
+                )}
+              </div>
 
-            {displayMessages.map((msg) => (
-              <div key={msg.id} className={cn("flex", msg.isMine ? "justify-end" : "justify-start")}> 
-                <div className={cn("flex max-w-[80%] gap-3", msg.isMine && "flex-row-reverse")}> 
-                  {!msg.isMine && (
-                    <Avatar className="h-8 w-8 flex-shrink-0">
-                      <AvatarImage src={conversationDetails.avatarUrl} alt={conversationDetails.title} />
-                      <AvatarFallback>{conversationDetails.initials}</AvatarFallback>
-                    </Avatar>
-                  )}
-                  <div>
+              {displayMessages.map((msg) => (
+                <div key={msg.id} className={cn("flex", msg.isMine ? "justify-end" : "justify-start")}>
+                  <div className={cn("flex max-w-[80%] gap-3", msg.isMine && "flex-row-reverse")}>
                     {!msg.isMine && (
-                      <p className="mb-1 text-xs text-muted-foreground">{msg.sender}</p>
+                      <Avatar className="h-8 w-8 flex-shrink-0">
+                        <AvatarImage src={conversationDetails.avatarUrl} alt={conversationDetails.title} />
+                        <AvatarFallback>{conversationDetails.initials}</AvatarFallback>
+                      </Avatar>
                     )}
-                    <div
-                      className={cn(
-                        "rounded-2xl px-4 py-3",
-                        msg.isMine
-                          ? "rounded-br-sm bg-[#E8B956] text-black"
-                          : "rounded-bl-sm bg-[#FF8663] text-white",
+                    <div>
+                      {!msg.isMine && (
+                        <p className="mb-1 text-xs text-muted-foreground">{msg.sender}</p>
                       )}
-                    >
-                      <p className="text-sm leading-relaxed">{msg.content}</p>
+                      <div
+                        className={cn(
+                          "rounded-2xl px-4 py-3",
+                          msg.isMine
+                            ? "rounded-br-sm bg-[#E8B956] text-black"
+                            : "rounded-bl-sm bg-[#FF8663] text-white",
+                        )}
+                      >
+                        <p className="text-sm leading-relaxed">{msg.content}</p>
+                      </div>
+                      <p
+                        className={cn(
+                          "mt-1 text-xs text-muted-foreground",
+                          msg.isMine && "text-right",
+                        )}
+                      >
+                        {msg.time}
+                      </p>
                     </div>
-                    <p
-                      className={cn(
-                        "mt-1 text-xs text-muted-foreground",
-                        msg.isMine && "text-right",
-                      )}
-                    >
-                      {msg.time}
-                    </p>
                   </div>
                 </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
 
-          <MessageInput
-            onSendMessage={handleSendMessage}
-            onSelectIcebreaker={(text) => {
-              if (requireProFeature()) {
-                void handleSendMessage(text);
-              }
-            }}
-            suggestions={dynamicSuggestions}
-            isDisabled={!isEncryptionReady || Boolean(encryptionError)}
-            isPremiumFeatureLocked={!isProMember}
-            onRequestPremiumFeature={requireProFeature}
-          />
+            <MessageInput
+              className="border-t border-border/80 bg-card/95 shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.18)] backdrop-blur supports-[backdrop-filter]:bg-card/80"
+              onSendMessage={handleSendMessage}
+              onSelectIcebreaker={(text) => {
+                if (requireProFeature()) {
+                  void handleSendMessage(text);
+                }
+              }}
+              suggestions={dynamicSuggestions}
+              isDisabled={!isEncryptionReady || Boolean(encryptionError)}
+              isPremiumFeatureLocked={!isProMember}
+              onRequestPremiumFeature={requireProFeature}
+            />
 
-          <div className="border-t border-border/80 bg-card/80 px-4 py-3">
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {quickReplies.map((reply, index) => (
+            <div className="border-t border-border/80 bg-card/90 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-card/80">
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {quickReplies.map((reply, index) => (
+                  <Button
+                    key={`${reply}-${index}`}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full border-border bg-background text-xs"
+                    onClick={() => void handleSendMessage(reply)}
+                    disabled={!isEncryptionReady || Boolean(encryptionError)}
+                  >
+                    {reply}
+                  </Button>
+                ))}
                 <Button
-                  key={`${reply}-${index}`}
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="rounded-full border-border bg-background text-xs"
-                  onClick={() => void handleSendMessage(reply)}
-                  disabled={!isEncryptionReady || Boolean(encryptionError)}
+                  className="gap-2 rounded-full border-dashed border-primary/40 text-xs text-primary"
+                  onClick={() => {
+                    if (isProMember) {
+                      void handleSendMessage("Fun fact: I once hosted a pop-up dinner for 20!");
+                    } else {
+                      requireProFeature();
+                    }
+                  }}
                 >
-                  {reply}
+                  <Smile className="h-4 w-4" /> Share a fun fact
                 </Button>
-              ))}
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="gap-2 rounded-full border-dashed border-primary/40 text-xs text-primary"
-                onClick={() => {
-                  if (isProMember) {
-                    void handleSendMessage("Fun fact: I once hosted a pop-up dinner for 20!");
-                  } else {
-                    requireProFeature();
-                  }
-                }}
-              >
-                <Smile className="h-4 w-4" /> Share a fun fact
-              </Button>
+              </div>
             </div>
           </div>
         </section>
