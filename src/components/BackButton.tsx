@@ -29,11 +29,9 @@ const BackButton = ({
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     onClick?.(event);
 
-    if (event.defaultPrevented) {
-      return;
-    }
+    if (event.defaultPrevented) return;
 
-    // Try to go back in history, with fallback to specified path
+    // Try to go back in history, fallback if no history
     if (window.history.length > 1) {
       navigate(-1);
     } else {
@@ -47,7 +45,8 @@ const BackButton = ({
       variant={variant}
       size={size ?? "sm"}
       className={cn(
-        "mt-2 gap-2 rounded-full px-4 sm:mt-4 md:mt-6",
+        // Merged styles from both branches
+        "sticky top-4 z-20 mt-4 gap-2 rounded-full px-4 sm:mt-4 md:mt-6",
         className,
       )}
       onClick={handleClick}
