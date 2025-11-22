@@ -136,17 +136,20 @@ const AppContent = () => {
 
   const showLoadingScreen = isBooting || !hasCompletedInitialLoad;
 
+  const layoutStyles = {
+    "--bottom-nav-height": "5.75rem",
+    "--top-bar-height": "4rem",
+  } as CSSProperties;
+
   return (
-    <div
-      className="relative flex min-h-screen flex-col"
-      style={{ "--bottom-nav-height": "5.75rem" } as CSSProperties}
-    >
+    <div className="relative flex min-h-screen flex-col" style={layoutStyles}>
       <LoadingScreen show={showLoadingScreen} />
       <TopBar />
 
       <main
-        className="flex-1 pt-20"
+        className="flex-1 px-4 pt-6 sm:px-6 lg:px-8"
         style={{
+          paddingTop: "calc(var(--top-bar-height, 4rem) + 0.75rem)",
           paddingBottom:
             "calc(var(--bottom-nav-height, 5.75rem) + env(safe-area-inset-bottom, 0px))",
         }}
