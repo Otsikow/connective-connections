@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  AnimatePresence,
   animate,
   motion,
   useMotionValue,
@@ -9,7 +10,15 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, X, Coffee, Shield, Clock } from "lucide-react";
+import {
+  Heart,
+  X,
+  Coffee,
+  Shield,
+  Clock,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { triggerHaptic } from "@/lib/haptics";
 
 interface Profile {
@@ -44,7 +53,16 @@ export const SwipeCard = ({
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [swipeProgress, setSwipeProgress] = useState(0);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  const photoSources = useMemo(() => {
+    const sources = [profile.photo, ...(profile.gallery ?? [])].filter(
+      (src): src is string => Boolean(src),
+    );
+    const uniqueSources = Array.from(new Set(sources));
+    return uniqueSources.length > 0 ? uniqueSources : ["/placeholder.svg"];
+  }, [profile.gallery, profile.photo]);
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -78,6 +96,7 @@ export const SwipeCard = ({
     setSwipeProgress(0);
     setIsAnimatingOut(false);
     setIsDragging(false);
+    setActivePhotoIndex(0);
   }, [profile.id, x, y]);
 
   const handleStart = (clientX: number, clientY: number) => {
@@ -182,6 +201,18 @@ export const SwipeCard = ({
   const showPass = swipeProgress < -50;
   const isInteractable = isActive && !isAnimatingOut;
 
+  const navigatePhotos = (direction: "prev" | "next") => {
+    if (photoSources.length <= 1) return;
+
+    setActivePhotoIndex((prev) => {
+      const nextIndex =
+        direction === "next"
+          ? (prev + 1) % photoSources.length
+          : (prev - 1 + photoSources.length) % photoSources.length;
+      return nextIndex;
+    });
+  };
+
   return (
     <motion.div
       ref={cardRef}
@@ -218,12 +249,58 @@ export const SwipeCard = ({
       >
         {/* Photo Section */}
         <div className="relative flex-shrink-0 aspect-[4/5] sm:aspect-[3/4] overflow-hidden">
-          <img
-            src={profile.photo}
-            alt={`${profile.name}'s profile photo`}
-            className="absolute inset-0 h-full w-full object-cover"
-          />
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.img
+              key={photoSources[activePhotoIndex]}
+              src={photoSources[activePhotoIndex]}
+              alt={`${profile.name}'s profile photo ${activePhotoIndex + 1}`}
+              className="absolute inset-0 h-full w-full object-cover"
+              initial={{ x: 40, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -40, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 180, damping: 24 }}
+            />
+          </AnimatePresence>
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/5 to-black/60" />
+
+          {photoSources.length > 1 && (
+            <div className="absolute inset-0 flex items-center justify-between px-3">
+              <button
+                type="button"
+                onClick={() => navigatePhotos("prev")}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm transition hover:bg-black/60"
+                aria-label="Previous photo"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => navigatePhotos("next")}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm transition hover:bg-black/60"
+                aria-label="Next photo"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+          )}
+
+          {photoSources.length > 1 && (
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+              {photoSources.map((_, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => setActivePhotoIndex(index)}
+                  className={`h-2 rounded-full transition-all ${
+                    activePhotoIndex === index
+                      ? "w-6 bg-white"
+                      : "w-2 bg-white/60 hover:bg-white"
+                  }`}
+                  aria-label={`View photo ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
 
           {/* Status Badges */}
           {(profile.availability || profile.trustBadge) && (
@@ -297,19 +374,21 @@ export const SwipeCard = ({
             </p>
           </div>
 
-          {profile.gallery && profile.gallery.length > 0 && (
+          {photoSources.length > 1 && (
             <div className="space-y-3 text-left w-full">
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
                 Photo Highlights
               </h3>
               <div className="grid grid-cols-3 gap-2">
-                {profile.gallery.slice(0, 3).map((image, index) => (
-                  <div
-                    key={index}
-                    className="relative aspect-square rounded-xl overflow-hidden border border-white/10 shadow-sm"
+                {photoSources.slice(1, 4).map((image, index) => (
+                  <button
+                    key={image}
+                    type="button"
+                    onClick={() => setActivePhotoIndex(index + 1)}
+                    className="relative aspect-square rounded-xl overflow-hidden border border-white/10 shadow-sm focus:outline-none focus:ring-2 focus:ring-white/70"
                   >
                     <img src={image} alt={`${profile.name} gallery ${index + 1}`} className="h-full w-full object-cover" />
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
