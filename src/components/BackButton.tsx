@@ -46,7 +46,10 @@ const BackButton = ({
       type="button"
       variant={variant}
       size={size ?? "sm"}
-      className={cn("mt-4 gap-2 rounded-full px-4", className)}
+      className={cn(
+        "sticky top-4 z-20 mt-4 gap-2 rounded-full px-4",
+        className,
+      )}
       onClick={handleClick}
       aria-label={computedAriaLabel}
       {...props}
