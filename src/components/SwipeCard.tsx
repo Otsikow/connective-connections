@@ -74,7 +74,7 @@ export const SwipeCard = ({
     return clamped;
   });
   const focusOpacity = useMotionValue(isActive ? 1 : 0.55);
-  const combinedOpacity = useTransform([motionOpacity, focusOpacity], ([base, focus]) => base * focus);
+  const combinedOpacity = useTransform([motionOpacity, focusOpacity], ([base, focus]: [number, number]) => base * focus);
 
   useMotionValueEvent(x, "change", (latest) => {
     setSwipeProgress(latest);
