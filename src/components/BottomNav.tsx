@@ -39,10 +39,10 @@ export const BottomNav = ({ currentPath }: BottomNavProps) => {
   return (
     <nav
       aria-label="Primary navigation"
-      className="fixed inset-x-0 bottom-0 z-50 px-3 pt-2"
+      className="fixed inset-x-0 bottom-0 z-50 px-0 pt-2"
       style={navStyles}
     >
-      <div className="mx-auto w-full max-w-4xl rounded-[30px] border border-border/40 bg-card/95 p-1.5 shadow-[0_30px_60px_-35px_rgba(188,150,82,0.6)] backdrop-blur-xl supports-[backdrop-filter]:bg-card/85">
+      <div className="w-full rounded-none border-t border-border/40 bg-card/95 p-1.5 shadow-[0_30px_60px_-35px_rgba(188,150,82,0.6)] backdrop-blur-xl supports-[backdrop-filter]:bg-card/85">
         <div className="flex w-full items-stretch gap-1 overflow-x-auto px-0.5 py-0.5 scrollbar-none sm:gap-1.5 sm:px-1">
           {navItems.map(({ icon: Icon, label, path }) => {
             const isActive =
