@@ -18,12 +18,7 @@ export function ThemeToggle({
   }} whileTap={{
     scale: 0.95
   }} aria-label="Toggle theme">
-      <motion.div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10" animate={{
-      x: isDark ? "100%" : "-100%"
-    }} transition={{
-      duration: 0.5,
-      ease: "easeInOut"
-    }} />
+      
 
       <div className="relative flex items-center gap-2">
         <motion.div animate={{
