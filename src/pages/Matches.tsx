@@ -46,6 +46,10 @@ const profiles: Profile[] = [
     age: 28,
     photo:
       "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=900&q=80",
+    ],
     interests: ["Coffee Addict", "Yoga Lover", "Plant Parent", "Art Enthusiast"],
     bio: "Love exploring new coffee shops and finding hidden gems in the city. Always up for a good conversation over a cup of coffee!",
     verified: true,
@@ -58,6 +62,10 @@ const profiles: Profile[] = [
     age: 31,
     photo:
       "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=900&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80",
+    ],
     interests: ["Bookworm", "Hiking Enthusiast", "Dog Lover", "New in Town"],
     bio: "Recently moved to the city and looking to make new friends. Love outdoor activities and discovering local bookstores.",
     verified: false,
@@ -70,6 +78,10 @@ const profiles: Profile[] = [
     age: 27,
     photo:
       "https://images.unsplash.com/photo-1542596768-5d1d21f1cf98?auto=format&fit=crop&w=900&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1500522144261-ea64433bbe27?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
+    ],
     interests: ["Food Truck Explorer", "Live Music", "Pop Culture", "Skating"],
     bio: "Marketing professional who loves discovering new live music venues and foodie spots. Always ready for a trivia night!",
     verified: true,
