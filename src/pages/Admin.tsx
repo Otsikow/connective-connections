@@ -1,23 +1,46 @@
-src/
- └─ pages/
-     └─ Admin/
-         ├─ Admin.tsx                  ← Main unified dashboard
-         ├─ components/
-         │    ├─ AdminTopBar.tsx
-         │    ├─ AdminSafetyAlerts.tsx
-         │    ├─ AdminModerationActions.tsx
-         │    ├─ AdminAISummary.tsx
-         │    ├─ AdminPerformanceMonitor.tsx
-         │    ├─ AdminCommunicationsPulse.tsx
-         │    ├─ AdminSafetyFeatures.tsx
-         │    ├─ AdminSupportCenter.tsx
-         │    ├─ AdminBulkEmail.tsx
-         │    └─ AdminUserManagement.tsx
-         └─ hooks/
-              └─ useAdminPagination.ts
-// src/pages/Admin/hooks/useAdminPagination.ts
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import BackButton from "@/components/BackButton";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { usePageTitle } from "@/hooks/usePageTitle";
+import {
+  Activity,
+  Ban,
+  Bell,
+  Bot,
+  CheckCircle2,
+  FileText,
+  Gauge,
+  Hammer,
+  Headset,
+  IdCard,
+  Mail,
+  MessageCircleWarning,
+  MessageSquare,
+  Reply,
+  Shield,
+  ShieldAlert,
+  ShieldCheck,
+  Sparkles,
+  Tag,
+  TrendingDown,
+  TrendingUp,
+  UploadCloud,
+  UserX,
+  Users,
+  Send,
+} from "lucide-react";
 
-import { useState } from "react";
+import { Profile } from "./types/Profile";
 
 export function useAdminPagination<T>(data: T[], pageSize = 10) {
   const [page, setPage] = useState(1);
@@ -39,61 +62,6 @@ export function useAdminPagination<T>(data: T[], pageSize = 10) {
     goTo,
   };
 }
-// src/pages/Admin/components/AdminSection.tsx
-
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-
-interface AdminSectionProps {
-  title: string;
-  icon?: React.ReactNode;
-  description?: string;
-  children: React.ReactNode;
-}
-
-const AdminSection = ({ title, icon, description, children }: AdminSectionProps) => {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg">
-          {icon} {title}
-        </CardTitle>
-        {description && (
-          <p className="text-sm text-muted-foreground">{description}</p>
-        )}
-      </CardHeader>
-      <CardContent>{children}</CardContent>
-    </Card>
-  );
-};
-
-export default AdminSection;
-// src/pages/Admin/Admin.tsx
-
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { usePageTitle } from "@/hooks/usePageTitle";
-
-// Layout + UI
-import BackButton from "@/components/BackButton";
-import { Badge } from "@/components/ui/badge";
-import { Shield } from "lucide-react";
-
-// Hooks & Types
-import { Profile } from "./types/Profile";
-
-// Sections
-import AdminSafetyAlerts from "./components/AdminSafetyAlerts";
-import AdminModerationActions from "./components/AdminModerationActions";
-import AdminAISummary from "./components/AdminAISummary";
-import AdminPerformanceMonitor from "./components/AdminPerformanceMonitor";
-import AdminCommunicationsPulse from "./components/AdminCommunicationsPulse";
-import AdminSafetyFeatures from "./components/AdminSafetyFeatures";
-import AdminSupportCenter from "./components/AdminSupportCenter";
-import AdminBulkEmail from "./components/AdminBulkEmail";
-import AdminUserManagement from "./components/AdminUserManagement";
-
 
 /* ------------------------------------------------------------ */
 /* MAIN ADMIN PAGE */
@@ -268,8 +236,6 @@ const Admin = () => {
 
 export default Admin;
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ShieldAlert, MessageCircleWarning, UserX } from "lucide-react";
 
 const AdminSafetyAlerts = () => {
   const alerts = [
@@ -337,9 +303,6 @@ const AdminSafetyAlerts = () => {
   );
 };
 
-export default AdminSafetyAlerts;
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { CheckCircle2, Hammer, ShieldCheck } from "lucide-react";
 
 const AdminModerationActions = () => {
   const actions = [
@@ -392,10 +355,7 @@ const AdminModerationActions = () => {
   );
 };
 
-export default AdminModerationActions;
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Activity, Gauge, TrendingUp, TrendingDown } from "lucide-react";
 
 const AdminAISummary = () => {
   const metrics = [
@@ -459,9 +419,6 @@ const AdminAISummary = () => {
   );
 };
 
-export default AdminAISummary;
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 
 const AdminPerformanceMonitor = () => {
   const stats = [
@@ -510,10 +467,7 @@ const AdminPerformanceMonitor = () => {
   );
 };
 
-export default AdminPerformanceMonitor;
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Bell, Mail, MessageSquare, Users } from "lucide-react";
 
 const AdminCommunicationsPulse = () => {
   const stats = [
@@ -570,11 +524,7 @@ const AdminCommunicationsPulse = () => {
   );
 };
 
-export default AdminCommunicationsPulse;
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, Bot, Ban, IdCard } from "lucide-react";
 
 const AdminSafetyFeatures = () => {
   const features = [
@@ -644,21 +594,7 @@ const AdminSafetyFeatures = () => {
   );
 };
 
-export default AdminSafetyFeatures;
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-
-import {
-  Bot,
-  Sparkles,
-  Reply,
-  Tag,
-  FileText,
-  CheckCircle2,
-  UploadCloud,
-  Headset,
-} from "lucide-react";
 
 const AdminSupportCenter = () => {
   const tools = [
@@ -788,13 +724,6 @@ const AdminSupportCenter = () => {
   );
 };
 
-export default AdminSupportCenter;
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
 
 interface AdminBulkEmailProps {
   emailSubject: string;
@@ -857,21 +786,7 @@ const AdminBulkEmail = ({
   );
 };
 
-export default AdminBulkEmail;
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableHeader,
-  TableHead,
-  TableRow,
-  TableBody,
-  TableCell,
-} from "@/components/ui/table";
-
-import { useAdminPagination } from "../hooks/useAdminPagination";
 
 interface Profile {
   id: string;
@@ -1000,7 +915,6 @@ const AdminUserManagement = ({
   );
 };
 
-export default AdminUserManagement;
 
 
 
