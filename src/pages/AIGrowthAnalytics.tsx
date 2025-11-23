@@ -15,7 +15,7 @@ import {
   BellRing,
   Brain,
   Flame,
-  LineChart,
+  LineChart as LineChartIcon,
   Megaphone,
   MessageSquare,
   Radar,
@@ -24,6 +24,20 @@ import {
   Target,
   Users,
 } from "lucide-react";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import BackButton from "@/components/BackButton";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
@@ -186,6 +200,56 @@ const AIGrowthAnalytics = () => {
     },
   ];
 
+  const safetyTrend = useMemo(
+    () => [
+      { month: "Jan", reports: 18, resolved: 15, response: 42 },
+      { month: "Feb", reports: 22, resolved: 20, response: 38 },
+      { month: "Mar", reports: 24, resolved: 22, response: 36 },
+      { month: "Apr", reports: 21, resolved: 20, response: 35 },
+      { month: "May", reports: 19, resolved: 18, response: 34 },
+      { month: "Jun", reports: 20, resolved: 19, response: 33 },
+      { month: "Jul", reports: 23, resolved: 22, response: 32 },
+      { month: "Aug", reports: 25, resolved: 24, response: 31 },
+      { month: "Sep", reports: 21, resolved: 20, response: 30 },
+      { month: "Oct", reports: 19, resolved: 18, response: 29 },
+      { month: "Nov", reports: 18, resolved: 17, response: 29 },
+      { month: "Dec", reports: 17, resolved: 16, response: 28 },
+    ],
+    [],
+  );
+
+  const growthTrend = useMemo(
+    () => [
+      { month: "Jan", newUsers: 320, actives: 210, pro: 62 },
+      { month: "Feb", newUsers: 360, actives: 228, pro: 68 },
+      { month: "Mar", newUsers: 420, actives: 250, pro: 74 },
+      { month: "Apr", newUsers: 450, actives: 272, pro: 80 },
+      { month: "May", newUsers: 488, actives: 295, pro: 86 },
+      { month: "Jun", newUsers: 520, actives: 312, pro: 92 },
+      { month: "Jul", newUsers: 540, actives: 330, pro: 98 },
+      { month: "Aug", newUsers: 580, actives: 348, pro: 105 },
+      { month: "Sep", newUsers: 600, actives: 360, pro: 112 },
+      { month: "Oct", newUsers: 620, actives: 375, pro: 118 },
+      { month: "Nov", newUsers: 640, actives: 388, pro: 124 },
+      { month: "Dec", newUsers: 660, actives: 402, pro: 130 },
+    ],
+    [],
+  );
+
+  const engagementTrend = useMemo(
+    () => [
+      { week: "W1", events: 42, checkIns: 31, replies: 610 },
+      { week: "W2", events: 44, checkIns: 33, replies: 640 },
+      { week: "W3", events: 45, checkIns: 34, replies: 655 },
+      { week: "W4", events: 47, checkIns: 36, replies: 670 },
+      { week: "W5", events: 48, checkIns: 37, replies: 700 },
+      { week: "W6", events: 50, checkIns: 39, replies: 725 },
+      { week: "W7", events: 52, checkIns: 41, replies: 748 },
+      { week: "W8", events: 54, checkIns: 42, replies: 760 },
+    ],
+    [],
+  );
+
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6 pb-16">
       <div className="flex items-center gap-3">
@@ -205,7 +269,7 @@ const AIGrowthAnalytics = () => {
             </CardDescription>
           </div>
           <div className="flex items-center gap-2 rounded-full border border-border/60 bg-background/70 px-4 py-2 text-sm font-medium">
-            <LineChart className="h-4 w-4 text-primary" />
+            <LineChartIcon className="h-4 w-4 text-primary" />
             Live signals refreshed 5 min ago
           </div>
         </CardHeader>
@@ -224,6 +288,166 @@ const AIGrowthAnalytics = () => {
               <Progress value={Number(stage.conversion.replace("%", ""))} className="mt-3" />
             </div>
           ))}
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+              <ShieldCheck className="h-4 w-4" />
+              Safety health over time
+            </div>
+            <CardTitle className="text-xl">Response speed and resolution</CardTitle>
+            <CardDescription>
+              Track incident reports, resolution counts, and median response time as the community scales.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="h-[320px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={safetyTrend} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: "currentColor" }} />
+                <YAxis
+                  yAxisId="left"
+                  tickFormatter={(value) => `${value}`}
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{ fill: "currentColor" }}
+                />
+                <YAxis
+                  yAxisId="right"
+                  orientation="right"
+                  tickFormatter={(value) => `${value}m`}
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{ fill: "currentColor" }}
+                />
+                <Tooltip
+                  cursor={{ stroke: "var(--border)", strokeDasharray: "4 4" }}
+                  contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))" }}
+                  labelStyle={{ color: "hsl(var(--foreground))" }}
+                />
+                <Legend />
+                <Line
+                  yAxisId="left"
+                  type="monotone"
+                  dataKey="reports"
+                  stroke="hsl(var(--destructive))"
+                  strokeWidth={2.5}
+                  activeDot={{ r: 6 }}
+                  name="Reports"
+                />
+                <Line
+                  yAxisId="left"
+                  type="monotone"
+                  dataKey="resolved"
+                  stroke="hsl(var(--primary))"
+                  strokeWidth={2.5}
+                  strokeDasharray="4 4"
+                  activeDot={{ r: 6 }}
+                  name="Resolved"
+                />
+                <Area
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="response"
+                  fill="hsl(var(--muted))"
+                  fillOpacity={0.35}
+                  stroke="hsl(var(--muted-foreground))"
+                  name="Median response (min)"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+              <LineChartIcon className="h-4 w-4" />
+              Member growth velocity
+            </div>
+            <CardTitle className="text-xl">Acquisition to Pro upgrades</CardTitle>
+            <CardDescription>
+              Visualize new users, weekly actives, and Pro conversions month over month.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="h-[320px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={growthTrend} margin={{ top: 10, right: 6, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorNewUsers" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.05} />
+                  </linearGradient>
+                  <linearGradient id="colorActives" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--accent))" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="hsl(var(--accent))" stopOpacity={0.05} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: "currentColor" }} />
+                <YAxis tickLine={false} axisLine={false} tick={{ fill: "currentColor" }} />
+                <Tooltip
+                  cursor={{ stroke: "var(--border)", strokeDasharray: "4 4" }}
+                  contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))" }}
+                  labelStyle={{ color: "hsl(var(--foreground))" }}
+                />
+                <Legend />
+                <Area
+                  type="monotone"
+                  dataKey="newUsers"
+                  name="New users"
+                  stroke="hsl(var(--primary))"
+                  fillOpacity={1}
+                  fill="url(#colorNewUsers)"
+                  strokeWidth={2.5}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="actives"
+                  name="Weekly actives"
+                  stroke="hsl(var(--accent))"
+                  fillOpacity={1}
+                  fill="url(#colorActives)"
+                  strokeWidth={2.5}
+                />
+                <Line type="monotone" dataKey="pro" name="Pro upgrades" stroke="hsl(var(--foreground))" strokeWidth={2} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+            <Megaphone className="h-4 w-4" />
+            Community engagement momentum
+          </div>
+          <CardTitle className="text-xl">Event check-ins and conversation volume</CardTitle>
+          <CardDescription>
+            How weekly events, check-ins, and replies move together as the community grows.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={engagementTrend} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis dataKey="week" tickLine={false} axisLine={false} tick={{ fill: "currentColor" }} />
+              <YAxis tickLine={false} axisLine={false} tick={{ fill: "currentColor" }} />
+              <Tooltip
+                cursor={{ fill: "hsl(var(--muted) / 0.3)" }}
+                contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))" }}
+                labelStyle={{ color: "hsl(var(--foreground))" }}
+              />
+              <Legend />
+              <Bar dataKey="events" name="Events hosted" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="checkIns" name="Check-ins" fill="hsl(var(--accent))" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="replies" name="Replies" fill="hsl(var(--foreground))" radius={[6, 6, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
         </CardContent>
       </Card>
 
@@ -379,7 +603,7 @@ const AIGrowthAnalytics = () => {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2 text-sm font-semibold text-primary">
-              <LineChart className="h-4 w-4" />
+              <LineChartIcon className="h-4 w-4" />
               AI Recommendation Stats
             </div>
             <CardTitle className="text-xl">Quality signals that compound</CardTitle>
