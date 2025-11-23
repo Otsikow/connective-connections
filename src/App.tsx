@@ -34,7 +34,7 @@ import HostDashboard from "./pages/HostDashboard";
 import HostEvent from "./pages/HostEvent";
 import HostCreateExperience from "./pages/HostCreateExperience";
 import Dashboard from "./pages/Dashboard";
-import AISystemControls from "./pages/AISystemControls";
+import AICoach from "./pages/AICoach"; // <- resolved branch conflict
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback";
 import Privacy from "./pages/legal/Privacy";
@@ -53,7 +53,6 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-
         <Route path="/" element={<PageTransition><Splash /></PageTransition>} />
         <Route path="/signup" element={<PageTransition><Signup /></PageTransition>} />
         <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
@@ -62,6 +61,7 @@ const AnimatedRoutes = () => {
 
         <Route path="/home" element={<PageTransition><Home /></PageTransition>} />
         <Route path="/concierge" element={<PageTransition><Concierge /></PageTransition>} />
+
         <Route path="/events" element={<PageTransition><Events /></PageTransition>} />
         <Route path="/events/:eventId" element={<PageTransition><EventDetail /></PageTransition>} />
         <Route path="/host/create-event" element={<PageTransition><CreateEvent /></PageTransition>} />
@@ -69,22 +69,24 @@ const AnimatedRoutes = () => {
         <Route path="/matches" element={<PageTransition><Matches /></PageTransition>} />
         <Route path="/friend-finder" element={<PageTransition><FriendFinder /></PageTransition>} />
 
-        {/* Legacy + Dynamic Messages */}
+        {/* Messages */}
         <Route path="/messages" element={<PageTransition><Messages /></PageTransition>} />
         <Route path="/messages/:id" element={<PageTransition><Messages /></PageTransition>} />
 
         <Route path="/community" element={<PageTransition><Community /></PageTransition>} />
         <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
+
         <Route path="/admin" element={<PageTransition><Admin /></PageTransition>} />
-        <Route
-          path="/admin/moderation"
-          element={<PageTransition><ModerationPanel /></PageTransition>}
-        />
+        <Route path="/admin/moderation" element={<PageTransition><ModerationPanel /></PageTransition>} />
+
         <Route path="/host-dashboard" element={<PageTransition><HostDashboard /></PageTransition>} />
         <Route path="/host/create-experience" element={<PageTransition><HostCreateExperience /></PageTransition>} />
         <Route path="/host/event" element={<PageTransition><HostEvent /></PageTransition>} />
+
         <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
-        <Route path="/ai-system-controls" element={<PageTransition><AISystemControls /></PageTransition>} />
+
+        {/* AI */}
+        <Route path="/ai-coach" element={<PageTransition><AICoach /></PageTransition>} />
 
         {/* Legal */}
         <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />
@@ -105,23 +107,21 @@ const AnimatedRoutes = () => {
 const AppContent = () => {
   const location = useLocation();
   const { isLoading: isSubscriptionLoading } = useSubscription();
+
   const showFooter = location.pathname === "/home";
 
   const [isBooting, setIsBooting] = useState(true);
   const [hasCompletedInitialLoad, setHasCompletedInitialLoad] = useState(false);
 
-  /* Smooth initial boot delay */
   useEffect(() => {
     const timer = window.setTimeout(() => setIsBooting(false), 500);
     return () => window.clearTimeout(timer);
   }, []);
 
-  /* Scroll restore on route change */
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
   }, [location.pathname]);
 
-  /* Subscription loading handling */
   useEffect(() => {
     if (hasCompletedInitialLoad) return;
 
@@ -145,10 +145,10 @@ const AppContent = () => {
 
   const showLoadingScreen = isBooting || !hasCompletedInitialLoad;
 
-  const layoutStyles = {
+  const layoutStyles: CSSProperties = {
     "--bottom-nav-height": "5.75rem",
     "--top-bar-height": "4rem",
-  } as CSSProperties;
+  };
 
   return (
     <div className="relative flex min-h-screen flex-col" style={layoutStyles}>
@@ -158,9 +158,9 @@ const AppContent = () => {
       <main
         className="flex-1 px-4 pt-6 sm:px-6 lg:px-8"
         style={{
-          paddingTop: "calc(var(--top-bar-height, 4rem) + 0.75rem)",
+          paddingTop: "calc(var(--top-bar-height) + 0.75rem)",
           paddingBottom:
-            "calc(var(--bottom-nav-height, 5.75rem) + env(safe-area-inset-bottom, 0px))",
+            "calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px))",
         }}
       >
         <AnimatedRoutes />
