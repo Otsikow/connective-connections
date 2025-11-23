@@ -11,6 +11,18 @@ const sections = [
     ],
   },
   {
+    title: "Eligibility and account security",
+    paragraphs: [
+      "You must be at least 18 years old and legally able to enter into this agreement. You are responsible for safeguarding your login credentials and devices used to access the platform.",
+    ],
+    listTitle: "You agree to",
+    listItems: [
+      "Use your legal name and accurate professional details when creating or updating your profile.",
+      "Enable reasonable security controls on your devices and log out of shared computers.",
+      "Inform us immediately at security@connective.app if you suspect unauthorised access or credential compromise.",
+    ],
+  },
+  {
     title: "Use of the platform",
     paragraphs: [
       "You may use Connective's digital products to discover events, manage your membership, and collaborate with other members. Automated scraping, resale of invitations, or sharing member data without consent is strictly prohibited.",
@@ -23,17 +35,44 @@ const sections = [
     ],
   },
   {
+    title: "Events and guest conduct",
+    paragraphs: [
+      "Invitations are personal to you unless explicitly stated otherwise. You are responsible for the conduct of any guests you bring to Connective experiences.",
+      "Hosts or venue partners may remove attendees who disrupt programming, compromise safety, or violate applicable laws or policies.",
+    ],
+  },
+  {
     title: "Payments and billing",
     paragraphs: [
       "Premium plans renew automatically each billing cycle. Cancel anytime from your dashboard or by contacting billing@connective.app prior to renewal.",
       "All fees are non-refundable once the cycle has begun unless required by applicable law.",
     ],
+    listTitle: "Billing expectations",
+    listItems: [
+      "Taxes and payment processing fees may apply based on your jurisdiction.",
+      "We may suspend or limit access for invoices that remain unpaid after the due date.",
+      "If we make a pricing change, we will provide reasonable notice before your next renewal.",
+    ],
   },
   {
-    title: "Liability",
+    title: "Content and intellectual property",
+    paragraphs: [
+      "Connective owns or licenses all platform content, branding, and underlying technology. Members retain ownership of content they submit but grant Connective a limited licence to display it for community purposes.",
+      "Do not reproduce or distribute materials from Connective events or the platform without express permission from the rightful owner.",
+    ],
+  },
+  {
+    title: "Liability and disclaimers",
     paragraphs: [
       "We curate experiences with reputable partners and employ robust security measures. However, Connective is not responsible for personal arrangements or agreements made directly between members.",
-      "To the fullest extent permitted by law, Connective's liability is limited to the fees paid during the previous twelve months.",
+      "To the fullest extent permitted by law, Connective's liability is limited to the fees paid during the previous twelve months. We provide the service on an \"as-is\" basis and disclaim warranties not expressly stated in these terms.",
+    ],
+  },
+  {
+    title: "Changes to these terms",
+    paragraphs: [
+      "We may update these terms to reflect product changes or legal requirements. If an update materially impacts your rights, we will notify you in advance through the app or by email.",
+      "Continued use of the platform after the effective date of changes constitutes acceptance. If you do not agree, you may cancel your membership and discontinue use before the effective date.",
     ],
   },
 ];
