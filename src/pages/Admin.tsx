@@ -17,19 +17,32 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
+import { Progress } from "@/components/ui/progress";
+
 import {
   Shield,
   Mail,
   Users,
   Settings,
   Send,
-  Music,
-  Timer,
-  Globe,
   ShieldCheck,
   Bot,
   Ban,
   IdCard,
+  AlertTriangle,
+  Activity,
+  Gauge,
+  TrendingDown,
+  TrendingUp,
+  ListChecks,
+  Bell,
+  Power,
+  Settings2,
+  CheckCircle2,
+
+  // AI Content Audit icons
   MessageCircleWarning,
   ShieldAlert,
   ImageOff,
@@ -38,6 +51,7 @@ import {
   ClipboardList,
   Eye,
 } from "lucide-react";
+
 import BackButton from "@/components/BackButton";
 import {
   Table,
@@ -48,6 +62,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+
+/* ------------------------------------------------------------ */
+/* TYPES */
+/* ------------------------------------------------------------ */
+
 interface Profile {
   id: string;
   full_name: string | null;
@@ -56,6 +75,11 @@ interface Profile {
   roles: string[];
   loading?: boolean;
 }
+
+
+/* ------------------------------------------------------------ */
+/* MAIN ADMIN COMPONENT */
+/* ------------------------------------------------------------ */
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -66,73 +90,45 @@ const Admin = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   const [emailSubject, setEmailSubject] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
 
-  const adminMetrics = [
-    {
-      title: "Total Users",
-      value: profiles.length.toString(),
-      icon: Users,
-    },
-    {
-      title: "Email Campaigns",
-      value: "—",
-      icon: Mail,
-    },
-    {
-      title: "System Status",
-      value: "Online",
-      icon: Settings,
-      valueClass: "text-green-600",
-    },
-  ];
+  const [autoModerationEnabled, setAutoModerationEnabled] = useState(true);
+  const [strictnessLevel, setStrictnessLevel] = useState(68);
 
-  const platformStats = [
-    {
-      title: "Songs in the library",
-      value: "390",
-      icon: Music,
-    },
-    {
-      title: "Worshippers online",
-      value: "1",
-      icon: Timer,
-    },
-    {
-      title: "Countries reached",
-      value: "9",
-      icon: Globe,
-    },
-  ];
+
+  /* ------------------------------------------------------------ */
+  /* STATIC AI DATA — MERGED FROM BOTH VERSIONS (C OPTION) */
+  /* ------------------------------------------------------------ */
 
   const safetyFeatures = [
     {
       title: "Harassment & threat detection",
       description:
-        "Automatically scans messages for harassment, threats, or inappropriate content and issues AI-crafted warnings before it escalates.",
-      badge: "Auto-warn live",
+        "Automatically scans all messages for harassment, threats, or manipulation, and issues AI-guided warnings.",
+      badge: "Auto-warn",
       icon: ShieldCheck,
     },
     {
       title: "Suspicious account flagging",
       description:
-        "Surfaces risky behavior patterns, flags suspect accounts, and queues them for instant follow-up or automated suspension.",
-      badge: "Risk scoring on",
+        "Detects risky behaviour patterns and temporarily restricts accounts until reviewed.",
+      badge: "Risk scoring",
       icon: Ban,
     },
     {
       title: "Bot, spam, and scam detection",
       description:
-        "Filters bots and spammers in real time so community spaces stay clean without hands-on moderation.",
+        "Blocks bots and spam attempts in real time using behavioural AI.",
       badge: "Active filter",
       icon: Bot,
     },
     {
       title: "ID & profile verification",
       description:
-        "Auto-verifies ID documents and profile photos to keep hosts and attendees safe with minimal manual review.",
+        "AI-assisted ID verification to protect hosts and attendees.",
       badge: "Auto-verify",
       icon: IdCard,
     },
@@ -142,123 +138,200 @@ const Admin = () => {
     "Toxic language",
     "Harassment",
     "Manipulation",
-    "Exploitation",
-    "Romance/sexual content (if forbidden)",
+    "Romance/sexual content (restricted)",
     "Hate speech / discrimination",
-    "Spam or bot-like behaviour",
+    "Spam / bot behaviour",
   ];
 
   const flaggedEventSignals = [
-    "Dangerous events",
-    "Misleading descriptions",
-    "Extremism/religious misuse",
-    "Misinformation",
-    "Fraudulent invitations",
+    "Dangerous activities",
+    "Misleading event descriptions",
+    "Extremism / ideological misuse",
+    "Fraudulent or deceptive events",
   ];
 
   const flaggedImageSignals = [
-    "NSFW detection",
-    "Fake/AI-face detection",
-    "ID mismatch",
-    "Suspicious patterns",
+    "NSFW or borderline unsafe",
+    "AI/fake-face detection",
+    "ID mismatch detection",
+    "Suspicious pattern anomalies",
   ];
 
   const aiTools = [
     "View full conversation context",
-    "Auto-highlight toxic messages",
-    "AI rewrite suggestions (\"suggest a safer event description\")",
+    "Auto-highlight unsafe phrases",
+    "AI rewrite suggestions for safer content",
   ];
 
+
+  const safetyAlerts = {
+    flaggedChats: { today: 18, week: 94, month: 376, change: "+12% vs yesterday" },
+    flaggedAccounts: { value: 7, note: "AI paused 3 high-risk profiles" },
+    urgent: [
+      {
+        title: "Escalated conversation flagged",
+        description: "Repeated harassment triggers in a Community group.",
+        severity: "High",
+      },
+      {
+        title: "Multiple spam reports on @nightowl",
+        description: "Four independent reports within one hour.",
+        severity: "Medium",
+      },
+    ],
+  };
+
+
+  const moderationActions = [
+    { label: "Auto-warnings sent", value: 42, delta: "+9% vs avg" },
+    { label: "Auto-suspensions", value: 6, delta: "2 pending reviews" },
+    { label: "AI-resolved issues", value: 31, delta: "78% resolved automatically" },
+  ];
+
+  const predictionSummary = [
+    {
+      title: "User activity trends",
+      value: "+14%",
+      description: "Engagement increased after AI onboarding nudges.",
+      icon: Activity,
+      accent: "text-emerald-500",
+    },
+    {
+      title: "Event success predictions",
+      value: "82%",
+      description: "AI forecasts strong turnout for upcoming events.",
+      icon: Gauge,
+      accent: "text-indigo-500",
+    },
+    {
+      title: "Communities growing",
+      value: "6",
+      description: "Wellness, Tech Makers, and Nightlife communities are rising.",
+      icon: TrendingUp,
+      accent: "text-blue-500",
+    },
+    {
+      title: "Expected churn rate",
+      value: "3.1%",
+      description: "Reduced by 0.7% thanks to proactive interventions.",
+      icon: TrendingDown,
+      accent: "text-amber-500",
+    },
+  ];
+
+  const performanceMetrics = [
+    {
+      title: "Accuracy of AI moderation",
+      value: 92,
+      goal: "Goal: 95%+",
+      accent: "[&>*]:bg-emerald-500",
+    },
+    {
+      title: "False positives detected",
+      value: 6,
+      goal: "Dropping week-on-week",
+      accent: "[&>*]:bg-amber-500",
+    },
+    {
+      title: "Pending human reviews",
+      value: 14,
+      goal: "Goal: < 10",
+      accent: "[&>*]:bg-blue-500",
+    },
+  ];
+
+  const communitySignals = {
+    growing: [
+      { name: "Tech Makers", change: "+18% active", detail: "AI mentorship sessions trending up." },
+      { name: "Wellness Weekly", change: "+11% joins", detail: "Meditation and breathwork events." },
+    ],
+    declining: [
+      { name: "Weekend Adventurers", change: "-6% check-ins", detail: "Weather impact detected." },
+      { name: "City Nightlife", change: "-4% RSVPs", detail: "AI recommends host spotlight boosts." },
+    ],
+  };
+
+
+  /* ------------------------------------------------------------ */
+  /* VERIFY ADMIN ACCESS */
+  /* ------------------------------------------------------------ */
+
   useEffect(() => {
-    const verifyAdmin = async () => {
+    const verify = async () => {
       try {
-        const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser();
-
-        if (userError || !user) {
+        const { data: { user }, error: userErr } = await supabase.auth.getUser();
+        if (userErr || !user) {
           setError("Not authenticated");
-          setLoading(false);
-          return;
+          return setLoading(false);
         }
 
-        const { data: isAdmin, error: roleError } = await supabase
-          .rpc("has_role", {
-            _user_id: user.id,
-            _role: "admin",
-          });
+        const { data: isAdminValue, error: roleErr } = await supabase.rpc("has_role", {
+          _user_id: user.id,
+          _role: "admin",
+        });
 
-        if (roleError) {
-          console.error("Error checking admin role:", roleError);
-          setError("Failed to verify admin status");
-          setLoading(false);
-          return;
+        if (roleErr) {
+          setError("Failed verifying role");
+          return setLoading(false);
         }
-
-        if (!isAdmin) {
-          setError("Access denied: admin only");
-          setLoading(false);
-          return;
+        if (!isAdminValue) {
+          setError("Access denied: Admins only");
+          return setLoading(false);
         }
 
         setIsAdmin(true);
         await loadProfiles();
-      } catch (err) {
-        console.error("Error verifying admin:", err);
+      } catch {
         setError("Failed to verify admin");
       } finally {
         setLoading(false);
       }
     };
 
-    verifyAdmin();
+    verify();
   }, []);
+
+
+  /* ------------------------------------------------------------ */
+  /* LOAD PROFILES */
+  /* ------------------------------------------------------------ */
 
   const loadProfiles = async () => {
     try {
-      setLoading(true);
-      const { data, error: profilesError } = await supabase
+      const { data, error } = await supabase
         .from("profiles")
         .select("id, full_name, created_at, email, user_roles(role)")
         .order("created_at", { ascending: false });
 
-      if (profilesError) {
-        throw profilesError;
-      }
+      if (error) throw error;
 
       setProfiles(
-        (data ?? []).map((profile) => ({
-          id: profile.id,
-          full_name: profile.full_name,
-          created_at: profile.created_at ?? null,
-          // @ts-ignore
-          roles: profile.user_roles.map((r) => r.role) ?? [],
-          email: profile.email || null,
+        (data ?? []).map((p: any) => ({
+          id: p.id,
+          full_name: p.full_name,
+          created_at: p.created_at,
+          email: p.email ?? null,
+          roles: p.user_roles?.map((r: any) => r.role) ?? [],
         }))
       );
-    } catch (err) {
-      console.error("Error loading profiles:", err);
+    } catch {
       toast({
         title: "Error",
-        description: "Failed to load profiles",
+        description: "Failed to load user profiles",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
-  const handleRoleChange = async (
-    userId: string,
-    role: string,
-    action: "assign" | "revoke"
-  ) => {
+
+  /* ------------------------------------------------------------ */
+  /* ROLE MANAGEMENT */
+  /* ------------------------------------------------------------ */
+
+  const handleRoleChange = async (userId: string, role: string, action: "assign" | "revoke") => {
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) throw new Error("Not logged in");
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
 
       const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/manage-user-role`,
@@ -272,82 +345,75 @@ const Admin = () => {
         }
       );
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to update role");
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error);
 
-      toast({
-        title: "Success",
-        description: data.message || `Role ${action === "assign" ? "assigned" : "revoked"}.`,
-      });
-
+      toast({ title: "Success", description: result.message });
       await loadProfiles();
-    } catch (err: unknown) {
-      console.error("Role change error:", err);
-      const description =
-        err instanceof Error ? err.message : "Failed to update role";
+    } catch (err: any) {
       toast({
         title: "Error",
-        description,
+        description: err.message || "Failed to update role",
         variant: "destructive",
       });
     }
   };
 
+
+  /* ------------------------------------------------------------ */
+  /* ON-DEMAND EMAIL FETCH */
+  /* ------------------------------------------------------------ */
+
   const fetchUserEmail = async (userId: string, index: number) => {
     try {
-      setProfiles((prev) =>
+      setProfiles(prev =>
         prev.map((p, i) => (i === index ? { ...p, loading: true } : p))
       );
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) throw new Error("Not logged in");
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
 
       const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-user-email?userId=${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${session.access_token}` } }
       );
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to load email");
+      if (!res.ok) throw new Error(data.error);
 
-      setProfiles((prev) =>
+      setProfiles(prev =>
         prev.map((p, i) =>
           i === index ? { ...p, email: data.email, loading: false } : p
         )
       );
-    } catch (err) {
-      console.error("Error fetching email:", err);
-      setProfiles((prev) =>
+    } catch {
+      setProfiles(prev =>
         prev.map((p, i) =>
-          i === index
-            ? { ...p, email: "Error loading email", loading: false }
-            : p
+          i === index ? { ...p, email: "Error loading email", loading: false } : p
         )
       );
     }
   };
 
+
+  /* ------------------------------------------------------------ */
+  /* BULK EMAIL SENDER */
+  /* ------------------------------------------------------------ */
+
   const handleSendBulkEmail = async () => {
     if (!emailSubject.trim() || !emailMessage.trim()) {
-      toast({
-        title: "Validation Error",
-        description: "Please provide both subject and message",
+      return toast({
+        title: "Error",
+        description: "Subject and message are required.",
         variant: "destructive",
       });
-      return;
     }
 
     try {
       setSendingEmail(true);
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) throw new Error("Not logged in");
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
 
       const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-bulk-email`,
@@ -365,381 +431,20 @@ const Admin = () => {
       );
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to send email");
+      if (!res.ok) throw new Error(data.error);
 
-      toast({ title: "Success", description: data.message || "Emails sent!" });
+      toast({ title: "Success", description: data.message });
+
       setEmailSubject("");
       setEmailMessage("");
-    } catch (err: unknown) {
-      console.error("Bulk email error:", err);
-      const description =
-        err instanceof Error ? err.message : "Failed to send emails";
+
+    } catch (err: any) {
       toast({
         title: "Error",
-        description,
+        description: err.message || "Failed to send emails",
         variant: "destructive",
       });
     } finally {
       setSendingEmail(false);
     }
   };
-
-  if (loading)
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Shield className="w-8 h-8 animate-spin text-primary" />
-        <p className="ml-2 text-muted-foreground">Verifying admin access…</p>
-      </div>
-    );
-
-  if (error || !isAdmin)
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Card className="w-full max-w-md text-center">
-          <CardHeader>
-            <CardTitle className="text-destructive">Access Denied</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground mb-4">
-              {error || "You do not have admin privileges."}
-            </p>
-            <Button onClick={() => navigate("/home")} className="w-full">
-              Return Home
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-
-  return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-        <BackButton fallbackPath="/home" />
-        <h1 className="text-lg font-semibold flex items-center gap-2">
-          <Shield className="w-5 h-5" /> Admin Dashboard
-        </h1>
-        <Badge variant="secondary">Admin Access</Badge>
-      </div>
-
-      <div className="p-4 sm:p-6 space-y-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {adminMetrics.map(({ title, value, icon: Icon, valueClass }) => (
-            <Card key={title}>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Icon className="w-4 h-4" /> {title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className={`text-2xl font-bold ${valueClass ?? ""}`}>{value}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <Card className="border-dashed">
-          <CardHeader>
-            <CardTitle className="text-base font-semibold text-muted-foreground">
-              Community reach overview
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              {platformStats.map(({ title, value, icon: Icon }) => (
-                <div
-                  key={title}
-                  className="flex flex-col items-center justify-center rounded-xl border border-border/50 bg-muted/30 p-4 text-center"
-                >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <p className="mt-3 text-3xl font-bold">{value}</p>
-                  <p className="mt-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                    {title}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-primary/30 bg-primary/5">
-          <CardHeader>
-            <CardTitle className="flex flex-col gap-1">
-              <span className="flex items-center gap-2 text-primary">
-                <ShieldCheck className="w-5 h-5" /> AI-powered safety & behaviour monitoring
-              </span>
-              <p className="text-sm font-normal text-muted-foreground">
-                Automated guardrails that scan conversations, flag risks, and protect the community so you don't have to manually police behaviour.
-              </p>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              {safetyFeatures.map(({ title, description, badge, icon: Icon }) => (
-                <div
-                  key={title}
-                  className="rounded-xl border border-primary/20 bg-background/60 p-4 shadow-sm"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                        <Icon className="h-5 w-5" />
-                      </span>
-                      <p className="font-semibold leading-tight">{title}</p>
-                    </div>
-                    <Badge variant="outline" className="border-primary/40 text-primary">
-                      {badge}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
-              Admin impact: dashboard stays clean, high-risk accounts are auto-suspended, and users get friendly AI nudges before issues reach your inbox.
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border/80">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MessageCircleWarning className="w-5 h-5" />
-              <span>AI Message & Content Audit</span>
-            </CardTitle>
-            <CardDescription>
-              Review flagged chats, images, events, and bios with AI guardrails so moderators can triage faster.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-lg border bg-muted/40 p-4 space-y-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <ShieldAlert className="w-5 h-5 text-destructive" />
-                    <div>
-                      <p className="font-semibold">Flagged Messages</p>
-                      <p className="text-sm text-muted-foreground">High-risk chat signals queued for moderation.</p>
-                    </div>
-                  </div>
-                  <Badge variant="outline">Chats</Badge>
-                </div>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {flaggedMessageSignals.map((item) => (
-                    <div
-                      key={item}
-                      className="flex items-center gap-2 rounded-md border border-border/70 bg-background/80 px-3 py-2 text-sm"
-                    >
-                      <ClipboardList className="w-4 h-4 text-primary" />
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-lg border bg-muted/40 p-4 space-y-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <FileWarning className="w-5 h-5 text-amber-500" />
-                    <div>
-                      <p className="font-semibold">Flagged Event Descriptions</p>
-                      <p className="text-sm text-muted-foreground">Unsafe or misleading event language under review.</p>
-                    </div>
-                  </div>
-                  <Badge variant="outline">Events</Badge>
-                </div>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {flaggedEventSignals.map((item) => (
-                    <div
-                      key={item}
-                      className="flex items-center gap-2 rounded-md border border-border/70 bg-background/80 px-3 py-2 text-sm"
-                    >
-                      <ClipboardList className="w-4 h-4 text-primary" />
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-lg border bg-muted/40 p-4 space-y-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <ImageOff className="w-5 h-5 text-purple-500" />
-                    <div>
-                      <p className="font-semibold">Flagged Images</p>
-                      <p className="text-sm text-muted-foreground">Visual safety signals for photos and profile media.</p>
-                    </div>
-                  </div>
-                  <Badge variant="outline">Images</Badge>
-                </div>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {flaggedImageSignals.map((item) => (
-                    <div
-                      key={item}
-                      className="flex items-center gap-2 rounded-md border border-border/70 bg-background/80 px-3 py-2 text-sm"
-                    >
-                      <ClipboardList className="w-4 h-4 text-primary" />
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-lg border bg-muted/40 p-4 space-y-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <Eye className="w-5 h-5 text-sky-500" />
-                    <div>
-                      <p className="font-semibold">AI Tools</p>
-                      <p className="text-sm text-muted-foreground">Built-in assists for faster decisions and safer edits.</p>
-                    </div>
-                  </div>
-                  <Badge variant="outline">Moderation</Badge>
-                </div>
-                <div className="space-y-2">
-                  {aiTools.map((item) => (
-                    <div
-                      key={item}
-                      className="flex items-center gap-2 rounded-md border border-border/70 bg-background/80 px-3 py-2 text-sm"
-                    >
-                      <Sparkles className="w-4 h-4 text-primary" />
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm text-primary">
-              This audit view keeps toxic language, unsafe events, and risky images contained while AI suggests safer alternatives before moderators take action.
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Send className="w-5 h-5" /> Send Bulk Email
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="subject">Subject</Label>
-              <Input
-                id="subject"
-                value={emailSubject}
-                onChange={(e) => setEmailSubject(e.target.value)}
-                placeholder="Email subject"
-              />
-            </div>
-            <div>
-              <Label htmlFor="message">Message</Label>
-              <Textarea
-                id="message"
-                value={emailMessage}
-                onChange={(e) => setEmailMessage(e.target.value)}
-                placeholder="Email message"
-                rows={6}
-              />
-            </div>
-            <Button
-              onClick={handleSendBulkEmail}
-              disabled={sendingEmail}
-              className="w-full"
-            >
-              {sendingEmail
-                ? "Sending..."
-                : `Send to ${profiles.length || 0} users`}
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="w-5 h-5" /> User Management
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-md border overflow-x-auto">
-              <Table className="min-w-[700px]">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Joined</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {profiles.map((profile, index) => {
-                    const isProfileAdmin = profile.roles.includes("admin");
-                    return (
-                    <TableRow key={profile.id}>
-                      <TableCell>{profile.full_name || "N/A"}</TableCell>
-                      <TableCell>
-                        <Badge variant={isProfileAdmin ? "default" : "secondary"}>
-                          {isProfileAdmin ? "ADMIN" : "USER"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {profile.email ? (
-                          profile.email
-                        ) : profile.loading ? (
-                          <span className="text-muted-foreground">Loading…</span>
-                        ) : (
-                          <Button
-                            variant="link"
-                            size="sm"
-                            onClick={() => fetchUserEmail(profile.id, index)}
-                          >
-                            Load Email
-                          </Button>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {profile.created_at
-                          ? new Date(profile.created_at).toLocaleDateString()
-                          : "Unknown"}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {isProfileAdmin ? (
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() =>
-                              handleRoleChange(profile.id, "admin", "revoke")
-                            }
-                          >
-                            Revoke Admin
-                          </Button>
-                        ) : (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              handleRoleChange(profile.id, "admin", "assign")
-                            }
-                          >
-                            Make Admin
-                          </Button>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  )})}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-};
-
-export default Admin;
