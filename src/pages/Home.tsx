@@ -53,6 +53,21 @@ const Home = () => {
   //     FEATURE DEFINITIONS
   // ------------------------ //
   const features = [{
+    value: "concierge",
+    title: "AI Friendship Concierge",
+    desc: "Tell us who you want to meet—concierge matches, schedules, and sends invites for you.",
+    highlight: "Handles invites, venues, and follow-ups automatically.",
+    badge: "bg-purple-500/15 text-purple-600",
+    cta: {
+      path: "/concierge",
+      requiresAuth: true
+    },
+    spotlight: {
+      avatar: generateAvatarUrl("Concierge spotlight"),
+      name: "Concierge",
+      tagline: "Organised your last three meetups"
+    }
+  }, {
     value: "friends",
     title: "Find your kind of people",
     desc: "Tell us what lights you up and we introduce you to people already on your wavelength.",
@@ -266,7 +281,7 @@ const Home = () => {
         {/* FEATURES */}
         <section>
           <Tabs value={activeFeature} onValueChange={setActiveFeature}>
-            <TabsList className="grid grid-cols-4 mb-4 rounded-full bg-slate-100 p-1 dark:bg-slate-800">
+            <TabsList className="mb-4 grid grid-cols-2 rounded-full bg-slate-100 p-1 dark:bg-slate-800 sm:grid-cols-3 lg:grid-cols-5">
               {features.map(f => <TabsTrigger key={f.value} value={f.value} className="rounded-full text-sm data-[state=active]:bg-white data-[state=active]:text-black">
                   {f.title.split(" ")[0]}
                 </TabsTrigger>)}
