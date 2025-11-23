@@ -20,7 +20,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { CalendarCheck, MapPin, MessageCircle, Sparkles, Users } from "lucide-react";
+import {
+  Bot,
+  CalendarCheck,
+  MapPin,
+  MessageCircle,
+  Sparkles,
+  Users,
+} from "lucide-react";
 import BackButton from "@/components/BackButton";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useToast } from "@/hooks/use-toast";
@@ -708,6 +715,10 @@ const FriendFinder = () => {
     [ensureChatAccess, navigate],
   );
 
+  const handleOpenConcierge = useCallback(() => {
+    navigate("/concierge");
+  }, [navigate]);
+
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border">
@@ -770,6 +781,37 @@ const FriendFinder = () => {
               {primaryChatLabel}
             </Button>
           </CardFooter>
+        </Card>
+
+        <Card className="relative overflow-hidden border border-border/60 bg-gradient-to-br from-primary/10 via-card to-background shadow-sm">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.08),transparent_35%),radial-gradient(circle_at_80%_0,rgba(255,255,255,0.08),transparent_30%)]" />
+          <CardHeader className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="mt-1 rounded-full bg-primary/15 p-2 text-primary shadow-inner">
+                <Bot className="h-5 w-5" />
+              </div>
+              <div className="space-y-1">
+                <CardTitle className="text-base">Concierge for curated intros</CardTitle>
+                <CardDescription>
+                  Let the Friendship Concierge handle invites, timing, and nudges
+                  so your matches turn into real plans faster.
+                </CardDescription>
+                <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                  <span className="rounded-full bg-background/80 px-3 py-1">Plan-ready suggestions</span>
+                  <span className="rounded-full bg-background/80 px-3 py-1">Coordinated meetups</span>
+                  <span className="rounded-full bg-background/80 px-3 py-1">Smart follow-ups</span>
+                </div>
+              </div>
+            </div>
+            <Button
+              size="lg"
+              className="w-full gap-2 text-base font-semibold sm:w-auto"
+              onClick={handleOpenConcierge}
+            >
+              <Bot className="h-4 w-4" />
+              Open Concierge
+            </Button>
+          </CardHeader>
         </Card>
 
         <Card className="border border-border/60">

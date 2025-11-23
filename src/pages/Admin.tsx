@@ -1,52 +1,877 @@
-// src/pages/Admin.tsx
-import { useState, useEffect } from "react";
+src/
+ └─ pages/
+     └─ Admin/
+         ├─ Admin.tsx                  ← Main unified dashboard
+         ├─ components/
+         │    ├─ AdminTopBar.tsx
+         │    ├─ AdminSafetyAlerts.tsx
+         │    ├─ AdminModerationActions.tsx
+         │    ├─ AdminAISummary.tsx
+         │    ├─ AdminPerformanceMonitor.tsx
+         │    ├─ AdminCommunicationsPulse.tsx
+         │    ├─ AdminSafetyFeatures.tsx
+         │    ├─ AdminSupportCenter.tsx
+         │    ├─ AdminBulkEmail.tsx
+         │    └─ AdminUserManagement.tsx
+         └─ hooks/
+              └─ useAdminPagination.ts
+// src/pages/Admin/hooks/useAdminPagination.ts
+
+import { useState } from "react";
+
+export function useAdminPagination<T>(data: T[], pageSize = 10) {
+  const [page, setPage] = useState(1);
+
+  const totalPages = Math.ceil(data.length / pageSize);
+
+  const paginated = data.slice((page - 1) * pageSize, page * pageSize);
+
+  const next = () => setPage((p) => Math.min(p + 1, totalPages));
+  const prev = () => setPage((p) => Math.max(p - 1, 1));
+  const goTo = (p: number) => setPage(Math.min(Math.max(1, p), totalPages));
+
+  return {
+    page,
+    totalPages,
+    paginated,
+    next,
+    prev,
+    goTo,
+  };
+}
+// src/pages/Admin/components/AdminSection.tsx
+
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+
+interface AdminSectionProps {
+  title: string;
+  icon?: React.ReactNode;
+  description?: string;
+  children: React.ReactNode;
+}
+
+const AdminSection = ({ title, icon, description, children }: AdminSectionProps) => {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-lg">
+          {icon} {title}
+        </CardTitle>
+        {description && (
+          <p className="text-sm text-muted-foreground">{description}</p>
+        )}
+      </CardHeader>
+      <CardContent>{children}</CardContent>
+    </Card>
+  );
+};
+
+export default AdminSection;
+// src/pages/Admin/Admin.tsx
+
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+// Layout + UI
+import BackButton from "@/components/BackButton";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Shield } from "lucide-react";
+
+// Hooks & Types
+import { Profile } from "./types/Profile";
+
+// Sections
+import AdminSafetyAlerts from "./components/AdminSafetyAlerts";
+import AdminModerationActions from "./components/AdminModerationActions";
+import AdminAISummary from "./components/AdminAISummary";
+import AdminPerformanceMonitor from "./components/AdminPerformanceMonitor";
+import AdminCommunicationsPulse from "./components/AdminCommunicationsPulse";
+import AdminSafetyFeatures from "./components/AdminSafetyFeatures";
+import AdminSupportCenter from "./components/AdminSupportCenter";
+import AdminBulkEmail from "./components/AdminBulkEmail";
+import AdminUserManagement from "./components/AdminUserManagement";
+
+
+/* ------------------------------------------------------------ */
+/* MAIN ADMIN PAGE */
+/* ------------------------------------------------------------ */
+
+const Admin = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  usePageTitle("Admin Command Center");
+
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+
+  /* ------------------------------------------------------------ */
+  /* ADMIN VERIFICATION */
+  /* ------------------------------------------------------------ */
+
+  useEffect(() => {
+    const verifyAdmin = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+          setError("Not authenticated");
+          return setLoading(false);
+        }
+
+        const { data: isAdminValue } = await supabase.rpc("has_role", {
+          _user_id: user.id,
+          _role: "admin",
+        });
+
+        if (!isAdminValue) {
+          setError("Access denied: Admin only");
+          return setLoading(false);
+        }
+
+        setIsAdmin(true);
+        await loadProfiles();
+      } catch {
+        setError("Failed to verify admin");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifyAdmin();
+  }, []);
+
+  /* ------------------------------------------------------------ */
+  /* LOAD USER PROFILES */
+  /* ------------------------------------------------------------ */
+
+  const loadProfiles = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, full_name, created_at, email, user_roles(role)")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      setProfiles(
+        (data ?? []).map((p: any) => ({
+          id: p.id,
+          full_name: p.full_name,
+          created_at: p.created_at,
+          email: p.email ?? null,
+          roles: p.user_roles?.map((r: any) => r.role) ?? [],
+        }))
+      );
+    } catch {
+      toast({
+        title: "Error loading profiles",
+        description: "Could not load user records.",
+        variant: "destructive",
+      });
+    }
+  };
+
+
+  /* ------------------------------------------------------------ */
+  /* ACCESS GUARDS */
+  /* ------------------------------------------------------------ */
+
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Shield className="w-6 h-6 mr-2 animate-spin text-primary" />
+        <p className="text-muted-foreground">Verifying admin access…</p>
+      </div>
+    );
+
+  if (error || !isAdmin)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="border rounded-lg p-6 max-w-md text-center">
+          <p className="text-red-500 font-semibold mb-2">Access Denied</p>
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <button
+            onClick={() => navigate("/home")}
+            className="px-4 py-2 bg-primary text-white rounded-md"
+          >
+            Return Home
+          </button>
+        </div>
+      </div>
+    );
+
+
+  /* ------------------------------------------------------------ */
+  /* PAGE RENDER */
+  /* ------------------------------------------------------------ */
+
+  return (
+    <div className="min-h-screen bg-background pb-20">
+
+      {/* TOP HEADER */}
+      <div className="bg-card border-b px-4 py-4 flex items-center justify-between sticky top-0 z-20">
+        <BackButton fallbackPath="/home" />
+
+        <h1 className="text-lg font-semibold flex items-center gap-2">
+          <Shield className="w-5 h-5 text-primary" />
+          Admin Dashboard
+        </h1>
+
+        <Badge variant="secondary">Admin</Badge>
+      </div>
+
+      {/* MAIN CONTENT */}
+      <div className="p-4 space-y-6">
+
+        {/* 1. Safety Alerts */}
+        <AdminSafetyAlerts />
+
+        {/* 2. Moderation Summary */}
+        <AdminModerationActions />
+
+        {/* 3. AI Prediction Summary */}
+        <AdminAISummary />
+
+        {/* 4. AI Performance Monitor */}
+        <AdminPerformanceMonitor />
+
+        {/* 5. Communications Pulse */}
+        <AdminCommunicationsPulse />
+
+        {/* 6. Safety Features */}
+        <AdminSafetyFeatures />
+
+        {/* 7. AI Support Center */}
+        <AdminSupportCenter />
+
+        {/* 8. Bulk Email */}
+        <AdminBulkEmail
+          profiles={profiles}
+        />
+
+        {/* 9. User Management (Paginated) */}
+        <AdminUserManagement
+          profiles={profiles}
+          onRefresh={loadProfiles}
+        />
+
+      </div>
+    </div>
+  );
+};
+
+export default Admin;
+
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { ShieldAlert, MessageCircleWarning, UserX } from "lucide-react";
+
+const AdminSafetyAlerts = () => {
+  const alerts = [
+    {
+      title: "Escalated conversation flagged",
+      description: "AI detected repeated harassment patterns in a group chat.",
+      severity: "High",
+      icon: MessageCircleWarning,
+    },
+    {
+      title: "Suspicious account behaviour",
+      description: "Multiple users reported @nightowl for spam-like actions.",
+      severity: "Medium",
+      icon: UserX,
+    },
+    {
+      title: "Potentially harmful event description",
+      description: "AI detected misleading or unsafe elements in a new event.",
+      severity: "Medium",
+      icon: ShieldAlert,
+    },
+  ];
+
+  const severityColor = (s: string) =>
+    s === "High"
+      ? "text-red-600 bg-red-100 dark:bg-red-900/30"
+      : "text-amber-600 bg-amber-100 dark:bg-amber-900/30";
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg font-semibold flex items-center gap-2">
+          <ShieldAlert className="w-5 h-5 text-red-500" />
+          Safety Alerts
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent className="space-y-4">
+        {alerts.map((alert, i) => (
+          <div
+            key={i}
+            className="rounded-lg border p-4 bg-card hover:bg-muted/30 transition"
+          >
+            <div className="flex items-start gap-3">
+              <alert.icon className="w-6 h-6 text-primary" />
+              <div className="flex-1">
+                <p className="font-semibold">{alert.title}</p>
+                <p className="text-sm text-muted-foreground">
+                  {alert.description}
+                </p>
+              </div>
+
+              <span
+                className={`px-2 py-1 rounded text-xs font-medium ${severityColor(
+                  alert.severity
+                )}`}
+              >
+                {alert.severity}
+              </span>
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+};
+
+export default AdminSafetyAlerts;
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { CheckCircle2, Hammer, ShieldCheck } from "lucide-react";
+
+const AdminModerationActions = () => {
+  const actions = [
+    {
+      label: "Auto-warnings sent",
+      value: 42,
+      delta: "+9% this week",
+      icon: ShieldCheck,
+    },
+    {
+      label: "Auto-suspensions",
+      value: 6,
+      delta: "2 pending reviews",
+      icon: Hammer,
+    },
+    {
+      label: "AI-resolved issues",
+      value: 31,
+      delta: "78% automated",
+      icon: CheckCircle2,
+    },
+  ];
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg font-semibold flex items-center gap-2">
+          <CheckCircle2 className="w-5 h-5 text-primary" />
+          Moderation Activity
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent className="grid gap-4 sm:grid-cols-3">
+        {actions.map((a) => (
+          <div
+            key={a.label}
+            className="rounded-lg border p-4 bg-card hover:bg-muted/20 transition"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <a.icon className="w-5 h-5 text-primary" />
+              <p className="font-medium">{a.label}</p>
+            </div>
+
+            <p className="text-3xl font-bold">{a.value}</p>
+            <p className="text-xs mt-1 text-muted-foreground">{a.delta}</p>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+};
+
+export default AdminModerationActions;
+
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Activity, Gauge, TrendingUp, TrendingDown } from "lucide-react";
+
+const AdminAISummary = () => {
+  const metrics = [
+    {
+      title: "User activity rise",
+      value: "+14%",
+      description: "Driven by AI onboarding nudges.",
+      icon: Activity,
+      accent: "text-emerald-500",
+    },
+    {
+      title: "Event success prediction",
+      value: "82%",
+      description: "Strong turnout forecast.",
+      icon: Gauge,
+      accent: "text-indigo-500",
+    },
+    {
+      title: "Communities trending up",
+      value: "6",
+      description: "AI engagement boosts working.",
+      icon: TrendingUp,
+      accent: "text-blue-500",
+    },
+    {
+      title: "Churn prediction",
+      value: "3.1%",
+      description: "Down by 0.7% after interventions.",
+      icon: TrendingDown,
+      accent: "text-amber-500",
+    },
+  ];
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg font-semibold">
+          AI Prediction Summary
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {metrics.map((m) => (
+          <div
+            key={m.title}
+            className="rounded-lg border p-4 bg-card hover:bg-muted/20 transition"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <m.icon className={`w-5 h-5 ${m.accent}`} />
+              <p className="font-medium">{m.title}</p>
+            </div>
+
+            <p className={`text-3xl font-bold ${m.accent}`}>{m.value}</p>
+            <p className="text-xs mt-1 text-muted-foreground">
+              {m.description}
+            </p>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+};
+
+export default AdminAISummary;
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+
+const AdminPerformanceMonitor = () => {
+  const stats = [
+    {
+      title: "AI moderation accuracy",
+      value: 92,
+      goal: "95% goal",
+      color: "text-emerald-500",
+    },
+    {
+      title: "False positives",
+      value: 6,
+      goal: "Dropping weekly",
+      color: "text-amber-500",
+    },
+    {
+      title: "Pending human reviews",
+      value: 14,
+      goal: "Goal < 10",
+      color: "text-blue-500",
+    },
+  ];
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg font-semibold">
+          AI Performance Monitor
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent className="space-y-6">
+        {stats.map((s) => (
+          <div key={s.title} className="space-y-2">
+            <div className="flex justify-between">
+              <p className="font-medium">{s.title}</p>
+              <p className={`font-semibold ${s.color}`}>{s.value}%</p>
+            </div>
+
+            <Progress value={s.value} className="h-2" />
+            <p className="text-xs text-muted-foreground">{s.goal}</p>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+};
+
+export default AdminPerformanceMonitor;
+
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Bell, Mail, MessageSquare, Users } from "lucide-react";
+
+const AdminCommunicationsPulse = () => {
+  const stats = [
+    {
+      label: "Messages sent today",
+      value: 482,
+      icon: MessageSquare,
+      color: "text-blue-500",
+    },
+    {
+      label: "Email campaigns this week",
+      value: 6,
+      icon: Mail,
+      color: "text-amber-500",
+    },
+    {
+      label: "New user reports",
+      value: 14,
+      icon: Bell,
+      color: "text-red-500",
+    },
+    {
+      label: "Active communities",
+      value: 23,
+      icon: Users,
+      color: "text-emerald-500",
+    },
+  ];
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg font-semibold">
+          Communications Pulse
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((s) => (
+          <div
+            key={s.label}
+            className="rounded-lg border p-4 bg-card hover:bg-muted/20 transition"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <s.icon className={`w-5 h-5 ${s.color}`} />
+              <p className="font-medium">{s.label}</p>
+            </div>
+
+            <p className={`text-3xl font-bold ${s.color}`}>{s.value}</p>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+};
+
+export default AdminCommunicationsPulse;
+
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ShieldCheck, Bot, Ban, IdCard } from "lucide-react";
+
+const AdminSafetyFeatures = () => {
+  const features = [
+    {
+      title: "Harassment & threat detection",
+      description:
+        "AI scans conversations for harassment, threats, manipulation and sends auto-warnings.",
+      badge: "Auto-warn",
+      icon: ShieldCheck,
+      color: "text-emerald-600",
+    },
+    {
+      title: "Suspicious account flagging",
+      description:
+        "AI detects risky behaviour patterns and temporarily restricts accounts.",
+      badge: "Risk scoring",
+      icon: Ban,
+      color: "text-red-600",
+    },
+    {
+      title: "Bot, spam & scam filtering",
+      description:
+        "Real-time spam/bot blocking based on behavioural patterns.",
+      badge: "Active filter",
+      icon: Bot,
+      color: "text-blue-600",
+    },
+    {
+      title: "AI-assisted ID verification",
+      description:
+        "Automatic ID checks to improve safety for meetups and events.",
+      badge: "Auto-verify",
+      icon: IdCard,
+      color: "text-amber-600",
+    },
+  ];
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg font-semibold">
+          AI Safety & Behaviour Systems
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent className="grid gap-4 sm:grid-cols-2">
+        {features.map((f) => (
+          <div
+            key={f.title}
+            className="rounded-xl border p-4 bg-card hover:bg-muted/20 transition"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-3">
+                <f.icon className={`w-7 h-7 ${f.color}`} />
+                <p className="font-semibold">{f.title}</p>
+              </div>
+              <Badge variant="secondary">{f.badge}</Badge>
+            </div>
+
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {f.description}
+            </p>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+};
+
+export default AdminSafetyFeatures;
+
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+
 import {
-  Shield,
-  Mail,
-  Users,
-  Settings,
-  Send,
-  Music,
-  Timer,
-  Globe,
-  ShieldCheck,
   Bot,
-  Ban,
-  IdCard,
-  Headset,
   Sparkles,
   Reply,
   Tag,
   FileText,
   CheckCircle2,
-  BarChart3,
   UploadCloud,
+  Headset,
 } from "lucide-react";
-import BackButton from "@/components/BackButton";
+
+const AdminSupportCenter = () => {
+  const tools = [
+    {
+      title: "AI answers support tickets",
+      description:
+        "Instant, on-brand responses to inbound questions—no need for manual typing.",
+      badge: "Instant replies",
+      icon: Bot,
+    },
+    {
+      title: "AI troubleshooting drafts",
+      description:
+        "Creates step-by-step fixes and actionable guidance for users.",
+      badge: "Auto-fix",
+      icon: Sparkles,
+    },
+    {
+      title: "AI reply suggestions",
+      description:
+        "Admins can approve automated replies in one click.",
+      badge: "1-tap approval",
+      icon: Reply,
+    },
+    {
+      title: "Auto triage (billing, login, behaviour)",
+      description:
+        "Routes every ticket into the correct workflow automatically.",
+      badge: "Smart triage",
+      icon: Tag,
+    },
+    {
+      title: "AI macros + saved replies",
+      description:
+        "Pre-written admin responses the AI can adapt on the fly.",
+      badge: "Macros",
+      icon: FileText,
+    },
+  ];
+
+  const adminActions = [
+    {
+      title: "Approve / Reject AI replies",
+      description:
+        "Human-in-the-loop protection ensures quality control for all AI outputs.",
+      badge: "Quality gate",
+      icon: CheckCircle2,
+    },
+    {
+      title: "Upload new FAQ content",
+      description:
+        "Updating policy docs or help pages trains the AI instantly.",
+      badge: "Knowledge update",
+      icon: UploadCloud,
+    },
+  ];
+
+  return (
+    <Card className="border-amber-300/40 bg-amber-50/40 dark:bg-amber-950/20">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-amber-700 dark:text-amber-200">
+          <Headset className="w-5 h-5" />
+          AI Automated Support Centre
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent className="grid gap-6 md:grid-cols-2">
+        {/* Tools */}
+        <div className="space-y-4">
+          <p className="text-sm font-semibold text-amber-700 dark:text-amber-200">
+            Tools
+          </p>
+
+          {tools.map((t) => (
+            <div
+              key={t.title}
+              className="rounded-xl border border-amber-200/60 p-4 bg-white dark:bg-amber-900/30"
+            >
+              <div className="flex items-start gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-200/40 dark:bg-amber-800/50">
+                  <t.icon className="w-5 h-5 text-amber-800 dark:text-amber-100" />
+                </span>
+
+                <div>
+                  <p className="font-semibold">{t.title}</p>
+                  <p className="text-sm text-muted-foreground">{t.description}</p>
+                </div>
+              </div>
+
+              <Badge className="mt-3 bg-amber-100 text-amber-800 dark:bg-amber-700/40 dark:text-amber-100">
+                {t.badge}
+              </Badge>
+            </div>
+          ))}
+        </div>
+
+        {/* Admin Actions */}
+        <div className="space-y-4">
+          <p className="text-sm font-semibold text-amber-700 dark:text-amber-200">
+            Admin Actions
+          </p>
+
+          {adminActions.map((a) => (
+            <div
+              key={a.title}
+              className="rounded-xl border border-amber-200/60 p-4 bg-amber-50 dark:bg-amber-900/20"
+            >
+              <div className="flex items-start gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-200/40 dark:bg-amber-800/50">
+                  <a.icon className="w-5 h-5 text-amber-800 dark:text-amber-100" />
+                </span>
+
+                <div>
+                  <p className="font-semibold">{a.title}</p>
+                  <p className="text-sm text-muted-foreground">{a.description}</p>
+                </div>
+              </div>
+
+              <Badge variant="outline" className="mt-3 border-amber-400 text-amber-700 dark:text-amber-200">
+                {a.badge}
+              </Badge>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default AdminSupportCenter;
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Send } from "lucide-react";
+
+interface AdminBulkEmailProps {
+  emailSubject: string;
+  emailMessage: string;
+  setEmailSubject: (v: string) => void;
+  setEmailMessage: (v: string) => void;
+  handleSendBulkEmail: () => void;
+  sendingEmail: boolean;
+  totalUsers: number;
+}
+
+const AdminBulkEmail = ({
+  emailSubject,
+  emailMessage,
+  setEmailSubject,
+  setEmailMessage,
+  handleSendBulkEmail,
+  sendingEmail,
+  totalUsers,
+}: AdminBulkEmailProps) => {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Send className="w-5 h-5" /> Bulk Email Sender
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent className="space-y-4">
+        <div>
+          <Label htmlFor="subject">Subject</Label>
+          <Input
+            id="subject"
+            placeholder="Email subject"
+            value={emailSubject}
+            onChange={(e) => setEmailSubject(e.target.value)}
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="message">Message</Label>
+          <Textarea
+            id="message"
+            placeholder="Write your message here…"
+            rows={6}
+            value={emailMessage}
+            onChange={(e) => setEmailMessage(e.target.value)}
+          />
+        </div>
+
+        <Button
+          className="w-full"
+          onClick={handleSendBulkEmail}
+          disabled={sendingEmail}
+        >
+          {sendingEmail ? "Sending…" : `Send to ${totalUsers} users`}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default AdminBulkEmail;
+
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
+  TableHeader,
+  TableHead,
+  TableRow,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
 } from "@/components/ui/table";
+
+import { useAdminPagination } from "../hooks/useAdminPagination";
 
 interface Profile {
   id: string;
@@ -57,681 +882,127 @@ interface Profile {
   loading?: boolean;
 }
 
-const Admin = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  usePageTitle("Admin Command Center");
+interface AdminUserManagementProps {
+  profiles: Profile[];
+  fetchUserEmail: (id: string, index: number) => void;
+  handleRoleChange: (id: string, role: string, action: "assign" | "revoke") => void;
+}
 
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [emailSubject, setEmailSubject] = useState("");
-  const [emailMessage, setEmailMessage] = useState("");
-  const [sendingEmail, setSendingEmail] = useState(false);
-
-  const adminMetrics = [
-    {
-      title: "Total Users",
-      value: profiles.length.toString(),
-      icon: Users,
-    },
-    {
-      title: "Email Campaigns",
-      value: "—",
-      icon: Mail,
-    },
-    {
-      title: "System Status",
-      value: "Online",
-      icon: Settings,
-      valueClass: "text-green-600",
-    },
-  ];
-
-  const platformStats = [
-    {
-      title: "Songs in the library",
-      value: "390",
-      icon: Music,
-    },
-    {
-      title: "Worshippers online",
-      value: "1",
-      icon: Timer,
-    },
-    {
-      title: "Countries reached",
-      value: "9",
-      icon: Globe,
-    },
-  ];
-
-  const safetyFeatures = [
-    {
-      title: "Harassment & threat detection",
-      description:
-        "Automatically scans messages for harassment, threats, or inappropriate content and issues AI-crafted warnings before it escalates.",
-      badge: "Auto-warn live",
-      icon: ShieldCheck,
-    },
-    {
-      title: "Suspicious account flagging",
-      description:
-        "Surfaces risky behavior patterns, flags suspect accounts, and queues them for instant follow-up or automated suspension.",
-      badge: "Risk scoring on",
-      icon: Ban,
-    },
-    {
-      title: "Bot, spam, and scam detection",
-      description:
-        "Filters bots and spammers in real time so community spaces stay clean without hands-on moderation.",
-      badge: "Active filter",
-      icon: Bot,
-    },
-    {
-      title: "ID & profile verification",
-      description:
-        "Auto-verifies ID documents and profile photos to keep hosts and attendees safe with minimal manual review.",
-      badge: "Auto-verify",
-      icon: IdCard,
-    },
-  ];
-
-  const supportTools = [
-    {
-      title: "AI answers support tickets",
-      description:
-        "Routes inbound questions to the AI concierge with instant, on-brand responses before a human ever needs to step in.",
-      badge: "Instant replies",
-      icon: Bot,
-    },
-    {
-      title: "AI-generated solutions",
-      description:
-        "Drafts the exact troubleshooting steps, fixes, and follow-ups so the support queue keeps moving without manual typing.",
-      badge: "Step-by-step fixes",
-      icon: Sparkles,
-    },
-    {
-      title: "Auto-reply suggestions",
-      description:
-        "Surfaces the best reply for each ticket so admins can approve and send in one click or edit before sending.",
-      badge: "One-tap send",
-      icon: Reply,
-    },
-    {
-      title: "Categorisation (billing, login, behaviour issue, events)",
-      description:
-        "Auto-triages every message into billing, login, behaviour, or events so the right workflows and SLAs trigger instantly.",
-      badge: "Smart triage",
-      icon: Tag,
-    },
-    {
-      title: "Pre-written admin responses",
-      description:
-        "Keeps a library of saved replies and macros that the AI can insert or adapt to keep responses consistent and fast.",
-      badge: "Reusable macros",
-      icon: FileText,
-    },
-  ];
-
-  const supportAdminActions = [
-    {
-      title: "Approve / Reject AI replies",
-      description:
-        "Human-in-the-loop controls that let admins greenlight or decline AI suggestions before they reach members.",
-      badge: "Quality gate",
-      icon: CheckCircle2,
-    },
-    {
-      title: "Monitor AI error rate",
-      description:
-        "Tracks when AI falls back to humans or sends corrections so you can see failure patterns and improve training data.",
-      badge: "Reliability",
-      icon: BarChart3,
-    },
-    {
-      title: "Upload new FAQ content to train AI",
-      description:
-        "Drop in updated FAQs or playbooks and the AI refreshes its knowledge so answers stay accurate as policies change.",
-      badge: "Fresh knowledge",
-      icon: UploadCloud,
-    },
-  ];
-
-  useEffect(() => {
-    const verifyAdmin = async () => {
-      try {
-        const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser();
-
-        if (userError || !user) {
-          setError("Not authenticated");
-          setLoading(false);
-          return;
-        }
-
-        const { data: isAdmin, error: roleError } = await supabase
-          .rpc("has_role", {
-            _user_id: user.id,
-            _role: "admin",
-          });
-
-        if (roleError) {
-          console.error("Error checking admin role:", roleError);
-          setError("Failed to verify admin status");
-          setLoading(false);
-          return;
-        }
-
-        if (!isAdmin) {
-          setError("Access denied: admin only");
-          setLoading(false);
-          return;
-        }
-
-        setIsAdmin(true);
-        await loadProfiles();
-      } catch (err) {
-        console.error("Error verifying admin:", err);
-        setError("Failed to verify admin");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    verifyAdmin();
-  }, []);
-
-  const loadProfiles = async () => {
-    try {
-      setLoading(true);
-      const { data, error: profilesError } = await supabase
-        .from("profiles")
-        .select("id, full_name, created_at, email, user_roles(role)")
-        .order("created_at", { ascending: false });
-
-      if (profilesError) {
-        throw profilesError;
-      }
-
-      setProfiles(
-        (data ?? []).map((profile) => ({
-          id: profile.id,
-          full_name: profile.full_name,
-          created_at: profile.created_at ?? null,
-          // @ts-ignore
-          roles: profile.user_roles.map((r) => r.role) ?? [],
-          email: profile.email || null,
-        }))
-      );
-    } catch (err) {
-      console.error("Error loading profiles:", err);
-      toast({
-        title: "Error",
-        description: "Failed to load profiles",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRoleChange = async (
-    userId: string,
-    role: string,
-    action: "assign" | "revoke"
-  ) => {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) throw new Error("Not logged in");
-
-      const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/manage-user-role`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({ userId, role, action }),
-        }
-      );
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to update role");
-
-      toast({
-        title: "Success",
-        description: data.message || `Role ${action === "assign" ? "assigned" : "revoked"}.`,
-      });
-
-      await loadProfiles();
-    } catch (err: unknown) {
-      console.error("Role change error:", err);
-      const description =
-        err instanceof Error ? err.message : "Failed to update role";
-      toast({
-        title: "Error",
-        description,
-        variant: "destructive",
-      });
-    }
-  };
-
-  const fetchUserEmail = async (userId: string, index: number) => {
-    try {
-      setProfiles((prev) =>
-        prev.map((p, i) => (i === index ? { ...p, loading: true } : p))
-      );
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) throw new Error("Not logged in");
-
-      const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-user-email?userId=${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        }
-      );
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to load email");
-
-      setProfiles((prev) =>
-        prev.map((p, i) =>
-          i === index ? { ...p, email: data.email, loading: false } : p
-        )
-      );
-    } catch (err) {
-      console.error("Error fetching email:", err);
-      setProfiles((prev) =>
-        prev.map((p, i) =>
-          i === index
-            ? { ...p, email: "Error loading email", loading: false }
-            : p
-        )
-      );
-    }
-  };
-
-  const handleSendBulkEmail = async () => {
-    if (!emailSubject.trim() || !emailMessage.trim()) {
-      toast({
-        title: "Validation Error",
-        description: "Please provide both subject and message",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      setSendingEmail(true);
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) throw new Error("Not logged in");
-
-      const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-bulk-email`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
-            subject: emailSubject,
-            message: emailMessage,
-          }),
-        }
-      );
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to send email");
-
-      toast({ title: "Success", description: data.message || "Emails sent!" });
-      setEmailSubject("");
-      setEmailMessage("");
-    } catch (err: unknown) {
-      console.error("Bulk email error:", err);
-      const description =
-        err instanceof Error ? err.message : "Failed to send emails";
-      toast({
-        title: "Error",
-        description,
-        variant: "destructive",
-      });
-    } finally {
-      setSendingEmail(false);
-    }
-  };
-
-  if (loading)
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Shield className="w-8 h-8 animate-spin text-primary" />
-        <p className="ml-2 text-muted-foreground">Verifying admin access…</p>
-      </div>
-    );
-
-  if (error || !isAdmin)
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Card className="w-full max-w-md text-center">
-          <CardHeader>
-            <CardTitle className="text-destructive">Access Denied</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground mb-4">
-              {error || "You do not have admin privileges."}
-            </p>
-            <Button onClick={() => navigate("/home")} className="w-full">
-              Return Home
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
+const AdminUserManagement = ({
+  profiles,
+  fetchUserEmail,
+  handleRoleChange,
+}: AdminUserManagementProps) => {
+  const { paginated, page, totalPages, next, prev } =
+    useAdminPagination(profiles, 10);
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-        <BackButton fallbackPath="/home" />
-        <h1 className="text-lg font-semibold flex items-center gap-2">
-          <Shield className="w-5 h-5" /> Admin Dashboard
-        </h1>
-        <Badge variant="secondary">Admin Access</Badge>
-      </div>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">User Management</CardTitle>
+      </CardHeader>
 
-      <div className="p-4 sm:p-6 space-y-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {adminMetrics.map(({ title, value, icon: Icon, valueClass }) => (
-            <Card key={title}>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Icon className="w-4 h-4" /> {title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className={`text-2xl font-bold ${valueClass ?? ""}`}>{value}</p>
-              </CardContent>
-            </Card>
-          ))}
+      <CardContent className="space-y-4">
+        <div className="rounded-md border overflow-x-auto">
+          <Table className="min-w-[780px]">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Joined</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
+              {paginated.map((profile, index) => {
+                const isAdmin = profile.roles.includes("admin");
+
+                return (
+                  <TableRow key={profile.id}>
+                    <TableCell>{profile.full_name ?? "N/A"}</TableCell>
+
+                    <TableCell>
+                      <Badge variant={isAdmin ? "default" : "secondary"}>
+                        {isAdmin ? "ADMIN" : "USER"}
+                      </Badge>
+                    </TableCell>
+
+                    <TableCell>
+                      {profile.email ? (
+                        profile.email
+                      ) : profile.loading ? (
+                        <span className="text-muted-foreground">Loading…</span>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="link"
+                          onClick={() => fetchUserEmail(profile.id, index)}
+                        >
+                          Load Email
+                        </Button>
+                      )}
+                    </TableCell>
+
+                    <TableCell>
+                      {profile.created_at
+                        ? new Date(profile.created_at).toLocaleDateString()
+                        : "Unknown"}
+                    </TableCell>
+
+                    <TableCell className="text-right">
+                      {isAdmin ? (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() =>
+                            handleRoleChange(profile.id, "admin", "revoke")
+                          }
+                        >
+                          Revoke Admin
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() =>
+                            handleRoleChange(profile.id, "admin", "assign")
+                          }
+                        >
+                          Make Admin
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
         </div>
 
-        <Card className="border-dashed">
-          <CardHeader>
-            <CardTitle className="text-base font-semibold text-muted-foreground">
-              Community reach overview
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              {platformStats.map(({ title, value, icon: Icon }) => (
-                <div
-                  key={title}
-                  className="flex flex-col items-center justify-center rounded-xl border border-border/50 bg-muted/30 p-4 text-center"
-                >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <p className="mt-3 text-3xl font-bold">{value}</p>
-                  <p className="mt-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                    {title}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Pagination Controls */}
+        <div className="flex items-center justify-between pt-2">
+          <Button variant="outline" disabled={page === 1} onClick={prev}>
+            Previous
+          </Button>
 
-        <Card className="border-primary/30 bg-primary/5">
-          <CardHeader>
-            <CardTitle className="flex flex-col gap-1">
-              <span className="flex items-center gap-2 text-primary">
-                <ShieldCheck className="w-5 h-5" /> AI-powered safety & behaviour monitoring
-              </span>
-              <p className="text-sm font-normal text-muted-foreground">
-                Automated guardrails that scan conversations, flag risks, and protect the community so you don't have to manually police behaviour.
-              </p>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              {safetyFeatures.map(({ title, description, badge, icon: Icon }) => (
-                <div
-                  key={title}
-                  className="rounded-xl border border-primary/20 bg-background/60 p-4 shadow-sm"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                        <Icon className="h-5 w-5" />
-                      </span>
-                      <p className="font-semibold leading-tight">{title}</p>
-                    </div>
-                    <Badge variant="outline" className="border-primary/40 text-primary">
-                      {badge}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
-                </div>
-              ))}
-            </div>
+          <p className="text-sm text-muted-foreground">
+            Page <strong>{page}</strong> of <strong>{totalPages}</strong>
+          </p>
 
-            <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
-              Admin impact: dashboard stays clean, high-risk accounts are auto-suspended, and users get friendly AI nudges before issues reach your inbox.
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-amber-200/60 bg-gradient-to-b from-amber-50/60 via-background to-background shadow-sm dark:border-amber-900/60 dark:from-amber-950/20">
-          <CardHeader>
-            <CardTitle className="flex flex-col gap-1">
-              <span className="flex items-center gap-2 text-amber-700 dark:text-amber-200">
-                <Headset className="w-5 h-5" /> AI Automated Support Centre
-              </span>
-              <p className="text-sm font-normal text-muted-foreground">This makes support almost hands-free.</p>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-amber-700 dark:text-amber-200">Tools</p>
-                  <Badge variant="outline" className="border-amber-200/80 text-amber-700 dark:border-amber-800/80 dark:text-amber-200">
-                    AI responses
-                  </Badge>
-                </div>
-                <div className="space-y-3">
-                  {supportTools.map(({ title, description, badge, icon: Icon }) => (
-                    <div
-                      key={title}
-                      className="rounded-xl border border-amber-200/80 bg-white/60 p-3 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/50 dark:border-amber-900/60 dark:bg-amber-950/30"
-                    >
-                      <div className="flex items-start gap-3">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/15 text-amber-700 dark:bg-amber-900/60 dark:text-amber-100">
-                          <Icon className="h-5 w-5" />
-                        </span>
-                        <div className="space-y-1">
-                          <p className="font-semibold leading-tight">{title}</p>
-                          <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
-                        </div>
-                      </div>
-                      <Badge variant="secondary" className="mt-3 bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/60 dark:text-amber-100">
-                        {badge}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-amber-700 dark:text-amber-200">Admin actions</p>
-                  <Badge variant="outline" className="border-amber-200/80 text-amber-700 dark:border-amber-800/80 dark:text-amber-200">
-                    Control & QA
-                  </Badge>
-                </div>
-                <div className="space-y-3">
-                  {supportAdminActions.map(({ title, description, badge, icon: Icon }) => (
-                    <div
-                      key={title}
-                      className="rounded-xl border border-amber-200/80 bg-amber-50/70 p-3 shadow-sm dark:border-amber-900/60 dark:bg-amber-950/25"
-                    >
-                      <div className="flex items-start gap-3">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/15 text-amber-700 dark:bg-amber-900/60 dark:text-amber-100">
-                          <Icon className="h-5 w-5" />
-                        </span>
-                        <div className="space-y-1">
-                          <p className="font-semibold leading-tight">{title}</p>
-                          <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
-                        </div>
-                      </div>
-                      <Badge variant="outline" className="mt-3 border-amber-200/80 text-amber-700 dark:border-amber-800/80 dark:text-amber-200">
-                        {badge}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-lg border border-amber-200/80 bg-amber-50/80 px-4 py-3 text-sm text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-100">
-              Impact: AI handles the bulk of support with human guardrails, giving admins faster first response times, consistent tone, and a feedback loop to keep training data fresh.
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Send className="w-5 h-5" /> Send Bulk Email
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="subject">Subject</Label>
-              <Input
-                id="subject"
-                value={emailSubject}
-                onChange={(e) => setEmailSubject(e.target.value)}
-                placeholder="Email subject"
-              />
-            </div>
-            <div>
-              <Label htmlFor="message">Message</Label>
-              <Textarea
-                id="message"
-                value={emailMessage}
-                onChange={(e) => setEmailMessage(e.target.value)}
-                placeholder="Email message"
-                rows={6}
-              />
-            </div>
-            <Button
-              onClick={handleSendBulkEmail}
-              disabled={sendingEmail}
-              className="w-full"
-            >
-              {sendingEmail
-                ? "Sending..."
-                : `Send to ${profiles.length || 0} users`}
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="w-5 h-5" /> User Management
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-md border overflow-x-auto">
-              <Table className="min-w-[700px]">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Joined</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {profiles.map((profile, index) => {
-                    const isProfileAdmin = profile.roles.includes("admin");
-                    return (
-                    <TableRow key={profile.id}>
-                      <TableCell>{profile.full_name || "N/A"}</TableCell>
-                      <TableCell>
-                        <Badge variant={isProfileAdmin ? "default" : "secondary"}>
-                          {isProfileAdmin ? "ADMIN" : "USER"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {profile.email ? (
-                          profile.email
-                        ) : profile.loading ? (
-                          <span className="text-muted-foreground">Loading…</span>
-                        ) : (
-                          <Button
-                            variant="link"
-                            size="sm"
-                            onClick={() => fetchUserEmail(profile.id, index)}
-                          >
-                            Load Email
-                          </Button>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {profile.created_at
-                          ? new Date(profile.created_at).toLocaleDateString()
-                          : "Unknown"}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {isProfileAdmin ? (
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() =>
-                              handleRoleChange(profile.id, "admin", "revoke")
-                            }
-                          >
-                            Revoke Admin
-                          </Button>
-                        ) : (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              handleRoleChange(profile.id, "admin", "assign")
-                            }
-                          >
-                            Make Admin
-                          </Button>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  )})}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+          <Button variant="outline" disabled={page === totalPages} onClick={next}>
+            Next
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
-export default Admin;
+export default AdminUserManagement;
+
+
+
+
+
