@@ -42,6 +42,12 @@ import {
   Flame,
   ArrowRight,
   Medal,
+  Target,
+  ShieldCheck,
+  AlertTriangle,
+  Lightbulb,
+  Users2,
+  Wand2,
   type LucideIcon,
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
@@ -237,6 +243,99 @@ const Dashboard = () => {
     },
   ];
 
+  const eventPredictions = [
+    {
+      name: "Design Sprint Weekend",
+      timing: "Fri, Oct 20 • 6:30 PM",
+      location: "Innovation Hub",
+      successProbability: 82,
+      expectedAttendance: 78,
+      recommended: ["Product leads", "UX mentors"],
+      tip: "Send a build-a-thon prompt 48 hours before to lock in team pairings.",
+    },
+    {
+      name: "Creators Circle Salon",
+      timing: "Thu, Oct 26 • 7:00 PM",
+      location: "Studio Collective",
+      successProbability: 76,
+      expectedAttendance: 64,
+      recommended: ["Community builders", "Storytellers"],
+      tip: "Highlight past speaker clips—boosts RSVP confidence for new guests.",
+    },
+    {
+      name: "Wellness Sunrise Hike",
+      timing: "Sat, Oct 28 • 7:00 AM",
+      location: "Trailhead Park",
+      successProbability: 91,
+      expectedAttendance: 32,
+      recommended: ["Wellness cohort", "First-time joiners"],
+      tip: "Auto-send gear checklist + rideshare matches tonight to reduce day-of drops.",
+    },
+  ];
+
+  const venuePerformance = [
+    {
+      name: "Studio Collective",
+      bestFor: "Workshops & salons",
+      safetyScore: 9.4,
+      lift: "+12% repeat attendance",
+      suggestion: "Hold creative labs here twice monthly; pairs well with maker circles.",
+    },
+    {
+      name: "Innovation Hub",
+      bestFor: "Founder roundtables",
+      safetyScore: 9.1,
+      lift: "+18% RSVP-to-show",
+      suggestion: "Book the atrium for demo nights with capped invite lists.",
+    },
+    {
+      name: "Trailhead Park",
+      bestFor: "Outdoor wellness",
+      safetyScore: 8.7,
+      lift: "+22% new member discovery",
+      suggestion: "Sunrise start times keep the vibe calm and introspective.",
+    },
+  ];
+
+  const groupDynamics = [
+    {
+      segment: "Design Sprint Weekend crews",
+      compatibility: "High alignment across product + research tracks",
+      watchouts: "Two overlapping mentor requests—assign co-leads to prevent bottlenecks.",
+      vibe: "Maker-forward, balanced mix of introverts/extroverts",
+    },
+    {
+      segment: "Creators Circle Salon",
+      compatibility: "Strong creative chemistry; repeat attendees mentoring new voices",
+      watchouts: "One guest prefers small groups—add a quiet breakout circle.",
+      vibe: "Reflective with high storytelling energy",
+    },
+    {
+      segment: "Wellness Sunrise Hike",
+      compatibility: "Shared wellness interests; 6 first-timers matched with trail guides",
+      watchouts: "Early start drop-off risk—send accountability buddy pairs.",
+      vibe: "Grounded and restorative",
+    },
+  ];
+
+  const adminActions = [
+    {
+      title: "Add AI suggestions to events",
+      description: "Insert turnout boosts and pacing tips directly into the event brief.",
+      cta: "Push suggestions",
+    },
+    {
+      title: "Auto-invite users to events",
+      description: "Target members with matching interests and proximity for higher show rates.",
+      cta: "Review invites",
+    },
+    {
+      title: "Approve AI-created meetup ideas",
+      description: "Curate three fresh formats sourced from member sentiment and gaps.",
+      cta: "Approve ideas",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/40">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-10">
@@ -421,6 +520,163 @@ const Dashboard = () => {
               </Button>
             </CardFooter>
           </Card>
+        </section>
+
+        <section className="grid gap-6 xl:grid-cols-3">
+          <Card className="border-border/60 xl:col-span-2">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <CardTitle className="text-2xl">AI event insights & predictions</CardTitle>
+                  <CardDescription>
+                    Forecast turnout, nudge the right members, and keep momentum high.
+                  </CardDescription>
+                </div>
+                <Badge variant="outline" className="rounded-full border-primary/40 text-primary">
+                  <Sparkles className="mr-1 h-3.5 w-3.5" /> Live predictions
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {eventPredictions.map((event) => (
+                <div
+                  key={event.name}
+                  className="space-y-3 rounded-2xl border border-border/60 bg-muted/40 p-4 shadow-sm"
+                >
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <p className="text-sm font-semibold">{event.name}</p>
+                      <p className="text-xs text-muted-foreground">{event.timing}</p>
+                      <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                        <MapPin className="h-3.5 w-3.5" /> {event.location}
+                      </div>
+                    </div>
+                    <Badge className="w-fit rounded-full bg-primary/10 text-primary">
+                      <Target className="mr-1 h-3.5 w-3.5" /> {event.successProbability}% success odds
+                    </Badge>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span className="flex items-center gap-2 text-primary">
+                        <Target className="h-4 w-4" /> Success probability
+                      </span>
+                      <span className="font-semibold text-primary">{event.successProbability}%</span>
+                    </div>
+                    <Progress value={event.successProbability} className="h-2" />
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <div className="rounded-xl bg-background/70 p-3">
+                      <p className="text-xs text-muted-foreground">Expected attendance</p>
+                      <p className="mt-1 flex items-center gap-2 text-sm font-semibold">
+                        <Users2 className="h-4 w-4 text-primary" />
+                        {event.expectedAttendance} guests
+                      </p>
+                    </div>
+                    <div className="rounded-xl bg-background/70 p-3">
+                      <p className="text-xs text-muted-foreground">People recommended to join</p>
+                      <div className="mt-1 flex flex-wrap gap-2 text-xs font-medium text-primary">
+                        {event.recommended.map((person) => (
+                          <span key={person} className="rounded-full bg-primary/10 px-2 py-1">
+                            {person}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="rounded-xl bg-background/70 p-3">
+                      <p className="text-xs text-muted-foreground">AI tip to improve turnout</p>
+                      <p className="mt-1 flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
+                        <Lightbulb className="mt-0.5 h-4 w-4 text-primary" />
+                        {event.tip}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <div className="space-y-6">
+            <Card className="border-border/60">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xl">Locations performance</CardTitle>
+                <CardDescription>Best-performing venues with safety signals.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {venuePerformance.map((venue) => (
+                  <div
+                    key={venue.name}
+                    className="space-y-2 rounded-2xl border border-border/60 bg-muted/50 p-4"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <p className="text-sm font-semibold">{venue.name}</p>
+                        <p className="text-xs text-muted-foreground">Best for: {venue.bestFor}</p>
+                        <p className="mt-1 text-xs font-medium text-primary">{venue.lift}</p>
+                      </div>
+                      <div className="flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                        {venue.safetyScore} safety
+                      </div>
+                    </div>
+                    <p className="text-xs leading-relaxed text-muted-foreground">{venue.suggestion}</p>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/60">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xl">Group dynamics AI analysis</CardTitle>
+                <CardDescription>Compatibility, friction risks, and vibe checks.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {groupDynamics.map((group) => (
+                  <div
+                    key={group.segment}
+                    className="space-y-2 rounded-2xl border border-border/60 bg-muted/50 p-4"
+                  >
+                    <p className="text-sm font-semibold">{group.segment}</p>
+                    <p className="text-xs text-muted-foreground">{group.compatibility}</p>
+                    <div className="flex items-start gap-2 text-xs text-amber-700">
+                      <AlertTriangle className="mt-0.5 h-4 w-4" />
+                      <span>{group.watchouts}</span>
+                    </div>
+                    <p className="text-xs font-medium text-primary">Vibe: {group.vibe}</p>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/60">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xl">Admin tools</CardTitle>
+                <CardDescription>Let AI handle outreach and idea curation.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {adminActions.map((action) => (
+                  <div
+                    key={action.title}
+                    className="flex flex-col gap-2 rounded-xl border border-dashed border-primary/40 bg-primary/5 p-3"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold">{action.title}</p>
+                        <p className="text-xs text-muted-foreground">{action.description}</p>
+                      </div>
+                      <Wand2 className="h-4 w-4 text-primary" />
+                    </div>
+                    <Button
+                      variant="ghost"
+                      className="w-fit rounded-full px-3"
+                      onClick={() => navigate("/host-dashboard")}
+                    >
+                      {action.cta}
+                    </Button>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
         </section>
 
         <section className="grid gap-6 lg:grid-cols-3">
