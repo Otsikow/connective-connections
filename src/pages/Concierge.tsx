@@ -167,7 +167,7 @@ const Concierge = () => {
 
   return (
     <div className="space-y-6 pb-16">
-      <BackButton label="Home" to="/home" />
+      <BackButton fallbackPath="/home">Home</BackButton>
 
       <div className="flex items-start justify-between gap-4">
         <div>

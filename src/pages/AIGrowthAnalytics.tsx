@@ -189,7 +189,7 @@ const AIGrowthAnalytics = () => {
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6 pb-16">
       <div className="flex items-center gap-3">
-        <BackButton label="Back" />
+        <BackButton>Back</BackButton>
         <Badge className="bg-gradient-to-r from-primary to-primary/70 text-primary-foreground">
           Growth & Engagement
         </Badge>
