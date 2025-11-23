@@ -4,8 +4,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
+import { Textarea } from '@/components/ui/textarea'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import { Loader2, Mail, Users, Search } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
+
+const emailSchema = z.object({
+  subject: z.string().trim().min(1, 'Subject is required').max(150, 'Subject is too long (max 150 characters)'),
+  content: z.string().trim().min(1, 'Content is required').max(4000, 'Content is too long (max 4000 characters)'),
+})
+
+type EmailFormValues = z.infer<typeof emailSchema>
 
 interface UserEmail {
   id: string
@@ -28,6 +42,18 @@ const UserManagement = () => {
   const [total, setTotal] = useState(0)
   const [currentPage, setCurrentPage] = useState(0)
   const [limit] = useState(20)
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false)
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
+  const [selectedUser, setSelectedUser] = useState<UserEmail | null>(null)
+  const [pendingEmail, setPendingEmail] = useState<EmailFormValues | null>(null)
+
+  const emailForm = useForm<EmailFormValues>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: {
+      subject: '',
+      content: '',
+    },
+  })
 
   // Fetch user emails from secure server-side function
   const fetchUserEmails = async (offset: number = 0) => {
@@ -73,6 +99,9 @@ const UserManagement = () => {
 
   // Send bulk email using secure server-side function
   const sendBulkEmail = async (subject: string, content: string) => {
+    const sanitizedSubject = subject.trim()
+    const sanitizedContent = content.trim()
+
     setLoading(true)
     setError(null)
 
@@ -92,8 +121,8 @@ const UserManagement = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            subject,
-            content,
+            subject: sanitizedSubject,
+            content: sanitizedContent,
           }),
         }
       )
@@ -111,6 +140,35 @@ const UserManagement = () => {
     } finally {
       setLoading(false)
     }
+  }
+
+  const openEmailDialog = (user?: UserEmail) => {
+    setSelectedUser(user ?? null)
+    setPendingEmail(null)
+    setConfirmDialogOpen(false)
+    emailForm.reset({ subject: '', content: '' })
+    setEmailDialogOpen(true)
+  }
+
+  const handleEmailSubmit = (values: EmailFormValues) => {
+    const sanitizedValues = {
+      subject: values.subject.trim(),
+      content: values.content.trim(),
+    }
+
+    setPendingEmail(sanitizedValues)
+    setConfirmDialogOpen(true)
+  }
+
+  const handleConfirmSend = async () => {
+    if (!pendingEmail) return
+
+    await sendBulkEmail(pendingEmail.subject, pendingEmail.content)
+    setConfirmDialogOpen(false)
+    setEmailDialogOpen(false)
+    setSelectedUser(null)
+    setPendingEmail(null)
+    emailForm.reset({ subject: '', content: '' })
   }
 
   // Filter users based on search term
@@ -199,13 +257,7 @@ const UserManagement = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => {
-                            const subject = prompt('Email subject:')
-                            const content = prompt('Email content:')
-                            if (subject && content) {
-                              sendBulkEmail(subject, content)
-                            }
-                          }}
+                          onClick={() => openEmailDialog(user)}
                         >
                           <Mail className="w-4 h-4 mr-1" />
                           Send Email
@@ -249,13 +301,7 @@ const UserManagement = () => {
           <div className="pt-4 border-t">
             <h3 className="font-semibold mb-2">Bulk Actions</h3>
             <Button
-              onClick={() => {
-                const subject = prompt('Bulk email subject:')
-                const content = prompt('Bulk email content:')
-                if (subject && content) {
-                  sendBulkEmail(subject, content)
-                }
-              }}
+              onClick={() => openEmailDialog()}
               disabled={loading}
               className="w-full"
             >
@@ -265,6 +311,112 @@ const UserManagement = () => {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog
+        open={emailDialogOpen}
+        onOpenChange={(open) => {
+          setEmailDialogOpen(open)
+          if (!open) {
+            setSelectedUser(null)
+            setPendingEmail(null)
+            setConfirmDialogOpen(false)
+            emailForm.reset({ subject: '', content: '' })
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {selectedUser ? 'Send Email to User' : 'Send Bulk Email'}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedUser
+                ? `Send an email to ${selectedUser.full_name || 'this user'} (${selectedUser.email}).`
+                : 'Send an email to all users. Subject limited to 150 characters and content to 4000 characters.'}
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...emailForm}>
+            <form onSubmit={emailForm.handleSubmit(handleEmailSubmit)} className="space-y-4">
+              <FormField
+                control={emailForm.control}
+                name="subject"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Subject</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Announcement" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={emailForm.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Message</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Share updates, reminders, or announcements with your users."
+                        className="min-h-[160px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setEmailDialogOpen(false)} disabled={loading}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={loading}>
+                  Review & Send
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm email send</AlertDialogTitle>
+            <AlertDialogDescription>
+              {selectedUser
+                ? `Send this email to ${selectedUser.email}?`
+                : 'Send this email to all users?'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          {pendingEmail && (
+            <div className="space-y-3 rounded-md border p-3 text-sm">
+              <div>
+                <p className="font-semibold">Subject</p>
+                <p className="text-muted-foreground break-words">{pendingEmail.subject}</p>
+              </div>
+              <div>
+                <p className="font-semibold">Message</p>
+                <p className="text-muted-foreground whitespace-pre-wrap break-words max-h-48 overflow-y-auto">
+                  {pendingEmail.content}
+                </p>
+              </div>
+            </div>
+          )}
+
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmSend} disabled={loading} className="gap-2">
+              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+              Send Email
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
