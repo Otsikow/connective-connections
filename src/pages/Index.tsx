@@ -14,6 +14,9 @@ import {
   HeartHandshake,
   CalendarCheck,
   Smile,
+  PenLine,
+  Tags,
+  Camera,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -349,6 +352,116 @@ const Index = () => {
                     awkward silence disappears.
                   </p>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* AI PROFILE BUILDER */}
+      {/* ---------------------------------------------------------------- */}
+      <div className="px-4 pb-16 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div
+          className={cn(
+            "relative overflow-hidden p-8 sm:p-10 rounded-2xl",
+            surfaceClass,
+            isDark
+              ? "bg-gradient-to-br from-white/5 via-white/0 to-white/5"
+              : "bg-gradient-to-br from-white via-[#e8f2ff] to-white",
+          )}
+        >
+          <div className="flex flex-wrap items-center gap-3 mb-6">
+            <Badge className="bg-[#F8D57E] text-slate-950">Beta</Badge>
+            <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#F8D57E]">
+              AI Profile Builder
+            </p>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
+            <div className="space-y-4">
+              <h2 className="text-3xl font-bold">Instant perfect profile that still sounds like you.</h2>
+              <p className={cn("text-base", secondaryTextClass)}>
+                Most people write weak bios. We guide them through five quick questions, sharpen their
+                highlights, and suggest better photos—without taking away their voice.
+              </p>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
+                  <PenLine className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-semibold">5-question mini interview</p>
+                    <p className={cn("text-sm", secondaryTextClass)}>
+                      Generates a confident bio you can edit and approve in seconds.
+                    </p>
+                  </div>
+                </div>
+
+                <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
+                  <Tags className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-semibold">Smart interest tags</p>
+                    <p className={cn("text-sm", secondaryTextClass)}>
+                      Suggests the right tags and conversation hooks for your vibe.
+                    </p>
+                  </div>
+                </div>
+
+                <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
+                  <Camera className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-semibold">Photo guidance</p>
+                    <p className={cn("text-sm", secondaryTextClass)}>
+                      Recommends clearer pictures and cover photos that showcase you best.
+                    </p>
+                  </div>
+                </div>
+
+                <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
+                  <Sparkles className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-semibold">Friendship Personality Profile</p>
+                    <p className={cn("text-sm", secondaryTextClass)}>
+                      Summarizes your social energy and meetup style so matches know what to expect.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <p className={cn("text-sm", secondaryTextClass)}>
+                You stay in control: review the drafts, swap the tags you like, and choose which tips to
+                keep. The builder just makes great profiles happen faster.
+              </p>
+            </div>
+
+            <div className={cn("p-6 rounded-xl border space-y-5", isDark ? "border-white/10" : "border-slate-200")}> 
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-[#F8D57E]" />
+                  <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#F8D57E]">Preview</p>
+                </div>
+                <h3 className="text-xl font-semibold">Friend-ready profile</h3>
+                <p className={cn("text-sm", secondaryTextClass)}>
+                  Bio draft: "Seattle transplant who hosts Sunday coffee crawls and sunset park hangs.
+                  I love trying new recipes, indie films, and planning low-pressure meetups."
+                </p>
+              </div>
+
+              <div className={cn("rounded-lg p-4", isDark ? "bg-white/5" : "bg-slate-50")}> 
+                <p className="text-sm font-semibold mb-2">Friendship Personality Profile</p>
+                <ul className="space-y-2 text-sm">
+                  <li>• Social energy: Warm introvert who loves 1:1 or 3-4 person hangs</li>
+                  <li>• Ideal plans: Coffee walks, cooking nights, co-working with conversation breaks</li>
+                  <li>• Conversation sparks: Food experiments, film recs, travel hacks</li>
+                </ul>
+              </div>
+
+              <div className="rounded-lg bg-[#F8D57E]/15 border border-[#F8D57E]/30 p-4 text-sm text-slate-900">
+                <p className="font-semibold text-slate-900">Impact</p>
+                <p>
+                  Members with AI-tuned profiles see higher match rates, more replies, and faster
+                  invites to local meetups.
+                </p>
               </div>
             </div>
           </div>
