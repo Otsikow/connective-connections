@@ -5,11 +5,33 @@ import { useToast } from "@/hooks/use-toast";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import BackButton from "@/components/BackButton";
 import { Badge } from "@/components/ui/badge";
-import { Shield, ShieldAlert, Activity, Mail, Users } from "lucide-react";
+import {
+  Shield,
+  ShieldAlert,
+  Activity,
+  TrendingUp,
+  MessageSquare,
+  Lock,
+  HeadphonesIcon,
+  Mail,
+  Users,
+} from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+
+type AlertSeverity = "High" | "Medium" | "Low";
+
+interface AdminAlert {
+  id: string;
+  action: string;
+  target_user_id?: string | null;
+  created_at?: string | null;
+  admin_id?: string | null;
+  metadata?: Record<string, unknown> | null;
+  severity?: AlertSeverity;
+}
 
 interface Profile {
   id: string;
@@ -29,7 +51,8 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [moderationMetrics] = useState({
+  const [alerts, setAlerts] = useState<AdminAlert[]>([]);
+  const [moderationMetrics, setModerationMetrics] = useState({
     totalActions: 0,
     targetedActions: 0,
     last24h: 0,
@@ -41,7 +64,9 @@ const Admin = () => {
   useEffect(() => {
     const verifyAdmin = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (!user) {
           setError("Not authenticated");
           return setLoading(false);
@@ -58,7 +83,7 @@ const Admin = () => {
         }
 
         setIsAdmin(true);
-        await loadProfiles();
+        await Promise.all([loadProfiles(), loadAuditLog()]);
       } catch {
         setError("Failed to verify admin");
       } finally {
@@ -85,7 +110,7 @@ const Admin = () => {
           created_at: p.created_at,
           email: p.email ?? null,
           roles: p.user_roles?.map((r: any) => r.role) ?? [],
-        }))
+        })),
       );
     } catch {
       toast({
@@ -96,6 +121,49 @@ const Admin = () => {
     }
   };
 
+  const normalizeSeverity = (metadata?: Record<string, unknown> | null): AlertSeverity => {
+    const severity = typeof metadata?.severity === "string" ? (metadata.severity as string) : undefined;
+    if (!severity) return "Medium";
+    const normalized = severity.toLowerCase();
+    if (normalized.includes("high")) return "High";
+    if (normalized.includes("low")) return "Low";
+    return "Medium";
+  };
+
+  const loadAuditLog = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("admin_audit_log")
+        .select("id, admin_id, action, target_user_id, metadata, created_at")
+        .order("created_at", { ascending: false })
+        .limit(25);
+
+      if (error) throw error;
+
+      const normalized = (data ?? []).map((entry: any) => ({
+        ...entry,
+        severity: normalizeSeverity(entry.metadata),
+      }));
+
+      setAlerts(normalized);
+
+      const now = Date.now();
+      const dayAgo = now - 24 * 60 * 60 * 1000;
+      setModerationMetrics({
+        totalActions: normalized.length,
+        targetedActions: normalized.filter((entry) => !!entry.target_user_id).length,
+        last24h: normalized.filter((entry) =>
+          entry.created_at ? new Date(entry.created_at).getTime() >= dayAgo : false,
+        ).length,
+      });
+    } catch {
+      toast({
+        title: "Error loading admin signals",
+        description: "Could not retrieve audit log entries.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleSendBulkEmail = async () => {
     setSendingEmail(true);
@@ -117,23 +185,16 @@ const Admin = () => {
     }
   };
 
-  const handleRoleChange = async (id: string, roleType: "admin" | "moderator" | "user", action: "assign" | "revoke") => {
+  const handleRoleChange = async (id: string, role: string, action: "assign" | "revoke") => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
       if (action === "assign") {
-        await supabase.from("user_roles").insert({ 
-          user_id: id, 
-          role: roleType,
-          granted_by: user.id
-        });
+        await supabase.from("user_roles").insert({ user_id: id, role });
       } else {
-        await supabase.from("user_roles").delete().eq("user_id", id).eq("role", roleType);
+        await supabase.from("user_roles").delete().eq("user_id", id).eq("role", role);
       }
       await loadProfiles();
       toast({
-        title: action === "assign" ? "Role granted" : "Role revoked",
+        title: action === "assign" ? "Admin role granted" : "Admin role revoked",
         description: "Changes applied successfully.",
       });
     } catch {
@@ -144,6 +205,8 @@ const Admin = () => {
       });
     }
   };
+
+  const visibleAlerts = useMemo(() => alerts.slice(0, 5), [alerts]);
 
   if (loading) {
     return (
@@ -168,6 +231,12 @@ const Admin = () => {
     );
   }
 
+  const severityColor = (s: AlertSeverity = "Medium") =>
+    s === "High"
+      ? "text-red-600 bg-red-100 dark:bg-red-900/30"
+      : s === "Low"
+        ? "text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30"
+        : "text-amber-600 bg-amber-100 dark:bg-amber-900/30";
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -181,16 +250,32 @@ const Admin = () => {
       </div>
 
       <div className="p-4 space-y-6">
-        {/* System Status */}
+        {/* Safety Alerts */}
         <Card>
           <CardHeader>
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <ShieldAlert className="w-5 h-5 text-green-500" />
-              System Status
+              <ShieldAlert className="w-5 h-5 text-red-500" />
+              Safety Alerts
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">All systems operational</p>
+          <CardContent className="space-y-4">
+            {visibleAlerts.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No recent alerts</p>
+            ) : (
+              visibleAlerts.map((alert) => (
+                <div key={alert.id} className="flex items-start gap-3 border-b pb-3 last:border-0">
+                  <div className={`px-2 py-1 rounded text-xs font-medium ${severityColor(alert.severity)}`}>
+                    {alert.severity}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">{alert.action}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {alert.created_at ? new Date(alert.created_at).toLocaleString() : "Unknown time"}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
 
@@ -267,18 +352,11 @@ const Admin = () => {
                 </div>
                 <div className="flex gap-2">
                   {profile.roles.includes("admin") ? (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleRoleChange(profile.id, "admin", "revoke")}
-                    >
+                    <Button size="sm" variant="outline" onClick={() => handleRoleChange(profile.id, "admin", "revoke")}>
                       Revoke Admin
                     </Button>
                   ) : (
-                    <Button
-                      size="sm"
-                      onClick={() => handleRoleChange(profile.id, "admin", "assign")}
-                    >
+                    <Button size="sm" onClick={() => handleRoleChange(profile.id, "admin", "assign")}>
                       Make Admin
                     </Button>
                   )}
@@ -293,3 +371,12 @@ const Admin = () => {
 };
 
 export default Admin;
+
+export interface Profile {
+  id: string;
+  full_name: string | null;
+  created_at: string | null;
+  email?: string | null;
+  roles: string[];
+  loading?: boolean;
+}
