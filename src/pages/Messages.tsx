@@ -32,6 +32,9 @@ import {
   CalendarCheck,
   Target,
   PenSquare,
+  HeartPulse,
+  Brain,
+  Coffee,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -724,6 +727,47 @@ const Messages = () => {
     return highlights;
   }, [selectedConversation]);
 
+  const moodCheckIn = useMemo(
+    () => ({
+      label: "Optimistic but a bit overloaded",
+      confidence: 84,
+      toneSummary: `Detected from your last few notes with ${conversationDetails.title}.`,
+      emotions: [
+        { name: "Calm", weight: 42, toneClass: "bg-emerald-500/15 text-emerald-700" },
+        { name: "Excited", weight: 33, toneClass: "bg-amber-500/15 text-amber-700" },
+        { name: "Stressed", weight: 25, toneClass: "bg-rose-500/15 text-rose-700" },
+      ],
+      supportiveNudge:
+        "Affirm their pace, keep it light, and invite them to pick one simple next step together.",
+      healthyMicroActions: [
+        "Offer to choose the venue so they don't have to plan anything.",
+        "Send a 10-second voice note to keep warmth high without pressure.",
+        "Set a gentle check-in time tomorrow if they need space tonight.",
+      ],
+      motivation:
+        "You've been steadily showing up for friends—this thread is right on track for a great meet-up.",
+      recommendedEvents: [
+        {
+          name: "Slow Coffee & Journaling",
+          mood: "Grounding",
+          when: "Sat • 10:00 AM",
+          place: "Beacon Café",
+          benefit: "Low-key table with other reflective members; perfect for easing back in.",
+          path: "/events?mood=grounding",
+        },
+        {
+          name: "Sunset Breathwork Circle",
+          mood: "Calming",
+          when: "Today • 6:30 PM",
+          place: "Waterfront Commons",
+          benefit: "Guided session to reset after a full day; hosts handle intros.",
+          path: "/events?mood=calm",
+        },
+      ],
+    }),
+    [conversationDetails.title],
+  );
+
   return (
     <div className="min-h-screen bg-muted/40 py-6">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 lg:flex-row">
@@ -795,6 +839,98 @@ const Messages = () => {
                     <span>{conversationMetrics.avgEngagement}%</span>
                   </div>
                   <Progress value={conversationMetrics.avgEngagement} className="h-2" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="mt-4 border border-border bg-background/70">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                  <HeartPulse className="h-4 w-4 text-primary" /> AI mood & mental check-in
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Reads the tone of this thread and keeps it supportive.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Dominant vibe</p>
+                    <p className="font-semibold leading-tight">{moodCheckIn.label}</p>
+                    <p className="text-xs text-muted-foreground">{moodCheckIn.toneSummary}</p>
+                  </div>
+                  <Badge variant="outline" className="rounded-full bg-emerald-50 text-[11px] text-emerald-700">
+                    {moodCheckIn.confidence}% confident
+                  </Badge>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {moodCheckIn.emotions.map((emotion) => (
+                    <span
+                      key={emotion.name}
+                      className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ${emotion.toneClass}`}
+                    >
+                      <Brain className="h-3.5 w-3.5" /> {emotion.name} · {emotion.weight}%
+                    </span>
+                  ))}
+                </div>
+
+                <div className="rounded-2xl border border-border/60 bg-muted/40 p-3">
+                  <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    <Shield className="h-3.5 w-3.5" /> Healthy interaction tips
+                  </div>
+                  <p className="mt-1 text-sm leading-snug text-foreground">{moodCheckIn.supportiveNudge}</p>
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-muted-foreground">
+                    {moodCheckIn.healthyMicroActions.map((tip) => (
+                      <li key={tip}>{tip}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="rounded-2xl bg-primary/5 p-3 text-sm">
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Motivation</p>
+                      <p className="font-medium leading-snug text-foreground">{moodCheckIn.motivation}</p>
+                    </div>
+                    <Sparkles className="h-4 w-4 text-primary" />
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Tailored to keep the conversation positive and healthy.
+                  </p>
+                </div>
+
+                <div>
+                  <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    <Coffee className="h-4 w-4 text-primary" /> Event matches for this mood
+                  </div>
+                  <div className="space-y-2">
+                    {moodCheckIn.recommendedEvents.map((event) => (
+                      <div
+                        key={event.name}
+                        className="flex items-start justify-between gap-3 rounded-2xl border border-border/70 bg-card/60 p-3"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{event.name}</span>
+                            <Badge variant="secondary" className="text-[11px]">
+                              {event.mood}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground">{event.when} • {event.place}</p>
+                          <p className="text-xs text-foreground/80">{event.benefit}</p>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 rounded-full border-primary/40 text-xs text-primary"
+                          onClick={() => navigate(event.path)}
+                        >
+                          Join
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </CardContent>
             </Card>

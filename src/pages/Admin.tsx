@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
+
 import {
   Shield,
   Mail,
@@ -40,6 +41,7 @@ import {
   Settings2,
   CheckCircle2,
 } from "lucide-react";
+
 import BackButton from "@/components/BackButton";
 import {
   Table,
@@ -59,6 +61,10 @@ interface Profile {
   loading?: boolean;
 }
 
+/* ------------------------------------------------------------ */
+/* MAIN COMPONENT */
+/* ------------------------------------------------------------ */
+
 const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -68,38 +74,44 @@ const Admin = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   const [emailSubject, setEmailSubject] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
+
   const [autoModerationEnabled, setAutoModerationEnabled] = useState(true);
   const [strictnessLevel, setStrictnessLevel] = useState(68);
+
+  /* ------------------------------------------------------------ */
+  /* SAFETY & AI FEATURES (STATIC CONFIGURATIONS) */
+  /* ------------------------------------------------------------ */
 
   const safetyFeatures = [
     {
       title: "Harassment & threat detection",
       description:
-        "Automatically scans messages for harassment, threats, or inappropriate content and issues AI-crafted warnings before it escalates.",
-      badge: "Auto-warn live",
+        "Automatically scans messages for harassment or threats and issues AI-crafted warnings.",
+      badge: "Auto-warn",
       icon: ShieldCheck,
     },
     {
       title: "Suspicious account flagging",
       description:
-        "Surfaces risky behavior patterns, flags suspect accounts, and queues them for instant follow-up or automated suspension.",
-      badge: "Risk scoring on",
+        "Surfaces risky behaviour patterns and queues flagged accounts for review.",
+      badge: "Risk scoring",
       icon: Ban,
     },
     {
       title: "Bot, spam, and scam detection",
       description:
-        "Filters bots and spammers in real time so community spaces stay clean without hands-on moderation.",
+        "Stops bots and spam accounts in real time to keep the community clean.",
       badge: "Active filter",
       icon: Bot,
     },
     {
       title: "ID & profile verification",
       description:
-        "Auto-verifies ID documents and profile photos to keep hosts and attendees safe with minimal manual review.",
+        "AI verifies IDs and profile photos to ensure safe event participation.",
       badge: "Auto-verify",
       icon: IdCard,
     },
@@ -111,16 +123,22 @@ const Admin = () => {
     urgent: [
       {
         title: "Escalated conversation flagged",
-        description: "Group chat in Community Leads shows repeated harassment triggers.",
+        description: "Repeated harassment triggers in a Community Leads group chat.",
         severity: "High",
       },
       {
-        title: "Multiple reports on @nightowl",
-        description: "4 independent reports in the last hour for spam links.",
+        title: "Multiple spam reports on @nightowl",
+        description: "Four independent spam reports in the last hour.",
         severity: "Medium",
       },
     ],
   };
+
+  const moderationActions = [
+    { label: "Auto-warnings sent", value: 42, delta: "+9% vs avg" },
+    { label: "Auto-suspensions", value: 6, delta: "2 pending reviews" },
+    { label: "AI-resolved issues", value: 31, delta: "78% resolved automatically" },
+  ];
 
   const predictionSummary = [
     {
@@ -133,14 +151,14 @@ const Admin = () => {
     {
       title: "Event success predictions",
       value: "82%",
-      description: "Upcoming host events predicted to fill based on past conversion.",
+      description: "Upcoming events predicted to fill based on conversions.",
       icon: Gauge,
       accent: "text-indigo-500",
     },
     {
       title: "Communities growing",
       value: "6",
-      description: "Tech, Wellness, and City Nightlife trending upward.",
+      description: "Tech, Wellness, and Nightlife trending upward.",
       icon: TrendingUp,
       accent: "text-blue-500",
     },
@@ -151,12 +169,6 @@ const Admin = () => {
       icon: TrendingDown,
       accent: "text-amber-500",
     },
-  ];
-
-  const moderationActions = [
-    { label: "Auto-warnings sent", value: 42, delta: "+9% vs avg" },
-    { label: "Auto-suspensions", value: 6, delta: "2 pending reviews" },
-    { label: "AI-resolved issues", value: 31, delta: "78% resolved without human" },
   ];
 
   const performanceMetrics = [
@@ -183,51 +195,45 @@ const Admin = () => {
   const communitySignals = {
     growing: [
       { name: "Tech Makers", change: "+18% active", detail: "New AI mentorship series" },
-      { name: "Wellness Weekly", change: "+11% joins", detail: "Meditation collabs performing" },
+      { name: "Wellness Weekly", change: "+11% joins", detail: "Meditation workshops" },
     ],
     declining: [
-      { name: "Weekend Adventurers", change: "-6% check-ins", detail: "Drop after weather alerts" },
-      { name: "City Nightlife", change: "-4% RSVPs", detail: "AI suggests spotlighting hosts" },
+      { name: "Weekend Adventurers", change: "-6% check-ins", detail: "Weather-related dip" },
+      { name: "City Nightlife", change: "-4% RSVPs", detail: "AI suggests spotlighting top hosts" },
     ],
   };
+
+  /* ------------------------------------------------------------ */
+  /* AUTH & PROFILE LOADING */
+  /* ------------------------------------------------------------ */
 
   useEffect(() => {
     const verifyAdmin = async () => {
       try {
-        const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser();
-
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
         if (userError || !user) {
           setError("Not authenticated");
-          setLoading(false);
-          return;
+          return setLoading(false);
         }
 
-        const { data: isAdmin, error: roleError } = await supabase
-          .rpc("has_role", {
-            _user_id: user.id,
-            _role: "admin",
-          });
+        const { data: isAdminValue, error: roleError } = await supabase.rpc("has_role", {
+          _user_id: user.id,
+          _role: "admin",
+        });
 
         if (roleError) {
-          console.error("Error checking admin role:", roleError);
-          setError("Failed to verify admin status");
-          setLoading(false);
-          return;
+          setError("Failed verifying role");
+          return setLoading(false);
         }
 
-        if (!isAdmin) {
-          setError("Access denied: admin only");
-          setLoading(false);
-          return;
+        if (!isAdminValue) {
+          setError("Access denied: Admin only");
+          return setLoading(false);
         }
 
         setIsAdmin(true);
         await loadProfiles();
-      } catch (err) {
-        console.error("Error verifying admin:", err);
+      } catch (e) {
         setError("Failed to verify admin");
       } finally {
         setLoading(false);
@@ -240,27 +246,23 @@ const Admin = () => {
   const loadProfiles = async () => {
     try {
       setLoading(true);
-      const { data, error: profilesError } = await supabase
+      const { data, error } = await supabase
         .from("profiles")
         .select("id, full_name, created_at, email, user_roles(role)")
         .order("created_at", { ascending: false });
 
-      if (profilesError) {
-        throw profilesError;
-      }
+      if (error) throw error;
 
       setProfiles(
-        (data ?? []).map((profile) => ({
-          id: profile.id,
-          full_name: profile.full_name,
-          created_at: profile.created_at ?? null,
-          // @ts-ignore
-          roles: profile.user_roles.map((r) => r.role) ?? [],
-          email: profile.email || null,
+        (data ?? []).map((p: any) => ({
+          id: p.id,
+          full_name: p.full_name,
+          created_at: p.created_at,
+          email: p.email ?? null,
+          roles: p.user_roles?.map((r: any) => r.role) ?? [],
         }))
       );
-    } catch (err) {
-      console.error("Error loading profiles:", err);
+    } catch {
       toast({
         title: "Error",
         description: "Failed to load profiles",
@@ -271,15 +273,13 @@ const Admin = () => {
     }
   };
 
-  const handleRoleChange = async (
-    userId: string,
-    role: string,
-    action: "assign" | "revoke"
-  ) => {
+  /* ------------------------------------------------------------ */
+  /* ROLE MANAGEMENT */
+  /* ------------------------------------------------------------ */
+
+  const handleRoleChange = async (userId: string, role: string, action: "assign" | "revoke") => {
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not logged in");
 
       const res = await fetch(
@@ -295,80 +295,68 @@ const Admin = () => {
       );
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to update role");
+      if (!res.ok) throw new Error(data.error);
 
-      toast({
-        title: "Success",
-        description: data.message || `Role ${action === "assign" ? "assigned" : "revoked"}.`,
-      });
-
+      toast({ title: "Success", description: data.message });
       await loadProfiles();
-    } catch (err: unknown) {
-      console.error("Role change error:", err);
-      const description =
-        err instanceof Error ? err.message : "Failed to update role";
+    } catch (err: any) {
       toast({
         title: "Error",
-        description,
+        description: err.message || "Failed to update role",
         variant: "destructive",
       });
     }
   };
 
+  /* ------------------------------------------------------------ */
+  /* FETCH EMAIL ON DEMAND */
+  /* ------------------------------------------------------------ */
+
   const fetchUserEmail = async (userId: string, index: number) => {
     try {
-      setProfiles((prev) =>
+      setProfiles(prev =>
         prev.map((p, i) => (i === index ? { ...p, loading: true } : p))
       );
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not logged in");
 
       const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-user-email?userId=${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${session.access_token}` } }
       );
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to load email");
+      if (!res.ok) throw new Error(data.error);
 
-      setProfiles((prev) =>
-        prev.map((p, i) =>
-          i === index ? { ...p, email: data.email, loading: false } : p
-        )
+      setProfiles(prev =>
+        prev.map((p, i) => (i === index ? { ...p, email: data.email, loading: false } : p))
       );
-    } catch (err) {
-      console.error("Error fetching email:", err);
-      setProfiles((prev) =>
+    } catch {
+      setProfiles(prev =>
         prev.map((p, i) =>
-          i === index
-            ? { ...p, email: "Error loading email", loading: false }
-            : p
+          i === index ? { ...p, email: "Error loading email", loading: false } : p
         )
       );
     }
   };
 
+  /* ------------------------------------------------------------ */
+  /* BULK EMAIL */
+  /* ------------------------------------------------------------ */
+
   const handleSendBulkEmail = async () => {
     if (!emailSubject.trim() || !emailMessage.trim()) {
-      toast({
-        title: "Validation Error",
-        description: "Please provide both subject and message",
+      return toast({
+        title: "Error",
+        description: "Subject and message are required",
         variant: "destructive",
       });
-      return;
     }
 
     try {
       setSendingEmail(true);
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not logged in");
 
       const res = await fetch(
@@ -387,18 +375,15 @@ const Admin = () => {
       );
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to send email");
+      if (!res.ok) throw new Error(data.error);
 
-      toast({ title: "Success", description: data.message || "Emails sent!" });
+      toast({ title: "Success", description: data.message });
       setEmailSubject("");
       setEmailMessage("");
-    } catch (err: unknown) {
-      console.error("Bulk email error:", err);
-      const description =
-        err instanceof Error ? err.message : "Failed to send emails";
+    } catch (err: any) {
       toast({
         title: "Error",
-        description,
+        description: err.message || "Failed to send emails",
         variant: "destructive",
       });
     } finally {
@@ -406,25 +391,29 @@ const Admin = () => {
     }
   };
 
+  /* ------------------------------------------------------------ */
+  /* AUTH + ACCESS BLOCKERS */
+  /* ------------------------------------------------------------ */
+
   if (loading)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Shield className="w-8 h-8 animate-spin text-primary" />
-        <p className="ml-2 text-muted-foreground">Verifying admin access…</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <Shield className="w-6 h-6 animate-spin mr-2" />
+        <p>Verifying admin access…</p>
       </div>
     );
 
   if (error || !isAdmin)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Card className="w-full max-w-md text-center">
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="max-w-md w-full">
           <CardHeader>
-            <CardTitle className="text-destructive">Access Denied</CardTitle>
+            <CardTitle className="text-destructive">
+              Access Denied
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground mb-4">
-              {error || "You do not have admin privileges."}
-            </p>
+            <p className="mb-4">{error || "You do not have admin privileges."}</p>
             <Button onClick={() => navigate("/home")} className="w-full">
               Return Home
             </Button>
@@ -433,9 +422,14 @@ const Admin = () => {
       </div>
     );
 
+  /* ------------------------------------------------------------ */
+  /* MAIN ADMIN DASHBOARD */
+  /* ------------------------------------------------------------ */
+
   return (
     <div className="min-h-screen bg-background pb-20">
-      <div className="bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+      {/* TOP BAR */}
+      <div className="bg-card border-b px-4 py-4 flex items-center justify-between sticky top-0 z-10">
         <BackButton fallbackPath="/home" />
         <h1 className="text-lg font-semibold flex items-center gap-2">
           <Shield className="w-5 h-5" /> Admin Dashboard
@@ -443,103 +437,108 @@ const Admin = () => {
         <Badge variant="secondary">Admin Access</Badge>
       </div>
 
-      <div className="p-4 sm:p-6 space-y-6">
+      <div className="p-4 space-y-6">
+        {/* ----------------------------------------------------------------------- */}
+        {/* AI SAFETY ALERTS SECTION */}
+        {/* ----------------------------------------------------------------------- */}
         <div className="grid gap-4 lg:grid-cols-3">
           <Card className="lg:col-span-2">
-            <CardHeader className="flex flex-row items-start justify-between gap-3">
-              <div>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <AlertTriangle className="w-5 h-5 text-amber-500" /> AI Safety Alerts
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Flagged chats, suspicious accounts, and urgent risks surfaced by moderation AI.
-                </p>
-              </div>
-              <Badge variant="outline" className="bg-amber-50/10 text-amber-500 border-amber-500/30">
-                Live
-              </Badge>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-amber-500" />
+                AI Safety Alerts
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                System-detected risks requiring attention.
+              </p>
             </CardHeader>
+
             <CardContent className="space-y-5">
               <div className="grid gap-4 md:grid-cols-3">
-                <div className="rounded-lg border border-border/60 bg-muted/40 p-4">
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span className="font-medium text-foreground">Flagged chats</span>
+                {/* Flagged Chats */}
+                <div className="rounded-lg border p-4 bg-muted/40">
+                  <div className="flex justify-between text-sm">
+                    <span>Flagged chats</span>
                     <Badge variant="secondary" className="flex items-center gap-1">
-                      <Bell className="h-3.5 w-3.5" /> Today
+                      <Bell className="h-3 w-3" /> Today
                     </Badge>
                   </div>
-                  <p className="mt-3 text-3xl font-bold">{safetyAlerts.flaggedChats.today}</p>
-                  <p className="text-xs text-muted-foreground">{safetyAlerts.flaggedChats.change}</p>
-                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                  <p className="mt-3 text-3xl font-bold">
+                    {safetyAlerts.flaggedChats.today}
+                  </p>
+                  <p className="text-xs">{safetyAlerts.flaggedChats.change}</p>
+                  <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
                     <div className="rounded-md bg-background/60 p-2">
-                      <p className="text-foreground/80 font-medium">This week</p>
-                      <p className="text-lg font-semibold text-foreground">{safetyAlerts.flaggedChats.week}</p>
+                      <p>This week</p>
+                      <p className="font-bold text-lg">
+                        {safetyAlerts.flaggedChats.week}
+                      </p>
                     </div>
                     <div className="rounded-md bg-background/60 p-2">
-                      <p className="text-foreground/80 font-medium">This month</p>
-                      <p className="text-lg font-semibold text-foreground">{safetyAlerts.flaggedChats.month}</p>
+                      <p>This month</p>
+                      <p className="font-bold text-lg">
+                        {safetyAlerts.flaggedChats.month}
+                      </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="rounded-lg border border-border/60 bg-muted/40 p-4">
-                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                {/* Flagged accounts */}
+                <div className="rounded-lg border p-4 bg-muted/40">
+                  <p className="flex items-center gap-2">
                     <Users className="h-4 w-4" /> Flagged accounts
-                  </div>
-                  <p className="mt-3 text-3xl font-bold text-foreground">{safetyAlerts.flaggedAccounts.value}</p>
-                  <p className="text-xs text-muted-foreground">{safetyAlerts.flaggedAccounts.note}</p>
-                  <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                    <span>All urgent profiles require approval before reinstatement.</span>
-                  </div>
+                  </p>
+                  <p className="mt-3 text-3xl font-bold">
+                    {safetyAlerts.flaggedAccounts.value}
+                  </p>
+                  <p className="text-xs">{safetyAlerts.flaggedAccounts.note}</p>
                 </div>
 
-                <div className="rounded-lg border border-border/60 bg-primary/5 p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-primary">
-                      <Shield className="h-4 w-4" />
-                      <p className="font-semibold">Protection status</p>
-                    </div>
-                    <Badge variant="outline" className="border-primary/40 text-primary">
-                      Auto-moderation
-                    </Badge>
-                  </div>
-                  <p className="mt-3 text-lg font-semibold text-foreground">Coverage is stable</p>
-                  <div className="mt-3 space-y-2 text-sm text-muted-foreground">
+                {/* Protection Status */}
+                <div className="rounded-lg border p-4 bg-primary/5">
+                  <p className="flex items-center gap-2 text-primary">
+                    <Shield className="h-4 w-4" />
+                    Protection status
+                  </p>
+                  <p className="mt-3 text-lg font-semibold">Coverage stable</p>
+                  <div className="space-y-1 text-xs">
                     <p className="flex items-center gap-2">
-                      <ListChecks className="h-4 w-4 text-primary" /> 98% of live rooms actively monitored
+                      <ListChecks className="h-4 w-4 text-primary" /> 98% live rooms monitored
                     </p>
                     <p className="flex items-center gap-2">
-                      <ShieldCheck className="h-4 w-4 text-primary" /> Safety actions synced with host dashboards
+                      <ShieldCheck className="h-4 w-4 text-primary" /> Safety actions synced with hosts
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="rounded-lg border border-border/70 bg-background/60 p-4">
-                <div className="flex items-center gap-2 text-sm font-semibold text-foreground mb-2">
-                  <AlertTriangle className="h-4 w-4 text-amber-500" /> Urgent alerts
-                </div>
+              {/* Urgent Alerts */}
+              <div className="rounded-lg border p-4 bg-background/60">
+                <p className="text-sm font-semibold flex items-center gap-2 mb-2">
+                  <AlertTriangle className="h-4 w-4 text-amber-500" /> Urgent Alerts
+                </p>
                 <div className="space-y-3">
-                  {safetyAlerts.urgent.map((alert) => (
+                  {safetyAlerts.urgent.map(alert => (
                     <div
                       key={alert.title}
-                      className="flex flex-col gap-1 rounded-md border border-border/60 bg-muted/30 p-3"
+                      className="rounded-md border p-3 bg-muted/30"
                     >
-                      <div className="flex items-center justify-between">
-                        <p className="font-semibold text-foreground">{alert.title}</p>
+                      <div className="flex justify-between">
+                        <p className="font-semibold">{alert.title}</p>
                         <Badge
                           variant="outline"
                           className={
                             alert.severity === "High"
-                              ? "border-amber-500/40 text-amber-500"
-                              : "border-blue-500/40 text-blue-500"
+                              ? "text-amber-500 border-amber-500/30"
+                              : "text-blue-500 border-blue-500/30"
                           }
                         >
                           {alert.severity}
                         </Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">{alert.description}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {alert.description}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -547,103 +546,100 @@ const Admin = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-muted/30">
+          {/* Moderation actions summary */}
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
+              <CardTitle className="flex items-center gap-2">
                 <Settings2 className="h-5 w-5" /> AI Moderation Actions
               </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Fast snapshot of automated responses and queue health.
-              </p>
             </CardHeader>
+
             <CardContent className="space-y-4">
-              {moderationActions.map((item) => (
+              {moderationActions.map(item => (
                 <div
                   key={item.label}
-                  className="flex items-center justify-between rounded-md border border-border/70 bg-background/60 p-3"
+                  className="flex items-center justify-between rounded-md border p-3"
                 >
                   <div>
-                    <p className="text-sm font-semibold text-foreground">{item.label}</p>
+                    <p className="font-semibold text-sm">{item.label}</p>
                     <p className="text-xs text-muted-foreground">{item.delta}</p>
                   </div>
-                  <p className="text-2xl font-bold text-foreground">{item.value}</p>
+                  <p className="text-2xl font-bold">{item.value}</p>
                 </div>
               ))}
 
-              <div className="rounded-md border border-primary/30 bg-primary/5 p-3 text-sm">
-                <p className="flex items-center gap-2 text-primary font-semibold">
-                  <CheckCircle2 className="h-4 w-4" /> AI-resolved issues are auto-notified to hosts
-                </p>
-                <p className="mt-1 text-muted-foreground">
-                  Confirmation receipts are sent to reporters when actions are taken.
-                </p>
+              <div className="rounded-md border bg-primary/5 p-3 text-sm text-primary">
+                <CheckCircle2 className="h-4 w-4 inline-block mr-1" />
+                AI-resolved issues synced with host dashboards
               </div>
             </CardContent>
           </Card>
         </div>
 
+        {/* ----------------------------------------------------------------------- */}
+        {/* AI PREDICTION SUMMARY */}
+        {/* ----------------------------------------------------------------------- */}
+
         <div className="grid gap-4 lg:grid-cols-3">
           <Card className="lg:col-span-2">
-            <CardHeader className="flex flex-row items-start justify-between gap-3">
-              <div>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <Activity className="h-5 w-5 text-primary" /> AI Prediction Summary
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Forward-looking signals on usage, events, and community health.
-                </p>
-              </div>
-              <Badge variant="secondary" className="flex items-center gap-2">
-                <Gauge className="h-4 w-4" /> Updated 3m ago
-              </Badge>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="h-5 w-5 text-primary" /> AI Prediction Summary
+              </CardTitle>
             </CardHeader>
+
             <CardContent className="space-y-4">
-              <div className="grid gap-3 sm:grid-cols-2">
-                {predictionSummary.map(({ title, value, description, icon: Icon, accent }) => (
+              <div className="grid sm:grid-cols-2 gap-3">
+                {predictionSummary.map(summary => (
                   <div
-                    key={title}
-                    className="rounded-lg border border-border/60 bg-muted/30 p-4 flex items-start gap-3"
+                    key={summary.title}
+                    className="flex items-start gap-3 rounded-lg border p-4 bg-muted/30"
                   >
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-full bg-background/70 ${accent}`}>
-                      <Icon className="h-5 w-5" />
+                    <div
+                      className={`rounded-full h-10 w-10 flex items-center justify-center bg-background/70 ${summary.accent}`}
+                    >
+                      <summary.icon className="h-5 w-5" />
                     </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-semibold text-foreground">{title}</p>
-                      <p className="text-2xl font-bold text-foreground">{value}</p>
-                      <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+                    <div>
+                      <p className="font-semibold">{summary.title}</p>
+                      <p className="text-2xl font-bold">{summary.value}</p>
+                      <p className="text-sm text-muted-foreground">{summary.description}</p>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="rounded-lg border border-border/70 bg-background/60 p-4">
-                <p className="text-sm font-semibold text-foreground flex items-center gap-2">
+              {/* Community Signals */}
+              <div className="rounded-lg border p-4 bg-background/60">
+                <p className="flex items-center gap-2 text-sm font-semibold">
                   <TrendingUp className="h-4 w-4 text-emerald-500" /> Community signals
                 </p>
-                <div className="mt-3 grid gap-4 sm:grid-cols-2">
+
+                <div className="grid sm:grid-cols-2 gap-4 mt-3">
+                  {/* Growing */}
                   <div className="space-y-2">
-                    <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Growing</p>
-                    {communitySignals.growing.map((signal) => (
-                      <div
-                        key={signal.name}
-                        className="rounded-md border border-border/60 bg-muted/30 p-3"
-                      >
-                        <p className="font-semibold text-foreground">{signal.name}</p>
-                        <p className="text-sm text-emerald-500">{signal.change}</p>
-                        <p className="text-xs text-muted-foreground">{signal.detail}</p>
+                    <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                      Growing
+                    </p>
+                    {communitySignals.growing.map(c => (
+                      <div key={c.name} className="border rounded-md p-3 bg-muted/30">
+                        <p className="font-semibold">{c.name}</p>
+                        <p className="text-sm text-emerald-500">{c.change}</p>
+                        <p className="text-xs text-muted-foreground">{c.detail}</p>
                       </div>
                     ))}
                   </div>
+
+                  {/* Declining */}
                   <div className="space-y-2">
-                    <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Declining</p>
-                    {communitySignals.declining.map((signal) => (
-                      <div
-                        key={signal.name}
-                        className="rounded-md border border-border/60 bg-muted/30 p-3"
-                      >
-                        <p className="font-semibold text-foreground">{signal.name}</p>
-                        <p className="text-sm text-amber-500">{signal.change}</p>
-                        <p className="text-xs text-muted-foreground">{signal.detail}</p>
+                    <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                      Declining
+                    </p>
+                    {communitySignals.declining.map(c => (
+                      <div key={c.name} className="border rounded-md p-3 bg-muted/30">
+                        <p className="font-semibold">{c.name}</p>
+                        <p className="text-sm text-amber-500">{c.change}</p>
+                        <p className="text-xs text-muted-foreground">{c.detail}</p>
                       </div>
                     ))}
                   </div>
@@ -652,87 +648,86 @@ const Admin = () => {
             </CardContent>
           </Card>
 
+          {/* ADMIN ACTIONS */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
+              <CardTitle className="flex items-center gap-2">
                 <Settings className="h-5 w-5" /> Admin Actions
               </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Control AI responses, review escalations, and tweak guardrails.
-              </p>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-2">
-                <Button variant="default" className="justify-between">
-                  View All Alerts
-                  <Bell className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" className="justify-between">
-                  Approve / Reject AI Actions
-                  <ListChecks className="h-4 w-4" />
-                </Button>
-              </div>
 
-              <div className="rounded-md border border-border/70 bg-muted/30 p-3 space-y-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-foreground">AI strictness level</p>
+            <CardContent className="space-y-4">
+              <Button variant="default" className="justify-between">
+                View All Alerts <Bell className="h-4 w-4" />
+              </Button>
+
+              <Button variant="outline" className="justify-between">
+                Approve / Reject AI Actions <ListChecks className="h-4 w-4" />
+              </Button>
+
+              {/* AI Strictness */}
+              <div className="rounded-md border p-3">
+                <div className="flex justify-between">
+                  <p className="font-semibold text-sm">AI strictness level</p>
                   <Badge variant="secondary">{strictnessLevel}%</Badge>
                 </div>
+
                 <Slider
                   value={[strictnessLevel]}
                   max={100}
                   step={1}
-                  onValueChange={(value) => setStrictnessLevel(value[0])}
+                  onValueChange={([v]) => setStrictnessLevel(v)}
+                  className="mt-2"
                 />
-                <p className="text-xs text-muted-foreground">
-                  Higher strictness adds more proactive interventions before human review.
+
+                <p className="text-xs text-muted-foreground mt-1">
+                  More strictness = more proactive interventions.
                 </p>
               </div>
 
-              <div className="flex items-center justify-between rounded-md border border-border/70 bg-background/60 p-3">
+              {/* Auto-moderation toggle */}
+              <div className="flex justify-between items-center rounded-md border p-3">
                 <div>
-                  <p className="text-sm font-semibold text-foreground">AI auto-moderation</p>
-                  <p className="text-xs text-muted-foreground">Switch on/off without impacting logs.</p>
+                  <p className="font-semibold text-sm">AI Auto-moderation</p>
+                  <p className="text-xs text-muted-foreground">
+                    Toggle without clearing logs.
+                  </p>
                 </div>
                 <Switch
                   checked={autoModerationEnabled}
                   onCheckedChange={setAutoModerationEnabled}
-                  aria-label="Toggle AI auto-moderation"
                 />
               </div>
 
-              <div className="rounded-md border border-primary/30 bg-primary/5 p-3 flex items-start gap-3">
-                <Power className="h-5 w-5 text-primary" />
-                <div>
-                  <p className="text-sm font-semibold text-primary">Safeguards stay in place</p>
-                  <p className="text-xs text-primary/80">
-                    Even when paused, recent alerts remain queued for review and export.
-                  </p>
-                </div>
+              <div className="rounded-md border bg-primary/5 p-3 text-primary">
+                <Power className="h-4 w-4 inline-block mr-1" />
+                Safeguards remain active even if paused.
               </div>
             </CardContent>
           </Card>
         </div>
 
+        {/* ----------------------------------------------------------------------- */}
+        {/* PERFORMANCE MONITOR */}
+        {/* ----------------------------------------------------------------------- */}
+
         <div className="grid gap-4 lg:grid-cols-3">
           <Card className="lg:col-span-2">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
+              <CardTitle className="flex items-center gap-2">
                 <Gauge className="h-5 w-5" /> AI Performance Monitor
               </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Track the quality of automated decisions before they hit human review.
-              </p>
             </CardHeader>
+
             <CardContent className="space-y-4">
-              {performanceMetrics.map((metric) => (
-                <div key={metric.title} className="space-y-2 rounded-md border border-border/70 bg-muted/30 p-3">
-                  <div className="flex items-center justify-between">
+              {performanceMetrics.map(metric => (
+                <div key={metric.title} className="space-y-2 border p-3 rounded-md">
+                  <div className="flex justify-between">
                     <div>
-                      <p className="text-sm font-semibold text-foreground">{metric.title}</p>
+                      <p className="font-semibold text-sm">{metric.title}</p>
                       <p className="text-xs text-muted-foreground">{metric.goal}</p>
                     </div>
-                    <p className="text-2xl font-bold text-foreground">{metric.value}</p>
+                    <p className="text-2xl font-bold">{metric.value}</p>
                   </div>
                   <Progress value={metric.value} className={`h-2 ${metric.accent}`} />
                 </div>
@@ -740,73 +735,74 @@ const Admin = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-muted/30">
+          {/* COMMUNICATIONS */}
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Mail className="h-5 w-5" /> Communications pulse
+              <CardTitle className="flex items-center gap-2">
+                <Mail className="h-5 w-5" /> Communications Pulse
               </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                What admins and reporters are seeing from AI interventions.
-              </p>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="rounded-md border border-border/70 bg-background/60 p-3">
-                <p className="text-sm font-semibold text-foreground">Auto follow-ups</p>
-                <p className="text-xs text-muted-foreground">Sent after AI warnings to confirm compliance.</p>
-                <p className="mt-2 text-2xl font-bold text-foreground">58</p>
+
+            <CardContent className="space-y-4">
+              <div className="border rounded-md p-3">
+                <p className="font-semibold text-sm">Auto follow-ups</p>
+                <p className="text-xs text-muted-foreground">
+                  Sent after AI warnings to confirm compliance.
+                </p>
+                <p className="text-2xl font-bold mt-2">58</p>
               </div>
-              <div className="rounded-md border border-border/70 bg-background/60 p-3">
-                <p className="text-sm font-semibold text-foreground">Reporter updates</p>
-                <p className="text-xs text-muted-foreground">Status updates delivered to reporters this week.</p>
-                <p className="mt-2 text-2xl font-bold text-foreground">34</p>
+
+              <div className="border rounded-md p-3">
+                <p className="font-semibold text-sm">Reporter updates</p>
+                <p className="text-xs text-muted-foreground">
+                  Status updates sent this week.
+                </p>
+                <p className="text-2xl font-bold mt-2">34</p>
               </div>
-              <div className="rounded-md border border-primary/30 bg-primary/5 p-3">
-                <p className="text-sm font-semibold text-primary">AI handoff confidence</p>
-                <p className="text-xs text-primary/80">Moderation AI predicts 76% of new alerts can be auto-closed.</p>
+
+              <div className="rounded-md border bg-primary/5 p-3 text-primary text-sm">
+                AI predicts 76% of new alerts can be auto-closed.
               </div>
             </CardContent>
           </Card>
         </div>
 
+        {/* ----------------------------------------------------------------------- */}
+        {/* SAFETY FEATURE GRID */}
+        {/* ----------------------------------------------------------------------- */}
+
         <Card className="border-primary/30 bg-primary/5">
           <CardHeader>
-            <CardTitle className="flex flex-col gap-1">
-              <span className="flex items-center gap-2 text-primary">
-                <ShieldCheck className="w-5 h-5" /> AI-powered safety & behaviour monitoring
-              </span>
-              <p className="text-sm font-normal text-muted-foreground">
-                Automated guardrails that scan conversations, flag risks, and protect the community so you don't have to manually police behaviour.
-              </p>
+            <CardTitle className="flex items-center gap-2">
+              <ShieldCheck className="h-5 w-5 text-primary" />
+              AI-powered safety & behaviour monitoring
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              {safetyFeatures.map(({ title, description, badge, icon: Icon }) => (
-                <div
-                  key={title}
-                  className="rounded-xl border border-primary/20 bg-background/60 p-4 shadow-sm"
-                >
-                  <div className="flex items-center justify-between mb-2">
+          <CardContent>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {safetyFeatures.map(f => (
+                <div key={f.title} className="border p-4 rounded-xl bg-background/60">
+                  <div className="flex justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                        <Icon className="h-5 w-5" />
+                      <span className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <f.icon className="h-5 w-5" />
                       </span>
-                      <p className="font-semibold leading-tight">{title}</p>
+                      <p className="font-semibold">{f.title}</p>
                     </div>
-                    <Badge variant="outline" className="border-primary/40 text-primary">
-                      {badge}
+                    <Badge variant="outline" className="text-primary border-primary/40">
+                      {f.badge}
                     </Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+                  <p className="text-sm text-muted-foreground">{f.description}</p>
                 </div>
               ))}
             </div>
-
-            <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
-              Admin impact: dashboard stays clean, high-risk accounts are auto-suspended, and users get friendly AI nudges before issues reach your inbox.
-            </div>
           </CardContent>
         </Card>
+
+        {/* ----------------------------------------------------------------------- */}
+        {/* BULK EMAIL */}
+        {/* ----------------------------------------------------------------------- */}
 
         <Card>
           <CardHeader>
@@ -814,26 +810,29 @@ const Admin = () => {
               <Send className="w-5 h-5" /> Send Bulk Email
             </CardTitle>
           </CardHeader>
+
           <CardContent className="space-y-4">
             <div>
               <Label htmlFor="subject">Subject</Label>
               <Input
                 id="subject"
                 value={emailSubject}
-                onChange={(e) => setEmailSubject(e.target.value)}
+                onChange={e => setEmailSubject(e.target.value)}
                 placeholder="Email subject"
               />
             </div>
+
             <div>
               <Label htmlFor="message">Message</Label>
               <Textarea
                 id="message"
-                value={emailMessage}
-                onChange={(e) => setEmailMessage(e.target.value)}
-                placeholder="Email message"
                 rows={6}
+                value={emailMessage}
+                onChange={e => setEmailMessage(e.target.value)}
+                placeholder="Email message"
               />
             </div>
+
             <Button
               onClick={handleSendBulkEmail}
               disabled={sendingEmail}
@@ -846,12 +845,17 @@ const Admin = () => {
           </CardContent>
         </Card>
 
+        {/* ----------------------------------------------------------------------- */}
+        {/* USER MANAGEMENT */}
+        {/* ----------------------------------------------------------------------- */}
+
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="w-5 h-5" /> User Management
             </CardTitle>
           </CardHeader>
+
           <CardContent>
             <div className="rounded-md border overflow-x-auto">
               <Table className="min-w-[700px]">
@@ -864,22 +868,28 @@ const Admin = () => {
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
+
                 <TableBody>
                   {profiles.map((profile, index) => {
                     const isProfileAdmin = profile.roles.includes("admin");
+
                     return (
                       <TableRow key={profile.id}>
                         <TableCell>{profile.full_name || "N/A"}</TableCell>
+
                         <TableCell>
                           <Badge variant={isProfileAdmin ? "default" : "secondary"}>
                             {isProfileAdmin ? "ADMIN" : "USER"}
                           </Badge>
                         </TableCell>
+
                         <TableCell>
                           {profile.email ? (
                             profile.email
                           ) : profile.loading ? (
-                            <span className="text-muted-foreground">Loading…</span>
+                            <span className="text-muted-foreground">
+                              Loading…
+                            </span>
                           ) : (
                             <Button
                               variant="link"
@@ -890,11 +900,13 @@ const Admin = () => {
                             </Button>
                           )}
                         </TableCell>
+
                         <TableCell>
                           {profile.created_at
                             ? new Date(profile.created_at).toLocaleDateString()
                             : "Unknown"}
                         </TableCell>
+
                         <TableCell className="text-right">
                           {isProfileAdmin ? (
                             <Button

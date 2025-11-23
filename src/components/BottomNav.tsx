@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import { motion } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, Calendar, MessageSquare, User, Users } from "lucide-react";
+import { Calendar, Home, MessageSquare, User, Users } from "lucide-react";
 import { triggerHaptic } from "@/lib/haptics";
 
 interface NavItem {
