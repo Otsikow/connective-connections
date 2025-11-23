@@ -8,6 +8,7 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -29,6 +30,13 @@ import {
   Bot,
   Ban,
   IdCard,
+  MessageCircleWarning,
+  ShieldAlert,
+  ImageOff,
+  FileWarning,
+  Sparkles,
+  ClipboardList,
+  Eye,
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import {
@@ -128,6 +136,37 @@ const Admin = () => {
       badge: "Auto-verify",
       icon: IdCard,
     },
+  ];
+
+  const flaggedMessageSignals = [
+    "Toxic language",
+    "Harassment",
+    "Manipulation",
+    "Exploitation",
+    "Romance/sexual content (if forbidden)",
+    "Hate speech / discrimination",
+    "Spam or bot-like behaviour",
+  ];
+
+  const flaggedEventSignals = [
+    "Dangerous events",
+    "Misleading descriptions",
+    "Extremism/religious misuse",
+    "Misinformation",
+    "Fraudulent invitations",
+  ];
+
+  const flaggedImageSignals = [
+    "NSFW detection",
+    "Fake/AI-face detection",
+    "ID mismatch",
+    "Suspicious patterns",
+  ];
+
+  const aiTools = [
+    "View full conversation context",
+    "Auto-highlight toxic messages",
+    "AI rewrite suggestions (\"suggest a safer event description\")",
   ];
 
   useEffect(() => {
@@ -460,6 +499,123 @@ const Admin = () => {
 
             <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
               Admin impact: dashboard stays clean, high-risk accounts are auto-suspended, and users get friendly AI nudges before issues reach your inbox.
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/80">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MessageCircleWarning className="w-5 h-5" />
+              <span>AI Message & Content Audit</span>
+            </CardTitle>
+            <CardDescription>
+              Review flagged chats, images, events, and bios with AI guardrails so moderators can triage faster.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="rounded-lg border bg-muted/40 p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <ShieldAlert className="w-5 h-5 text-destructive" />
+                    <div>
+                      <p className="font-semibold">Flagged Messages</p>
+                      <p className="text-sm text-muted-foreground">High-risk chat signals queued for moderation.</p>
+                    </div>
+                  </div>
+                  <Badge variant="outline">Chats</Badge>
+                </div>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {flaggedMessageSignals.map((item) => (
+                    <div
+                      key={item}
+                      className="flex items-center gap-2 rounded-md border border-border/70 bg-background/80 px-3 py-2 text-sm"
+                    >
+                      <ClipboardList className="w-4 h-4 text-primary" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-lg border bg-muted/40 p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <FileWarning className="w-5 h-5 text-amber-500" />
+                    <div>
+                      <p className="font-semibold">Flagged Event Descriptions</p>
+                      <p className="text-sm text-muted-foreground">Unsafe or misleading event language under review.</p>
+                    </div>
+                  </div>
+                  <Badge variant="outline">Events</Badge>
+                </div>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {flaggedEventSignals.map((item) => (
+                    <div
+                      key={item}
+                      className="flex items-center gap-2 rounded-md border border-border/70 bg-background/80 px-3 py-2 text-sm"
+                    >
+                      <ClipboardList className="w-4 h-4 text-primary" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="rounded-lg border bg-muted/40 p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <ImageOff className="w-5 h-5 text-purple-500" />
+                    <div>
+                      <p className="font-semibold">Flagged Images</p>
+                      <p className="text-sm text-muted-foreground">Visual safety signals for photos and profile media.</p>
+                    </div>
+                  </div>
+                  <Badge variant="outline">Images</Badge>
+                </div>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {flaggedImageSignals.map((item) => (
+                    <div
+                      key={item}
+                      className="flex items-center gap-2 rounded-md border border-border/70 bg-background/80 px-3 py-2 text-sm"
+                    >
+                      <ClipboardList className="w-4 h-4 text-primary" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-lg border bg-muted/40 p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Eye className="w-5 h-5 text-sky-500" />
+                    <div>
+                      <p className="font-semibold">AI Tools</p>
+                      <p className="text-sm text-muted-foreground">Built-in assists for faster decisions and safer edits.</p>
+                    </div>
+                  </div>
+                  <Badge variant="outline">Moderation</Badge>
+                </div>
+                <div className="space-y-2">
+                  {aiTools.map((item) => (
+                    <div
+                      key={item}
+                      className="flex items-center gap-2 rounded-md border border-border/70 bg-background/80 px-3 py-2 text-sm"
+                    >
+                      <Sparkles className="w-4 h-4 text-primary" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm text-primary">
+              This audit view keeps toxic language, unsafe events, and risky images contained while AI suggests safer alternatives before moderators take action.
             </div>
           </CardContent>
         </Card>
