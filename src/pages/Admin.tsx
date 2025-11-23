@@ -1216,6 +1216,21 @@ const AdminUserManagement = ({
 
 export default AdminUserManagement;
 
+Admin.tsx
+types/Profile.ts
+
+components/
+    AdminSafetyAlerts.tsx
+    AdminModerationActions.tsx
+    AdminAISummary.tsx
+    AdminPerformanceMonitor.tsx
+    AdminCommunicationsPulse.tsx
+    AdminSafetyFeatures.tsx
+    AdminSupportCenter.tsx
+    AdminBulkEmail.tsx
+    AdminUserManagement.tsx
+    AdminSection.tsx        (generic card wrapper)
+    useAdminPagination.ts   (custom pagination hook)
 
 
 
