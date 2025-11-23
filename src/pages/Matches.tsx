@@ -11,7 +11,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Check, Heart, ShieldCheck, Sparkles, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  Heart,
+  Lightbulb,
+  MessageSquare,
+  ShieldCheck,
+  Sparkles,
+  Users,
+  X,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SwipeCard } from "@/components/SwipeCard";
 import BackButton from "@/components/BackButton";
@@ -87,6 +97,69 @@ const profiles: Profile[] = [
     verified: true,
     availability: "Weeknights",
     distance: "0.8 miles away",
+  },
+];
+
+interface MatchSuggestion {
+  id: string;
+  name: string;
+  compatibility: number;
+  sharedVibe: string;
+  meetingPreference: string;
+  distance: string;
+  reasoning: string;
+  sharedInterests: string[];
+  conversationStarters: string[];
+}
+
+const aiSuggestions: MatchSuggestion[] = [
+  {
+    id: "ms-1",
+    name: "Jordan — Product mentor",
+    compatibility: 94,
+    sharedVibe: "Curious builder energy with calm communication style",
+    meetingPreference: "Weeknight coffee within 2 miles",
+    distance: "1.2 miles away",
+    reasoning:
+      "Matches your love of founder stories and reflective journaling, while bringing accountability for the next career move.",
+    sharedInterests: ["Indie hacking", "Third places", "Mindful productivity"],
+    conversationStarters: [
+      "Swap the one ritual you both use before deep work sessions.",
+      "Compare favorite hidden coffee bars that let you stay in flow for hours.",
+      "Ask about the most surprising lesson from their last product experiment.",
+    ],
+  },
+  {
+    id: "ms-2",
+    name: "Mina — Community architect",
+    compatibility: 91,
+    sharedVibe: "Warm host who loves pairing people with similar creative sparks",
+    meetingPreference: "Saturday brunch or gallery stroll",
+    distance: "0.7 miles away",
+    reasoning:
+      "Similar values around intentional gatherings and slow friendships. You're both searching for co-creators for passion projects.",
+    sharedInterests: ["Analog photography", "Pop-up dinners", "Creative accountability"],
+    conversationStarters: [
+      "Compare the best pop-up events you've attended and what made them special.",
+      "Share a photo prompt for the week and plan to swap results.",
+      "Brainstorm a two-person micro-gathering that blends your interests.",
+    ],
+  },
+  {
+    id: "ms-3",
+    name: "Arjun — Strategy nerd",
+    compatibility: 88,
+    sharedVibe: "Brainy but playful; loves structured debates and late-night walks",
+    meetingPreference: "Evening tea + strategy games",
+    distance: "2.4 miles away",
+    reasoning:
+      "Your personality map shows overlapping curiosity across systems thinking, urban adventures, and playful competition.",
+    sharedInterests: ["Systems thinking", "Board games", "Urban hikes"],
+    conversationStarters: [
+      "Trade your current life experiment and set a check-in for next week.",
+      "Ask which board game best mirrors how they approach work decisions.",
+      "Plan a walkable route that ends at a tea spot with outdoor seating.",
+    ],
   },
 ];
 
@@ -308,6 +381,84 @@ const Matches = () => {
 
         {/* Discover Tab */}
         <TabsContent value="discover" className="mt-6 space-y-6">
+          <Card className="border-border/60 shadow-sm">
+            <CardHeader className="space-y-1">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Sparkles className="w-4 h-4" />
+                <span>AI Matchmaking</span>
+              </div>
+              <CardTitle>Curated people who actually fit</CardTitle>
+              <CardDescription>
+                We read your interests, vibe, and meeting preferences to surface
+                people nearby who feel like an instant friend. Each suggestion
+                includes why it clicks and how to start the conversation.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4 md:grid-cols-3">
+              {aiSuggestions.map((suggestion) => (
+                <div
+                  key={suggestion.id}
+                  className="rounded-xl border border-border/60 bg-card p-4 shadow-sm space-y-3"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">
+                        {suggestion.distance}
+                      </p>
+                      <p className="font-semibold leading-tight">
+                        {suggestion.name}
+                      </p>
+                    </div>
+                    <Badge className="gap-1"> 
+                      <Users className="w-3.5 h-3.5" />
+                      {suggestion.compatibility}%
+                    </Badge>
+                  </div>
+
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-start gap-2 text-primary font-medium">
+                      <Lightbulb className="w-4 h-4 mt-0.5" />
+                      <span>{suggestion.sharedVibe}</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-muted-foreground">
+                      <Check className="w-4 h-4 mt-0.5" />
+                      <span>{suggestion.reasoning}</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-muted-foreground">
+                      <MessageSquare className="w-4 h-4 mt-0.5" />
+                      <span>{suggestion.meetingPreference}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                    {suggestion.sharedInterests.map((interest) => (
+                      <span
+                        key={interest}
+                        className="rounded-full bg-muted px-3 py-1 text-[11px] uppercase tracking-wide"
+                      >
+                        {interest}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="space-y-2 rounded-lg bg-muted/60 p-3">
+                    <p className="text-xs font-semibold text-muted-foreground">
+                      Conversation starters
+                    </p>
+                    <ul className="space-y-1.5 text-sm text-muted-foreground">
+                      {suggestion.conversationStarters.map((starter) => (
+                        <li key={starter} className="flex gap-2">
+                          <Sparkles className="w-3.5 h-3.5 mt-0.5 text-primary" />
+                          <span>{starter}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
           {currentIndex < profiles.length ? (
             <Card className="overflow-hidden border-border shadow-xl transition-all">
               <div className="h-80 bg-muted relative">
