@@ -21,6 +21,7 @@ import ProfileSetup from "./pages/ProfileSetup";
 import Home from "./pages/Home";
 import Matches from "./pages/Matches";
 import FriendFinder from "./pages/FriendFinder";
+import Concierge from "./pages/Concierge";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
 import Community from "./pages/Community";
@@ -58,6 +59,7 @@ const AnimatedRoutes = () => {
         <Route path="/auth/callback" element={<PageTransition><AuthCallback /></PageTransition>} />
 
         <Route path="/home" element={<PageTransition><Home /></PageTransition>} />
+        <Route path="/concierge" element={<PageTransition><Concierge /></PageTransition>} />
         <Route path="/events" element={<PageTransition><Events /></PageTransition>} />
         <Route path="/events/:eventId" element={<PageTransition><EventDetail /></PageTransition>} />
         <Route path="/host/create-event" element={<PageTransition><CreateEvent /></PageTransition>} />
