@@ -254,6 +254,108 @@ const Index = () => {
       </div>
 
       {/* ---------------------------------------------------------------- */}
+      {/* AI ICEBREAKER ENGINE */}
+      {/* ---------------------------------------------------------------- */}
+      <div className="px-4 pb-16 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div
+          className={cn(
+            "relative overflow-hidden p-8 sm:p-10 rounded-2xl",
+            surfaceClass,
+            isDark
+              ? "bg-gradient-to-br from-white/5 via-white/0 to-white/5"
+              : "bg-gradient-to-br from-white via-[#fef7e5] to-white",
+          )}
+        >
+          <div className="flex flex-wrap items-center gap-3 mb-6">
+            <Badge className="bg-[#F8D57E] text-slate-950">New</Badge>
+            <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#F8D57E]">
+              AI Icebreaker Engine
+            </p>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr] lg:items-center">
+            <div className="space-y-4">
+              <h2 className="text-3xl font-bold">Avoid awkward silence.</h2>
+              <p className={cn("text-base", secondaryTextClass)}>
+                Our AI Icebreaker Engine keeps chats flowing with personalized prompts and friendly
+                nudges that feel human, not robotic.
+              </p>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
+                  <Sparkles className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-semibold">Personalized daily icebreakers</p>
+                    <p className={cn("text-sm", secondaryTextClass)}>
+                      Fresh conversation starters tuned to each person every day.
+                    </p>
+                  </div>
+                </div>
+
+                <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
+                  <UserCheck className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-semibold">Profile-aware topics</p>
+                    <p className={cn("text-sm", secondaryTextClass)}>
+                      Analyzes shared interests and suggests natural talking points.
+                    </p>
+                  </div>
+                </div>
+
+                <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
+                  <MessageCircle className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-semibold">Friendly nudge prompts</p>
+                    <p className={cn("text-sm", secondaryTextClass)}>
+                      Timely reminders to keep conversations moving without feeling forced.
+                    </p>
+                  </div>
+                </div>
+
+                <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
+                  <CheckCircle2 className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-semibold">Measured impact</p>
+                    <p className={cn("text-sm", secondaryTextClass)}>
+                      Boosts message activity, retention, and makes chatting easier and fun.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className={cn("p-6 rounded-xl border", isDark ? "border-white/10" : "border-slate-200")}> 
+              <div className="space-y-3">
+                <h3 className="text-xl font-semibold">How it works</h3>
+                <ul className="space-y-3 text-sm">
+                  <li className="flex gap-2">
+                    <Sparkles className="h-4 w-4 text-[#F8D57E] mt-0.5" />
+                    <span>Auto-generates fresh icebreakers every morning for your active chats.</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <UserCheck className="h-4 w-4 text-[#F8D57E] mt-0.5" />
+                    <span>Reads both profiles to surface shared interests and timely topics.</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <MessageSquare className="h-4 w-4 text-[#F8D57E] mt-0.5" />
+                    <span>Sends warm, friendly nudges that keep the conversation flowing.</span>
+                  </li>
+                </ul>
+
+                <div className="rounded-lg bg-[#F8D57E]/15 border border-[#F8D57E]/30 p-4 text-sm text-slate-900">
+                  <p className="font-semibold text-slate-900">Impact</p>
+                  <p>
+                    Members see higher reply rates, smoother chats, and more meetups because the
+                    awkward silence disappears.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ---------------------------------------------------------------- */}
       {/* FRIEND FINDER STEPS (from Option B) */}
       {/* ---------------------------------------------------------------- */}
       <div className="px-4 py-16 sm:px-6 lg:px-8 max-w-7xl mx-auto">
