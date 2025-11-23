@@ -33,10 +33,14 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const isLikelyPhone = (value: string) => {
+    const trimmed = value.trim();
+    return trimmed.length > 0 && !trimmed.includes("@") && /^\+?[\d\s().-]+$/.test(trimmed);
+  };
+
   const identifierLabel = useMemo(() => {
     if (!identifier) return "Email or phone";
-    const looksLikePhone = /[^@a-zA-Z]/.test(identifier);
-    return looksLikePhone ? "Phone" : "Email";
+    return isLikelyPhone(identifier) ? "Phone" : "Email";
   }, [identifier]);
 
   const locationState = location.state as { next?: string } | null;
@@ -66,8 +70,7 @@ const Login = () => {
       return;
     }
 
-    const looksLikePhone = /[^@a-zA-Z]/.test(identifier);
-    const credentials = looksLikePhone
+    const credentials = isLikelyPhone(identifier)
       ? { phone: identifier.trim(), password }
       : { email: identifier.trim(), password };
 
