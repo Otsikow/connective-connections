@@ -17,6 +17,7 @@ import { TopBar } from "@/components/TopBar";
 import Splash from "./pages/Splash";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
+import Onboarding from "./pages/Onboarding";
 import ProfileSetup from "./pages/ProfileSetup";
 import Home from "./pages/Home";
 import Matches from "./pages/Matches";
@@ -58,6 +59,7 @@ const AnimatedRoutes = () => {
         <Route path="/" element={<PageTransition><Splash /></PageTransition>} />
         <Route path="/signup" element={<PageTransition><Signup /></PageTransition>} />
         <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
+        <Route path="/onboarding" element={<PageTransition><Onboarding /></PageTransition>} />
         <Route path="/profile-setup" element={<PageTransition><ProfileSetup /></PageTransition>} />
         <Route path="/auth/callback" element={<PageTransition><AuthCallback /></PageTransition>} />
 
