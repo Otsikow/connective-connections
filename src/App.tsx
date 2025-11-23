@@ -158,10 +158,10 @@ const AppContent = () => {
 
   const showLoadingScreen = isBooting || !hasCompletedInitialLoad;
 
-  const layoutStyles: CSSProperties = {
+  const layoutStyles = {
     "--bottom-nav-height": "5.75rem",
     "--top-bar-height": "4rem",
-  };
+  } as React.CSSProperties;
 
   return (
     <div className="relative flex min-h-screen flex-col" style={layoutStyles}>
