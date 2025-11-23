@@ -16,7 +16,26 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Shield, Mail, Users, Settings, Send, Music, Timer, Globe } from "lucide-react";
+import {
+  Shield,
+  Mail,
+  Users,
+  Settings,
+  Send,
+  Music,
+  Timer,
+  Globe,
+  ShieldCheck,
+  Bot,
+  Ban,
+  IdCard,
+  Activity,
+  Radar,
+  Headset,
+  ShieldAlert,
+  Sparkles,
+  Fingerprint,
+} from "lucide-react";
 import BackButton from "@/components/BackButton";
 import {
   Table,
@@ -83,6 +102,96 @@ const Admin = () => {
       title: "Countries reached",
       value: "9",
       icon: Globe,
+    },
+  ];
+
+  const safetyFeatures = [
+    {
+      title: "Harassment & threat detection",
+      description:
+        "Automatically scans messages for harassment, threats, or inappropriate content and issues AI-crafted warnings before it escalates.",
+      badge: "Auto-warn live",
+      icon: ShieldCheck,
+    },
+    {
+      title: "Suspicious account flagging",
+      description:
+        "Surfaces risky behavior patterns, flags suspect accounts, and queues them for instant follow-up or automated suspension.",
+      badge: "Risk scoring on",
+      icon: Ban,
+    },
+    {
+      title: "Bot, spam, and scam detection",
+      description:
+        "Filters bots and spammers in real time so community spaces stay clean without hands-on moderation.",
+      badge: "Active filter",
+      icon: Bot,
+    },
+    {
+      title: "ID & profile verification",
+      description:
+        "Auto-verifies ID documents and profile photos to keep hosts and attendees safe with minimal manual review.",
+      badge: "Auto-verify",
+      icon: IdCard,
+    },
+  ];
+
+  const aiAdminFeatures = [
+    {
+      title: "AI User Behaviour Dashboard",
+      description:
+        "See which features power users love, understand engagement drop-offs, and spot churn risk before it happens.",
+      badge: "Predictive churn alerts",
+      icon: Activity,
+      highlights: [
+        "Engagement heatmaps by feature and cohort",
+        "Auto-detected toxic behaviour warnings",
+        "Flags for users that need human review",
+      ],
+      metricLabel: "Churn risk flagged",
+      metricValue: "3.4% weekly",
+    },
+    {
+      title: "AI Event Quality Monitor",
+      description:
+        "Tracks what makes events succeed, predicts attendance, and recommends the best categories to boost.",
+      badge: "Live quality scoring",
+      icon: Radar,
+      highlights: [
+        "Predicts which events will attract people",
+        "Category & promo suggestions by city",
+        "Optimal time and location recommendations",
+      ],
+      metricLabel: "Forecast accuracy",
+      metricValue: "92% last 30d",
+    },
+    {
+      title: "AI Automated Support Agent",
+      description:
+        "Deflects the bulk of support volume with instant answers, simple fixes, and precise routing when a human is needed.",
+      badge: "80–90% auto-resolution",
+      icon: Headset,
+      highlights: [
+        "Understands intent across email, chat, and in-app",
+        "Handles password resets & account issues automatically",
+        "Escalates complex tickets with full context",
+      ],
+      metricLabel: "Avg. resolution time",
+      metricValue: "42s",
+    },
+    {
+      title: "AI Fraud & Catfish Detection",
+      description:
+        "Keeps the community safe with layered checks that block suspicious activity before it impacts members.",
+      badge: "Always-on",
+      icon: ShieldAlert,
+      highlights: [
+        "Photo & ID verification workflows",
+        "Behaviour analysis with anomaly alerts",
+        "Instant notifications when accounts act suspiciously",
+      ],
+      metricLabel: "High-risk accounts caught",
+      metricValue: "+38% MoM",
     },
   ];
 
@@ -354,6 +463,69 @@ const Admin = () => {
           ))}
         </div>
 
+        <Card className="border-primary/30 bg-primary/5">
+          <CardHeader className="gap-2">
+            <CardTitle className="flex flex-col gap-1">
+              <span className="flex items-center gap-2 text-primary">
+                <Sparkles className="w-5 h-5" /> Admin-side AI features
+              </span>
+              <p className="text-sm font-normal text-muted-foreground">
+                Stress-free management tools that predict, prevent, and automate the work behind community safety and growth.
+              </p>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2">
+            {aiAdminFeatures.map(
+              ({
+                title,
+                description,
+                badge,
+                icon: Icon,
+                highlights,
+                metricLabel,
+                metricValue,
+              }) => (
+                <div
+                  key={title}
+                  className="rounded-xl border border-primary/30 bg-background/70 p-4 shadow-sm"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <Icon className="h-5 w-5" />
+                      </span>
+                      <div>
+                        <p className="font-semibold leading-tight">{title}</p>
+                        <p className="text-xs text-muted-foreground">{description}</p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="border-primary/40 text-primary">
+                      {badge}
+                    </Badge>
+                  </div>
+
+                  <div className="mt-3 space-y-2 text-sm text-muted-foreground">
+                    {highlights.map((highlight) => (
+                      <div
+                        key={highlight}
+                        className="flex items-start gap-2 rounded-lg bg-muted/50 px-3 py-2"
+                      >
+                        <Fingerprint className="mt-0.5 h-4 w-4 text-primary" />
+                        <span className="leading-relaxed text-foreground/90">{highlight}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-3 flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-xs text-primary">
+                    <span className="font-medium uppercase tracking-[0.12em]">{metricLabel}</span>
+                    <span className="text-sm font-semibold text-foreground">{metricValue}</span>
+                  </div>
+                </div>
+              )
+            )}
+          </CardContent>
+        </Card>
+
         <Card className="border-dashed">
           <CardHeader>
             <CardTitle className="text-base font-semibold text-muted-foreground">
@@ -376,6 +548,46 @@ const Admin = () => {
                   </p>
                 </div>
               ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-primary/30 bg-primary/5">
+          <CardHeader>
+            <CardTitle className="flex flex-col gap-1">
+              <span className="flex items-center gap-2 text-primary">
+                <ShieldCheck className="w-5 h-5" /> AI-powered safety & behaviour monitoring
+              </span>
+              <p className="text-sm font-normal text-muted-foreground">
+                Automated guardrails that scan conversations, flag risks, and protect the community so you don't have to manually police behaviour.
+              </p>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {safetyFeatures.map(({ title, description, badge, icon: Icon }) => (
+                <div
+                  key={title}
+                  className="rounded-xl border border-primary/20 bg-background/60 p-4 shadow-sm"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <Icon className="h-5 w-5" />
+                      </span>
+                      <p className="font-semibold leading-tight">{title}</p>
+                    </div>
+                    <Badge variant="outline" className="border-primary/40 text-primary">
+                      {badge}
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
+              Admin impact: dashboard stays clean, high-risk accounts are auto-suspended, and users get friendly AI nudges before issues reach your inbox.
             </div>
           </CardContent>
         </Card>
