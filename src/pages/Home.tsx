@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselItem, CarouselContent, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Sparkles, PlayCircle, Users, Send } from "lucide-react";
+import { Sparkles, PlayCircle, Users, Send, MapPin, Clock, CalendarCheck2, Wand2 } from "lucide-react";
 import { useSubscription } from "@/hooks/useSubscription";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { generateAvatarUrl } from "@/lib/avatar";
@@ -170,6 +170,59 @@ const Home = () => {
     author: "Malik",
     quote: "Hosting workshops has never been easier."
   }];
+  const meetupPlans = [{
+    id: "makers",
+    label: "Builders",
+    duo: "Ava + Leo",
+    vibe: "Product design • Front-end dev",
+    ideas: [
+      "Prototype swap at Indie Coffee Lab",
+      "Micro-design critique with 3 prompts",
+      "Sunset sketch walk along Riverside Park"
+    ],
+    venues: [
+      { name: "Indie Coffee Lab", detail: "Quiet tables · WiFi · Great light" },
+      { name: "Civic Innovation Hub", detail: "Whiteboards · outlets · casual" },
+      { name: "Riverside Promenade", detail: "Golden hour views · easy stroll" }
+    ],
+    windows: ["Thu · 6:30 PM", "Sat · 10:00 AM"],
+    anchorTime: "Thu · 6:30 PM"
+  }, {
+    id: "outdoors",
+    label: "Outdoorsy",
+    duo: "Maya + Chris",
+    vibe: "Trail running • Photography",
+    ideas: [
+      "Golden-hour photo jog at Cedar Ridge",
+      "Smoothie cool-down and route swap",
+      "Trail gear show-and-tell back at the lot"
+    ],
+    venues: [
+      { name: "Cedar Ridge Loop", detail: "3.5 mi · light elevation" },
+      { name: "Sunrise Smoothies", detail: "Patio seating · 8 min away" },
+      { name: "Overlook Deck", detail: "Wide-angle skyline shots" }
+    ],
+    windows: ["Wed · 7:00 AM", "Sun · 8:30 AM"],
+    anchorTime: "Sun · 8:30 AM"
+  }, {
+    id: "bookish",
+    label: "Bookish",
+    duo: "Nina + Harper",
+    vibe: "Lit fic • Cozy cafés",
+    ideas: [
+      "Two-chapter swap with annotated sticky notes",
+      "Mini book blind-date at the shelves",
+      "Slow coffee & reading hour with no phones"
+    ],
+    venues: [
+      { name: "Paper Crane Books", detail: "Nook seating · staff picks" },
+      { name: "Hearth Café", detail: "Cozy sofas · oat matcha" },
+      { name: "Central Green", detail: "Shaded lawn for post-read chat" }
+    ],
+    windows: ["Fri · 5:45 PM", "Sat · 3:00 PM"],
+    anchorTime: "Fri · 5:45 PM"
+  }];
+  const [activeMeetup, setActiveMeetup] = useState(meetupPlans[0]);
 
   // ------------------------ //
   //     RENDER
@@ -255,6 +308,131 @@ const Home = () => {
               </Card>
             </TabsContent>
           </Tabs>
+        </section>
+
+        {/* AI LOCAL MEETUP PLANNER */}
+        <section>
+          <Card className="overflow-hidden border-2 border-[#f7c145]/50 bg-gradient-to-br from-white to-amber-50 dark:from-slate-900 dark:to-slate-900/40">
+            <div className="flex items-center justify-between gap-3 border-b px-6 py-4 dark:border-slate-800">
+              <div>
+                <Badge className="rounded-full bg-[#f7c145] text-black">New</Badge>
+                <CardTitle className="mt-2 text-2xl">AI Local Meetup Planner</CardTitle>
+                <CardDescription>Move from chat → confirmed plans without the back-and-forth.</CardDescription>
+              </div>
+              <div className="hidden items-center gap-2 rounded-full bg-black px-3 py-1 text-sm font-semibold text-white shadow-sm dark:bg-white dark:text-black md:flex">
+                <Sparkles className="h-4 w-4" /> Instant plan cards
+              </div>
+            </div>
+
+            <CardContent className="grid gap-6 px-6 py-6 lg:grid-cols-[1.2fr_1fr]">
+              <div className="space-y-4">
+                <div className="flex flex-wrap gap-2">
+                  {meetupPlans.map(plan => (
+                    <Button
+                      key={plan.id}
+                      variant={activeMeetup.id === plan.id ? "default" : "outline"}
+                      className={cn(
+                        "rounded-full border-amber-200 text-sm",
+                        activeMeetup.id === plan.id
+                          ? "bg-[#f7c145] text-black hover:bg-[#f5b92a]"
+                          : "bg-white/70 dark:bg-slate-900"
+                      )}
+                      onClick={() => setActiveMeetup(plan)}
+                    >
+                      {plan.label}
+                    </Button>
+                  ))}
+                </div>
+
+                <div className="rounded-2xl border bg-white/80 p-4 shadow-sm ring-1 ring-amber-100 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80 dark:ring-amber-200/20">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-sm text-slate-500 dark:text-slate-300">Suggested duo</p>
+                      <p className="text-lg font-semibold text-slate-900 dark:text-white">{activeMeetup.duo}</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">{activeMeetup.vibe}</p>
+                    </div>
+                    <Button
+                      className="bg-black text-white hover:bg-slate-800 dark:bg-white dark:text-black"
+                      onClick={() => handleNavigate("/messages", { requiresAuth: true })}
+                    >
+                      Send plan to chat
+                    </Button>
+                  </div>
+
+                  <div className="mt-4 grid gap-4 md:grid-cols-2">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white">
+                        <Wand2 className="h-4 w-4 text-amber-500" /> 3 meetup ideas
+                      </div>
+                      <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+                        {activeMeetup.ideas.map(idea => (
+                          <li key={idea} className="rounded-lg border border-amber-100 bg-amber-50/60 px-3 py-2 dark:border-amber-200/30 dark:bg-amber-50/5">
+                            {idea}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white">
+                        <MapPin className="h-4 w-4 text-amber-500" /> Local venues
+                      </div>
+                      <div className="space-y-2">
+                        {activeMeetup.venues.map(venue => (
+                          <div key={venue.name} className="rounded-lg border border-slate-200/80 bg-white px-3 py-2 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                            <p className="font-medium text-slate-900 dark:text-white">{venue.name}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{venue.detail}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="rounded-3xl border-2 border-amber-200 bg-white p-5 shadow-lg shadow-amber-100/60 dark:border-amber-200/50 dark:bg-slate-900">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold text-amber-600 dark:text-amber-300">Meetup Plan Card</p>
+                    <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-200">Ready to confirm</Badge>
+                  </div>
+                  <p className="mt-1 text-lg font-bold text-slate-900 dark:text-white">{activeMeetup.anchorTime}</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">AI found overlapping availability</p>
+
+                  <div className="mt-4 space-y-3 text-sm">
+                    {activeMeetup.windows.map(slot => (
+                      <div key={slot} className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-200">
+                        <Clock className="h-4 w-4 text-amber-500" /> {slot}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-4 flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-200">
+                    <CalendarCheck2 className="h-4 w-4 text-amber-500" />
+                    Auto-syncs to both calendars once they confirm in chat.
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <Button className="bg-[#f7c145] text-black" onClick={() => handleNavigate("/events", { requiresAuth: true })}>
+                      Confirm plan
+                    </Button>
+                    <Button variant="outline" onClick={() => handleNavigate("/messages", { requiresAuth: true })}>
+                      Share to thread
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200">
+                  <p className="font-semibold text-slate-900 dark:text-white">How it reduces friction</p>
+                  <ul className="mt-2 list-disc space-y-1 pl-5">
+                    <li>Pairs mutual interests from both profiles.</li>
+                    <li>Filters venues by distance, vibe, and accessibility.</li>
+                    <li>Locks only times that overlap for both calendars.</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </section>
 
         {/* EVENTS */}
