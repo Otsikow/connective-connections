@@ -29,6 +29,14 @@ import {
   Bot,
   Ban,
   IdCard,
+  Headset,
+  Sparkles,
+  Reply,
+  Tag,
+  FileText,
+  CheckCircle2,
+  BarChart3,
+  UploadCloud,
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import {
@@ -127,6 +135,68 @@ const Admin = () => {
         "Auto-verifies ID documents and profile photos to keep hosts and attendees safe with minimal manual review.",
       badge: "Auto-verify",
       icon: IdCard,
+    },
+  ];
+
+  const supportTools = [
+    {
+      title: "AI answers support tickets",
+      description:
+        "Routes inbound questions to the AI concierge with instant, on-brand responses before a human ever needs to step in.",
+      badge: "Instant replies",
+      icon: Bot,
+    },
+    {
+      title: "AI-generated solutions",
+      description:
+        "Drafts the exact troubleshooting steps, fixes, and follow-ups so the support queue keeps moving without manual typing.",
+      badge: "Step-by-step fixes",
+      icon: Sparkles,
+    },
+    {
+      title: "Auto-reply suggestions",
+      description:
+        "Surfaces the best reply for each ticket so admins can approve and send in one click or edit before sending.",
+      badge: "One-tap send",
+      icon: Reply,
+    },
+    {
+      title: "Categorisation (billing, login, behaviour issue, events)",
+      description:
+        "Auto-triages every message into billing, login, behaviour, or events so the right workflows and SLAs trigger instantly.",
+      badge: "Smart triage",
+      icon: Tag,
+    },
+    {
+      title: "Pre-written admin responses",
+      description:
+        "Keeps a library of saved replies and macros that the AI can insert or adapt to keep responses consistent and fast.",
+      badge: "Reusable macros",
+      icon: FileText,
+    },
+  ];
+
+  const supportAdminActions = [
+    {
+      title: "Approve / Reject AI replies",
+      description:
+        "Human-in-the-loop controls that let admins greenlight or decline AI suggestions before they reach members.",
+      badge: "Quality gate",
+      icon: CheckCircle2,
+    },
+    {
+      title: "Monitor AI error rate",
+      description:
+        "Tracks when AI falls back to humans or sends corrections so you can see failure patterns and improve training data.",
+      badge: "Reliability",
+      icon: BarChart3,
+    },
+    {
+      title: "Upload new FAQ content to train AI",
+      description:
+        "Drop in updated FAQs or playbooks and the AI refreshes its knowledge so answers stay accurate as policies change.",
+      badge: "Fresh knowledge",
+      icon: UploadCloud,
     },
   ];
 
@@ -460,6 +530,84 @@ const Admin = () => {
 
             <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
               Admin impact: dashboard stays clean, high-risk accounts are auto-suspended, and users get friendly AI nudges before issues reach your inbox.
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-amber-200/60 bg-gradient-to-b from-amber-50/60 via-background to-background shadow-sm dark:border-amber-900/60 dark:from-amber-950/20">
+          <CardHeader>
+            <CardTitle className="flex flex-col gap-1">
+              <span className="flex items-center gap-2 text-amber-700 dark:text-amber-200">
+                <Headset className="w-5 h-5" /> AI Automated Support Centre
+              </span>
+              <p className="text-sm font-normal text-muted-foreground">This makes support almost hands-free.</p>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold text-amber-700 dark:text-amber-200">Tools</p>
+                  <Badge variant="outline" className="border-amber-200/80 text-amber-700 dark:border-amber-800/80 dark:text-amber-200">
+                    AI responses
+                  </Badge>
+                </div>
+                <div className="space-y-3">
+                  {supportTools.map(({ title, description, badge, icon: Icon }) => (
+                    <div
+                      key={title}
+                      className="rounded-xl border border-amber-200/80 bg-white/60 p-3 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/50 dark:border-amber-900/60 dark:bg-amber-950/30"
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/15 text-amber-700 dark:bg-amber-900/60 dark:text-amber-100">
+                          <Icon className="h-5 w-5" />
+                        </span>
+                        <div className="space-y-1">
+                          <p className="font-semibold leading-tight">{title}</p>
+                          <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
+                        </div>
+                      </div>
+                      <Badge variant="secondary" className="mt-3 bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/60 dark:text-amber-100">
+                        {badge}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold text-amber-700 dark:text-amber-200">Admin actions</p>
+                  <Badge variant="outline" className="border-amber-200/80 text-amber-700 dark:border-amber-800/80 dark:text-amber-200">
+                    Control & QA
+                  </Badge>
+                </div>
+                <div className="space-y-3">
+                  {supportAdminActions.map(({ title, description, badge, icon: Icon }) => (
+                    <div
+                      key={title}
+                      className="rounded-xl border border-amber-200/80 bg-amber-50/70 p-3 shadow-sm dark:border-amber-900/60 dark:bg-amber-950/25"
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/15 text-amber-700 dark:bg-amber-900/60 dark:text-amber-100">
+                          <Icon className="h-5 w-5" />
+                        </span>
+                        <div className="space-y-1">
+                          <p className="font-semibold leading-tight">{title}</p>
+                          <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
+                        </div>
+                      </div>
+                      <Badge variant="outline" className="mt-3 border-amber-200/80 text-amber-700 dark:border-amber-800/80 dark:text-amber-200">
+                        {badge}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-amber-200/80 bg-amber-50/80 px-4 py-3 text-sm text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-100">
+              Impact: AI handles the bulk of support with human guardrails, giving admins faster first response times, consistent tone, and a feedback loop to keep training data fresh.
             </div>
           </CardContent>
         </Card>
