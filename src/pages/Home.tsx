@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+
 import {
   Card,
   CardContent,
@@ -10,12 +11,14 @@ import {
   CardTitle,
   CardDescription
 } from "@/components/ui/card";
+
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger
 } from "@/components/ui/tabs";
+
 import {
   Carousel,
   CarouselItem,
@@ -23,6 +26,7 @@ import {
   CarouselNext,
   CarouselPrevious
 } from "@/components/ui/carousel";
+
 import {
   Dialog,
   DialogContent,
@@ -41,7 +45,10 @@ import {
   MapPin,
   Clock,
   CalendarCheck2,
-  Wand2
+  Wand2,
+  CalendarClock,
+  ShieldCheck,
+  Sparkle
 } from "lucide-react";
 
 import { useSubscription } from "@/hooks/useSubscription";
@@ -154,7 +161,11 @@ const Home = () => {
       desc: "Guided prompts keep conversations natural and fun.",
       highlight: "Instant translation in 28 languages with Pro.",
       badge: "bg-rose-500/15 text-rose-600",
-      cta: { path: "/messages", requiresAuth: true, requiresSubscription: true },
+      cta: {
+        path: "/messages",
+        requiresAuth: true,
+        requiresSubscription: true
+      },
       spotlight: {
         avatar: generateAvatarUrl("Miguel spotlight"),
         name: "Miguel",
@@ -185,7 +196,7 @@ const Home = () => {
   };
 
   /* ------------------------------------------------------------ */
-  /* STATIC SAMPLE DATA */
+  /* DATA (EVENTS / COMMUNITIES / TESTIMONIALS) */
   /* ------------------------------------------------------------ */
 
   const events = [
@@ -222,64 +233,30 @@ const Home = () => {
     { author: "Malik", quote: "Hosting workshops has never been easier." }
   ];
 
-  const meetupPlans = [
+  /* ------------------------------------------------------------ */
+  /* AI GROUP FORMATION FEATURES */
+  /* ------------------------------------------------------------ */
+
+  const aiGroupFeatures = [
     {
-      id: "makers",
-      label: "Builders",
-      duo: "Ava + Leo",
-      vibe: "Product design • Front-end dev",
-      ideas: [
-        "Prototype swap at Indie Coffee Lab",
-        "Micro-design critique with 3 prompts",
-        "Sunset sketch walk along Riverside Park"
-      ],
-      venues: [
-        { name: "Indie Coffee Lab", detail: "Quiet tables · WiFi · Great light" },
-        { name: "Civic Innovation Hub", detail: "Whiteboards · outlets · casual" },
-        { name: "Riverside Promenade", detail: "Golden hour views · easy stroll" }
-      ],
-      windows: ["Thu · 6:30 PM", "Sat · 10:00 AM"],
-      anchorTime: "Thu · 6:30 PM"
+      title: "Smart clustering",
+      description:
+        "Groups 4–10 people who share interests, vibe, and free time windows.",
+      icon: <Sparkle className="h-5 w-5 text-amber-500" />
     },
     {
-      id: "outdoors",
-      label: "Outdoorsy",
-      duo: "Maya + Chris",
-      vibe: "Trail running • Photography",
-      ideas: [
-        "Golden-hour photo jog at Cedar Ridge",
-        "Smoothie cool-down and route swap",
-        "Trail gear show-and-tell back at the lot"
-      ],
-      venues: [
-        { name: "Cedar Ridge Loop", detail: "3.5 mi · light elevation" },
-        { name: "Sunrise Smoothies", detail: "Patio seating · 8 min away" },
-        { name: "Overlook Deck", detail: "Wide-angle skyline shots" }
-      ],
-      windows: ["Wed · 7:00 AM", "Sun · 8:30 AM"],
-      anchorTime: "Sun · 8:30 AM"
+      title: "Auto meetup planning",
+      description:
+        "Suggests names, venues, and dates so you can just say yes.",
+      icon: <CalendarClock className="h-5 w-5 text-emerald-500" />
     },
     {
-      id: "bookish",
-      label: "Bookish",
-      duo: "Nina + Harper",
-      vibe: "Lit fic • Cozy cafés",
-      ideas: [
-        "Two-chapter swap with annotated sticky notes",
-        "Mini book blind-date at the shelves",
-        "Slow coffee & reading hour with no phones"
-      ],
-      venues: [
-        { name: "Paper Crane Books", detail: "Nook seating · staff picks" },
-        { name: "Hearth Café", detail: "Cozy sofas · oat matcha" },
-        { name: "Central Green", detail: "Shaded lawn for post-read chat" }
-      ],
-      windows: ["Fri · 5:45 PM", "Sat · 3:00 PM"],
-      anchorTime: "Fri · 5:45 PM"
+      title: "Built-in safety",
+      description:
+        "RSVP tracking, chat moderation, and reminders are handled for you.",
+      icon: <ShieldCheck className="h-5 w-5 text-sky-500" />
     }
   ];
-
-  const [activeMeetup, setActiveMeetup] = useState(meetupPlans[0]);
 
   /* ------------------------------------------------------------ */
   /* RENDER */
@@ -290,32 +267,302 @@ const Home = () => {
       <div className="mx-auto w-full max-w-5xl space-y-10 px-4 py-8">
 
         {/* HERO */}
-        <!-- Same hero section as before... unchanged -->
+        <section className="rounded-3xl border bg-white p-6 shadow dark:bg-slate-900">
+          <Badge className="rounded-full bg-[#fff4d1] text-[#a0772d] px-3 py-1">
+            Experience connections differently
+          </Badge>
 
-        {/* AI COACH */}
-        <!-- Same AI coach section... unchanged -->
+          <h2 className="mt-4 text-3xl font-bold dark:text-white">
+            Find genuine friends & real experiences—no pressure.
+          </h2>
 
-        {/* FEATURES TABS */}
-        <!-- Same features tab section... unchanged -->
+          <p className="mt-2 text-slate-600 dark:text-slate-300">
+            Connective helps you find people you vibe with, join curated events,
+            and chat naturally.
+          </p>
 
-        {/* AI LOCAL MEETUP PLANNER */}
-        <!-- Same meetup planner section... unchanged -->
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button className="bg-[#f7c145] text-black" onClick={() => navigate("/signup")}>
+              Get started
+            </Button>
+            <Button variant="outline" onClick={() => navigate("/splash")}>
+              <PlayCircle className="h-4 w-4 mr-2" /> Watch demo
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => handleNavigate("/community", {
+                requiresAuth: true
+              })}
+            >
+              <Users className="h-4 w-4 mr-2" /> Explore community
+            </Button>
+          </div>
+        </section>
 
-        {/* EVENTS SLIDER */}
-        <!-- Same events section... unchanged -->
+        {/* FEATURES */}
+        <section>
+          <Tabs value={activeFeature} onValueChange={setActiveFeature}>
+            <TabsList className="grid grid-cols-4 mb-4 rounded-full bg-slate-100 p-1 dark:bg-slate-800">
+              {features.map(f => (
+                <TabsTrigger
+                  key={f.value}
+                  value={f.value}
+                  className="rounded-full text-sm data-[state=active]:bg-white data-[state=active]:text-black"
+                >
+                  {f.title.split(" ")[0]}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+
+            <TabsContent value={selected.value}>
+              <Card
+                className="cursor-pointer"
+                onClick={() =>
+                  handleNavigate(selected.cta.path, {
+                    requiresAuth: selected.cta.requiresAuth,
+                    requiresSubscription: selected.cta.requiresSubscription
+                  })
+                }
+              >
+                <CardHeader>
+                  <Badge className={cn("rounded-full px-3 py-1", selected.badge)}>
+                    {selected.highlight}
+                  </Badge>
+                  <CardTitle>{selected.title}</CardTitle>
+                  <CardDescription>{selected.desc}</CardDescription>
+                </CardHeader>
+                <CardContent className="flex items-center justify-between">
+                  <Button
+                    className="bg-[#f7c145] text-black"
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleNavigate(selected.cta.path, {
+                        requiresAuth: selected.cta.requiresAuth,
+                        requiresSubscription: selected.cta.requiresSubscription
+                      });
+                    }}
+                  >
+                    Continue
+                  </Button>
+                  <div className="flex items-center gap-3">
+                    <Avatar>
+                      <AvatarImage src={selected.spotlight.avatar} />
+                      <AvatarFallback>{selected.spotlight.name[0]}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-semibold">{selected.spotlight.name}</p>
+                      <p className="text-xs text-slate-500">
+                        {selected.spotlight.tagline}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </section>
+
+        {/* AI GROUP FORMATION */}
+        <section className="grid gap-4 md:grid-cols-[1.6fr_1fr]">
+          <Card className="border-amber-100 bg-amber-50/70 shadow-sm dark:border-amber-500/40 dark:bg-slate-900">
+            <CardHeader>
+              <div className="flex items-center gap-2 text-sm font-semibold text-amber-700 dark:text-amber-300">
+                <Sparkles className="h-4 w-4" />
+                AI Event Discovery & Group Formation
+              </div>
+              <CardTitle>Let AI gather the right 4–10 people</CardTitle>
+              <CardDescription>
+                We cluster people by interest, vibe, and availability, then
+                suggest the perfect meetup plan.
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent className="space-y-4">
+              <div className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm dark:border-amber-500/30 dark:bg-slate-950">
+                <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+                  Live example
+                </p>
+                <div className="mt-2 rounded-xl bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-500/10 dark:text-amber-100">
+                  “6 people near you love football and are free on Saturday.
+                  Want me to organise a friendly meetup?”
+                </div>
+
+                <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300">
+                  <Badge variant="secondary" className="bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-100">
+                    Suggested name, date & time
+                  </Badge>
+                  <Badge variant="secondary" className="bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-100">
+                    Automatic RSVPs
+                  </Badge>
+                  <Badge variant="secondary" className="bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-100">
+                    Group page with chat
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Feature list */}
+              <div className="grid gap-3 md:grid-cols-3">
+                {aiGroupFeatures.map(feature => (
+                  <div
+                    key={feature.title}
+                    className="rounded-xl border border-amber-200/60 bg-white p-3 text-sm dark:border-amber-500/30 dark:bg-slate-950"
+                  >
+                    <div className="flex items-center gap-2 font-semibold text-slate-900 dark:text-white">
+                      {feature.icon}
+                      {feature.title}
+                    </div>
+                    <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
+                      {feature.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  className="bg-[#f7c145] text-black"
+                  onClick={() => handleNavigate("/events", { requiresAuth: true })}
+                >
+                  Preview AI meetup
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    handleNavigate("/community", {
+                      requiresAuth: true,
+                      requiresSubscription: true
+                    })
+                  }
+                >
+                  Let AI form a group
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Right column — Group Autopilot */}
+          <Card className="h-full shadow-sm dark:bg-slate-900">
+            <CardHeader>
+              <CardTitle className="text-lg">Group autopilot</CardTitle>
+              <CardDescription>
+                AI keeps the momentum so meetups actually happen.
+OnClick {/* truncated because max answer length */}
+            </CardHeader>
+          </Card>
+        </section>
+
+        {/* EVENTS */}
+        <section>
+          <Card>
+            <CardHeader>
+              <CardTitle>Featured Experiences</CardTitle>
+              <CardDescription>Events near you</CardDescription>
+            </CardHeader>
+
+            <CardContent>
+              <Carousel>
+                <CarouselContent>
+                  {events.map(ev => (
+                    <CarouselItem key={ev.id} className="md:basis-1/2">
+                      <div
+                        className="rounded-xl border shadow-sm overflow-hidden cursor-pointer"
+                        onClick={() =>
+                          handleNavigate(`/events/${ev.id}`, {
+                            requiresAuth: true
+                          })
+                        }
+                      >
+                        <img
+                          src={ev.image}
+                          className="h-44 w-full object-cover"
+                          alt=""
+                        />
+                        <div className="p-4 space-y-2">
+                          <h3 className="font-semibold">{ev.title}</h3>
+                          <p className="text-sm text-slate-500">{ev.date}</p>
+                          <p className="text-sm text-slate-500">{ev.location}</p>
+
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm">{ev.attendees}+ going</span>
+
+                            <Button
+                              size="sm"
+                              className="bg-[#f7c145] text-black"
+                              onClick={e => {
+                                e.stopPropagation();
+                                handleNavigate(`/events/${ev.id}`, {
+                                  requiresAuth: true
+                                });
+                              }}
+                            >
+                              Join
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+
+                <div className="flex justify-end gap-2 mt-4">
+                  <CarouselPrevious className="h-8 w-8" />
+                  <CarouselNext className="h-8 w-8" />
+                </div>
+              </Carousel>
+            </CardContent>
+          </Card>
+        </section>
 
         {/* COMMUNITIES */}
-        <!-- Same communities section... unchanged -->
+        <section>
+          <Card>
+            <CardHeader>
+              <CardTitle>Communities You Should See</CardTitle>
+            </CardHeader>
+
+            <CardContent className="space-y-3">
+              {communities.map(c => (
+                <div
+                  key={c.name}
+                  className="rounded-xl border p-4 hover:border-[#f7c145] cursor-pointer"
+                >
+                  <p className="font-semibold">{c.name}</p>
+                  <p className="text-sm text-slate-500">{c.members}</p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </section>
 
         {/* TESTIMONIALS */}
-        <!-- Same testimonials section... unchanged -->
+        <section className="grid gap-6 md:grid-cols-2">
+          {testimonials.map(t => (
+            <Card key={t.author} className="shadow-sm">
+              <CardContent className="p-5">
+                <p className="text-lg font-medium">“{t.quote}”</p>
 
+                <div className="flex items-center gap-3 mt-4">
+                  <Avatar>
+                    <AvatarImage src={generateAvatarUrl(t.author)} />
+                    <AvatarFallback>{t.author[0]}</AvatarFallback>
+                  </Avatar>
+                  <span className="font-semibold">{t.author}</span>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </section>
       </div>
 
       {/* FLOATING CTA */}
       <Button
         className="fixed right-4 rounded-full bg-[#f7c145] text-black shadow-lg bottom-[calc(env(safe-area-inset-bottom,0px)+5.5rem)] sm:right-6 sm:bottom-[calc(env(safe-area-inset-bottom,0px)+5.75rem)]"
-        onClick={() => handleNavigate("/host/create-event", { requiresAuth: true })}
+        onClick={() =>
+          handleNavigate("/host/create-event", {
+            requiresAuth: true
+          })
+        }
       >
         <Send className="h-4 w-4 mr-2" /> Host an experience
       </Button>
@@ -329,10 +576,15 @@ const Home = () => {
               Premium communities and messaging require a Pro subscription.
             </DialogDescription>
           </DialogHeader>
+
           <DialogFooter>
             <Button
               className="bg-[#f7c145] text-black"
-              onClick={() => handleNavigate("/profile", { requiresAuth: true })}
+              onClick={() =>
+                handleNavigate("/profile", {
+                  requiresAuth: true
+                })
+              }
             >
               Subscribe
             </Button>
@@ -358,16 +610,20 @@ const Home = () => {
               Log in or create a free account to continue.
             </DialogDescription>
           </DialogHeader>
+
           <DialogFooter>
             <Button asChild variant="ghost">
               <Link
                 to="/login"
-                state={{ next: pendingPath ?? undefined }}
+                state={{
+                  next: pendingPath ?? undefined
+                }}
                 onClick={() => setShowAuthPrompt(false)}
               >
                 Sign in
               </Link>
             </Button>
+
             <Button
               className="bg-[#f7c145] text-black"
               onClick={() => {
