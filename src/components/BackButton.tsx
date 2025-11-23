@@ -46,7 +46,7 @@ const BackButton = ({
       size={size ?? "sm"}
       className={cn(
         // Merged styles from both branches
-        "sticky top-4 z-20 mt-4 gap-2 rounded-full px-4 sm:mt-4 md:mt-6",
+        "sticky top-4 z-20 mt-3 ms-2 gap-2 rounded-full px-4 sm:mt-4 sm:ms-0 md:mt-6",
         className,
       )}
       onClick={handleClick}
