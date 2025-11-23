@@ -32,9 +32,10 @@ async function verifyAdminRole(
     }
 
     const { data: isAdmin, error: roleError } = await supabase.rpc(
-      "is_admin",
+      "has_role",
       {
-        user_id: user.id,
+        _user_id: user.id,
+        _role: "admin",
       }
     );
 
