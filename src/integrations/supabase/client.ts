@@ -69,6 +69,11 @@ const createStubClient = (): SupabaseClient<Database> => {
   const error = createNotConfiguredError();
   const subscription = { unsubscribe: () => {} };
   const builder = createStubQueryBuilder();
+  const channel = () => ({
+    on: () => channel(),
+    subscribe: () => ({ data: { subscription }, error: null }),
+    unsubscribe: () => {},
+  });
 
   return {
     auth: {
@@ -92,6 +97,8 @@ const createStubClient = (): SupabaseClient<Database> => {
       signOut: async () => ({ error }),
     },
     from: () => builder,
+    channel,
+    removeChannel: () => {},
   } as unknown as SupabaseClient<Database>;
 };
 
