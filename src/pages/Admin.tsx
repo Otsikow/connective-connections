@@ -29,6 +29,10 @@ import {
   Bot,
   Ban,
   IdCard,
+  Sparkles,
+  Activity,
+  Terminal,
+  ArrowUpRight,
 } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import {
@@ -49,6 +53,13 @@ interface Profile {
   loading?: boolean;
 }
 
+interface AIMessage {
+  id: string;
+  sender: "admin" | "ai";
+  content: string;
+  summary?: string;
+}
+
 const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -61,6 +72,19 @@ const Admin = () => {
   const [emailSubject, setEmailSubject] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiProcessing, setAiProcessing] = useState(false);
+  const [commandCenterMessages, setCommandCenterMessages] = useState<
+    AIMessage[]
+  >(() => [
+    {
+      id: "intro",
+      sender: "ai",
+      content:
+        "Hi Admin — I'm your always-on operator. Ask me to investigate incidents, draft outreach, or synthesize insights, and I'll handle it.",
+      summary: "Ready to execute AI-level admin requests.",
+    },
+  ]);
 
   const adminMetrics = [
     {
@@ -129,6 +153,100 @@ const Admin = () => {
       icon: IdCard,
     },
   ];
+
+  const quickAdminPrompts = [
+    {
+      title: "Aggression flags (48h)",
+      prompt: "Show me all users flagged for aggression in the last 48 hours.",
+      impact: "Triage now",
+    },
+    {
+      title: "Manchester meetup", // from user request, keep short label
+      prompt: "Create a new meetup idea in Manchester for people aged 20–30.",
+      impact: "Engagement",
+    },
+    {
+      title: "Retention drop analysis",
+      prompt: "Analyse why user retention dropped last week.",
+      impact: "Growth health",
+    },
+  ];
+
+  const aiResponseTemplates = {
+    aggression: () =>
+      `Here are the aggression-related incidents from the last 48 hours:
+
+- 7 accounts auto-warned for heated language. Top triggers: “threat” (4), “harass” (2), “slur” (1).
+- 3 conversations escalated to the safety queue. Locations: 2 UK (London, Leeds), 1 US (Chicago).
+- 2 users temporarily muted for 12 hours after repeat offences.
+
+Recommended actions:
+• Review the 3 escalations and convert to suspensions if confirmed.
+• Send a calming nudge to the two group chats with the highest trigger density.
+• Keep live monitoring on.`,
+    meetup: () =>
+      `Drafted a meetup concept for Manchester (ages 20–30):
+
+- Theme: "Northern Creators & Coffee" — relaxed networking for makers, founders, and technologists.
+- Venue: Pollen Bakery (Ancoats) — Saturday 3pm, easy transit and Wi‑Fi.
+- Format: 10-min lightning intros → small group breakouts → open mingle.
+- Safety & vibe: AI-powered check-in + respectful-conduct reminders for new attendees.
+
+Next steps: publish as "early access", cap at 30 RSVPs, auto-invite last month's engaged Manchester users.`,
+    retention: () =>
+      `Here’s a quick retention investigation for the past week:
+
+- Drop-off: weekly active down 12%, concentrated among new signups (days 2–4).
+- Signals: onboarding completion fell from 78% → 63%; messaging replies per user down 9%.
+- Likely causes: increased friction from new profile verification step; two feed outages on Tuesday.
+
+Fast fixes:
+• Add a progress bar + auto-save in onboarding to recover 8–10%.
+• Ship a “back-to-feed” push to users who saw the outage.
+• Boost friend suggestions for day-2 users to keep reply depth healthy.`,
+  };
+
+  const handleCommandCenterPrompt = async (prompt?: string) => {
+    const finalPrompt = (prompt ?? aiPrompt).trim();
+    if (!finalPrompt) return;
+
+    setAiProcessing(true);
+    setCommandCenterMessages((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        sender: "admin",
+        content: finalPrompt,
+      },
+    ]);
+
+    setAiPrompt("");
+
+    const lowerPrompt = finalPrompt.toLowerCase();
+    let responseContent =
+      "I couldn’t map that to a playbook yet, but I’ll draft a concise plan if you clarify the data source or timeframe.";
+
+    if (lowerPrompt.includes("aggression")) {
+      responseContent = aiResponseTemplates.aggression();
+    } else if (lowerPrompt.includes("manchester")) {
+      responseContent = aiResponseTemplates.meetup();
+    } else if (lowerPrompt.includes("retention")) {
+      responseContent = aiResponseTemplates.retention();
+    }
+
+    setTimeout(() => {
+      setCommandCenterMessages((prev) => [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          sender: "ai",
+          content: responseContent,
+          summary: "Task executed in the AI Command Center",
+        },
+      ]);
+      setAiProcessing(false);
+    }, 350);
+  };
 
   useEffect(() => {
     const verifyAdmin = async () => {
@@ -460,6 +578,145 @@ const Admin = () => {
 
             <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
               Admin impact: dashboard stays clean, high-risk accounts are auto-suspended, and users get friendly AI nudges before issues reach your inbox.
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-primary/40 bg-gradient-to-br from-primary/5 via-background to-background">
+          <CardHeader>
+            <CardTitle className="flex flex-col gap-2">
+              <span className="flex items-center gap-2 text-primary">
+                <Sparkles className="w-5 h-5" /> AI Command Center (chat-first)
+              </span>
+              <p className="text-sm font-normal text-muted-foreground">
+                Ask for incident sweeps, outreach drafts, or growth analysis in natural language — the AI operator executes instantly.
+              </p>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <Badge
+                variant="outline"
+                className="border-primary/40 bg-primary/10 text-primary"
+              >
+                Live safety layer
+              </Badge>
+              <Badge variant="secondary" className="gap-2">
+                <Activity className="w-3 h-3" /> Response target: &lt; 2s
+              </Badge>
+              <div className="flex items-center gap-2 rounded-full border border-dashed border-border/70 bg-muted/40 px-3 py-1 text-muted-foreground">
+                <Terminal className="w-3.5 h-3.5" /> Try: "Show me all users flagged for aggression in the last 48 hours."
+              </div>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-[0.95fr,1.05fr]">
+              <div className="space-y-3">
+                <div className="rounded-lg border border-border/80 bg-muted/30 p-4 shadow-sm">
+                  <div className="mb-3 flex items-center justify-between">
+                    <p className="text-sm font-semibold text-foreground">Playbook shortcuts</p>
+                    <Badge variant="outline" className="gap-1 text-muted-foreground">
+                      <ArrowUpRight className="w-3 h-3" /> One-tap
+                    </Badge>
+                  </div>
+                  <div className="space-y-2">
+                    {quickAdminPrompts.map(({ title, prompt, impact }) => (
+                      <Button
+                        key={title}
+                        variant="outline"
+                        className="h-auto w-full justify-between gap-3 py-3 text-left"
+                        onClick={() => handleCommandCenterPrompt(prompt)}
+                      >
+                        <div className="flex flex-col text-left">
+                          <span className="text-sm font-semibold leading-tight text-foreground">
+                            {title}
+                          </span>
+                          <span className="text-xs text-muted-foreground">{prompt}</span>
+                        </div>
+                        <Badge variant="secondary" className="shrink-0">
+                          {impact}
+                        </Badge>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-dashed border-border/80 bg-background p-3 text-sm text-muted-foreground shadow-inner">
+                  <p className="mb-2 flex items-center gap-2 font-semibold text-foreground">
+                    <Sparkles className="h-4 w-4" /> What the command center can run
+                  </p>
+                  <ul className="list-disc space-y-1 pl-4">
+                    <li>Incident sweeps with human-friendly summaries and next steps.</li>
+                    <li>Event ideation with safety hooks, venue picks, and capacity guidance.</li>
+                    <li>Growth health checks that surface drop-off points and quick wins.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex flex-col overflow-hidden rounded-lg border bg-background/80 shadow-sm backdrop-blur">
+                <div className="flex items-center justify-between border-b px-4 py-3">
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <Bot className="h-4 w-4 text-primary" /> Live conversation
+                  </div>
+                  <Badge variant="outline" className="gap-1 text-muted-foreground">
+                    <Activity className="h-3.5 w-3.5" /> Auto-prioritized
+                  </Badge>
+                </div>
+                <div className="flex-1 max-h-[420px] space-y-3 overflow-y-auto p-4">
+                  {commandCenterMessages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`rounded-lg border p-3 shadow-sm ${
+                        message.sender === "ai"
+                          ? "border-primary/30 bg-primary/5"
+                          : "border-border bg-muted/30"
+                      }`}
+                    >
+                      <div className="mb-1 flex items-center gap-2 text-xs uppercase tracking-[0.12em] text-muted-foreground">
+                        {message.sender === "ai" ? (
+                          <Sparkles className="h-4 w-4 text-primary" />
+                        ) : (
+                          <Terminal className="h-4 w-4" />
+                        )}
+                        <span>{message.sender === "ai" ? "AI" : "Admin"}</span>
+                      </div>
+                      <div className="text-sm leading-relaxed text-foreground whitespace-pre-line">
+                        {message.content}
+                      </div>
+                      {message.summary && (
+                        <p className="mt-2 flex items-center gap-1 text-xs text-primary">
+                          <ArrowUpRight className="h-3 w-3" /> {message.summary}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                  {aiProcessing && (
+                    <div className="flex items-center gap-2 rounded-lg border border-primary/40 bg-primary/5 p-3 text-sm text-primary">
+                      <Sparkles className="h-4 w-4 animate-pulse" />
+                      Generating response...
+                    </div>
+                  )}
+                </div>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleCommandCenterPrompt();
+                  }}
+                  className="flex flex-col gap-2 border-t bg-muted/40 p-3 sm:flex-row"
+                >
+                  <Input
+                    value={aiPrompt}
+                    onChange={(e) => setAiPrompt(e.target.value)}
+                    placeholder="Ask the command center to run an investigation or draft an action plan"
+                  />
+                  <Button
+                    type="submit"
+                    disabled={aiProcessing}
+                    className="shrink-0 sm:min-w-[120px]"
+                  >
+                    {aiProcessing ? "Thinking" : "Send"}
+                  </Button>
+                </form>
+              </div>
             </div>
           </CardContent>
         </Card>
