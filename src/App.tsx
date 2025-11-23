@@ -34,6 +34,7 @@ import HostDashboard from "./pages/HostDashboard";
 import HostEvent from "./pages/HostEvent";
 import HostCreateExperience from "./pages/HostCreateExperience";
 import Dashboard from "./pages/Dashboard";
+import AISystemControls from "./pages/AISystemControls";
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback";
 import Privacy from "./pages/legal/Privacy";
@@ -83,6 +84,7 @@ const AnimatedRoutes = () => {
         <Route path="/host/create-experience" element={<PageTransition><HostCreateExperience /></PageTransition>} />
         <Route path="/host/event" element={<PageTransition><HostEvent /></PageTransition>} />
         <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
+        <Route path="/ai-system-controls" element={<PageTransition><AISystemControls /></PageTransition>} />
 
         {/* Legal */}
         <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />
