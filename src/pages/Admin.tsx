@@ -16,7 +16,20 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Shield, Mail, Users, Settings, Send, Music, Timer, Globe } from "lucide-react";
+import {
+  Shield,
+  Mail,
+  Users,
+  Settings,
+  Send,
+  Music,
+  Timer,
+  Globe,
+  ShieldCheck,
+  Bot,
+  Ban,
+  IdCard,
+} from "lucide-react";
 import BackButton from "@/components/BackButton";
 import {
   Table,
@@ -83,6 +96,37 @@ const Admin = () => {
       title: "Countries reached",
       value: "9",
       icon: Globe,
+    },
+  ];
+
+  const safetyFeatures = [
+    {
+      title: "Harassment & threat detection",
+      description:
+        "Automatically scans messages for harassment, threats, or inappropriate content and issues AI-crafted warnings before it escalates.",
+      badge: "Auto-warn live",
+      icon: ShieldCheck,
+    },
+    {
+      title: "Suspicious account flagging",
+      description:
+        "Surfaces risky behavior patterns, flags suspect accounts, and queues them for instant follow-up or automated suspension.",
+      badge: "Risk scoring on",
+      icon: Ban,
+    },
+    {
+      title: "Bot, spam, and scam detection",
+      description:
+        "Filters bots and spammers in real time so community spaces stay clean without hands-on moderation.",
+      badge: "Active filter",
+      icon: Bot,
+    },
+    {
+      title: "ID & profile verification",
+      description:
+        "Auto-verifies ID documents and profile photos to keep hosts and attendees safe with minimal manual review.",
+      badge: "Auto-verify",
+      icon: IdCard,
     },
   ];
 
@@ -376,6 +420,46 @@ const Admin = () => {
                   </p>
                 </div>
               ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-primary/30 bg-primary/5">
+          <CardHeader>
+            <CardTitle className="flex flex-col gap-1">
+              <span className="flex items-center gap-2 text-primary">
+                <ShieldCheck className="w-5 h-5" /> AI-powered safety & behaviour monitoring
+              </span>
+              <p className="text-sm font-normal text-muted-foreground">
+                Automated guardrails that scan conversations, flag risks, and protect the community so you don't have to manually police behaviour.
+              </p>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {safetyFeatures.map(({ title, description, badge, icon: Icon }) => (
+                <div
+                  key={title}
+                  className="rounded-xl border border-primary/20 bg-background/60 p-4 shadow-sm"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <Icon className="h-5 w-5" />
+                      </span>
+                      <p className="font-semibold leading-tight">{title}</p>
+                    </div>
+                    <Badge variant="outline" className="border-primary/40 text-primary">
+                      {badge}
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
+              Admin impact: dashboard stays clean, high-risk accounts are auto-suspended, and users get friendly AI nudges before issues reach your inbox.
             </div>
           </CardContent>
         </Card>
