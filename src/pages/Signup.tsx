@@ -29,6 +29,7 @@ import {
 } from "@/integrations/supabase/client";
 import BackButton from "@/components/BackButton";
 import { cn } from "@/lib/utils";
+import { resetOnboardingProgress } from "@/lib/onboarding";
 
 const SIGNUP_STEPS = [
   {
@@ -126,7 +127,7 @@ const Signup = () => {
   const nextPath =
     typeof locationState?.next === "string" && locationState.next.length > 0
       ? locationState.next
-      : "/profile-setup";
+      : "/onboarding";
 
   const contactValue = authTab === "email" ? data.email.trim() : data.phone.trim();
   const passwordIsStrong = data.password.length >= 8;
@@ -161,6 +162,17 @@ const Signup = () => {
       return;
     }
 
+    resetOnboardingProgress();
+
+    if (!isSupabaseConfigured) {
+      toast({
+        title: "Account created",
+        description: "We saved your details. Let's personalize things together.",
+      });
+      navigate(nextPath);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const profileMetadata = {
@@ -187,9 +199,7 @@ const Signup = () => {
             "We sent a confirmation link. Verify your email, then log in with your new password.",
         });
 
-        if (signUpData.session) {
-          navigate(nextPath);
-        }
+        navigate(nextPath);
       } else {
         const { data: signUpData, error } = await supabase.auth.signUp({
           phone: data.phone,
@@ -206,9 +216,7 @@ const Signup = () => {
           description: "Enter the code we just texted you, then sign in with your password.",
         });
 
-        if (signUpData.session) {
-          navigate(nextPath);
-        }
+        navigate(nextPath);
       }
     } catch (error) {
       console.error(error);
@@ -233,7 +241,7 @@ const Signup = () => {
 
     try {
       const redirectUrl = `${getSupabaseRedirectUrl("/auth/callback")}?next=${encodeURIComponent(
-        "/profile-setup",
+        "/onboarding",
       )}`;
       await supabase.auth.signInWithOAuth({
         provider: "google",
