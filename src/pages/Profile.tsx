@@ -22,6 +22,7 @@ import BackButton from "@/components/BackButton";
 import { useSubscription, type SubscriptionTier } from "@/hooks/useSubscription";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useTheme } from "@/components/ThemeProvider";
+import { isSupabaseConfigured, supabase } from "@/integrations/supabase/client";
 import {
   createStripeBillingPortalSession,
   createStripeCheckoutSession,
@@ -38,6 +39,7 @@ import {
   MapPin,
   Palette,
   ShieldCheck,
+  ShieldAlert,
   Sparkles,
   Moon,
   Sun,
@@ -156,6 +158,9 @@ export default function Profile() {
     monthlyEventJoins,
     subscriptionExpires,
     openUpgrade,
+    fullName: subscriptionFullName,
+    email,
+    isVerified,
   } = useSubscription();
 
   const [billingCadence, setBillingCadence] = useState<BillingCadence>("monthly");
@@ -165,13 +170,14 @@ export default function Profile() {
   const [isPreferencesSaving, setIsPreferencesSaving] = useState(false);
   const [isNotificationsSaving, setIsNotificationsSaving] = useState(false);
   const [isSecuritySaving, setIsSecuritySaving] = useState(false);
+  const [isVerificationSending, setIsVerificationSending] = useState(false);
 
   const [profileForm, setProfileForm] = useState({
-    fullName: "Avery Johnson",
-    headline: "Designing gatherings that spark lasting friendships",
-    location: "Austin, Texas",
-    website: "avery.community",
-    bio: "Community architect, supper club host, and adventure seeker. I curate intimate gatherings that help ambitious people feel at home in new cities.",
+    fullName: subscriptionFullName ?? "",
+    headline: "",
+    location: "",
+    website: "",
+    bio: "",
   });
   const [focusAreas, setFocusAreas] = useState<string[]>([PROFILE_FOCUS_OPTIONS[0], PROFILE_FOCUS_OPTIONS[2]]);
   const [accentColor, setAccentColor] = useState<AccentColor>("emerald");
@@ -188,11 +194,31 @@ export default function Profile() {
     confirmPassword: "",
   });
 
+  useEffect(() => {
+    const fallbackName =
+      subscriptionFullName?.trim() || (email ? email.split("@")[0] : "");
+
+    if (!fallbackName) return;
+
+    setProfileForm((previous) => {
+      if (previous.fullName?.trim()) return previous;
+      return { ...previous, fullName: fallbackName };
+    });
+  }, [email, subscriptionFullName]);
+
   const formattedExpiration = useMemo(
     () => (subscriptionExpires ? formatDate(subscriptionExpires) : null),
     [subscriptionExpires]
   );
   const joinedDate = useMemo(() => formatDate(new Date("2023-04-19")), []);
+
+  const displayFullName =
+    profileForm.fullName.trim() ||
+    subscriptionFullName?.trim() ||
+    (email ? email.split("@")[0] : "Your profile");
+  const displayHeadline =
+    profileForm.headline.trim() || "Add a headline to let people know what you do.";
+  const displayLocation = profileForm.location.trim() || "Add your location";
 
   const badge = getBadgeForTier(tier);
   const connectionLimit = PLAN_LIMITS[tier].connections;
@@ -226,6 +252,49 @@ export default function Profile() {
   const showEventUpgradePrompt = useCallback(() => {
     openUpgrade({ message: "Join or host more events with a paid plan", highlightTier: "standard" });
   }, [openUpgrade]);
+
+  const handleVerificationRequest = useCallback(async () => {
+    if (!email) {
+      toast({
+        title: "Email required",
+        description: "Add an email address to your profile to request verification.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!isSupabaseConfigured) {
+      toast({
+        title: "Verification unavailable in preview",
+        description: "Email verification links require the live backend configuration.",
+      });
+      return;
+    }
+
+    setIsVerificationSending(true);
+    try {
+      const { error } = await supabase.auth.resend({ type: "signup", email });
+
+      if (error) throw error;
+
+      toast({
+        title: "Verification email sent",
+        description: `Check ${email} for your confirmation link.`,
+      });
+    } catch (error) {
+      console.error("verification:resend", error);
+      toast({
+        title: "Unable to send verification",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Please try again or contact support if the issue continues.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsVerificationSending(false);
+    }
+  }, [email, toast]);
 
   const handleProfileChange = useCallback(
     (field: keyof typeof profileForm) =>
@@ -457,19 +526,30 @@ export default function Profile() {
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-start gap-6">
               <Avatar className="h-20 w-20 border-4 border-background shadow-lg">
-                <AvatarImage src="https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=256&q=80" alt={profileForm.fullName} />
-                <AvatarFallback>{profileForm.fullName.slice(0, 2).toUpperCase()}</AvatarFallback>
+                <AvatarImage
+                  src="https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=256&q=80"
+                  alt={displayFullName}
+                />
+                <AvatarFallback>{displayFullName.slice(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
               <div className="space-y-3">
                 <div>
                   <p className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Profile</p>
-                  <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{profileForm.fullName}</h1>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{displayFullName}</h1>
+                    {isVerified && (
+                      <Badge className="flex items-center gap-1 bg-emerald-500/15 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-200">
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                        Verified
+                      </Badge>
+                    )}
+                  </div>
                 </div>
-                <p className="max-w-xl text-base text-muted-foreground">{profileForm.headline}</p>
+                <p className="max-w-xl text-base text-muted-foreground">{displayHeadline}</p>
                 <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                   <span className="flex items-center gap-2">
                     <MapPin className="h-4 w-4" />
-                    {profileForm.location}
+                    {displayLocation}
                   </span>
                   <span className="flex items-center gap-2">
                     <Sun className="h-4 w-4" />
@@ -507,6 +587,29 @@ export default function Profile() {
             </div>
           </div>
         </section>
+
+        {!isVerified && (
+          <div className="flex flex-col gap-4 rounded-2xl border border-amber-200/60 bg-amber-50/80 p-4 text-amber-900 shadow-sm dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-50 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <ShieldAlert className="mt-0.5 h-5 w-5" />
+              <div className="space-y-1">
+                <p className="text-sm font-semibold">Verify your account</p>
+                <p className="text-sm text-amber-900/80 dark:text-amber-50/80">
+                  Confirm your email to unlock trust cues and display a verified badge on your profile.
+                </p>
+              </div>
+            </div>
+            <Button
+              size="sm"
+              onClick={handleVerificationRequest}
+              disabled={isVerificationSending}
+              className="w-full sm:w-auto"
+            >
+              {isVerificationSending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Send verification link
+            </Button>
+          </div>
+        )}
 
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="space-y-6 lg:col-span-2">

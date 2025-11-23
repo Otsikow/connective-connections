@@ -21,7 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { PostgrestError } from "@supabase/supabase-js";
+import type { PostgrestError, User } from "@supabase/supabase-js";
 
 export type SubscriptionTier = "basic" | "standard" | "pro";
 
@@ -39,6 +39,7 @@ type SubscriptionContextValue = {
   userId: string | null;
   fullName: string | null;
   email: string | null;
+  isVerified: boolean;
   tier: SubscriptionTier;
   monthlyConnections: number;
   monthlyEventJoins: number;
@@ -68,6 +69,7 @@ const defaultProfileState = {
   subscriptionExpires: null as Date | null,
   fullName: null as string | null,
   email: null as string | null,
+  isVerified: false,
 };
 
 type ProfileUsage = Pick<
@@ -120,10 +122,22 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
   }, [resetProfileState]);
 
   const handleProfileLoaded = useCallback(
-    (profile: ProfileUsage | null | undefined) => {
+    (profile: ProfileUsage | null | undefined, user: User, isVerified: boolean) => {
       if (!isMountedRef.current) return;
+      const normalized = normalizeProfileUsage(profile ?? undefined);
+      const metadataName =
+        typeof user.user_metadata?.full_name === "string"
+          ? user.user_metadata.full_name
+          : typeof user.user_metadata?.name === "string"
+            ? user.user_metadata.name
+            : "";
+      const cleanedMetadataName = metadataName?.trim();
+
       setState({
-        ...normalizeProfileUsage(profile ?? undefined),
+        ...normalized,
+        fullName: normalized.fullName ?? cleanedMetadataName ?? user.email ?? null,
+        email: normalized.email ?? user.email ?? null,
+        isVerified,
         isLoading: false,
       });
     },
@@ -166,6 +180,10 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       }
 
       setUserId(session.user.id);
+
+      const verificationStatus = Boolean(
+        session.user.email_confirmed_at || session.user.phone_confirmed_at || session.user.confirmed_at,
+      );
 
       const loadProfile = async (id: string) => {
         try {
@@ -218,13 +236,13 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
                   variant: "destructive",
                 });
                 resetProfileState();
-                return;
-              }
-
-              handleProfileLoaded(inserted);
               return;
-            } catch (insertException) {
-              console.error("subscription:create-profile-exception", insertException);
+            }
+
+            handleProfileLoaded(inserted, session.user, verificationStatus);
+            return;
+          } catch (insertException) {
+            console.error("subscription:create-profile-exception", insertException);
               toast({
                 title: "Unable to prepare profile",
                 description:
@@ -236,7 +254,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
             }
           }
 
-          handleProfileLoaded(profile);
+          handleProfileLoaded(profile, session.user, verificationStatus);
         } catch (profileException) {
           console.error("subscription:profile-exception", profileException);
           resetProfileState();
@@ -410,6 +428,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       monthlyEventJoins: state.monthlyEventJoins,
       subscriptionExpires: state.subscriptionExpires,
       isLoading: state.isLoading,
+      isVerified: state.isVerified,
       attemptConnection,
       attemptEventJoin,
       refresh: fetchProfile,
@@ -428,6 +447,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       state.monthlyConnections,
       state.monthlyEventJoins,
       state.subscriptionExpires,
+      state.isVerified,
       state.tier,
       state.isLoading,
     ],
