@@ -98,7 +98,7 @@ const Events = () => {
       <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-br from-primary/5 via-background to-background">
         <BackButton
           fallbackPath="/home"
-          className="absolute left-6 top-6 z-10 bg-background/80 border border-border/60 text-foreground shadow-sm backdrop-blur-sm hover:bg-muted sm:left-10 sm:top-10"
+          className="absolute left-4 top-4 z-10 bg-background/80 border border-border/60 text-foreground shadow-sm backdrop-blur-sm hover:bg-muted sm:left-8 sm:top-6 md:left-12 md:top-8"
           ariaLabel="Go back"
         />
         <div className="absolute inset-y-0 -right-32 hidden md:block opacity-20 pointer-events-none">
