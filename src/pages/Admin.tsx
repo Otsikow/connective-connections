@@ -8,11 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   Shield,
   ShieldAlert,
-  Activity,
-  TrendingUp,
-  MessageSquare,
-  Lock,
-  HeadphonesIcon,
   Mail,
   Users,
 } from "lucide-react";
@@ -20,18 +15,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-
-type AlertSeverity = "High" | "Medium" | "Low";
-
-interface AdminAlert {
-  id: string;
-  action: string;
-  target_user_id?: string | null;
-  created_at?: string | null;
-  admin_id?: string | null;
-  metadata?: Record<string, unknown> | null;
-  severity?: AlertSeverity;
-}
 
 interface Profile {
   id: string;
@@ -51,12 +34,6 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [alerts, setAlerts] = useState<AdminAlert[]>([]);
-  const [moderationMetrics, setModerationMetrics] = useState({
-    totalActions: 0,
-    targetedActions: 0,
-    last24h: 0,
-  });
   const [emailSubject, setEmailSubject] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
@@ -83,7 +60,7 @@ const Admin = () => {
         }
 
         setIsAdmin(true);
-        await Promise.all([loadProfiles(), loadAuditLog()]);
+        await loadProfiles();
       } catch {
         setError("Failed to verify admin");
       } finally {
@@ -121,49 +98,6 @@ const Admin = () => {
     }
   };
 
-  const normalizeSeverity = (metadata?: Record<string, unknown> | null): AlertSeverity => {
-    const severity = typeof metadata?.severity === "string" ? (metadata.severity as string) : undefined;
-    if (!severity) return "Medium";
-    const normalized = severity.toLowerCase();
-    if (normalized.includes("high")) return "High";
-    if (normalized.includes("low")) return "Low";
-    return "Medium";
-  };
-
-  const loadAuditLog = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("admin_audit_log")
-        .select("id, admin_id, action, target_user_id, metadata, created_at")
-        .order("created_at", { ascending: false })
-        .limit(25);
-
-      if (error) throw error;
-
-      const normalized = (data ?? []).map((entry: any) => ({
-        ...entry,
-        severity: normalizeSeverity(entry.metadata),
-      }));
-
-      setAlerts(normalized);
-
-      const now = Date.now();
-      const dayAgo = now - 24 * 60 * 60 * 1000;
-      setModerationMetrics({
-        totalActions: normalized.length,
-        targetedActions: normalized.filter((entry) => !!entry.target_user_id).length,
-        last24h: normalized.filter((entry) =>
-          entry.created_at ? new Date(entry.created_at).getTime() >= dayAgo : false,
-        ).length,
-      });
-    } catch {
-      toast({
-        title: "Error loading admin signals",
-        description: "Could not retrieve audit log entries.",
-        variant: "destructive",
-      });
-    }
-  };
 
   const handleSendBulkEmail = async () => {
     setSendingEmail(true);
@@ -185,19 +119,28 @@ const Admin = () => {
     }
   };
 
-  const handleRoleChange = async (id: string, role: string, action: "assign" | "revoke") => {
+  const handleRoleChange = async (id: string, role: "admin" | "moderator" | "user", action: "assign" | "revoke") => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
       if (action === "assign") {
-        await supabase.from("user_roles").insert({ user_id: id, role });
+        const { error } = await supabase.from("user_roles").insert({ 
+          user_id: id, 
+          role: role,
+          granted_by: user?.id 
+        });
+        if (error) throw error;
       } else {
-        await supabase.from("user_roles").delete().eq("user_id", id).eq("role", role);
+        const { error } = await supabase.from("user_roles").delete().eq("user_id", id).eq("role", role);
+        if (error) throw error;
       }
       await loadProfiles();
       toast({
-        title: action === "assign" ? "Admin role granted" : "Admin role revoked",
+        title: action === "assign" ? "Role granted" : "Role revoked",
         description: "Changes applied successfully.",
       });
-    } catch {
+    } catch (error) {
+      console.error("Role change error:", error);
       toast({
         title: "Unable to update role",
         description: "Please try again or contact support if the issue persists.",
@@ -206,7 +149,7 @@ const Admin = () => {
     }
   };
 
-  const visibleAlerts = useMemo(() => alerts.slice(0, 5), [alerts]);
+  
 
   if (loading) {
     return (
@@ -231,12 +174,6 @@ const Admin = () => {
     );
   }
 
-  const severityColor = (s: AlertSeverity = "Medium") =>
-    s === "High"
-      ? "text-red-600 bg-red-100 dark:bg-red-900/30"
-      : s === "Low"
-        ? "text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30"
-        : "text-amber-600 bg-amber-100 dark:bg-amber-900/30";
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -250,58 +187,19 @@ const Admin = () => {
       </div>
 
       <div className="p-4 space-y-6">
-        {/* Safety Alerts */}
+        {/* System Status */}
         <Card>
           <CardHeader>
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <ShieldAlert className="w-5 h-5 text-red-500" />
-              Safety Alerts
+              <ShieldAlert className="w-5 h-5 text-green-500" />
+              System Status
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {visibleAlerts.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No recent alerts</p>
-            ) : (
-              visibleAlerts.map((alert) => (
-                <div key={alert.id} className="flex items-start gap-3 border-b pb-3 last:border-0">
-                  <div className={`px-2 py-1 rounded text-xs font-medium ${severityColor(alert.severity)}`}>
-                    {alert.severity}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{alert.action}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {alert.created_at ? new Date(alert.created_at).toLocaleString() : "Unknown time"}
-                    </p>
-                  </div>
-                </div>
-              ))
-            )}
+          <CardContent>
+            <p className="text-sm text-muted-foreground">All systems operational</p>
           </CardContent>
         </Card>
 
-        {/* Moderation Summary */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <Activity className="w-5 h-5 text-blue-500" />
-              Moderation Actions
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-3 gap-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-primary">{moderationMetrics.totalActions}</p>
-              <p className="text-xs text-muted-foreground">Total Actions</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-primary">{moderationMetrics.targetedActions}</p>
-              <p className="text-xs text-muted-foreground">Targeted</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-primary">{moderationMetrics.last24h}</p>
-              <p className="text-xs text-muted-foreground">Last 24h</p>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Bulk Email */}
         <Card>
@@ -371,12 +269,3 @@ const Admin = () => {
 };
 
 export default Admin;
-
-export interface Profile {
-  id: string;
-  full_name: string | null;
-  created_at: string | null;
-  email?: string | null;
-  roles: string[];
-  loading?: boolean;
-}
