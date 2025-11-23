@@ -146,6 +146,8 @@ const ACCENT_COLORS = [
 type NotificationKey = (typeof NOTIFICATION_OPTIONS)[number]["key"];
 type AccentColor = (typeof ACCENT_COLORS)[number]["value"];
 
+const PROFILE_STORAGE_KEY = "connective-profile-preferences";
+
 export default function Profile() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -153,6 +155,7 @@ export default function Profile() {
   usePageTitle("Your Profile");
   const { theme, setTheme } = useTheme();
   const {
+    userId,
     tier,
     monthlyConnections,
     monthlyEventJoins,
@@ -193,6 +196,45 @@ export default function Profile() {
     newPassword: "",
     confirmPassword: "",
   });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const storedProfile = window.localStorage.getItem(PROFILE_STORAGE_KEY);
+    if (!storedProfile) return;
+
+    try {
+      const parsed = JSON.parse(storedProfile) as Partial<{
+        profileForm: typeof profileForm;
+        focusAreas: string[];
+        accentColor: AccentColor;
+        notificationPrefs: Record<NotificationKey, boolean>;
+        twoFactorEnabled: boolean;
+      }>;
+
+      if (parsed.profileForm) {
+        setProfileForm((previous) => ({ ...previous, ...parsed.profileForm }));
+      }
+
+      if (Array.isArray(parsed.focusAreas) && parsed.focusAreas.length) {
+        setFocusAreas(parsed.focusAreas);
+      }
+
+      if (parsed.accentColor && ACCENT_COLORS.some((color) => color.value === parsed.accentColor)) {
+        setAccentColor(parsed.accentColor);
+      }
+
+      if (parsed.notificationPrefs) {
+        setNotificationPrefs((previous) => ({ ...previous, ...parsed.notificationPrefs }));
+      }
+
+      if (typeof parsed.twoFactorEnabled === "boolean") {
+        setTwoFactorEnabled(parsed.twoFactorEnabled);
+      }
+    } catch (error) {
+      console.error("profile:storage-load", error);
+    }
+  }, []);
 
   useEffect(() => {
     const fallbackName =
@@ -305,6 +347,20 @@ export default function Profile() {
     []
   );
 
+  const persistProfileState = useCallback(() => {
+    if (typeof window === "undefined") return;
+
+    const payload = {
+      profileForm,
+      focusAreas,
+      accentColor,
+      notificationPrefs,
+      twoFactorEnabled,
+    };
+
+    window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(payload));
+  }, [accentColor, focusAreas, notificationPrefs, profileForm, twoFactorEnabled]);
+
   const toggleFocusArea = useCallback((area: string) => {
     setFocusAreas((previous) =>
       previous.includes(area)
@@ -313,41 +369,90 @@ export default function Profile() {
     );
   }, []);
 
-  const handleProfileSave = useCallback(() => {
+  const handleProfileSave = useCallback(async () => {
     if (isProfileSaving) return;
+
+    if (isSupabaseConfigured && !userId) {
+      toast({
+        title: "Sign in to save",
+        description: "Log in to sync your profile details across devices.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsProfileSaving(true);
-    setTimeout(() => {
-      setIsProfileSaving(false);
+    try {
+      if (isSupabaseConfigured && userId) {
+        const { error } = await supabase
+          .from("profiles")
+          .update({
+            full_name: profileForm.fullName || null,
+            email: email ?? null,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", userId);
+
+        if (error) {
+          throw error;
+        }
+      }
+
+      persistProfileState();
       toast({
         title: "Profile updated",
-        description: "Your public details are now up to date.",
+        description: isSupabaseConfigured
+          ? "Your public details are now saved to your account."
+          : "Saved to this device. Sign in with the live app to sync your profile.",
       });
-    }, 700);
-  }, [isProfileSaving, toast]);
+    } catch (error) {
+      console.error("profile:save", error);
+      toast({
+        title: "Unable to save profile",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Please try again. If the issue continues, contact support.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProfileSaving(false);
+    }
+  }, [
+    email,
+    isProfileSaving,
+    isSupabaseConfigured,
+    persistProfileState,
+    profileForm.fullName,
+    toast,
+    userId,
+  ]);
 
   const handlePreferencesSave = useCallback(() => {
     if (isPreferencesSaving) return;
     setIsPreferencesSaving(true);
     setTimeout(() => {
       setIsPreferencesSaving(false);
+      persistProfileState();
       toast({
         title: "Preferences saved",
         description: "Theme, accent color, and accessibility settings updated.",
       });
     }, 600);
-  }, [isPreferencesSaving, toast]);
+  }, [isPreferencesSaving, persistProfileState, toast]);
 
   const handleNotificationsSave = useCallback(() => {
     if (isNotificationsSaving) return;
     setIsNotificationsSaving(true);
     setTimeout(() => {
       setIsNotificationsSaving(false);
+      persistProfileState();
       toast({
         title: "Notifications updated",
         description: "We'll tailor alerts to match your preferences.",
       });
     }, 600);
-  }, [isNotificationsSaving, toast]);
+  }, [isNotificationsSaving, persistProfileState, toast]);
 
   const handleSecurityChange = useCallback(
     (field: keyof typeof securityForm) =>
@@ -391,6 +496,7 @@ export default function Profile() {
     setTimeout(() => {
       setIsSecuritySaving(false);
       setSecurityForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      persistProfileState();
       toast({
         title: "Security updated",
         description: twoFactorEnabled
@@ -398,7 +504,7 @@ export default function Profile() {
           : "Consider enabling two-factor authentication to keep things extra secure.",
       });
     }, 800);
-  }, [isSecuritySaving, securityForm, toast, twoFactorEnabled]);
+  }, [isSecuritySaving, persistProfileState, securityForm, toast, twoFactorEnabled]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
