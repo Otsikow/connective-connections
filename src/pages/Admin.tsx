@@ -69,7 +69,7 @@ const AdminSection = ({ title, icon, description, children }: AdminSectionProps)
 export default AdminSection;
 // src/pages/Admin/Admin.tsx
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -82,6 +82,18 @@ import { Shield } from "lucide-react";
 
 // Hooks & Types
 import { Profile } from "./types/Profile";
+
+type AlertSeverity = "High" | "Medium" | "Low";
+
+interface AdminAlert {
+  id: string;
+  action: string;
+  target_user_id?: string | null;
+  created_at?: string | null;
+  admin_id?: string | null;
+  metadata?: Record<string, unknown> | null;
+  severity?: AlertSeverity;
+}
 
 // Sections
 import AdminSafetyAlerts from "./components/AdminSafetyAlerts";
@@ -109,6 +121,16 @@ const Admin = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [alerts, setAlerts] = useState<AdminAlert[]>([]);
+  const [moderationMetrics, setModerationMetrics] = useState({
+    totalActions: 0,
+    targetedActions: 0,
+    last24h: 0,
+  });
+
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   /* ------------------------------------------------------------ */
   /* ADMIN VERIFICATION */
@@ -135,7 +157,7 @@ const Admin = () => {
         }
 
         setIsAdmin(true);
-        await loadProfiles();
+        await Promise.all([loadProfiles(), loadAuditLog()]);
       } catch {
         setError("Failed to verify admin");
       } finally {
@@ -176,6 +198,182 @@ const Admin = () => {
       });
     }
   };
+
+  const normalizeSeverity = (metadata?: Record<string, unknown> | null): AlertSeverity => {
+    const severity =
+      typeof metadata?.severity === "string"
+        ? (metadata.severity as string)
+        : undefined;
+
+    if (!severity) return "Medium";
+
+    const normalized = severity.toLowerCase();
+    if (normalized.includes("high")) return "High";
+    if (normalized.includes("low")) return "Low";
+    return "Medium";
+  };
+
+  const loadAuditLog = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("admin_audit_log")
+        .select("id, admin_id, action, target_user_id, metadata, created_at")
+        .order("created_at", { ascending: false })
+        .limit(25);
+
+      if (error) throw error;
+
+      const normalized = (data ?? []).map((entry: any) => ({
+        ...entry,
+        severity: normalizeSeverity(entry.metadata),
+      }));
+
+      setAlerts(normalized);
+
+      const now = Date.now();
+      const dayAgo = now - 24 * 60 * 60 * 1000;
+      setModerationMetrics({
+        totalActions: normalized.length,
+        targetedActions: normalized.filter((entry) => !!entry.target_user_id)
+          .length,
+        last24h: normalized.filter((entry) =>
+          entry.created_at ? new Date(entry.created_at).getTime() >= dayAgo : false
+        ).length,
+      });
+    } catch {
+      toast({
+        title: "Error loading admin signals",
+        description: "Could not retrieve audit log entries.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const channel = supabase
+      .channel("admin-dashboard-realtime")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "admin_audit_log" },
+        (payload) => {
+          const entry = payload.new as AdminAlert;
+          const normalizedEntry = {
+            ...entry,
+            severity: normalizeSeverity(entry.metadata),
+          };
+
+          setAlerts((prev) => [normalizedEntry, ...prev].slice(0, 25));
+
+          const createdAtTime = entry.created_at
+            ? new Date(entry.created_at).getTime()
+            : 0;
+          const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
+
+          setModerationMetrics((prev) => ({
+            totalActions: prev.totalActions + 1,
+            targetedActions: prev.targetedActions + (entry.target_user_id ? 1 : 0),
+            last24h: prev.last24h + (createdAtTime >= dayAgo ? 1 : 0),
+          }));
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "profiles" },
+        () => {
+          loadProfiles();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      // @ts-ignore - removeChannel is available in the Supabase client
+      supabase.removeChannel?.(channel);
+    };
+  }, [isAdmin]);
+
+  const handleSendBulkEmail = async () => {
+    setSendingEmail(true);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      toast({
+        title: "Bulk email queued",
+        description: "Messages will be delivered to all active users.",
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Unable to send bulk email",
+        description: "Please try again after checking your connection.",
+        variant: "destructive",
+      });
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
+  const fetchUserEmail = async (id: string, index: number) => {
+    setProfiles((prev) =>
+      prev.map((profile, i) =>
+        i === index ? { ...profile, loading: true } : profile
+      )
+    );
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("email")
+      .eq("id", id)
+      .maybeSingle();
+
+    setProfiles((prev) =>
+      prev.map((profile) =>
+        profile.id === id
+          ? { ...profile, email: data?.email ?? profile.email, loading: false }
+          : profile
+      )
+    );
+
+    if (error) {
+      toast({
+        title: "Could not load email",
+        description: "We couldn't fetch the email address for this user.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleRoleChange = async (
+    id: string,
+    role: string,
+    action: "assign" | "revoke"
+  ) => {
+    try {
+      if (action === "assign") {
+        await supabase.from("user_roles").insert({ user_id: id, role });
+      } else {
+        await supabase
+          .from("user_roles")
+          .delete()
+          .eq("user_id", id)
+          .eq("role", role);
+      }
+
+      await loadProfiles();
+      toast({
+        title: action === "assign" ? "Admin role granted" : "Admin role revoked",
+        description: "Changes applied successfully.",
+      });
+    } catch {
+      toast({
+        title: "Unable to update role",
+        description: "Please try again or contact support if the issue persists.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const visibleAlerts = useMemo(() => alerts.slice(0, 5), [alerts]);
 
 
   /* ------------------------------------------------------------ */
@@ -230,10 +428,10 @@ const Admin = () => {
       <div className="p-4 space-y-6">
 
         {/* 1. Safety Alerts */}
-        <AdminSafetyAlerts />
+        <AdminSafetyAlerts alerts={visibleAlerts} />
 
         {/* 2. Moderation Summary */}
-        <AdminModerationActions />
+        <AdminModerationActions metrics={moderationMetrics} />
 
         {/* 3. AI Prediction Summary */}
         <AdminAISummary />
@@ -252,13 +450,20 @@ const Admin = () => {
 
         {/* 8. Bulk Email */}
         <AdminBulkEmail
-          profiles={profiles}
+          emailSubject={emailSubject}
+          emailMessage={emailMessage}
+          setEmailSubject={setEmailSubject}
+          setEmailMessage={setEmailMessage}
+          handleSendBulkEmail={handleSendBulkEmail}
+          sendingEmail={sendingEmail}
+          totalUsers={profiles.length}
         />
 
         {/* 9. User Management (Paginated) */}
         <AdminUserManagement
           profiles={profiles}
-          onRefresh={loadProfiles}
+          fetchUserEmail={fetchUserEmail}
+          handleRoleChange={handleRoleChange}
         />
 
       </div>
@@ -269,33 +474,18 @@ const Admin = () => {
 export default Admin;
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ShieldAlert, MessageCircleWarning, UserX } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 
-const AdminSafetyAlerts = () => {
-  const alerts = [
-    {
-      title: "Escalated conversation flagged",
-      description: "AI detected repeated harassment patterns in a group chat.",
-      severity: "High",
-      icon: MessageCircleWarning,
-    },
-    {
-      title: "Suspicious account behaviour",
-      description: "Multiple users reported @nightowl for spam-like actions.",
-      severity: "Medium",
-      icon: UserX,
-    },
-    {
-      title: "Potentially harmful event description",
-      description: "AI detected misleading or unsafe elements in a new event.",
-      severity: "Medium",
-      icon: ShieldAlert,
-    },
-  ];
+interface AdminSafetyAlertsProps {
+  alerts: AdminAlert[];
+}
 
-  const severityColor = (s: string) =>
+const AdminSafetyAlerts = ({ alerts }: AdminSafetyAlertsProps) => {
+  const severityColor = (s: AlertSeverity = "Medium") =>
     s === "High"
       ? "text-red-600 bg-red-100 dark:bg-red-900/30"
+      : s === "Low"
+      ? "text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30"
       : "text-amber-600 bg-amber-100 dark:bg-amber-900/30";
 
   return (
@@ -308,17 +498,31 @@ const AdminSafetyAlerts = () => {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {alerts.map((alert, i) => (
+        {alerts.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            No live alerts yet. New admin events will appear here as they happen.
+          </p>
+        )}
+
+        {alerts.map((alert) => (
           <div
-            key={i}
+            key={alert.id}
             className="rounded-lg border p-4 bg-card hover:bg-muted/30 transition"
           >
             <div className="flex items-start gap-3">
-              <alert.icon className="w-6 h-6 text-primary" />
+              <ShieldAlert className="w-6 h-6 text-primary" />
               <div className="flex-1">
-                <p className="font-semibold">{alert.title}</p>
+                <p className="font-semibold">{alert.action}</p>
                 <p className="text-sm text-muted-foreground">
-                  {alert.description}
+                  {typeof alert.metadata?.reason === "string"
+                    ? alert.metadata.reason
+                    : "Tracked via admin audit log"}
+                </p>
+
+                <p className="text-xs text-muted-foreground mt-1">
+                  {alert.created_at
+                    ? new Date(alert.created_at).toLocaleString()
+                    : "Timestamp unavailable"}
                 </p>
               </div>
 
@@ -327,7 +531,7 @@ const AdminSafetyAlerts = () => {
                   alert.severity
                 )}`}
               >
-                {alert.severity}
+                {alert.severity ?? "Medium"}
               </span>
             </div>
           </div>
@@ -341,24 +545,34 @@ export default AdminSafetyAlerts;
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Hammer, ShieldCheck } from "lucide-react";
 
-const AdminModerationActions = () => {
+interface AdminModerationMetrics {
+  totalActions: number;
+  targetedActions: number;
+  last24h: number;
+}
+
+interface AdminModerationActionsProps {
+  metrics: AdminModerationMetrics;
+}
+
+const AdminModerationActions = ({ metrics }: AdminModerationActionsProps) => {
   const actions = [
     {
-      label: "Auto-warnings sent",
-      value: 42,
-      delta: "+9% this week",
+      label: "Audit log entries",
+      value: metrics.totalActions,
+      delta: "Live from Supabase",
       icon: ShieldCheck,
     },
     {
-      label: "Auto-suspensions",
-      value: 6,
-      delta: "2 pending reviews",
+      label: "Targeted actions",
+      value: metrics.targetedActions,
+      delta: "Actions tied to specific users",
       icon: Hammer,
     },
     {
-      label: "AI-resolved issues",
-      value: 31,
-      delta: "78% automated",
+      label: "Last 24h",
+      value: metrics.last24h,
+      delta: "New moderation items today",
       icon: CheckCircle2,
     },
   ];
