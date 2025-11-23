@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, Sparkles } from "lucide-react";
@@ -28,10 +28,16 @@ const Login = () => {
   const location = useLocation();
   const { toast } = useToast();
   usePageTitle("Sign In to Connective Connections");
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const identifierLabel = useMemo(() => {
+    if (!identifier) return "Email or phone";
+    const looksLikePhone = /[^@a-zA-Z]/.test(identifier);
+    return looksLikePhone ? "Phone" : "Email";
+  }, [identifier]);
 
   const locationState = location.state as { next?: string } | null;
   const nextPath =
@@ -43,16 +49,30 @@ const Login = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!email || !password) {
+    if (!identifier || !password) {
       toast({
         title: "Missing information",
-        description: "Please enter both your email and password to continue.",
+        description: "Please enter your email or phone plus your password to continue.",
       });
       return;
     }
 
+    if (!isSupabaseConfigured) {
+      toast({
+        title: "Sign-in unavailable",
+        description:
+          "Live authentication is disabled in this preview build. Use the guided demo to explore the app.",
+      });
+      return;
+    }
+
+    const looksLikePhone = /[^@a-zA-Z]/.test(identifier);
+    const credentials = looksLikePhone
+      ? { phone: identifier.trim(), password }
+      : { email: identifier.trim(), password };
+
     setIsLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword(credentials);
 
     if (error) {
       toast({
@@ -189,21 +209,21 @@ const Login = () => {
             <form className="space-y-5" onSubmit={handleSubmit}>
               <div className="space-y-2">
                 <Label
-                  htmlFor="email"
+                  htmlFor="identifier"
                   className="text-sm font-medium text-slate-900 dark:text-slate-200"
                 >
-                  Email
+                  {identifierLabel}
                 </Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground dark:text-slate-400" />
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
+                    id="identifier"
+                    type="text"
+                    placeholder="you@example.com or +1 (555) 000-0000"
+                    value={identifier}
+                    onChange={(event) => setIdentifier(event.target.value)}
                     className="h-12 rounded-xl border-black/10 bg-white/60 pl-10 dark:border-white/10 dark:bg-white/10"
-                    autoComplete="email"
+                    autoComplete="username"
                   />
                 </div>
               </div>
