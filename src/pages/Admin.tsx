@@ -1,22 +1,3 @@
-src/
- └─ pages/
-     └─ Admin/
-         ├─ Admin.tsx                  ← Main unified dashboard
-         ├─ components/
-         │    ├─ AdminTopBar.tsx
-         │    ├─ AdminSafetyAlerts.tsx
-         │    ├─ AdminModerationActions.tsx
-         │    ├─ AdminAISummary.tsx
-         │    ├─ AdminPerformanceMonitor.tsx
-         │    ├─ AdminCommunicationsPulse.tsx
-         │    ├─ AdminSafetyFeatures.tsx
-         │    ├─ AdminSupportCenter.tsx
-         │    ├─ AdminBulkEmail.tsx
-         │    └─ AdminUserManagement.tsx
-         └─ hooks/
-              └─ useAdminPagination.ts
-// src/pages/Admin/hooks/useAdminPagination.ts
-
 import { useState } from "react";
 
 export function useAdminPagination<T>(data: T[], pageSize = 10) {
@@ -69,7 +50,7 @@ const AdminSection = ({ title, icon, description, children }: AdminSectionProps)
 export default AdminSection;
 // src/pages/Admin/Admin.tsx
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -78,7 +59,23 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 // Layout + UI
 import BackButton from "@/components/BackButton";
 import { Badge } from "@/components/ui/badge";
-import { Shield } from "lucide-react";
+import {
+  LucideIcon,
+  Shield,
+  ShieldAlert,
+  MessageCircleWarning,
+  UserPlus,
+  Users,
+  Hammer,
+  CheckCircle2,
+  Activity,
+  Gauge,
+  TrendingUp,
+  TrendingDown,
+  Bell,
+  Mail,
+  MessageSquare,
+} from "lucide-react";
 
 // Hooks & Types
 import { Profile } from "./types/Profile";
@@ -93,6 +90,50 @@ import AdminSafetyFeatures from "./components/AdminSafetyFeatures";
 import AdminSupportCenter from "./components/AdminSupportCenter";
 import AdminBulkEmail from "./components/AdminBulkEmail";
 import AdminUserManagement from "./components/AdminUserManagement";
+
+type Severity = "Low" | "Medium" | "High";
+
+interface SafetyAlert {
+  title: string;
+  description: string;
+  severity: Severity;
+  icon: LucideIcon;
+}
+
+interface ModerationAction {
+  label: string;
+  value: number;
+  delta: string;
+  icon: LucideIcon;
+}
+
+interface AIMetric {
+  title: string;
+  value: string;
+  description: string;
+  icon: LucideIcon;
+  accent: string;
+}
+
+interface PerformanceStat {
+  title: string;
+  value: number;
+  goal: string;
+  color: string;
+}
+
+interface CommunicationStat {
+  label: string;
+  value: number;
+  trend: string;
+  icon: LucideIcon;
+}
+
+interface SafetyFeatureStat {
+  name: string;
+  status: string;
+  detail: string;
+}
 
 
 /* ------------------------------------------------------------ */
@@ -109,6 +150,12 @@ const Admin = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [alerts, setAlerts] = useState<SafetyAlert[]>([]);
+  const [moderationActions, setModerationActions] = useState<ModerationAction[]>([]);
+  const [aiMetrics, setAiMetrics] = useState<AIMetric[]>([]);
+  const [performanceStats, setPerformanceStats] = useState<PerformanceStat[]>([]);
+  const [communicationStats, setCommunicationStats] = useState<CommunicationStat[]>([]);
+  const [safetyFeatureStats, setSafetyFeatureStats] = useState<SafetyFeatureStat[]>([]);
 
   /* ------------------------------------------------------------ */
   /* ADMIN VERIFICATION */
@@ -144,13 +191,13 @@ const Admin = () => {
     };
 
     verifyAdmin();
-  }, []);
+  }, [loadProfiles]);
 
   /* ------------------------------------------------------------ */
   /* LOAD USER PROFILES */
   /* ------------------------------------------------------------ */
 
-  const loadProfiles = async () => {
+  const loadProfiles = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from("profiles")
@@ -175,7 +222,278 @@ const Admin = () => {
         variant: "destructive",
       });
     }
-  };
+  }, [toast]);
+
+  const loadDashboardData = useCallback(async () => {
+    try {
+      const [profilesResponse, groupsResponse, membershipsResponse, rolesResponse] =
+        await Promise.all([
+          supabase
+            .from("profiles")
+            .select(
+              "id, full_name, email, created_at, monthly_connections, monthly_event_joins, subscription_tier",
+              { count: "exact" },
+            ),
+          supabase
+            .from("groups")
+            .select("id, created_at, is_premium, next_meeting", { count: "exact" }),
+          supabase.from("group_members").select("*", { count: "exact", head: true }),
+          supabase.from("user_roles").select("role"),
+        ]);
+
+      const profileRows = profilesResponse.data ?? [];
+      const groupRows = groupsResponse.data ?? [];
+
+      const adminCount = rolesResponse.data?.filter((r) => r.role === "admin").length ?? 0;
+      const moderatorCount =
+        rolesResponse.data?.filter((r) => r.role === "moderator").length ?? 0;
+
+      const totalProfiles = profilesResponse.count ?? profileRows.length;
+      const totalGroups = groupsResponse.count ?? groupRows.length;
+      const totalMemberships = membershipsResponse.count ?? 0;
+
+      const sortedProfiles = [...profileRows].sort((a, b) =>
+        (b.created_at ?? "").localeCompare(a.created_at ?? ""),
+      );
+
+      const sortedGroups = [...groupRows].sort((a, b) =>
+        (b.created_at ?? "").localeCompare(a.created_at ?? ""),
+      );
+
+      const newProfilesLastWeek = sortedProfiles.filter((profile) => {
+        if (!profile.created_at) return false;
+        const createdAt = new Date(profile.created_at);
+        const diff = Date.now() - createdAt.getTime();
+        return diff <= 7 * 24 * 60 * 60 * 1000;
+      }).length;
+
+      const alertsFromProfiles: SafetyAlert[] = sortedProfiles.slice(0, 2).map((profile) => ({
+        title: profile.full_name ? `New profile: ${profile.full_name}` : "New profile created",
+        description: profile.email
+          ? `Signed up with ${profile.email}`
+          : "Recently created account",
+        severity: "Medium",
+        icon: UserPlus,
+      }));
+
+      const topGroup = sortedGroups.at(0);
+      const alertsFromGroups: SafetyAlert[] = topGroup
+        ? [
+            {
+              title: "Community created",
+              description: topGroup.next_meeting
+                ? `Upcoming meetup on ${new Date(topGroup.next_meeting).toLocaleDateString()}`
+                : "New group awaiting first event",
+              severity: topGroup.is_premium ? "High" : "Medium",
+              icon: Users,
+            },
+          ]
+        : [];
+
+      const combinedAlerts = [...alertsFromProfiles, ...alertsFromGroups];
+
+      setAlerts(
+        combinedAlerts.length
+          ? combinedAlerts
+          : [
+              {
+                title: "No recent alerts",
+                description: "Live monitoring is active. New activity will appear here.",
+                severity: "Low",
+                icon: MessageCircleWarning,
+              },
+            ],
+      );
+
+      const groupMembershipRatio = totalGroups
+        ? Math.round((totalMemberships / totalGroups) * 10) / 10
+        : 0;
+
+      setModerationActions([
+        {
+          label: "Active profiles",
+          value: totalProfiles,
+          delta: `${newProfilesLastWeek} joined this week`,
+          icon: ShieldCheck,
+        },
+        {
+          label: "Groups monitored",
+          value: totalGroups,
+          delta: `${totalMemberships} memberships (${groupMembershipRatio} avg)`,
+          icon: Hammer,
+        },
+        {
+          label: "Admin coverage",
+          value: adminCount + moderatorCount,
+          delta: `${adminCount} admins / ${moderatorCount} mods`,
+          icon: CheckCircle2,
+        },
+      ]);
+
+      const totalConnections = profileRows.reduce(
+        (sum, profile) => sum + (profile.monthly_connections ?? 0),
+        0,
+      );
+
+      const totalEventJoins = profileRows.reduce(
+        (sum, profile) => sum + (profile.monthly_event_joins ?? 0),
+        0,
+      );
+
+      const avgConnections = totalProfiles ? Math.round(totalConnections / totalProfiles) : 0;
+      const avgEventJoins = totalProfiles ? Math.round(totalEventJoins / totalProfiles) : 0;
+      const premiumGroups = groupRows.filter((group) => group.is_premium).length;
+
+      setAiMetrics([
+        {
+          title: "User activity rise",
+          value: `${avgConnections}%`,
+          description: "Avg. monthly connections across profiles",
+          icon: Activity,
+          accent: "text-emerald-500",
+        },
+        {
+          title: "Event success forecast",
+          value: `${avgEventJoins}%`,
+          description: "Avg. monthly event joins",
+          icon: Gauge,
+          accent: "text-indigo-500",
+        },
+        {
+          title: "Premium communities",
+          value: `${premiumGroups}/${totalGroups || 1}`,
+          description: "Groups running premium experiences",
+          icon: TrendingUp,
+          accent: "text-blue-500",
+        },
+        {
+          title: "Churn prediction",
+          value: `${Math.max(2, 10 - avgConnections)}%`,
+          description: "Lower is better. Based on recent activity.",
+          icon: TrendingDown,
+          accent: "text-amber-500",
+        },
+      ]);
+
+      const engagementScore = Math.min(100, Math.max(5, avgConnections));
+      const retentionScore = Math.min(100, Math.max(5, avgEventJoins));
+      const coverageScore = totalGroups
+        ? Math.min(100, Math.round((premiumGroups / totalGroups) * 100))
+        : 0;
+
+      setPerformanceStats([
+        {
+          title: "Engagement strength",
+          value: engagementScore,
+          goal: "Target > 50%",
+          color: "text-emerald-500",
+        },
+        {
+          title: "Retention outlook",
+          value: retentionScore,
+          goal: "Goal steady growth",
+          color: "text-amber-500",
+        },
+        {
+          title: "Premium coverage",
+          value: coverageScore,
+          goal: `${premiumGroups} premium / ${totalGroups || 0} groups`,
+          color: "text-blue-500",
+        },
+      ]);
+
+      setCommunicationStats([
+        {
+          label: "Groups created",
+          value: totalGroups,
+          trend: `${sortedGroups.slice(0, 3).filter((group) => !!group.next_meeting).length} upcoming events`,
+          icon: Bell,
+        },
+        {
+          label: "Active memberships",
+          value: totalMemberships,
+          trend: groupMembershipRatio ? `${groupMembershipRatio} per group` : "No memberships yet",
+          icon: Users,
+        },
+        {
+          label: "Premium signals",
+          value: premiumGroups,
+          trend: premiumGroups ? "Upgrade momentum" : "Awaiting first premium group",
+          icon: Mail,
+        },
+        {
+          label: "Engaged profiles",
+          value: totalProfiles,
+          trend: `${avgConnections} avg connections`,
+          icon: MessageSquare,
+        },
+      ]);
+
+      setSafetyFeatureStats([
+        {
+          name: "Live profile monitoring",
+          status: `${totalProfiles} profiles tracked`,
+          detail: `${newProfilesLastWeek} new in the last 7 days`,
+        },
+        {
+          name: "Community coverage",
+          status: `${totalGroups} groups monitored`,
+          detail: `${premiumGroups} premium, ${totalMemberships} memberships`,
+        },
+        {
+          name: "Admin oversight",
+          status: `${adminCount + moderatorCount} staff accounts`,
+          detail: `${adminCount} admins and ${moderatorCount} moderators`,
+        },
+      ]);
+    } catch (err) {
+      console.error("admin-dashboard:load-data", err);
+      toast({
+        title: "Error loading admin data",
+        description: "Supabase data could not be refreshed.",
+        variant: "destructive",
+      });
+    }
+  }, [toast]);
+
+
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    loadDashboardData();
+
+    const channel = supabase
+      .channel("admin-dashboard")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "profiles" },
+        () => {
+          loadDashboardData();
+          loadProfiles();
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "groups" },
+        loadDashboardData,
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "group_members" },
+        loadDashboardData,
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "user_roles" },
+        loadDashboardData,
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [isAdmin, loadDashboardData, loadProfiles]);
+
 
 
   /* ------------------------------------------------------------ */
@@ -230,22 +548,22 @@ const Admin = () => {
       <div className="p-4 space-y-6">
 
         {/* 1. Safety Alerts */}
-        <AdminSafetyAlerts />
+        <AdminSafetyAlerts alerts={alerts} />
 
         {/* 2. Moderation Summary */}
-        <AdminModerationActions />
+        <AdminModerationActions actions={moderationActions} />
 
         {/* 3. AI Prediction Summary */}
-        <AdminAISummary />
+        <AdminAISummary metrics={aiMetrics} />
 
         {/* 4. AI Performance Monitor */}
-        <AdminPerformanceMonitor />
+        <AdminPerformanceMonitor stats={performanceStats} />
 
         {/* 5. Communications Pulse */}
-        <AdminCommunicationsPulse />
+        <AdminCommunicationsPulse stats={communicationStats} />
 
         {/* 6. Safety Features */}
-        <AdminSafetyFeatures />
+        <AdminSafetyFeatures featureStats={safetyFeatureStats} />
 
         {/* 7. AI Support Center */}
         <AdminSupportCenter />
@@ -269,34 +587,14 @@ const Admin = () => {
 export default Admin;
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ShieldAlert, MessageCircleWarning, UserX } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 
-const AdminSafetyAlerts = () => {
-  const alerts = [
-    {
-      title: "Escalated conversation flagged",
-      description: "AI detected repeated harassment patterns in a group chat.",
-      severity: "High",
-      icon: MessageCircleWarning,
-    },
-    {
-      title: "Suspicious account behaviour",
-      description: "Multiple users reported @nightowl for spam-like actions.",
-      severity: "Medium",
-      icon: UserX,
-    },
-    {
-      title: "Potentially harmful event description",
-      description: "AI detected misleading or unsafe elements in a new event.",
-      severity: "Medium",
-      icon: ShieldAlert,
-    },
-  ];
-
-  const severityColor = (s: string) =>
-    s === "High"
-      ? "text-red-600 bg-red-100 dark:bg-red-900/30"
-      : "text-amber-600 bg-amber-100 dark:bg-amber-900/30";
+const AdminSafetyAlerts = ({ alerts }: { alerts: SafetyAlert[] }) => {
+  const severityColor = (s: Severity) => {
+    if (s === "High") return "text-red-600 bg-red-100 dark:bg-red-900/30";
+    if (s === "Low") return "text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30";
+    return "text-amber-600 bg-amber-100 dark:bg-amber-900/30";
+  };
 
   return (
     <Card>
@@ -308,6 +606,10 @@ const AdminSafetyAlerts = () => {
       </CardHeader>
 
       <CardContent className="space-y-4">
+        {!alerts.length && (
+          <p className="text-sm text-muted-foreground">No live alerts yet.</p>
+        )}
+
         {alerts.map((alert, i) => (
           <div
             key={i}
@@ -339,29 +641,10 @@ const AdminSafetyAlerts = () => {
 
 export default AdminSafetyAlerts;
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { CheckCircle2, Hammer, ShieldCheck } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
-const AdminModerationActions = () => {
-  const actions = [
-    {
-      label: "Auto-warnings sent",
-      value: 42,
-      delta: "+9% this week",
-      icon: ShieldCheck,
-    },
-    {
-      label: "Auto-suspensions",
-      value: 6,
-      delta: "2 pending reviews",
-      icon: Hammer,
-    },
-    {
-      label: "AI-resolved issues",
-      value: 31,
-      delta: "78% automated",
-      icon: CheckCircle2,
-    },
-  ];
+const AdminModerationActions = ({ actions }: { actions: ModerationAction[] }) => {
+  const hasData = actions.length > 0;
 
   return (
     <Card>
@@ -373,6 +656,8 @@ const AdminModerationActions = () => {
       </CardHeader>
 
       <CardContent className="grid gap-4 sm:grid-cols-3">
+        {!hasData && <p className="text-sm text-muted-foreground">No moderation stats yet.</p>}
+
         {actions.map((a) => (
           <div
             key={a.label}
@@ -395,39 +680,9 @@ const AdminModerationActions = () => {
 export default AdminModerationActions;
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Activity, Gauge, TrendingUp, TrendingDown } from "lucide-react";
 
-const AdminAISummary = () => {
-  const metrics = [
-    {
-      title: "User activity rise",
-      value: "+14%",
-      description: "Driven by AI onboarding nudges.",
-      icon: Activity,
-      accent: "text-emerald-500",
-    },
-    {
-      title: "Event success prediction",
-      value: "82%",
-      description: "Strong turnout forecast.",
-      icon: Gauge,
-      accent: "text-indigo-500",
-    },
-    {
-      title: "Communities trending up",
-      value: "6",
-      description: "AI engagement boosts working.",
-      icon: TrendingUp,
-      accent: "text-blue-500",
-    },
-    {
-      title: "Churn prediction",
-      value: "3.1%",
-      description: "Down by 0.7% after interventions.",
-      icon: TrendingDown,
-      accent: "text-amber-500",
-    },
-  ];
+const AdminAISummary = ({ metrics }: { metrics: AIMetric[] }) => {
+  const hasData = metrics.length > 0;
 
   return (
     <Card>
@@ -438,6 +693,8 @@ const AdminAISummary = () => {
       </CardHeader>
 
       <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {!hasData && <p className="text-sm text-muted-foreground">No AI metrics available.</p>}
+
         {metrics.map((m) => (
           <div
             key={m.title}
@@ -463,27 +720,8 @@ export default AdminAISummary;
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
-const AdminPerformanceMonitor = () => {
-  const stats = [
-    {
-      title: "AI moderation accuracy",
-      value: 92,
-      goal: "95% goal",
-      color: "text-emerald-500",
-    },
-    {
-      title: "False positives",
-      value: 6,
-      goal: "Dropping weekly",
-      color: "text-amber-500",
-    },
-    {
-      title: "Pending human reviews",
-      value: 14,
-      goal: "Goal < 10",
-      color: "text-blue-500",
-    },
-  ];
+const AdminPerformanceMonitor = ({ stats }: { stats: PerformanceStat[] }) => {
+  const hasData = stats.length > 0;
 
   return (
     <Card>
@@ -494,6 +732,8 @@ const AdminPerformanceMonitor = () => {
       </CardHeader>
 
       <CardContent className="space-y-6">
+        {!hasData && <p className="text-sm text-muted-foreground">No performance data yet.</p>}
+
         {stats.map((s) => (
           <div key={s.title} className="space-y-2">
             <div className="flex justify-between">
@@ -513,35 +753,9 @@ const AdminPerformanceMonitor = () => {
 export default AdminPerformanceMonitor;
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Bell, Mail, MessageSquare, Users } from "lucide-react";
 
-const AdminCommunicationsPulse = () => {
-  const stats = [
-    {
-      label: "Messages sent today",
-      value: 482,
-      icon: MessageSquare,
-      color: "text-blue-500",
-    },
-    {
-      label: "Email campaigns this week",
-      value: 6,
-      icon: Mail,
-      color: "text-amber-500",
-    },
-    {
-      label: "New user reports",
-      value: 14,
-      icon: Bell,
-      color: "text-red-500",
-    },
-    {
-      label: "Active communities",
-      value: 23,
-      icon: Users,
-      color: "text-emerald-500",
-    },
-  ];
+const AdminCommunicationsPulse = ({ stats }: { stats: CommunicationStat[] }) => {
+  const hasData = stats.length > 0;
 
   return (
     <Card>
@@ -552,17 +766,24 @@ const AdminCommunicationsPulse = () => {
       </CardHeader>
 
       <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {!hasData && (
+          <p className="text-sm text-muted-foreground">No communications activity yet.</p>
+        )}
+
         {stats.map((s) => (
           <div
             key={s.label}
             className="rounded-lg border p-4 bg-card hover:bg-muted/20 transition"
           >
             <div className="flex items-center gap-2 mb-1">
-              <s.icon className={`w-5 h-5 ${s.color}`} />
-              <p className="font-medium">{s.label}</p>
+              <s.icon className="w-5 h-5 text-primary" />
+              <div>
+                <p className="font-medium">{s.label}</p>
+                <p className="text-xs text-muted-foreground">{s.trend}</p>
+              </div>
             </div>
 
-            <p className={`text-3xl font-bold ${s.color}`}>{s.value}</p>
+            <p className="text-3xl font-bold text-foreground">{s.value}</p>
           </div>
         ))}
       </CardContent>
@@ -576,41 +797,26 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ShieldCheck, Bot, Ban, IdCard } from "lucide-react";
 
-const AdminSafetyFeatures = () => {
-  const features = [
-    {
-      title: "Harassment & threat detection",
-      description:
-        "AI scans conversations for harassment, threats, manipulation and sends auto-warnings.",
-      badge: "Auto-warn",
-      icon: ShieldCheck,
-      color: "text-emerald-600",
-    },
-    {
-      title: "Suspicious account flagging",
-      description:
-        "AI detects risky behaviour patterns and temporarily restricts accounts.",
-      badge: "Risk scoring",
-      icon: Ban,
-      color: "text-red-600",
-    },
-    {
-      title: "Bot, spam & scam filtering",
-      description:
-        "Real-time spam/bot blocking based on behavioural patterns.",
-      badge: "Active filter",
-      icon: Bot,
-      color: "text-blue-600",
-    },
-    {
-      title: "AI-assisted ID verification",
-      description:
-        "Automatic ID checks to improve safety for meetups and events.",
-      badge: "Auto-verify",
-      icon: IdCard,
-      color: "text-amber-600",
-    },
-  ];
+const AdminSafetyFeatures = ({ featureStats }: { featureStats: SafetyFeatureStat[] }) => {
+  const features = featureStats.length
+    ? featureStats.map((feature, index) => ({
+        title: feature.name,
+        description: feature.detail,
+        badge: feature.status,
+        icon: [ShieldCheck, Ban, Bot, IdCard][index % 4],
+        color: ["text-emerald-600", "text-red-600", "text-blue-600", "text-amber-600"][
+          index % 4
+        ],
+      }))
+    : [
+        {
+          title: "Safety systems online",
+          description: "Monitoring live signals",
+          badge: "Ready",
+          icon: ShieldCheck,
+          color: "text-emerald-600",
+        },
+      ];
 
   return (
     <Card>
