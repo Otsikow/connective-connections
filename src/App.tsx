@@ -29,6 +29,7 @@ import Events from "./pages/Events";
 import EventDetail from "./pages/EventDetail";
 import CreateEvent from "./pages/CreateEvent";
 import Admin from "./pages/Admin";
+import ModerationPanel from "./pages/ModerationPanel";
 import HostDashboard from "./pages/HostDashboard";
 import HostEvent from "./pages/HostEvent";
 import HostCreateExperience from "./pages/HostCreateExperience";
@@ -74,6 +75,10 @@ const AnimatedRoutes = () => {
         <Route path="/community" element={<PageTransition><Community /></PageTransition>} />
         <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
         <Route path="/admin" element={<PageTransition><Admin /></PageTransition>} />
+        <Route
+          path="/admin/moderation"
+          element={<PageTransition><ModerationPanel /></PageTransition>}
+        />
         <Route path="/host-dashboard" element={<PageTransition><HostDashboard /></PageTransition>} />
         <Route path="/host/create-experience" element={<PageTransition><HostCreateExperience /></PageTransition>} />
         <Route path="/host/event" element={<PageTransition><HostEvent /></PageTransition>} />
