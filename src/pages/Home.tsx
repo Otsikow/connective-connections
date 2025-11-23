@@ -377,7 +377,7 @@ const Home = () => {
               </CardDescription>
             </CardHeader>
 
-            <CardContent className="space-y-4">
+              <CardContent className="space-y-4">
               <div className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm dark:border-amber-500/30 dark:bg-slate-950">
                 <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
                   Live example
@@ -442,15 +442,49 @@ const Home = () => {
           </Card>
 
           {/* Right column — Group Autopilot */}
-          <Card className="h-full shadow-sm dark:bg-slate-900">
-            <CardHeader>
-              <CardTitle className="text-lg">Group autopilot</CardTitle>
-              <CardDescription>
-                AI keeps the momentum so meetups actually happen.
-OnClick {/* truncated because max answer length */}
-            </CardHeader>
-          </Card>
-        </section>
+            <Card className="h-full shadow-sm dark:bg-slate-900">
+              <CardHeader>
+                <CardTitle className="text-lg">Group autopilot</CardTitle>
+                <CardDescription>
+                  AI keeps the momentum so meetups actually happen.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="rounded-xl bg-slate-50 p-4 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                  <p className="font-semibold text-slate-900 dark:text-white">What the autopilot handles</p>
+                  <ul className="mt-2 space-y-2 list-disc pl-4">
+                    <li>Tracks interest signals and nudges the right people.</li>
+                    <li>Suggests dates, venues, and sends invites automatically.</li>
+                    <li>Shares recaps and keeps the chat lively after the meetup.</li>
+                  </ul>
+                </div>
+
+                <div className="flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300">
+                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-100">
+                    Auto reminders
+                  </Badge>
+                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-100">
+                    AI agenda prompts
+                  </Badge>
+                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-100">
+                    Post-event follow-ups
+                  </Badge>
+                </div>
+
+                <Button
+                  className="bg-[#f7c145] text-black"
+                  onClick={() =>
+                    handleNavigate("/community", {
+                      requiresAuth: true,
+                      requiresSubscription: true
+                    })
+                  }
+                >
+                  Enable autopilot
+                </Button>
+              </CardContent>
+            </Card>
+          </section>
 
         {/* EVENTS */}
         <section>
