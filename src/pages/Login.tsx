@@ -15,6 +15,7 @@ import {
 } from "@/integrations/supabase/client";
 import { Separator } from "@/components/ui/separator";
 import BackButton from "@/components/BackButton";
+import { hasCompletedOnboarding } from "@/lib/onboarding";
 
 const featureHighlights = [
   "Curated in-person events",
@@ -37,6 +38,8 @@ const Login = () => {
     typeof locationState?.next === "string" && locationState.next.length > 0
       ? locationState.next
       : "/home";
+
+  const resolvedNextPath = hasCompletedOnboarding() ? nextPath : "/onboarding";
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -61,7 +64,7 @@ const Login = () => {
         title: "Welcome back!",
         description: "You are now signed in to Connective.",
       });
-      navigate(nextPath);
+      navigate(resolvedNextPath);
     }
 
     setIsLoading(false);
@@ -78,7 +81,7 @@ const Login = () => {
     }
 
     try {
-      const redirectUrl = `${getSupabaseRedirectUrl("/auth/callback")}?next=${encodeURIComponent(nextPath)}`;
+      const redirectUrl = `${getSupabaseRedirectUrl("/auth/callback")}?next=${encodeURIComponent(resolvedNextPath)}`;
       await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
