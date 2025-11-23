@@ -9,6 +9,8 @@ const BodySchema = z.object({
   action: z.enum(["assign", "revoke"], { message: "Invalid action" }),
 });
 
+const ADMIN_ROLE = "admin" as const;
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -52,7 +54,7 @@ serve(async (req) => {
       "has_role",
       {
         _user_id: user.id,
-        _role: "admin",
+        _role: ADMIN_ROLE,
       }
     );
 

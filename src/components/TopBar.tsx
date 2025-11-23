@@ -21,16 +21,32 @@ export const TopBar = () => {
         </Link>
 
         <div className="flex items-center gap-3">
-          {isLoading ? <Skeleton className="h-10 w-28 rounded-full" /> : shouldShowAuthButtons ? <>
-              <Button variant="outline" size="sm" className={cn(navButtonClass, "font-semibold")} onClick={() => navigate("/login")} aria-current={location.pathname === "/login" ? "page" : undefined}>
+          {isLoading ? (
+            <Skeleton className="h-10 w-28 rounded-full" />
+          ) : shouldShowAuthButtons ? (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                className={cn(navButtonClass, "font-semibold")}
+                onClick={() => navigate("/login")}
+                aria-current={location.pathname === "/login" ? "page" : undefined}
+              >
                 Sign In
               </Button>
-              <Button size="sm" className={cn("shadow-[0_20px_48px_-28px_rgba(190,150,80,0.85)] hover:shadow-[0_22px_60px_-30px_rgba(190,150,80,0.95)]", "text-primary-foreground")} onClick={() => navigate("/signup")} aria-current={location.pathname === "/signup" ? "page" : undefined}>
+              <Button
+                size="sm"
+                className={cn(
+                  "shadow-[0_20px_48px_-28px_rgba(190,150,80,0.85)] hover:shadow-[0_22px_60px_-30px_rgba(190,150,80,0.95)]",
+                  "text-primary-foreground"
+                )}
+                onClick={() => navigate("/signup")}
+                aria-current={location.pathname === "/signup" ? "page" : undefined}
+              >
                 Join Now
               </Button>
-            </> : <Button variant="outline" size="sm" className={navButtonClass} onClick={() => navigate(location.pathname === "/profile" ? "/home" : "/profile")}>
-              {location.pathname === "/profile" ? "Home" : "Profile"}
-            </Button>}
+            </>
+          ) : null}
 
           <ThemeToggle className="relative z-10" />
         </div>
