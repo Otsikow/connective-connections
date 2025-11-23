@@ -29,10 +29,49 @@ const sections = [
     ],
   },
   {
+    title: "Sharing and legal bases",
+    paragraphs: [
+      "We share data only with trusted vendors (such as payment processors, event hosts, and security partners) who are bound by data protection agreements and may use it solely to support Connective services.",
+      "Processing is grounded in legitimate interest to operate our community, performance of our agreement with you, and compliance with legal obligations. Where required, we rely on your consent for optional features.",
+    ],
+  },
+  {
+    title: "Cookies and analytics",
+    paragraphs: [
+      "We use cookies and similar technologies to keep you signed in, remember preferences, and understand how members engage with programming.",
+    ],
+    listTitle: "Your choices",
+    listItems: [
+      "Manage browser settings to block or delete non-essential cookies.",
+      "Adjust in-product preferences where available to opt out of certain analytics events.",
+      "Contact privacy@connective.app if you want more detail on the tools we use.",
+    ],
+  },
+  {
+    title: "Data retention and security",
+    paragraphs: [
+      "We retain data only for as long as needed to provide services, comply with law, or resolve disputes. Once data is no longer required, we archive or delete it securely.",
+      "Our controls include encryption in transit, restricted access to production systems, and continuous monitoring for unusual activity.",
+    ],
+  },
+  {
     title: "Your privacy controls",
     paragraphs: [
       "You are in command of the story you share. Update profile data, adjust matching settings, or request data deletion from your dashboard or by contacting the concierge team.",
       "For formal requests, email privacy@connective.app and our compliance team will respond within 72 hours.",
+    ],
+    listTitle: "You can request",
+    listItems: [
+      "Access to, correction of, or deletion of your personal data.",
+      "Export of your data in a portable format, where technically feasible.",
+      "Restriction of certain processing where permitted by law.",
+    ],
+  },
+  {
+    title: "International transfers",
+    paragraphs: [
+      "If we transfer data outside your home jurisdiction, we use recognised safeguards such as standard contractual clauses to protect it.",
+      "You can contact privacy@connective.app for a copy of the relevant safeguards or to ask questions about how your data moves across regions.",
     ],
   },
 ];

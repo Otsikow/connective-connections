@@ -1,20 +1,21 @@
-src/
- └─ pages/
-     └─ Admin/
-         ├─ Admin.tsx                  ← Main unified dashboard
-         ├─ components/
-         │    ├─ AdminTopBar.tsx
-         │    ├─ AdminSafetyAlerts.tsx
-         │    ├─ AdminModerationActions.tsx
-         │    ├─ AdminAISummary.tsx
-         │    ├─ AdminPerformanceMonitor.tsx
-         │    ├─ AdminCommunicationsPulse.tsx
-         │    ├─ AdminSafetyFeatures.tsx
-         │    ├─ AdminSupportCenter.tsx
-         │    ├─ AdminBulkEmail.tsx
-         │    └─ AdminUserManagement.tsx
-         └─ hooks/
-              └─ useAdminPagination.ts
+//
+// src/
+//  └─ pages/
+//      └─ Admin/
+//          ├─ Admin.tsx                  ← Main unified dashboard
+//          ├─ components/
+//          │    ├─ AdminTopBar.tsx
+//          │    ├─ AdminSafetyAlerts.tsx
+//          │    ├─ AdminModerationActions.tsx
+//          │    ├─ AdminAISummary.tsx
+//          │    ├─ AdminPerformanceMonitor.tsx
+//          │    ├─ AdminCommunicationsPulse.tsx
+//          │    ├─ AdminSafetyFeatures.tsx
+//          │    ├─ AdminSupportCenter.tsx
+//          │    ├─ AdminBulkEmail.tsx
+//          │    └─ AdminUserManagement.tsx
+//          └─ hooks/
+//               └─ useAdminPagination.ts
 // src/pages/Admin/hooks/useAdminPagination.ts
 
 import { useState } from "react";
