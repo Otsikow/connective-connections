@@ -7,7 +7,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselItem, CarouselContent, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Sparkles, PlayCircle, Users, Send } from "lucide-react";
+import {
+  Sparkles,
+  PlayCircle,
+  Users,
+  Send,
+  CalendarClock,
+  Sparkle,
+  MapPin,
+  ShieldCheck
+} from "lucide-react";
 import { useSubscription } from "@/hooks/useSubscription";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { generateAvatarUrl } from "@/lib/avatar";
@@ -170,6 +179,19 @@ const Home = () => {
     author: "Malik",
     quote: "Hosting workshops has never been easier."
   }];
+  const aiGroupFeatures = [{
+    title: "Smart clustering",
+    description: "Groups 4–10 people who share interests, vibe, and free time windows.",
+    icon: <Sparkle className="h-5 w-5 text-amber-500" />
+  }, {
+    title: "Auto meetup planning",
+    description: "Suggests names, venues, and dates so you can just say yes.",
+    icon: <CalendarClock className="h-5 w-5 text-emerald-500" />
+  }, {
+    title: "Built-in safety",
+    description: "RSVP tracking, chat moderation, and reminders are handled for you.",
+    icon: <ShieldCheck className="h-5 w-5 text-sky-500" />
+  }];
 
   // ------------------------ //
   //     RENDER
@@ -255,6 +277,97 @@ const Home = () => {
               </Card>
             </TabsContent>
           </Tabs>
+        </section>
+
+        {/* AI GROUP FORMATION */}
+        <section className="grid gap-4 md:grid-cols-[1.6fr_1fr]">
+          <Card className="border-amber-100 bg-amber-50/70 shadow-sm dark:border-amber-500/40 dark:bg-slate-900">
+            <CardHeader>
+              <div className="flex items-center gap-2 text-sm font-semibold text-amber-700 dark:text-amber-300">
+                <Sparkles className="h-4 w-4" />
+                AI Event Discovery & Group Formation
+              </div>
+              <CardTitle>Let AI gather the right 4–10 people</CardTitle>
+              <CardDescription>
+                We cluster people by interest, vibe, and availability, then suggest the perfect meetup plan.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm dark:border-amber-500/30 dark:bg-slate-950">
+                <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">Live example</p>
+                <div className="mt-2 rounded-xl bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-500/10 dark:text-amber-100">
+                  “6 people near you love football and are free on Saturday. Want me to organise a friendly meetup?”
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300">
+                  <Badge variant="secondary" className="bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-100">Suggested name, date & time</Badge>
+                  <Badge variant="secondary" className="bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-100">Automatic RSVPs</Badge>
+                  <Badge variant="secondary" className="bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-100">Group page with chat</Badge>
+                </div>
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-3">
+                {aiGroupFeatures.map(feature => (
+                  <div
+                    key={feature.title}
+                    className="rounded-xl border border-amber-200/60 bg-white p-3 text-sm dark:border-amber-500/30 dark:bg-slate-950"
+                  >
+                    <div className="flex items-center gap-2 font-semibold text-slate-900 dark:text-white">
+                      {feature.icon}
+                      {feature.title}
+                    </div>
+                    <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">{feature.description}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  className="bg-[#f7c145] text-black"
+                  onClick={() => handleNavigate("/events", { requiresAuth: true })}
+                >
+                  Preview AI meetup
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => handleNavigate("/community", { requiresAuth: true, requiresSubscription: true })}
+                >
+                  Let AI form a group
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="h-full shadow-sm dark:bg-slate-900">
+            <CardHeader>
+              <CardTitle className="text-lg">Group autopilot</CardTitle>
+              <CardDescription>AI keeps the momentum so meetups actually happen.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="rounded-lg border bg-slate-50 p-3 text-sm dark:border-slate-700 dark:bg-slate-950">
+                <div className="flex items-center gap-2 font-semibold text-slate-900 dark:text-white">
+                  <MapPin className="h-4 w-4" />
+                  Smart suggestions
+                </div>
+                <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">Names, time windows, and meetup spots proposed automatically.</p>
+              </div>
+
+              <div className="space-y-3 text-sm">
+                {["Create pop-up group page", "Collect RSVPs & availability", "Moderate chat + reminders"].map(step => (
+                  <div key={step} className="flex items-start gap-2 rounded-lg border p-3 dark:border-slate-700">
+                    <div className="mt-0.5 h-2 w-2 rounded-full bg-amber-500" />
+                    <div>
+                      <p className="font-semibold text-slate-900 dark:text-white">{step}</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-300">
+                        {step === "Create pop-up group page" && "AI writes the description, vibe tags, and cover image so everyone is aligned."}
+                        {step === "Collect RSVPs & availability" && "See who’s in, who’s a maybe, and adjust the plan based on everyone’s windows."}
+                        {step === "Moderate chat + reminders" && "Guided prompts keep chat warm, while automated nudges prevent last-minute drop-offs."}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </section>
 
         {/* EVENTS */}
