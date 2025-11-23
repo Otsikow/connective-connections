@@ -11,6 +11,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const ADMIN_ROLE = "admin" as const
+
 // --- Verify admin role and return user ID ---
 async function verifyAdminRole(
   authHeader: string
@@ -35,7 +37,7 @@ async function verifyAdminRole(
       "has_role",
       {
         _user_id: user.id,
-        _role: "admin",
+        _role: ADMIN_ROLE,
       }
     );
 
