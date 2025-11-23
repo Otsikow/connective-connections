@@ -34,7 +34,8 @@ import HostDashboard from "./pages/HostDashboard";
 import HostEvent from "./pages/HostEvent";
 import HostCreateExperience from "./pages/HostCreateExperience";
 import Dashboard from "./pages/Dashboard";
-import AICoach from "./pages/AICoach"; // <- resolved branch conflict
+import AIGrowthAnalytics from "./pages/AIGrowthAnalytics";
+import AICoach from "./pages/AICoach";
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback";
 import Privacy from "./pages/legal/Privacy";
@@ -53,19 +54,23 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
+        {/* Auth + Entry */}
         <Route path="/" element={<PageTransition><Splash /></PageTransition>} />
         <Route path="/signup" element={<PageTransition><Signup /></PageTransition>} />
         <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
         <Route path="/profile-setup" element={<PageTransition><ProfileSetup /></PageTransition>} />
         <Route path="/auth/callback" element={<PageTransition><AuthCallback /></PageTransition>} />
 
+        {/* Main */}
         <Route path="/home" element={<PageTransition><Home /></PageTransition>} />
         <Route path="/concierge" element={<PageTransition><Concierge /></PageTransition>} />
 
+        {/* Events */}
         <Route path="/events" element={<PageTransition><Events /></PageTransition>} />
         <Route path="/events/:eventId" element={<PageTransition><EventDetail /></PageTransition>} />
         <Route path="/host/create-event" element={<PageTransition><CreateEvent /></PageTransition>} />
 
+        {/* Social */}
         <Route path="/matches" element={<PageTransition><Matches /></PageTransition>} />
         <Route path="/friend-finder" element={<PageTransition><FriendFinder /></PageTransition>} />
 
@@ -73,19 +78,24 @@ const AnimatedRoutes = () => {
         <Route path="/messages" element={<PageTransition><Messages /></PageTransition>} />
         <Route path="/messages/:id" element={<PageTransition><Messages /></PageTransition>} />
 
+        {/* Community */}
         <Route path="/community" element={<PageTransition><Community /></PageTransition>} />
         <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
 
+        {/* Admin */}
         <Route path="/admin" element={<PageTransition><Admin /></PageTransition>} />
         <Route path="/admin/moderation" element={<PageTransition><ModerationPanel /></PageTransition>} />
 
+        {/* Host */}
         <Route path="/host-dashboard" element={<PageTransition><HostDashboard /></PageTransition>} />
         <Route path="/host/create-experience" element={<PageTransition><HostCreateExperience /></PageTransition>} />
         <Route path="/host/event" element={<PageTransition><HostEvent /></PageTransition>} />
 
+        {/* User Dashboard */}
         <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
 
         {/* AI */}
+        <Route path="/ai-growth-analytics" element={<PageTransition><AIGrowthAnalytics /></PageTransition>} />
         <Route path="/ai-coach" element={<PageTransition><AICoach /></PageTransition>} />
 
         {/* Legal */}
@@ -113,34 +123,37 @@ const AppContent = () => {
   const [isBooting, setIsBooting] = useState(true);
   const [hasCompletedInitialLoad, setHasCompletedInitialLoad] = useState(false);
 
+  // Initial load
   useEffect(() => {
     const timer = window.setTimeout(() => setIsBooting(false), 500);
     return () => window.clearTimeout(timer);
   }, []);
 
+  // Scroll restore
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
   }, [location.pathname]);
 
+  // Subscription fallback
   useEffect(() => {
     if (hasCompletedInitialLoad) return;
 
-    const fallbackTimer = window.setTimeout(() => {
+    const fallback = window.setTimeout(() => {
       setHasCompletedInitialLoad(true);
     }, 1500);
 
     if (!isSubscriptionLoading) {
-      const readyTimer = window.setTimeout(() => {
+      const fastReady = window.setTimeout(() => {
         setHasCompletedInitialLoad(true);
       }, 200);
 
       return () => {
-        clearTimeout(fallbackTimer);
-        clearTimeout(readyTimer);
+        clearTimeout(fallback);
+        clearTimeout(fastReady);
       };
     }
 
-    return () => clearTimeout(fallbackTimer);
+    return () => clearTimeout(fallback);
   }, [hasCompletedInitialLoad, isSubscriptionLoading]);
 
   const showLoadingScreen = isBooting || !hasCompletedInitialLoad;
