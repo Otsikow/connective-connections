@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselItem, CarouselContent, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Sparkles, PlayCircle, Users, Send } from "lucide-react";
+import { Sparkles, PlayCircle, Users, Send, Brain } from "lucide-react";
 import { useSubscription } from "@/hooks/useSubscription";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { generateAvatarUrl } from "@/lib/avatar";
@@ -208,6 +208,56 @@ const Home = () => {
               <Users className="h-4 w-4 mr-2" /> Explore community
             </Button>
           </div>
+        </section>
+
+        {/* AI COACH */}
+        <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+          <Card className="overflow-hidden border shadow-sm dark:border-white/10">
+            <CardHeader className="relative z-10">
+              <Badge className="mb-3 w-fit rounded-full bg-primary/10 text-primary">New</Badge>
+              <CardTitle className="flex items-center gap-2 text-2xl font-bold">
+                <Brain className="h-6 w-6 text-primary" />
+                AI Confidence & Social Skills Coach
+              </CardTitle>
+              <CardDescription>
+                Get conversation openers, profile glow-ups, photo feedback, and post-meetup guidance tailored to shy or seasoned members.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="relative z-10 grid gap-4 md:grid-cols-2">
+              {["Start natural conversations", "Suggest friendlier bios", "Optimize your photos", "Break the ice when you’re shy", "Plan the perfect follow-up"].map(text => (
+                <div key={text} className="flex items-start gap-3 rounded-2xl border border-slate-200/70 bg-slate-50/70 p-3 shadow-inner dark:border-white/10 dark:bg-white/5">
+                  <Sparkles className="mt-0.5 h-4 w-4 text-primary" />
+                  <p className="text-sm text-slate-800 dark:text-slate-100">{text}</p>
+                </div>
+              ))}
+              <div className="col-span-full flex flex-wrap gap-3">
+                <Button className="bg-[#f7c145] text-black" onClick={() => navigate("/ai-coach")}>Try the coach</Button>
+                <Button variant="outline" className="border-slate-300 text-slate-900 dark:border-white/10 dark:text-white" onClick={() => navigate("/ai-coach")}>
+                  See how it works
+                </Button>
+              </div>
+            </CardContent>
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,193,97,0.15),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(124,94,255,0.15),transparent_32%),radial-gradient(circle_at_50%_80%,rgba(34,211,238,0.12),transparent_35%)]" />
+          </Card>
+
+          <Card className="relative overflow-hidden border shadow-sm dark:border-white/10">
+            <CardHeader>
+              <CardTitle>Mini-coaching streaks</CardTitle>
+              <CardDescription>Stay consistent with light-touch actions each week.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {[{ label: "Openers tried", value: "3" }, { label: "Profile tweaks", value: "2" }, { label: "Follow-ups sent", value: "1" }].map(item => (
+                <div key={item.label} className="flex items-center justify-between rounded-xl border border-slate-200/70 bg-slate-50/80 p-3 text-sm shadow-inner dark:border-white/10 dark:bg-white/5">
+                  <p className="font-semibold text-slate-800 dark:text-white">{item.label}</p>
+                  <p className="text-slate-600 dark:text-slate-200">{item.value} this week</p>
+                </div>
+              ))}
+              <p className="text-sm text-slate-600 dark:text-slate-300">
+                Keeping a small streak builds trust and momentum with every new friend.
+              </p>
+            </CardContent>
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,rgba(255,186,100,0.12),transparent_35%),radial-gradient(circle_at_100%_10%,rgba(140,120,255,0.12),transparent_30%),radial-gradient(circle_at_40%_100%,rgba(34,211,238,0.12),transparent_40%)]" />
+          </Card>
         </section>
 
         {/* FEATURES */}
