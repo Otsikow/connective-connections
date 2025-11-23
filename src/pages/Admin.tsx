@@ -1,45 +1,17 @@
-src/
- └─ pages/
-     └─ Admin/
-         ├─ Admin.tsx                  ← Main unified dashboard
-         ├─ components/
-         │    ├─ AdminTopBar.tsx
-         │    ├─ AdminSafetyAlerts.tsx
-         │    ├─ AdminModerationActions.tsx
-         │    ├─ AdminAISummary.tsx
-         │    ├─ AdminPerformanceMonitor.tsx
-         │    ├─ AdminCommunicationsPulse.tsx
-         │    ├─ AdminSafetyFeatures.tsx
-         │    ├─ AdminSupportCenter.tsx
-         │    ├─ AdminBulkEmail.tsx
-         │    └─ AdminUserManagement.tsx
-         └─ hooks/
-              └─ useAdminPagination.ts
-// src/pages/Admin/hooks/useAdminPagination.ts
-
 import { useState } from "react";
 
 export function useAdminPagination<T>(data: T[], pageSize = 10) {
   const [page, setPage] = useState(1);
 
   const totalPages = Math.ceil(data.length / pageSize);
-
   const paginated = data.slice((page - 1) * pageSize, page * pageSize);
 
   const next = () => setPage((p) => Math.min(p + 1, totalPages));
   const prev = () => setPage((p) => Math.max(p - 1, 1));
   const goTo = (p: number) => setPage(Math.min(Math.max(1, p), totalPages));
 
-  return {
-    page,
-    totalPages,
-    paginated,
-    next,
-    prev,
-    goTo,
-  };
+  return { page, totalPages, paginated, next, prev, goTo };
 }
-// src/pages/Admin/components/AdminSection.tsx
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
@@ -67,427 +39,22 @@ const AdminSection = ({ title, icon, description, children }: AdminSectionProps)
 };
 
 export default AdminSection;
-// src/pages/Admin/Admin.tsx
-
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { usePageTitle } from "@/hooks/usePageTitle";
-
-// Layout + UI
-import BackButton from "@/components/BackButton";
-import { Badge } from "@/components/ui/badge";
-import { Shield } from "lucide-react";
-
-// Hooks & Types
-import { Profile } from "./types/Profile";
-
-type AlertSeverity = "High" | "Medium" | "Low";
-
-interface AdminAlert {
-  id: string;
-  action: string;
-  target_user_id?: string | null;
-  created_at?: string | null;
-  admin_id?: string | null;
-  metadata?: Record<string, unknown> | null;
-  severity?: AlertSeverity;
-}
-
-// Sections
-import AdminSafetyAlerts from "./components/AdminSafetyAlerts";
-import AdminModerationActions from "./components/AdminModerationActions";
-import AdminAISummary from "./components/AdminAISummary";
-import AdminPerformanceMonitor from "./components/AdminPerformanceMonitor";
-import AdminCommunicationsPulse from "./components/AdminCommunicationsPulse";
-import AdminSafetyFeatures from "./components/AdminSafetyFeatures";
-import AdminSupportCenter from "./components/AdminSupportCenter";
-import AdminBulkEmail from "./components/AdminBulkEmail";
-import AdminUserManagement from "./components/AdminUserManagement";
-
-
-/* ------------------------------------------------------------ */
-/* MAIN ADMIN PAGE */
-/* ------------------------------------------------------------ */
-
-const Admin = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  usePageTitle("Admin Command Center");
-
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [alerts, setAlerts] = useState<AdminAlert[]>([]);
-  const [moderationMetrics, setModerationMetrics] = useState({
-    totalActions: 0,
-    targetedActions: 0,
-    last24h: 0,
-  });
-
-  const [emailSubject, setEmailSubject] = useState("");
-  const [emailMessage, setEmailMessage] = useState("");
-  const [sendingEmail, setSendingEmail] = useState(false);
-
-  /* ------------------------------------------------------------ */
-  /* ADMIN VERIFICATION */
-  /* ------------------------------------------------------------ */
-
-  useEffect(() => {
-    const verifyAdmin = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (!user) {
-          setError("Not authenticated");
-          return setLoading(false);
-        }
-
-        const { data: isAdminValue } = await supabase.rpc("has_role", {
-          _user_id: user.id,
-          _role: "admin",
-        });
-
-        if (!isAdminValue) {
-          setError("Access denied: Admin only");
-          return setLoading(false);
-        }
-
-        setIsAdmin(true);
-        await Promise.all([loadProfiles(), loadAuditLog()]);
-      } catch {
-        setError("Failed to verify admin");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    verifyAdmin();
-  }, []);
-
-  /* ------------------------------------------------------------ */
-  /* LOAD USER PROFILES */
-  /* ------------------------------------------------------------ */
-
-  const loadProfiles = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, full_name, created_at, email, user_roles(role)")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-
-      setProfiles(
-        (data ?? []).map((p: any) => ({
-          id: p.id,
-          full_name: p.full_name,
-          created_at: p.created_at,
-          email: p.email ?? null,
-          roles: p.user_roles?.map((r: any) => r.role) ?? [],
-        }))
-      );
-    } catch {
-      toast({
-        title: "Error loading profiles",
-        description: "Could not load user records.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const normalizeSeverity = (metadata?: Record<string, unknown> | null): AlertSeverity => {
-    const severity =
-      typeof metadata?.severity === "string"
-        ? (metadata.severity as string)
-        : undefined;
-
-    if (!severity) return "Medium";
-
-    const normalized = severity.toLowerCase();
-    if (normalized.includes("high")) return "High";
-    if (normalized.includes("low")) return "Low";
-    return "Medium";
-  };
-
-  const loadAuditLog = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("admin_audit_log")
-        .select("id, admin_id, action, target_user_id, metadata, created_at")
-        .order("created_at", { ascending: false })
-        .limit(25);
-
-      if (error) throw error;
-
-      const normalized = (data ?? []).map((entry: any) => ({
-        ...entry,
-        severity: normalizeSeverity(entry.metadata),
-      }));
-
-      setAlerts(normalized);
-
-      const now = Date.now();
-      const dayAgo = now - 24 * 60 * 60 * 1000;
-      setModerationMetrics({
-        totalActions: normalized.length,
-        targetedActions: normalized.filter((entry) => !!entry.target_user_id)
-          .length,
-        last24h: normalized.filter((entry) =>
-          entry.created_at ? new Date(entry.created_at).getTime() >= dayAgo : false
-        ).length,
-      });
-    } catch {
-      toast({
-        title: "Error loading admin signals",
-        description: "Could not retrieve audit log entries.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (!isAdmin) return;
-
-    const channel = supabase
-      .channel("admin-dashboard-realtime")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "admin_audit_log" },
-        (payload) => {
-          const entry = payload.new as AdminAlert;
-          const normalizedEntry = {
-            ...entry,
-            severity: normalizeSeverity(entry.metadata),
-          };
-
-          setAlerts((prev) => [normalizedEntry, ...prev].slice(0, 25));
-
-          const createdAtTime = entry.created_at
-            ? new Date(entry.created_at).getTime()
-            : 0;
-          const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
-
-          setModerationMetrics((prev) => ({
-            totalActions: prev.totalActions + 1,
-            targetedActions: prev.targetedActions + (entry.target_user_id ? 1 : 0),
-            last24h: prev.last24h + (createdAtTime >= dayAgo ? 1 : 0),
-          }));
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "profiles" },
-        () => {
-          loadProfiles();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      // @ts-ignore - removeChannel is available in the Supabase client
-      supabase.removeChannel?.(channel);
-    };
-  }, [isAdmin]);
-
-  const handleSendBulkEmail = async () => {
-    setSendingEmail(true);
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      toast({
-        title: "Bulk email queued",
-        description: "Messages will be delivered to all active users.",
-      });
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: "Unable to send bulk email",
-        description: "Please try again after checking your connection.",
-        variant: "destructive",
-      });
-    } finally {
-      setSendingEmail(false);
-    }
-  };
-
-  const fetchUserEmail = async (id: string, index: number) => {
-    setProfiles((prev) =>
-      prev.map((profile, i) =>
-        i === index ? { ...profile, loading: true } : profile
-      )
-    );
-
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("email")
-      .eq("id", id)
-      .maybeSingle();
-
-    setProfiles((prev) =>
-      prev.map((profile) =>
-        profile.id === id
-          ? { ...profile, email: data?.email ?? profile.email, loading: false }
-          : profile
-      )
-    );
-
-    if (error) {
-      toast({
-        title: "Could not load email",
-        description: "We couldn't fetch the email address for this user.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleRoleChange = async (
-    id: string,
-    role: string,
-    action: "assign" | "revoke"
-  ) => {
-    try {
-      if (action === "assign") {
-        await supabase.from("user_roles").insert({ user_id: id, role });
-      } else {
-        await supabase
-          .from("user_roles")
-          .delete()
-          .eq("user_id", id)
-          .eq("role", role);
-      }
-
-      await loadProfiles();
-      toast({
-        title: action === "assign" ? "Admin role granted" : "Admin role revoked",
-        description: "Changes applied successfully.",
-      });
-    } catch {
-      toast({
-        title: "Unable to update role",
-        description: "Please try again or contact support if the issue persists.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const visibleAlerts = useMemo(() => alerts.slice(0, 5), [alerts]);
-
-
-  /* ------------------------------------------------------------ */
-  /* ACCESS GUARDS */
-  /* ------------------------------------------------------------ */
-
-  if (loading)
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Shield className="w-6 h-6 mr-2 animate-spin text-primary" />
-        <p className="text-muted-foreground">Verifying admin access…</p>
-      </div>
-    );
-
-  if (error || !isAdmin)
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="border rounded-lg p-6 max-w-md text-center">
-          <p className="text-red-500 font-semibold mb-2">Access Denied</p>
-          <p className="text-muted-foreground mb-4">{error}</p>
-          <button
-            onClick={() => navigate("/home")}
-            className="px-4 py-2 bg-primary text-white rounded-md"
-          >
-            Return Home
-          </button>
-        </div>
-      </div>
-    );
-
-
-  /* ------------------------------------------------------------ */
-  /* PAGE RENDER */
-  /* ------------------------------------------------------------ */
-
-  return (
-    <div className="min-h-screen bg-background pb-20">
-
-      {/* TOP HEADER */}
-      <div className="bg-card border-b px-4 py-4 flex items-center justify-between sticky top-0 z-20">
-        <BackButton fallbackPath="/home" />
-
-        <h1 className="text-lg font-semibold flex items-center gap-2">
-          <Shield className="w-5 h-5 text-primary" />
-          Admin Dashboard
-        </h1>
-
-        <Badge variant="secondary">Admin</Badge>
-      </div>
-
-      {/* MAIN CONTENT */}
-      <div className="p-4 space-y-6">
-
-        {/* 1. Safety Alerts */}
-        <AdminSafetyAlerts alerts={visibleAlerts} />
-
-        {/* 2. Moderation Summary */}
-        <AdminModerationActions metrics={moderationMetrics} />
-
-        {/* 3. AI Prediction Summary */}
-        <AdminAISummary />
-
-        {/* 4. AI Performance Monitor */}
-        <AdminPerformanceMonitor />
-
-        {/* 5. Communications Pulse */}
-        <AdminCommunicationsPulse />
-
-        {/* 6. Safety Features */}
-        <AdminSafetyFeatures />
-
-        {/* 7. AI Support Center */}
-        <AdminSupportCenter />
-
-        {/* 8. Bulk Email */}
-        <AdminBulkEmail
-          emailSubject={emailSubject}
-          emailMessage={emailMessage}
-          setEmailSubject={setEmailSubject}
-          setEmailMessage={setEmailMessage}
-          handleSendBulkEmail={handleSendBulkEmail}
-          sendingEmail={sendingEmail}
-          totalUsers={profiles.length}
-        />
-
-        {/* 9. User Management (Paginated) */}
-        <AdminUserManagement
-          profiles={profiles}
-          fetchUserEmail={fetchUserEmail}
-          handleRoleChange={handleRoleChange}
-        />
-
-      </div>
-    </div>
-  );
-};
-
-export default Admin;
-
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ShieldAlert } from "lucide-react";
+import { AdminAlert, AlertSeverity } from "../Admin";
 
-interface AdminSafetyAlertsProps {
+interface Props {
   alerts: AdminAlert[];
 }
 
-const AdminSafetyAlerts = ({ alerts }: AdminSafetyAlertsProps) => {
-  const severityColor = (s: AlertSeverity = "Medium") =>
-    s === "High"
-      ? "text-red-600 bg-red-100 dark:bg-red-900/30"
-      : s === "Low"
-      ? "text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30"
-      : "text-amber-600 bg-amber-100 dark:bg-amber-900/30";
+const severityClass = (s: AlertSeverity = "Medium") =>
+  s === "High"
+    ? "text-red-600 bg-red-100 dark:bg-red-900/30"
+    : s === "Low"
+    ? "text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30"
+    : "text-amber-600 bg-amber-100 dark:bg-amber-900/30";
 
+const AdminSafetyAlerts = ({ alerts }: Props) => {
   return (
     <Card>
       <CardHeader>
@@ -500,7 +67,7 @@ const AdminSafetyAlerts = ({ alerts }: AdminSafetyAlertsProps) => {
       <CardContent className="space-y-4">
         {alerts.length === 0 && (
           <p className="text-sm text-muted-foreground">
-            No live alerts yet. New admin events will appear here as they happen.
+            No live alerts yet. New admin behaviour events will appear here.
           </p>
         )}
 
@@ -527,7 +94,7 @@ const AdminSafetyAlerts = ({ alerts }: AdminSafetyAlertsProps) => {
               </div>
 
               <span
-                className={`px-2 py-1 rounded text-xs font-medium ${severityColor(
+                className={`px-2 py-1 rounded text-xs font-medium ${severityClass(
                   alert.severity
                 )}`}
               >
@@ -545,35 +112,35 @@ export default AdminSafetyAlerts;
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Hammer, ShieldCheck } from "lucide-react";
 
-interface AdminModerationMetrics {
+interface Metrics {
   totalActions: number;
   targetedActions: number;
   last24h: number;
 }
 
-interface AdminModerationActionsProps {
-  metrics: AdminModerationMetrics;
+interface Props {
+  metrics: Metrics;
 }
 
-const AdminModerationActions = ({ metrics }: AdminModerationActionsProps) => {
-  const actions = [
+const AdminModerationActions = ({ metrics }: Props) => {
+  const cards = [
     {
       label: "Audit log entries",
       value: metrics.totalActions,
-      delta: "Live from Supabase",
       icon: ShieldCheck,
+      description: "Live from Supabase",
     },
     {
       label: "Targeted actions",
       value: metrics.targetedActions,
-      delta: "Actions tied to specific users",
       icon: Hammer,
+      description: "Actions tied to specific users",
     },
     {
-      label: "Last 24h",
+      label: "Last 24 hours",
       value: metrics.last24h,
-      delta: "New moderation items today",
       icon: CheckCircle2,
+      description: "New moderation events today",
     },
   ];
 
@@ -582,23 +149,23 @@ const AdminModerationActions = ({ metrics }: AdminModerationActionsProps) => {
       <CardHeader>
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <CheckCircle2 className="w-5 h-5 text-primary" />
-          Moderation Activity
+          Moderation Overview
         </CardTitle>
       </CardHeader>
 
       <CardContent className="grid gap-4 sm:grid-cols-3">
-        {actions.map((a) => (
+        {cards.map((c) => (
           <div
-            key={a.label}
+            key={c.label}
             className="rounded-lg border p-4 bg-card hover:bg-muted/20 transition"
           >
             <div className="flex items-center gap-2 mb-2">
-              <a.icon className="w-5 h-5 text-primary" />
-              <p className="font-medium">{a.label}</p>
+              <c.icon className="w-5 h-5 text-primary" />
+              <p className="font-medium">{c.label}</p>
             </div>
 
-            <p className="text-3xl font-bold">{a.value}</p>
-            <p className="text-xs mt-1 text-muted-foreground">{a.delta}</p>
+            <p className="text-3xl font-bold">{c.value}</p>
+            <p className="text-xs text-muted-foreground mt-1">{c.description}</p>
           </div>
         ))}
       </CardContent>
@@ -609,7 +176,7 @@ const AdminModerationActions = ({ metrics }: AdminModerationActionsProps) => {
 export default AdminModerationActions;
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Activity, Gauge, TrendingUp, TrendingDown } from "lucide-react";
+import { Activity, Gauge, TrendingDown, TrendingUp } from "lucide-react";
 
 const AdminAISummary = () => {
   const metrics = [
@@ -618,37 +185,35 @@ const AdminAISummary = () => {
       value: "+14%",
       description: "Driven by AI onboarding nudges.",
       icon: Activity,
-      accent: "text-emerald-500",
+      color: "text-emerald-500",
     },
     {
-      title: "Event success prediction",
+      title: "Event turnout prediction",
       value: "82%",
-      description: "Strong turnout forecast.",
+      description: "Strong user engagement forecast.",
       icon: Gauge,
-      accent: "text-indigo-500",
+      color: "text-indigo-500",
     },
     {
       title: "Communities trending up",
       value: "6",
-      description: "AI engagement boosts working.",
+      description: "AI-driven engagement improvements.",
       icon: TrendingUp,
-      accent: "text-blue-500",
+      color: "text-blue-500",
     },
     {
-      title: "Churn prediction",
+      title: "Churn risk",
       value: "3.1%",
-      description: "Down by 0.7% after interventions.",
+      description: "Down after AI retention interventions.",
       icon: TrendingDown,
-      accent: "text-amber-500",
+      color: "text-amber-500",
     },
   ];
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">
-          AI Prediction Summary
-        </CardTitle>
+        <CardTitle>AI Prediction Summary</CardTitle>
       </CardHeader>
 
       <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -658,12 +223,13 @@ const AdminAISummary = () => {
             className="rounded-lg border p-4 bg-card hover:bg-muted/20 transition"
           >
             <div className="flex items-center gap-2 mb-2">
-              <m.icon className={`w-5 h-5 ${m.accent}`} />
+              <m.icon className={`w-5 h-5 ${m.color}`} />
               <p className="font-medium">{m.title}</p>
             </div>
 
-            <p className={`text-3xl font-bold ${m.accent}`}>{m.value}</p>
-            <p className="text-xs mt-1 text-muted-foreground">
+            <p className={`text-3xl font-bold ${m.color}`}>{m.value}</p>
+
+            <p className="text-xs text-muted-foreground mt-1">
               {m.description}
             </p>
           </div>
@@ -674,49 +240,34 @@ const AdminAISummary = () => {
 };
 
 export default AdminAISummary;
+
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
 const AdminPerformanceMonitor = () => {
   const stats = [
-    {
-      title: "AI moderation accuracy",
-      value: 92,
-      goal: "95% goal",
-      color: "text-emerald-500",
-    },
-    {
-      title: "False positives",
-      value: 6,
-      goal: "Dropping weekly",
-      color: "text-amber-500",
-    },
-    {
-      title: "Pending human reviews",
-      value: 14,
-      goal: "Goal < 10",
-      color: "text-blue-500",
-    },
+    { label: "AI moderation accuracy", value: 92, color: "text-emerald-500", goal: "95% target" },
+    { label: "False positives", value: 6, color: "text-amber-500", goal: "Dropping weekly" },
+    { label: "Pending reviews", value: 14, color: "text-blue-500", goal: "Goal < 10" },
   ];
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">
-          AI Performance Monitor
-        </CardTitle>
+        <CardTitle>AI Performance Monitor</CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-6">
         {stats.map((s) => (
-          <div key={s.title} className="space-y-2">
+          <div key={s.label}>
             <div className="flex justify-between">
-              <p className="font-medium">{s.title}</p>
+              <p className="font-medium">{s.label}</p>
               <p className={`font-semibold ${s.color}`}>{s.value}%</p>
             </div>
 
             <Progress value={s.value} className="h-2" />
-            <p className="text-xs text-muted-foreground">{s.goal}</p>
+
+            <p className="text-xs text-muted-foreground mt-1">{s.goal}</p>
           </div>
         ))}
       </CardContent>
@@ -760,9 +311,7 @@ const AdminCommunicationsPulse = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">
-          Communications Pulse
-        </CardTitle>
+        <CardTitle>Communications Pulse</CardTitle>
       </CardHeader>
 
       <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -785,41 +334,36 @@ const AdminCommunicationsPulse = () => {
 };
 
 export default AdminCommunicationsPulse;
-
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, Bot, Ban, IdCard } from "lucide-react";
+import { Ban, Bot, IdCard, ShieldCheck } from "lucide-react";
 
 const AdminSafetyFeatures = () => {
   const features = [
     {
       title: "Harassment & threat detection",
-      description:
-        "AI scans conversations for harassment, threats, manipulation and sends auto-warnings.",
+      description: "AI scans conversations for threats, harassment, manipulation and auto-warns.",
       badge: "Auto-warn",
       icon: ShieldCheck,
       color: "text-emerald-600",
     },
     {
       title: "Suspicious account flagging",
-      description:
-        "AI detects risky behaviour patterns and temporarily restricts accounts.",
+      description: "AI detects abnormal behaviour and temporarily restricts accounts.",
       badge: "Risk scoring",
       icon: Ban,
       color: "text-red-600",
     },
     {
-      title: "Bot, spam & scam filtering",
-      description:
-        "Real-time spam/bot blocking based on behavioural patterns.",
+      title: "Bot / spam filtering",
+      description: "Real-time ML-based blocking of spam, bots, and scams.",
       badge: "Active filter",
       icon: Bot,
       color: "text-blue-600",
     },
     {
-      title: "AI-assisted ID verification",
-      description:
-        "Automatic ID checks to improve safety for meetups and events.",
+      title: "AI ID verification",
+      description: "Automatic document & ID verification for safer meetups.",
       badge: "Auto-verify",
       icon: IdCard,
       color: "text-amber-600",
@@ -829,9 +373,7 @@ const AdminSafetyFeatures = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">
-          AI Safety & Behaviour Systems
-        </CardTitle>
+        <CardTitle>AI Safety & Behaviour Systems</CardTitle>
       </CardHeader>
 
       <CardContent className="grid gap-4 sm:grid-cols-2">
@@ -848,9 +390,7 @@ const AdminSafetyFeatures = () => {
               <Badge variant="secondary">{f.badge}</Badge>
             </div>
 
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {f.description}
-            </p>
+            <p className="text-sm text-muted-foreground">{f.description}</p>
           </div>
         ))}
       </CardContent>
@@ -862,52 +402,37 @@ export default AdminSafetyFeatures;
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-import {
-  Bot,
-  Sparkles,
-  Reply,
-  Tag,
-  FileText,
-  CheckCircle2,
-  UploadCloud,
-  Headset,
-} from "lucide-react";
+import { Bot, CheckCircle2, FileText, Headset, Reply, Sparkles, Tag, UploadCloud } from "lucide-react";
 
 const AdminSupportCenter = () => {
   const tools = [
     {
       title: "AI answers support tickets",
-      description:
-        "Instant, on-brand responses to inbound questions—no need for manual typing.",
+      description: "Instant on-brand replies to user issues.",
       badge: "Instant replies",
       icon: Bot,
     },
     {
-      title: "AI troubleshooting drafts",
-      description:
-        "Creates step-by-step fixes and actionable guidance for users.",
+      title: "AI troubleshooting guides",
+      description: "Step-by-step auto-generated fixes.",
       badge: "Auto-fix",
       icon: Sparkles,
     },
     {
       title: "AI reply suggestions",
-      description:
-        "Admins can approve automated replies in one click.",
+      description: "Admins approve in one click.",
       badge: "1-tap approval",
       icon: Reply,
     },
     {
-      title: "Auto triage (billing, login, behaviour)",
-      description:
-        "Routes every ticket into the correct workflow automatically.",
+      title: "Auto triage",
+      description: "Billing, login, and behaviour tickets routed automatically.",
       badge: "Smart triage",
       icon: Tag,
     },
     {
-      title: "AI macros + saved replies",
-      description:
-        "Pre-written admin responses the AI can adapt on the fly.",
+      title: "AI macros",
+      description: "Saved responses improved by the AI automatically.",
       badge: "Macros",
       icon: FileText,
     },
@@ -915,46 +440,39 @@ const AdminSupportCenter = () => {
 
   const adminActions = [
     {
-      title: "Approve / Reject AI replies",
-      description:
-        "Human-in-the-loop protection ensures quality control for all AI outputs.",
+      title: "Approve / reject AI replies",
+      description: "Human-in-the-loop quality reviews.",
       badge: "Quality gate",
       icon: CheckCircle2,
     },
     {
       title: "Upload new FAQ content",
-      description:
-        "Updating policy docs or help pages trains the AI instantly.",
+      description: "Refresh AI knowledge instantly.",
       badge: "Knowledge update",
       icon: UploadCloud,
     },
   ];
 
   return (
-    <Card className="border-amber-300/40 bg-amber-50/40 dark:bg-amber-950/20">
+    <Card className="border-amber-300/40 bg-amber-50/40 dark:bg-amber-900/20">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-amber-700 dark:text-amber-200">
+        <CardTitle className="flex items-center gap-2 text-amber-800 dark:text-amber-100">
           <Headset className="w-5 h-5" />
-          AI Automated Support Centre
+          AI Support Centre
         </CardTitle>
       </CardHeader>
 
       <CardContent className="grid gap-6 md:grid-cols-2">
         {/* Tools */}
         <div className="space-y-4">
-          <p className="text-sm font-semibold text-amber-700 dark:text-amber-200">
-            Tools
-          </p>
+          <p className="text-sm font-semibold">Tools</p>
 
           {tools.map((t) => (
-            <div
-              key={t.title}
-              className="rounded-xl border border-amber-200/60 p-4 bg-white dark:bg-amber-900/30"
-            >
+            <div key={t.title} className="rounded-xl border p-4 bg-white dark:bg-amber-900/40">
               <div className="flex items-start gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-200/40 dark:bg-amber-800/50">
+                <div className="h-10 w-10 flex items-center justify-center rounded-full bg-amber-200/40 dark:bg-amber-800/50">
                   <t.icon className="w-5 h-5 text-amber-800 dark:text-amber-100" />
-                </span>
+                </div>
 
                 <div>
                   <p className="font-semibold">{t.title}</p>
@@ -962,28 +480,21 @@ const AdminSupportCenter = () => {
                 </div>
               </div>
 
-              <Badge className="mt-3 bg-amber-100 text-amber-800 dark:bg-amber-700/40 dark:text-amber-100">
-                {t.badge}
-              </Badge>
+              <Badge className="mt-3 bg-amber-100 text-amber-800">{t.badge}</Badge>
             </div>
           ))}
         </div>
 
         {/* Admin Actions */}
         <div className="space-y-4">
-          <p className="text-sm font-semibold text-amber-700 dark:text-amber-200">
-            Admin Actions
-          </p>
+          <p className="text-sm font-semibold">Admin Actions</p>
 
           {adminActions.map((a) => (
-            <div
-              key={a.title}
-              className="rounded-xl border border-amber-200/60 p-4 bg-amber-50 dark:bg-amber-900/20"
-            >
+            <div key={a.title} className="rounded-xl border p-4 bg-amber-50 dark:bg-amber-900/30">
               <div className="flex items-start gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-200/40 dark:bg-amber-800/50">
+                <div className="h-10 w-10 flex items-center justify-center rounded-full bg-amber-200/40 dark:bg-amber-800/50">
                   <a.icon className="w-5 h-5 text-amber-800 dark:text-amber-100" />
-                </span>
+                </div>
 
                 <div>
                   <p className="font-semibold">{a.title}</p>
@@ -991,7 +502,7 @@ const AdminSupportCenter = () => {
                 </div>
               </div>
 
-              <Badge variant="outline" className="mt-3 border-amber-400 text-amber-700 dark:text-amber-200">
+              <Badge variant="outline" className="mt-3 border-amber-400 text-amber-700">
                 {a.badge}
               </Badge>
             </div>
@@ -1010,7 +521,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 
-interface AdminBulkEmailProps {
+interface Props {
   emailSubject: string;
   emailMessage: string;
   setEmailSubject: (v: string) => void;
@@ -1028,20 +539,20 @@ const AdminBulkEmail = ({
   handleSendBulkEmail,
   sendingEmail,
   totalUsers,
-}: AdminBulkEmailProps) => {
+}: Props) => {
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Send className="w-5 h-5" /> Bulk Email Sender
+          <Send className="w-5 h-5" />
+          Bulk Email Sender
         </CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-4">
         <div>
-          <Label htmlFor="subject">Subject</Label>
+          <Label>Subject</Label>
           <Input
-            id="subject"
             placeholder="Email subject"
             value={emailSubject}
             onChange={(e) => setEmailSubject(e.target.value)}
@@ -1049,10 +560,9 @@ const AdminBulkEmail = ({
         </div>
 
         <div>
-          <Label htmlFor="message">Message</Label>
+          <Label>Message</Label>
           <Textarea
-            id="message"
-            placeholder="Write your message here…"
+            placeholder="Write the email..."
             rows={6}
             value={emailMessage}
             onChange={(e) => setEmailMessage(e.target.value)}
@@ -1061,8 +571,8 @@ const AdminBulkEmail = ({
 
         <Button
           className="w-full"
-          onClick={handleSendBulkEmail}
           disabled={sendingEmail}
+          onClick={handleSendBulkEmail}
         >
           {sendingEmail ? "Sending…" : `Send to ${totalUsers} users`}
         </Button>
@@ -1076,27 +586,11 @@ export default AdminBulkEmail;
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableHeader,
-  TableHead,
-  TableRow,
-  TableBody,
-  TableCell,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Profile } from "../types/Profile";
+import { useAdminPagination } from "./useAdminPagination";
 
-import { useAdminPagination } from "../hooks/useAdminPagination";
-
-interface Profile {
-  id: string;
-  full_name: string | null;
-  created_at: string | null;
-  email?: string | null;
-  roles: string[];
-  loading?: boolean;
-}
-
-interface AdminUserManagementProps {
+interface Props {
   profiles: Profile[];
   fetchUserEmail: (id: string, index: number) => void;
   handleRoleChange: (id: string, role: string, action: "assign" | "revoke") => void;
@@ -1106,19 +600,19 @@ const AdminUserManagement = ({
   profiles,
   fetchUserEmail,
   handleRoleChange,
-}: AdminUserManagementProps) => {
+}: Props) => {
   const { paginated, page, totalPages, next, prev } =
     useAdminPagination(profiles, 10);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">User Management</CardTitle>
+        <CardTitle>User Management</CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-4">
         <div className="rounded-md border overflow-x-auto">
-          <Table className="min-w-[780px]">
+          <Table className="min-w-[850px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
@@ -1195,7 +689,7 @@ const AdminUserManagement = ({
           </Table>
         </div>
 
-        {/* Pagination Controls */}
+        {/* Pagination */}
         <div className="flex items-center justify-between pt-2">
           <Button variant="outline" disabled={page === 1} onClick={prev}>
             Previous
@@ -1215,8 +709,4 @@ const AdminUserManagement = ({
 };
 
 export default AdminUserManagement;
-
-
-
-
 
