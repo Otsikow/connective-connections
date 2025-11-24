@@ -95,14 +95,25 @@ const Login = () => {
         normalizedMessage.includes("sms") ||
         normalizedMessage.includes("otp");
 
+      // Determine if this is a configuration/availability issue vs. a credential issue
+      const isServiceUnavailable =
+        isPhoneBlocked ||
+        normalizedMessage.includes("service") ||
+        normalizedMessage.includes("unavailable") ||
+        normalizedMessage.includes("disabled");
+
       toast({
         title: "Unable to sign in",
-        description:
-          (isPhoneBlocked
-            ? "Phone sign-ins are disabled in this preview. Please use email or continue with the demo."
-            : undefined) || error.message || "Check your credentials and try again.",
+        description: isPhoneBlocked
+          ? "Phone sign-ins are disabled in this preview. Please use email or try the demo."
+          : error.message || "Please check your credentials and try again.",
+        variant: "destructive",
       });
-      startDemoSignIn();
+
+      // Only auto-activate demo for service availability issues, NOT credential errors
+      if (isServiceUnavailable && isPhoneBlocked) {
+        console.log("Phone authentication unavailable, demo mode available as fallback");
+      }
     } else {
       toast({
         title: "Welcome back!",
@@ -293,10 +304,7 @@ const Login = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-sm">
-                <label className="text-muted-foreground dark:text-slate-400">
-                  <input type="checkbox" className="mr-2" /> Keep me signed in
-                </label>
+              <div className="flex items-center justify-end text-sm">
                 <Link
                   to="/forgot-password"
                   className="font-medium text-[hsl(var(--highlight-text))] hover:underline"
