@@ -29,7 +29,6 @@ export const TopBar = () => {
                 size="sm"
                 className={cn(navButtonClass, "font-semibold")}
                 onClick={() => navigate("/login")}
-                disabled={isLoading}
                 aria-current={location.pathname === "/login" ? "page" : undefined}
               >
                 Sign In
@@ -41,7 +40,6 @@ export const TopBar = () => {
                   "text-primary-foreground"
                 )}
                 onClick={() => navigate("/signup")}
-                disabled={isLoading}
                 aria-current={location.pathname === "/signup" ? "page" : undefined}
               >
                 Join Now
