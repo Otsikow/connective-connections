@@ -13,8 +13,6 @@ import { Profile } from "./types/Profile";
 import { AdminAlert, AlertSeverity } from "./types/AdminAlert";
 
 // Sections
-import AdminSafetyAlerts from "./components/AdminSafetyAlerts";
-import AdminModerationActions from "./components/AdminModerationActions";
 import AdminAISummary from "./components/AdminAISummary";
 import AdminPerformanceMonitor from "./components/AdminPerformanceMonitor";
 import AdminCommunicationsPulse from "./components/AdminCommunicationsPulse";
@@ -34,12 +32,6 @@ const Admin = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [alerts, setAlerts] = useState<AdminAlert[]>([]);
-  const [moderationMetrics, setModerationMetrics] = useState({
-    totalActions: 0,
-    targetedActions: 0,
-    last24h: 0,
-  });
 
   const [emailSubject, setEmailSubject] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
@@ -69,7 +61,7 @@ const Admin = () => {
         }
 
         setIsAdmin(true);
-        await Promise.all([loadProfiles(), loadAuditLog()]);
+        await loadProfiles();
       } catch {
         setError("Admin validation failed");
       } finally {
@@ -107,39 +99,6 @@ const Admin = () => {
     );
   };
 
-  /* LOAD AUDIT LOG */
-  const normalizeSeverity = (m?: Record<string, any>): AlertSeverity => {
-    const v = typeof m?.severity === "string" ? m.severity.toLowerCase() : "";
-    if (v.includes("high")) return "High";
-    if (v.includes("low")) return "Low";
-    return "Medium";
-  };
-
-  const loadAuditLog = async () => {
-    const { data } = await supabase
-      .from("admin_audit_log")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(25);
-
-    const normalized = (data ?? []).map((entry: any) => ({
-      ...entry,
-      severity: normalizeSeverity(entry.metadata),
-    }));
-
-    setAlerts(normalized);
-
-    const last24 = Date.now() - 24 * 60 * 60 * 1000;
-
-    setModerationMetrics({
-      totalActions: normalized.length,
-      targetedActions: normalized.filter((a) => a.target_user_id).length,
-      last24h: normalized.filter(
-        (a) =>
-          a.created_at && new Date(a.created_at).getTime() >= last24
-      ).length,
-    });
-  };
 
   /* SEND BULK EMAIL */
   const handleSendBulkEmail = async () => {
@@ -181,8 +140,6 @@ const Admin = () => {
   }
 
   /* RENDER FINAL DASHBOARD */
-  const visibleAlerts = useMemo(() => alerts.slice(0, 5), [alerts]);
-
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* HEADER */}
@@ -199,8 +156,10 @@ const Admin = () => {
 
       {/* BODY */}
       <div className="p-4 space-y-6">
-        <AdminSafetyAlerts alerts={visibleAlerts} />
-        <AdminModerationActions metrics={moderationMetrics} />
+        <Card className="p-6">
+          <h2 className="text-lg font-semibold mb-2">System Status</h2>
+          <p className="text-muted-foreground">All systems operational.</p>
+        </Card>
         <AdminAISummary />
         <AdminPerformanceMonitor />
         <AdminCommunicationsPulse />
