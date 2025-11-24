@@ -4,4 +4,5 @@ export interface Profile {
   created_at: string
   email: string
   roles: string[]
+  status?: "active" | "suspended"
 }
