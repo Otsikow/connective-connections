@@ -52,6 +52,15 @@ const Login = () => {
 
   const resolvedNextPath = hasCompletedOnboarding() ? nextPath : "/onboarding";
 
+  const startDemoSignIn = () => {
+    const session = activateDemoSession(identifier);
+    toast({
+      title: "Preview access enabled",
+      description: `You are browsing as ${session?.email ?? "a demo user"}.`,
+    });
+    navigate(resolvedNextPath);
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!identifier || !password) {
@@ -68,8 +77,7 @@ const Login = () => {
         description:
           "Live authentication is disabled in this preview build. Use the guided demo to explore the app.",
       });
-      activateDemoSession(identifier);
-      navigate(resolvedNextPath);
+      startDemoSignIn();
       return;
     }
 
@@ -81,16 +89,20 @@ const Login = () => {
     const { error } = await supabase.auth.signInWithPassword(credentials);
 
     if (error) {
+      const normalizedMessage = error.message?.toLowerCase() ?? "";
+      const isPhoneBlocked =
+        normalizedMessage.includes("phone") ||
+        normalizedMessage.includes("sms") ||
+        normalizedMessage.includes("otp");
+
       toast({
         title: "Unable to sign in",
-        description: error.message ?? "Check your credentials and try again.",
+        description:
+          (isPhoneBlocked
+            ? "Phone sign-ins are disabled in this preview. Please use email or continue with the demo."
+            : undefined) || error.message || "Check your credentials and try again.",
       });
-      activateDemoSession(identifier);
-      toast({
-        title: "Preview access enabled",
-        description: "We signed you in with a demo account so you can keep moving.",
-      });
-      navigate(resolvedNextPath);
+      startDemoSignIn();
     } else {
       toast({
         title: "Welcome back!",
@@ -208,6 +220,14 @@ const Login = () => {
                 onClick={handleOAuth}
               >
                 <FcGoogle className="h-5 w-5" /> Continue with Google
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                className="h-12 gap-2 rounded-xl border border-black/5 bg-white/80 text-slate-900 shadow-sm transition hover:border-black/10 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:text-slate-100"
+                onClick={startDemoSignIn}
+              >
+                Explore with demo access
               </Button>
             </div>
 
