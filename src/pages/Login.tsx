@@ -105,13 +105,31 @@ const Login = () => {
           normalizedMessage.includes("failed to fetch") ||
           normalizedMessage.includes("network");
 
+        // Check for specific credential errors that need better guidance
+        const isInvalidCredentials =
+          normalizedMessage.includes("invalid login credentials") ||
+          normalizedMessage.includes("invalid credentials");
+
+        const isEmailNotConfirmed =
+          normalizedMessage.includes("email not confirmed") ||
+          normalizedMessage.includes("confirm your email");
+
+        let description: string;
+        if (isPhoneBlocked) {
+          description = "Phone sign-ins are disabled in this preview. Please use email or try the demo.";
+        } else if (isServiceUnavailable) {
+          description = "We couldn't reach the sign-in service. Switching you to the demo experience so you can keep exploring.";
+        } else if (isEmailNotConfirmed) {
+          description = "Please check your email and click the verification link before signing in. Don't see it? Check your spam folder.";
+        } else if (isInvalidCredentials) {
+          description = "Invalid email or password. If you just signed up, please verify your email first. Need help? Try 'Forgot password?' or use the demo.";
+        } else {
+          description = error.message || "Please check your credentials and try again.";
+        }
+
         toast({
           title: "Unable to sign in",
-          description: isPhoneBlocked
-            ? "Phone sign-ins are disabled in this preview. Please use email or try the demo."
-            : isServiceUnavailable
-              ? "We couldn't reach the sign-in service. Switching you to the demo experience so you can keep exploring."
-              : error.message || "Please check your credentials and try again.",
+          description,
           variant: "destructive",
         });
 
