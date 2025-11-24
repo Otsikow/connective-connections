@@ -46,6 +46,7 @@ type SubscriptionContextValue = {
   monthlyEventJoins: number;
   subscriptionExpires: Date | null;
   isLoading: boolean;
+  signOut: () => Promise<void>;
   attemptConnection: () => Promise<boolean>;
   attemptEventJoin: () => Promise<boolean>;
   refresh: () => Promise<void>;
@@ -122,6 +123,23 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
     setUserId(null);
     resetProfileState();
   }, [resetProfileState]);
+
+  const signOut = useCallback(async () => {
+    if (!isSupabaseConfigured || getDemoSession()) {
+      handleSignedOut();
+      navigate("/");
+      return;
+    }
+
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error("subscription:sign-out", error);
+    } finally {
+      handleSignedOut();
+      navigate("/");
+    }
+  }, [handleSignedOut, isSupabaseConfigured, navigate]);
 
   const loadDemoSession = useCallback(() => {
     const session = getDemoSession() ?? activateDemoSession();
@@ -453,6 +471,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       subscriptionExpires: state.subscriptionExpires,
       isLoading: state.isLoading,
       isVerified: state.isVerified,
+      signOut,
       attemptConnection,
       attemptEventJoin,
       refresh: fetchProfile,
@@ -474,6 +493,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       state.isVerified,
       state.tier,
       state.isLoading,
+      signOut,
     ],
   );
 

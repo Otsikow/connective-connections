@@ -10,10 +10,12 @@ export const TopBar = () => {
   const location = useLocation();
   const {
     userId,
-    isLoading
+    isLoading,
+    signOut,
   } = useSubscription();
   const shouldShowAuthButtons = !userId;
-  const navButtonClass = "relative overflow-hidden rounded-full border border-foreground/10 bg-foreground/[0.04] px-5 text-sm font-semibold text-foreground/90 shadow-[0_16px_38px_-28px_rgba(15,15,15,0.45)] transition-colors duration-300 hover:border-foreground/20 hover:bg-foreground/[0.08] focus-visible:ring-2 focus-visible:ring-offset-1 dark:border-white/10 dark:bg-white/[0.06] dark:text-foreground dark:hover:bg-white/[0.14]";
+  const navButtonClass =
+    "relative overflow-hidden rounded-full border border-foreground/10 bg-foreground/[0.04] px-5 text-sm font-semibold text-foreground/90 shadow-[0_16px_38px_-28px_rgba(15,15,15,0.45)] transition-colors duration-300 hover:border-foreground/20 hover:bg-foreground/[0.08] focus-visible:ring-2 focus-visible:ring-offset-1 dark:border-white/10 dark:bg-white/[0.06] dark:text-foreground dark:hover:bg-white/[0.14]";
   return <div className="sticky top-0 z-[60] border-b border-black/5 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/65 dark:border-white/5">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-foreground/80 transition hover:text-foreground">
@@ -46,7 +48,16 @@ export const TopBar = () => {
                 Join Now
               </Button>
             </>
-          ) : null}
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn(navButtonClass, "font-semibold")}
+              onClick={signOut}
+            >
+              Sign Out
+            </Button>
+          )}
 
           <ThemeToggle className="relative z-10" />
         </div>
