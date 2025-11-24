@@ -181,9 +181,12 @@ const Signup = () => {
         photoDataUrl: data.photoDataUrl || null,
       };
 
+      const normalizedEmail = data.email.trim().toLowerCase();
+      const normalizedPhone = data.phone.trim();
+
       if (authTab === "email") {
         const { data: signUpData, error } = await supabase.auth.signUp({
-          email: data.email,
+          email: normalizedEmail,
           password: data.password,
           options: {
             emailRedirectTo: `${window.location.origin}/profile-setup`,
@@ -202,7 +205,7 @@ const Signup = () => {
         navigate(nextPath);
       } else {
         const { data: signUpData, error } = await supabase.auth.signUp({
-          phone: data.phone,
+          phone: normalizedPhone,
           password: data.password,
           options: {
             data: profileMetadata,
