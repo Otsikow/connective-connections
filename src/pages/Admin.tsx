@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BackButton from "@/components/BackButton";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +32,15 @@ const Admin = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [profiles, setProfiles] = useState<Profile[]>([]);
+
+  type SupabaseProfile = {
+    id: string;
+    full_name: string;
+    created_at: string;
+    email: string;
+    status?: Profile["status"];
+    user_roles?: { role: string }[];
+  };
 
   const [emailSubject, setEmailSubject] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
@@ -88,15 +97,41 @@ const Admin = () => {
       return;
     }
 
-    setProfiles(
-      data.map((p: any) => ({
-        id: p.id,
-        full_name: p.full_name,
-        created_at: p.created_at,
-        email: p.email,
-        roles: p.user_roles?.map((r: any) => r.role) ?? [],
-      }))
-    );
+    const formattedProfiles = (data ?? ([] as SupabaseProfile[])).map((p) => ({
+      id: p.id,
+      full_name: p.full_name,
+      created_at: p.created_at,
+      email: p.email,
+      roles: p.user_roles?.map((r) => r.role) ?? [],
+      status: p.status ?? "active",
+    }));
+
+    setProfiles(formattedProfiles);
+  };
+
+  const handleBulkUserAction = (
+    action: "suspend" | "activate" | "delete",
+    selectedIds: string[],
+  ) => {
+    setProfiles((prev) => {
+      if (action === "delete") {
+        return prev.filter((profile) => !selectedIds.includes(profile.id));
+      }
+
+      return prev.map((profile) =>
+        selectedIds.includes(profile.id)
+          ? { ...profile, status: action === "suspend" ? "suspended" : "active" }
+          : profile,
+      );
+    });
+
+    const actionLabel =
+      action === "suspend" ? "suspended" : action === "activate" ? "reactivated" : "deleted";
+
+    toast({
+      title: "Bulk action completed",
+      description: `${selectedIds.length} user${selectedIds.length === 1 ? "" : "s"} ${actionLabel}.`,
+    });
   };
 
 
@@ -178,7 +213,8 @@ const Admin = () => {
 
         <AdminUserManagement
           profiles={profiles}
-          fetchUserEmail={() => {}}
+          onRefresh={loadProfiles}
+          onBulkAction={handleBulkUserAction}
           handleRoleChange={() => {}}
         />
       </div>
