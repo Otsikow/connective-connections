@@ -2,7 +2,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useSubscription } from "@/hooks/useSubscription";
 import { cn } from "@/lib/utils";
 export const TopBar = () => {
@@ -13,7 +12,7 @@ export const TopBar = () => {
     isLoading,
     signOut,
   } = useSubscription();
-  const shouldShowAuthButtons = !userId;
+  const shouldShowAuthButtons = !userId || isLoading;
   const navButtonClass =
     "relative overflow-hidden rounded-full border border-foreground/10 bg-foreground/[0.04] px-5 text-sm font-semibold text-foreground/90 shadow-[0_16px_38px_-28px_rgba(15,15,15,0.45)] transition-colors duration-300 hover:border-foreground/20 hover:bg-foreground/[0.08] focus-visible:ring-2 focus-visible:ring-offset-1 dark:border-white/10 dark:bg-white/[0.06] dark:text-foreground dark:hover:bg-white/[0.14]";
   return <div className="sticky top-0 z-[60] border-b border-black/5 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/65 dark:border-white/5">
@@ -23,15 +22,14 @@ export const TopBar = () => {
         </Link>
 
         <div className="flex items-center gap-3">
-          {isLoading ? (
-            <Skeleton className="h-10 w-28 rounded-full" />
-          ) : shouldShowAuthButtons ? (
+          {shouldShowAuthButtons ? (
             <>
               <Button
                 variant="outline"
                 size="sm"
                 className={cn(navButtonClass, "font-semibold")}
                 onClick={() => navigate("/login")}
+                disabled={isLoading}
                 aria-current={location.pathname === "/login" ? "page" : undefined}
               >
                 Sign In
@@ -43,6 +41,7 @@ export const TopBar = () => {
                   "text-primary-foreground"
                 )}
                 onClick={() => navigate("/signup")}
+                disabled={isLoading}
                 aria-current={location.pathname === "/signup" ? "page" : undefined}
               >
                 Join Now
