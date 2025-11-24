@@ -63,7 +63,9 @@ const Login = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!identifier || !password) {
+    const normalizedIdentifier = identifier.trim();
+
+    if (!normalizedIdentifier || !password) {
       toast({
         title: "Missing information",
         description: "Please enter your email or phone plus your password to continue.",
@@ -81,9 +83,9 @@ const Login = () => {
       return;
     }
 
-    const credentials = isLikelyPhone(identifier)
-      ? { phone: identifier.trim(), password }
-      : { email: identifier.trim(), password };
+    const credentials = isLikelyPhone(normalizedIdentifier)
+      ? { phone: normalizedIdentifier, password }
+      : { email: normalizedIdentifier.toLowerCase(), password };
 
     try {
       setIsLoading(true);
