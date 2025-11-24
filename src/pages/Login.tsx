@@ -64,6 +64,9 @@ const Login = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const normalizedIdentifier = identifier.trim();
+    const emailIdentifier = !isLikelyPhone(normalizedIdentifier)
+      ? normalizedIdentifier.toLowerCase()
+      : null;
 
     if (!normalizedIdentifier || !password) {
       toast({
@@ -83,9 +86,9 @@ const Login = () => {
       return;
     }
 
-    const credentials = isLikelyPhone(normalizedIdentifier)
-      ? { phone: normalizedIdentifier, password }
-      : { email: normalizedIdentifier.toLowerCase(), password };
+    const credentials = emailIdentifier
+      ? { email: emailIdentifier, password }
+      : { phone: normalizedIdentifier, password };
 
     try {
       setIsLoading(true);
@@ -129,11 +132,29 @@ const Login = () => {
           description = error.message || "Please check your credentials and try again.";
         }
 
-        toast({
-          title: "Unable to sign in",
-          description,
-          variant: "destructive",
-        });
+          toast({
+            title: "Unable to sign in",
+            description,
+            variant: "destructive",
+          });
+
+          if (isEmailNotConfirmed && emailIdentifier) {
+            const { error: resendError } = await supabase.auth.resend({
+              type: "signup",
+              email: emailIdentifier,
+              options: {
+                emailRedirectTo: getSupabaseRedirectUrl("/auth/callback"),
+              },
+            });
+
+            toast({
+              title: resendError ? "Verification required" : "Check your email",
+              description:
+                resendError?.message ??
+                "We've sent a new verification link to your inbox. Please verify your email before signing in.",
+              variant: resendError ? "destructive" : "default",
+            });
+          }
 
         if (isServiceUnavailable) {
           startDemoSignIn();
