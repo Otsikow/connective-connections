@@ -22,6 +22,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { PostgrestError, User } from "@supabase/supabase-js";
+import { activateDemoSession, clearDemoSession, getDemoSession } from "@/lib/demoSession";
 
 export type SubscriptionTier = "basic" | "standard" | "pro";
 
@@ -117,9 +118,31 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const handleSignedOut = useCallback(() => {
+    clearDemoSession();
     setUserId(null);
     resetProfileState();
   }, [resetProfileState]);
+
+  const loadDemoSession = useCallback(() => {
+    const session = getDemoSession() ?? activateDemoSession();
+    if (!session) {
+      handleSignedOut();
+      return true;
+    }
+
+    setUserId(session.id);
+    setState({
+      tier: "pro",
+      monthlyConnections: 0,
+      monthlyEventJoins: 0,
+      subscriptionExpires: null,
+      fullName: session.fullName,
+      email: session.email,
+      isVerified: true,
+      isLoading: false,
+    });
+    return true;
+  }, [handleSignedOut]);
 
   const handleProfileLoaded = useCallback(
     (profile: ProfileUsage | null | undefined, user: User, isVerified: boolean) => {
@@ -159,8 +182,8 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const fetchProfile = useCallback(async () => {
-    if (!isSupabaseConfigured) {
-      resetProfileState();
+    if (!isSupabaseConfigured || getDemoSession()) {
+      loadDemoSession();
       return;
     }
 
@@ -236,13 +259,13 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
                   variant: "destructive",
                 });
                 resetProfileState();
-              return;
-            }
+                return;
+              }
 
-            handleProfileLoaded(inserted, session.user, verificationStatus);
-            return;
-          } catch (insertException) {
-            console.error("subscription:create-profile-exception", insertException);
+              handleProfileLoaded(inserted, session.user, verificationStatus);
+              return;
+            } catch (insertException) {
+              console.error("subscription:create-profile-exception", insertException);
               toast({
                 title: "Unable to prepare profile",
                 description:
@@ -272,6 +295,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
     handleSignedOut,
     isAuthorizationError,
     isSupabaseConfigured,
+    loadDemoSession,
     resetProfileState,
     toast,
   ]);
@@ -279,7 +303,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     fetchProfile();
 
-    if (!isSupabaseConfigured) {
+    if (!isSupabaseConfigured || getDemoSession()) {
       return undefined;
     }
 

@@ -16,6 +16,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import BackButton from "@/components/BackButton";
 import { hasCompletedOnboarding } from "@/lib/onboarding";
+import { activateDemoSession } from "@/lib/demoSession";
 
 const featureHighlights = [
   "Curated in-person events",
@@ -67,6 +68,8 @@ const Login = () => {
         description:
           "Live authentication is disabled in this preview build. Use the guided demo to explore the app.",
       });
+      activateDemoSession(identifier);
+      navigate(resolvedNextPath);
       return;
     }
 
@@ -82,6 +85,12 @@ const Login = () => {
         title: "Unable to sign in",
         description: error.message ?? "Check your credentials and try again.",
       });
+      activateDemoSession(identifier);
+      toast({
+        title: "Preview access enabled",
+        description: "We signed you in with a demo account so you can keep moving.",
+      });
+      navigate(resolvedNextPath);
     } else {
       toast({
         title: "Welcome back!",
