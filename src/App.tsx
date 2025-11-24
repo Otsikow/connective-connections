@@ -35,6 +35,7 @@ import HostDashboard from "./pages/HostDashboard";
 import HostEvent from "./pages/HostEvent";
 import HostCreateExperience from "./pages/HostCreateExperience";
 import Dashboard from "./pages/Dashboard";
+import UserAnalyticsDashboard from "./pages/UserAnalyticsDashboard";
 import AIGrowthAnalytics from "./pages/AIGrowthAnalytics";
 import AICoach from "./pages/AICoach";
 import NotFound from "./pages/NotFound";
@@ -95,6 +96,10 @@ const AnimatedRoutes = () => {
 
         {/* User Dashboard */}
         <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
+        <Route
+          path="/analytics/users"
+          element={<PageTransition><UserAnalyticsDashboard /></PageTransition>}
+        />
 
         {/* AI */}
         <Route path="/ai-growth-analytics" element={<PageTransition><AIGrowthAnalytics /></PageTransition>} />
