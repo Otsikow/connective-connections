@@ -161,6 +161,7 @@ export default function Profile() {
     monthlyEventJoins,
     subscriptionExpires,
     openUpgrade,
+    signOut,
     fullName: subscriptionFullName,
     email,
     isVerified,
@@ -196,6 +197,11 @@ export default function Profile() {
     newPassword: "",
     confirmPassword: "",
   });
+
+  const publicProfileUrl = useMemo(() => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://connective.app";
+    return `${origin}/profile?user=${userId ?? "me"}`;
+  }, [userId]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -337,6 +343,54 @@ export default function Profile() {
       setIsVerificationSending(false);
     }
   }, [email, toast]);
+
+  const handleViewPublicProfile = useCallback(() => {
+    if (typeof window === "undefined") return;
+
+    window.open(publicProfileUrl, "_blank", "noopener,noreferrer");
+    toast({
+      title: "Opening public view",
+      description: "A preview of your profile is opening in a new tab.",
+    });
+  }, [publicProfileUrl, toast]);
+
+  const handleShareProfile = useCallback(async () => {
+    const sharePayload = {
+      title: `${displayFullName}'s Connective profile`,
+      text: displayHeadline,
+      url: publicProfileUrl,
+    };
+
+    try {
+      if (typeof navigator !== "undefined" && navigator.share) {
+        await navigator.share(sharePayload);
+        toast({ title: "Profile shared", description: "Your sharing sheet just opened." });
+        return;
+      }
+
+      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(publicProfileUrl);
+        toast({ title: "Link copied", description: "Your profile link is ready to paste anywhere." });
+        return;
+      }
+
+      toast({
+        title: "Sharing unavailable",
+        description: "Your browser blocked sharing tools. Please copy the link manually.",
+        variant: "destructive",
+      });
+    } catch (error) {
+      console.error("profile:share", error);
+      toast({
+        title: "Unable to share",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Please try again or copy your profile link manually.",
+        variant: "destructive",
+      });
+    }
+  }, [displayFullName, displayHeadline, publicProfileUrl, toast]);
 
   const handleProfileChange = useCallback(
     (field: keyof typeof profileForm) =>
@@ -505,6 +559,22 @@ export default function Profile() {
       });
     }, 800);
   }, [isSecuritySaving, persistProfileState, securityForm, toast, twoFactorEnabled]);
+
+  const handleManageDevices = useCallback(() => {
+    toast({
+      title: "Trusted devices",
+      description: "Device management opens after enabling live security syncing.",
+    });
+  }, [toast]);
+
+  const handleAuthAction = useCallback(() => {
+    if (userId) {
+      void signOut();
+      return;
+    }
+
+    navigate("/login", { state: { next: location.pathname || "/profile" } });
+  }, [location.pathname, navigate, signOut, userId]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -684,11 +754,25 @@ export default function Profile() {
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button variant="outline" className="border-border/50 bg-background/80">
+              <Button
+                variant="outline"
+                className="border-border/50 bg-background/80"
+                onClick={handleViewPublicProfile}
+              >
                 View public profile
               </Button>
-              <Button className="bg-gradient-to-r from-primary to-primary/80 shadow-lg shadow-primary/20">
+              <Button
+                className="bg-gradient-to-r from-primary to-primary/80 shadow-lg shadow-primary/20"
+                onClick={handleShareProfile}
+              >
                 Share profile
+              </Button>
+              <Button
+                variant="ghost"
+                className="border border-border/50 bg-background/80 hover:bg-background"
+                onClick={handleAuthAction}
+              >
+                {userId ? "Sign out" : "Sign in"}
               </Button>
             </div>
           </div>
@@ -996,7 +1080,7 @@ export default function Profile() {
                 </div>
 
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <Button variant="outline" className="w-full sm:w-auto">
+                  <Button variant="outline" className="w-full sm:w-auto" onClick={handleManageDevices}>
                     Manage trusted devices
                   </Button>
                   <Button className="w-full sm:w-auto" onClick={handleSecuritySave} disabled={isSecuritySaving}>
