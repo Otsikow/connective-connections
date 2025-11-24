@@ -85,44 +85,59 @@ const Login = () => {
       ? { phone: identifier.trim(), password }
       : { email: identifier.trim(), password };
 
-    setIsLoading(true);
-    const { error } = await supabase.auth.signInWithPassword(credentials);
+    try {
+      setIsLoading(true);
+      const { error } = await supabase.auth.signInWithPassword(credentials);
 
-    if (error) {
-      const normalizedMessage = error.message?.toLowerCase() ?? "";
-      const isPhoneBlocked =
-        normalizedMessage.includes("phone") ||
-        normalizedMessage.includes("sms") ||
-        normalizedMessage.includes("otp");
+      if (error) {
+        const normalizedMessage = error.message?.toLowerCase() ?? "";
+        const isPhoneBlocked =
+          normalizedMessage.includes("phone") ||
+          normalizedMessage.includes("sms") ||
+          normalizedMessage.includes("otp");
 
-      // Determine if this is a configuration/availability issue vs. a credential issue
-      const isServiceUnavailable =
-        isPhoneBlocked ||
-        normalizedMessage.includes("service") ||
-        normalizedMessage.includes("unavailable") ||
-        normalizedMessage.includes("disabled");
+        // Determine if this is a configuration/availability issue vs. a credential issue
+        const isServiceUnavailable =
+          isPhoneBlocked ||
+          normalizedMessage.includes("service") ||
+          normalizedMessage.includes("unavailable") ||
+          normalizedMessage.includes("disabled") ||
+          normalizedMessage.includes("failed to fetch") ||
+          normalizedMessage.includes("network");
+
+        toast({
+          title: "Unable to sign in",
+          description: isPhoneBlocked
+            ? "Phone sign-ins are disabled in this preview. Please use email or try the demo."
+            : isServiceUnavailable
+              ? "We couldn't reach the sign-in service. Switching you to the demo experience so you can keep exploring."
+              : error.message || "Please check your credentials and try again.",
+          variant: "destructive",
+        });
+
+        if (isServiceUnavailable) {
+          startDemoSignIn();
+        }
+      } else {
+        toast({
+          title: "Welcome back!",
+          description: "You are now signed in to Connective.",
+        });
+        navigate(resolvedNextPath);
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "We couldn't reach the sign-in service.";
 
       toast({
         title: "Unable to sign in",
-        description: isPhoneBlocked
-          ? "Phone sign-ins are disabled in this preview. Please use email or try the demo."
-          : error.message || "Please check your credentials and try again.",
+        description: `${message} Switching you to the demo experience so you can keep exploring.`,
         variant: "destructive",
       });
-
-      // Only auto-activate demo for service availability issues, NOT credential errors
-      if (isServiceUnavailable && isPhoneBlocked) {
-        console.log("Phone authentication unavailable, demo mode available as fallback");
-      }
-    } else {
-      toast({
-        title: "Welcome back!",
-        description: "You are now signed in to Connective.",
-      });
-      navigate(resolvedNextPath);
+      startDemoSignIn();
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   const handleOAuth = async () => {
