@@ -50,6 +50,15 @@
 
     --radius: 1.75rem;
 
+    /* Glow System */
+    --glow-primary-start: #ff6b00;
+    --glow-primary-end: #ff9d47;
+    --glow-secondary-start: #1d7aff;
+    --glow-secondary-end: #56c0ff;
+    --glow-opacity: 0.14;
+    --glow-size-min: 120px;
+    --glow-size-max: 240px;
+
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(43 95% 64%), hsl(36 96% 70%));
     --gradient-warm: linear-gradient(155deg, hsl(37 90% 72%), hsl(43 95% 64%));
@@ -170,6 +179,53 @@
     transform: translateZ(0);
   }
 
+  /* Vertical striped background texture */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.02) 0%,
+        rgba(255, 255, 255, 0.06) 2%,
+        rgba(255, 255, 255, 0.02) 4%,
+        transparent 8%
+      ),
+      linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.02) 0%,
+        rgba(255, 255, 255, 0.05) 1.5%,
+        rgba(255, 255, 255, 0.02) 3%,
+        transparent 6%
+      );
+    background-size: 140px 100%, 220px 100%;
+    opacity: 0.12;
+    mix-blend-mode: soft-light;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .dark body::after {
+    background-image:
+      linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.012) 0%,
+        rgba(255, 255, 255, 0.04) 2.5%,
+        rgba(255, 255, 255, 0.012) 4.5%,
+        transparent 9%
+      ),
+      linear-gradient(
+        90deg,
+        rgba(39, 120, 255, 0.04) 0%,
+        rgba(86, 192, 255, 0.08) 1.5%,
+        rgba(39, 120, 255, 0.04) 3.5%,
+        transparent 7%
+      );
+    opacity: 0.1;
+    mix-blend-mode: overlay;
+  }
+
   .dark body::before {
     background-image:
       radial-gradient(circle at 18% 24%, rgba(224, 168, 78, 0.26), transparent 50%),
@@ -187,6 +243,36 @@
   .dark ::selection {
     background-color: hsl(var(--primary) / 0.55);
     color: hsl(var(--foreground));
+  }
+
+  /* Glow utility system */
+  .glow-spot {
+    position: absolute;
+    width: clamp(var(--glow-size-min), 18vw, var(--glow-size-max));
+    aspect-ratio: 1 / 1;
+    border-radius: 9999px;
+    pointer-events: none;
+    filter: blur(64px);
+    opacity: var(--glow-opacity);
+    background: radial-gradient(circle at 50% 50%, var(--glow-start) 0%, var(--glow-end) 46%, transparent 72%);
+    mix-blend-mode: screen;
+    transition: opacity 0.3s ease, transform 0.4s ease;
+    transform: translateZ(0);
+  }
+
+  .glow-spot.glow-primary {
+    --glow-start: var(--glow-primary-start);
+    --glow-end: var(--glow-primary-end);
+  }
+
+  .glow-spot.glow-secondary {
+    --glow-start: var(--glow-secondary-start);
+    --glow-end: var(--glow-secondary-end);
+  }
+
+  .glow-spot.is-soft {
+    opacity: calc(var(--glow-opacity) - 0.02);
+    filter: blur(72px);
   }
 
   /* Subtle glow effects for dark mode */
