@@ -156,6 +156,19 @@ const Home = () => {
       }
     },
     {
+      value: "micro-groups",
+      title: "Auto-form micro-groups",
+      desc: "AI assembles 3–6 person crews by hobbies, rhythms, and faith cues.",
+      highlight: "Instantly outputs a ready-to-launch circle.",
+      badge: "bg-emerald-500/15 text-emerald-700",
+      cta: { path: "/ai-group-builder", requiresAuth: true },
+      spotlight: {
+        avatar: generateAvatarUrl("Micro groups spotlight"),
+        name: "Samira",
+        tagline: "Formed a sunrise creative pod"
+      }
+    },
+    {
       value: "chat",
       title: "Chat without awkward starts",
       desc: "Guided prompts keep conversations natural and fun.",

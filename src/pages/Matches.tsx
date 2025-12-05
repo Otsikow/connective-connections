@@ -16,6 +16,7 @@ import {
   Check,
   Heart,
   Lightbulb,
+   Network,
   MessageSquare,
   ShieldCheck,
   Sparkles,
@@ -34,6 +35,11 @@ import {
   fetchConnectionFeedback,
   submitConnectionFeedback,
 } from "@/api/connection-feedback";
+import { behaviorProfiles } from "@/data/behavior-profiles";
+import {
+  buildBehaviorMatches,
+  clusterBehaviorProfiles,
+} from "@/lib/behavior-matching";
 
 interface Profile {
   id: string;
@@ -197,6 +203,9 @@ const connectionFeedbackSeeds: ConnectionFeedback[] = [
   },
 ];
 
+const anchorBehaviorProfile = behaviorProfiles[0];
+const candidateBehaviorProfiles = behaviorProfiles.slice(1);
+
 const Matches = () => {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -206,6 +215,16 @@ const Matches = () => {
   const { attemptConnection } = useSubscription();
   const { toast } = useToast();
   usePageTitle("Your Matches");
+
+  const behaviorMatches = useMemo(
+    () => buildBehaviorMatches(anchorBehaviorProfile, candidateBehaviorProfiles),
+    [],
+  );
+
+  const behaviorClusters = useMemo(
+    () => clusterBehaviorProfiles(behaviorProfiles),
+    [],
+  );
 
   useEffect(() => {
     const loadExistingFeedback = async () => {
@@ -456,6 +475,95 @@ const Matches = () => {
                   </div>
                 </div>
               ))}
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/60 shadow-sm">
+            <CardHeader className="space-y-1">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Network className="w-4 h-4" />
+                <span>Behavior-first graph</span>
+              </div>
+              <CardTitle>Matches from how you move</CardTitle>
+              <CardDescription>
+                Recommendations ignore bios and instead watch actions—events you show up
+                to, topics you interact with, workouts you keep, and faith or creative
+                rhythms you repeat.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6 lg:grid-cols-2">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+                  <Sparkles className="w-4 h-4" />
+                  <span>Behavioral recommendations</span>
+                </div>
+                {behaviorMatches.slice(0, 4).map((match) => (
+                  <div
+                    key={match.id}
+                    className="rounded-xl border border-border/60 bg-muted/30 p-4 space-y-2"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold leading-tight">{match.name}</p>
+                        <p className="text-xs text-muted-foreground">Behavioral compatibility</p>
+                      </div>
+                      <Badge className="gap-1">
+                        <Users className="w-3.5 h-3.5" />
+                        {match.score}%
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{match.insight}</p>
+                    {match.sharedSignals.length > 0 && (
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        {match.sharedSignals.slice(0, 6).map((signal) => (
+                          <span
+                            key={`${match.id}-${signal}`}
+                            className="rounded-full bg-background border border-border/60 px-3 py-1 text-xs"
+                          >
+                            {signal}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+                  <Lightbulb className="w-4 h-4" />
+                  <span>Pattern clusters</span>
+                </div>
+                {behaviorClusters.map((cluster) => (
+                  <div
+                    key={cluster.id}
+                    className="rounded-xl border border-border/60 bg-background p-4 space-y-3"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold leading-tight">{cluster.label}</p>
+                        <p className="text-xs text-muted-foreground">{cluster.description}</p>
+                      </div>
+                      <Badge variant="secondary" className="gap-1 text-xs">
+                        <Users className="w-3.5 h-3.5" /> {cluster.members.length} people
+                      </Badge>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {cluster.topSignals.map((signal) => (
+                        <span
+                          key={`${cluster.id}-${signal}`}
+                          className="rounded-full bg-muted px-3 py-1 text-[11px] uppercase tracking-wide"
+                        >
+                          {signal}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Members: {cluster.members.map((member) => member.name).join(", ")}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
 
