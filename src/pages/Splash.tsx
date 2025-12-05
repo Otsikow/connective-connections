@@ -142,7 +142,7 @@ const Splash = () => {
   const showAuthButtons = !isLoading && !userId;
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#0f172a] text-white">
+    <div className="flowmaster-hero relative min-h-screen overflow-hidden bg-[#0f172a] text-white">
       <div className="pointer-events-none absolute inset-0 -z-10 opacity-70">
         <div className="absolute left-[-10%] top-[-15%] h-[28rem] w-[28rem] rounded-full bg-[#f59e0b]/20 blur-[120px]" />
         <div className="absolute right-[-15%] top-[20%] h-[32rem] w-[32rem] rounded-full bg-[#6366f1]/20 blur-[130px]" />
@@ -176,7 +176,7 @@ const Splash = () => {
           <p className="mt-6 text-xs font-semibold uppercase tracking-[0.5em] text-gray-400">
             Exclusive Experiential Membership
           </p>
-          <h1 className="mt-6 text-balance text-4xl font-semibold leading-tight text-white sm:text-5xl">
+          <h1 className="flowmaster-hero-title mt-6 text-balance text-4xl font-semibold leading-tight sm:text-5xl">
             The future of connection is curated.
           </h1>
           <p className="mt-6 max-w-2xl text-pretty text-lg text-gray-300 sm:text-xl">
@@ -199,7 +199,11 @@ const Splash = () => {
           </div>
         </header>
 
-        <section className="mt-16">
+        <div className="mt-12">
+          <div className="flowmaster-divider" />
+        </div>
+
+        <section className="flowmaster-section mt-12">
           <div className="relative overflow-hidden rounded-[2rem] border border-gray-800/60 bg-gradient-to-br from-[#1e293b]/80 via-[#0f172a] to-[#0f172a]">
             <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#f59e0b]/10 via-transparent to-transparent" />
             <img
@@ -230,7 +234,7 @@ const Splash = () => {
           </div>
         </section>
 
-        <section className="mt-20 space-y-8">
+        <section className="flowmaster-section mt-16 space-y-8">
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.45em] text-[hsl(var(--highlight-text))]">Crafted experiences</p>
             <h2 className="mt-4 text-balance text-3xl font-semibold text-white sm:text-4xl">
@@ -272,7 +276,7 @@ const Splash = () => {
           </div>
         </section>
 
-        <section className="mt-24 space-y-12">
+        <section className="flowmaster-section mt-16 space-y-12">
           <div className="space-y-6 text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-gray-800/60 bg-[#1e293b]/80 px-4 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-gray-400">
               Your journey
@@ -314,7 +318,7 @@ const Splash = () => {
           </div>
         </section>
 
-        <section className="mt-24 space-y-10">
+        <section className="flowmaster-section mt-16 space-y-10">
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.45em] text-[hsl(var(--highlight-text))]">Member stories</p>
             <h2 className="mt-4 text-balance text-3xl font-semibold text-white sm:text-4xl">What members say.</h2>
@@ -342,7 +346,7 @@ const Splash = () => {
           </div>
         </section>
 
-        <section className="mt-24">
+        <section className="flowmaster-section mt-16">
           <div className="overflow-hidden rounded-[2rem] border border-[#fbbf24]/40 bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-[#0f172a] p-[1px]">
             <div className="flex h-full w-full flex-col gap-10 rounded-[calc(theme(borderRadius.4xl)-1px)] bg-[#0f172a]/95 p-10">
               <div className="space-y-4">
