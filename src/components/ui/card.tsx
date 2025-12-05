@@ -9,12 +9,27 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   idleFloat?: boolean;
 }
 
+/* --------------------------------------------
+   BASE CARD CLASSES (Unified + Theme-Friendly)
+   -------------------------------------------- */
 const baseCardClasses =
-  "relative w-full overflow-hidden rounded-[20px] border border-[rgba(255,255,255,0.06)] bg-[#111111] text-card-foreground shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03),0_8px_38px_rgba(0,0,0,0.55)] transition-all duration-350 ease-spring supports-[backdrop-filter]:backdrop-blur-xl card-glow-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8A3C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]";
+  "relative w-full overflow-hidden rounded-[22px] border border-border bg-card text-card-foreground shadow-[var(--shadow-card)] transition-all duration-500 supports-[backdrop-filter]:backdrop-blur-xl card-glow-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
+/* --------------------------------------------
+   MAIN CARD COMPONENT
+   -------------------------------------------- */
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, animated = true, hoverScale = true, highlighted = false, idleFloat = false, ...props }, ref) => {
-    
+  (
+    {
+      className,
+      animated = true,
+      hoverScale = true,
+      highlighted = false,
+      idleFloat = false,
+      ...props
+    },
+    ref
+  ) => {
     const mergedClasses = cn(
       baseCardClasses,
       "stagger-card",
@@ -35,7 +50,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       );
     }
 
-    // Animated version with world-class hover effects
+    // Animated version
     return (
       <motion.div
         ref={ref}
@@ -51,62 +66,91 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
                 rotateX: -3,
                 rotateY: 3,
                 scale: 1.02,
-                boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.06), 0 14px 48px rgba(0,0,0,0.65)",
-                transition: { 
+                boxShadow:
+                  "var(--shadow-card-hover, 0 14px 48px rgba(0,0,0,0.30))",
+                transition: {
                   duration: 0.35,
-                  ease: [0.34, 1.56, 0.64, 1]
+                  ease: [0.34, 1.56, 0.64, 1],
                 },
               }
             : undefined
         }
-        whileTap={{ 
+        whileTap={{
           scale: 0.97,
-          transition: { duration: 0.1 }
+          transition: { duration: 0.1 },
         }}
         {...props}
       />
     );
   }
 );
+
 Card.displayName = "Card";
 
-const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex flex-col space-y-2.5 p-6 sm:p-8", className)} {...props} />
-  )
-);
+/* --------------------------------------------
+   SUBCOMPONENTS
+   -------------------------------------------- */
+const CardHeader = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("flex flex-col space-y-2.5 p-6 sm:p-8", className)}
+    {...props}
+  />
+));
 CardHeader.displayName = "CardHeader";
 
-const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
-  ({ className, ...props }, ref) => (
-    <h3
-      ref={ref}
-      className={cn("text-2xl font-semibold leading-tight text-foreground/95 sm:text-[1.75rem]", className)}
-      {...props}
-    />
-  )
-);
+const CardTitle = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLHeadingElement>
+>(({ className, ...props }, ref) => (
+  <h3
+    ref={ref}
+    className={cn(
+      "text-2xl font-semibold leading-tight text-foreground/95 sm:text-[1.75rem]",
+      className
+    )}
+    {...props}
+  />
+));
 CardTitle.displayName = "CardTitle";
 
-const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
-  ({ className, ...props }, ref) => (
-    <p ref={ref} className={cn("text-base text-muted-foreground/90", className)} {...props} />
-  )
-);
+const CardDescription = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, ...props }, ref) => (
+  <p
+    ref={ref}
+    className={cn("text-base text-muted-foreground/90", className)}
+    {...props}
+  />
+));
 CardDescription.displayName = "CardDescription";
 
-const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("p-6 pt-0 sm:p-8", className)} {...props} />
-  )
-);
+const CardContent = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("p-6 pt-0 sm:p-8", className)}
+    {...props}
+  />
+));
 CardContent.displayName = "CardContent";
 
-const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex items-center p-6 pt-0 sm:p-8", className)} {...props} />
-  )
-);
+const CardFooter = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("flex items-center p-6 pt-0 sm:p-8", className)}
+    {...props}
+  />
+));
 CardFooter.displayName = "CardFooter";
 
 export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent };

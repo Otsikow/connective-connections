@@ -21,7 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import BackButton from "@/components/BackButton";
 import { useSubscription, type SubscriptionTier } from "@/hooks/useSubscription";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import { useTheme } from "@/components/ThemeProvider";
+import { useTheme, type AccentColor } from "@/components/ThemeProvider";
 import { isSupabaseConfigured, supabase } from "@/integrations/supabase/client";
 import {
   createStripeBillingPortalSession,
@@ -135,16 +135,15 @@ const NOTIFICATION_OPTIONS = [
   },
 ];
 
-const ACCENT_COLORS = [
+const ACCENT_COLORS: Array<{ value: AccentColor; label: string; swatch: string }> = [
   { value: "emerald", label: "Emerald", swatch: "bg-emerald-500" },
   { value: "sky", label: "Sky", swatch: "bg-sky-500" },
   { value: "violet", label: "Violet", swatch: "bg-violet-500" },
   { value: "amber", label: "Amber", swatch: "bg-amber-500" },
   { value: "rose", label: "Rose", swatch: "bg-rose-500" },
-] as const;
+];
 
 type NotificationKey = (typeof NOTIFICATION_OPTIONS)[number]["key"];
-type AccentColor = (typeof ACCENT_COLORS)[number]["value"];
 
 const PROFILE_STORAGE_KEY = "connective-profile-preferences";
 
@@ -153,7 +152,7 @@ export default function Profile() {
   const location = useLocation();
   const { toast } = useToast();
   usePageTitle("Your Profile");
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, accentColor, setAccentColor } = useTheme();
   const {
     userId,
     tier,
@@ -184,7 +183,6 @@ export default function Profile() {
     bio: "",
   });
   const [focusAreas, setFocusAreas] = useState<string[]>([PROFILE_FOCUS_OPTIONS[0], PROFILE_FOCUS_OPTIONS[2]]);
-  const [accentColor, setAccentColor] = useState<AccentColor>("emerald");
   const [notificationPrefs, setNotificationPrefs] = useState<Record<NotificationKey, boolean>>({
     communityDigest: true,
     eventReminders: true,
@@ -213,7 +211,6 @@ export default function Profile() {
       const parsed = JSON.parse(storedProfile) as Partial<{
         profileForm: typeof profileForm;
         focusAreas: string[];
-        accentColor: AccentColor;
         notificationPrefs: Record<NotificationKey, boolean>;
         twoFactorEnabled: boolean;
       }>;
@@ -224,10 +221,6 @@ export default function Profile() {
 
       if (Array.isArray(parsed.focusAreas) && parsed.focusAreas.length) {
         setFocusAreas(parsed.focusAreas);
-      }
-
-      if (parsed.accentColor && ACCENT_COLORS.some((color) => color.value === parsed.accentColor)) {
-        setAccentColor(parsed.accentColor);
       }
 
       if (parsed.notificationPrefs) {
@@ -407,13 +400,12 @@ export default function Profile() {
     const payload = {
       profileForm,
       focusAreas,
-      accentColor,
       notificationPrefs,
       twoFactorEnabled,
     };
 
     window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(payload));
-  }, [accentColor, focusAreas, notificationPrefs, profileForm, twoFactorEnabled]);
+  }, [focusAreas, notificationPrefs, profileForm, twoFactorEnabled]);
 
   const toggleFocusArea = useCallback((area: string) => {
     setFocusAreas((previous) =>
@@ -475,7 +467,6 @@ export default function Profile() {
   }, [
     email,
     isProfileSaving,
-    isSupabaseConfigured,
     persistProfileState,
     profileForm.fullName,
     toast,

@@ -142,11 +142,11 @@ const Splash = () => {
   const showAuthButtons = !isLoading && !userId;
 
   return (
-    <div className="flowmaster-hero relative min-h-screen overflow-hidden bg-[#0f172a] text-white">
+    <div className="flowmaster-hero relative min-h-screen overflow-hidden bg-background text-foreground">
       <div className="pointer-events-none absolute inset-0 -z-10 opacity-70">
-        <div className="absolute left-[-10%] top-[-15%] h-[28rem] w-[28rem] rounded-full bg-[#f59e0b]/20 blur-[120px]" />
-        <div className="absolute right-[-15%] top-[20%] h-[32rem] w-[32rem] rounded-full bg-[#6366f1]/20 blur-[130px]" />
-        <div className="absolute bottom-[-20%] right-[-5%] h-[30rem] w-[30rem] rounded-full bg-[#a855f7]/20 blur-[140px]" />
+        <div className="absolute left-[-10%] top-[-15%] h-[28rem] w-[28rem] rounded-full bg-primary/20 blur-[120px]" />
+        <div className="absolute right-[-15%] top-[20%] h-[32rem] w-[32rem] rounded-full bg-secondary/20 blur-[130px]" />
+        <div className="absolute bottom-[-20%] right-[-5%] h-[30rem] w-[30rem] rounded-full bg-accent/20 blur-[140px]" />
       </div>
 
       <div className="relative mx-auto flex min-h-screen max-w-4xl flex-col px-6 pb-24 pt-32 sm:px-10 lg:px-0">
@@ -157,45 +157,46 @@ const Splash = () => {
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => navigate("/login")}
-                  className="text-sm font-semibold text-gray-300 transition hover:text-white"
+                  className="text-sm font-semibold text-muted-foreground transition hover:text-foreground"
                 >
                   Sign In
                 </button>
                 <button
                   onClick={() => navigate("/signup")}
-                  className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-white/20"
+                  className="rounded-full bg-muted px-4 py-2 text-sm font-semibold text-foreground shadow-lg transition hover:bg-muted/80"
                 >
                   Sign Up
                 </button>
               </div>
             )}
           </div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#fbbf24]/40 bg-[#f59e0b]/10 px-4 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.35em] text-[hsl(var(--highlight-text))]">
+          <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.35em] text-primary">
             Connective Connections
           </span>
-          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.5em] text-gray-400">
+          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.5em] text-muted-foreground">
             Exclusive Experiential Membership
           </p>
           <h1 className="flowmaster-hero-title mt-6 text-balance text-4xl font-semibold leading-tight sm:text-5xl">
             The future of connection is curated.
           </h1>
-          <p className="mt-6 max-w-2xl text-pretty text-lg text-gray-300 sm:text-xl">
+          <p className="mt-6 max-w-2xl text-pretty text-lg text-muted-foreground sm:text-xl">
             Backed by neuroscience and crafted by world-class hosts, Connective orchestrates immersive experiences
             where ambitious humans build relationships that accelerate their impact.
           </p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <button
+            <Button
               onClick={() => navigate("/signup")}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#fcd34d] via-[#fbbf24] to-[#f59e0b] px-8 py-3 text-sm font-semibold text-[#0f172a] shadow-[0_12px_30px_-12px_rgba(250,204,21,0.6)] transition hover:scale-[1.02]"
+              className="gap-2"
             >
               <Sparkles className="h-4 w-4" /> Request an invite
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
               onClick={() => navigate("/events")}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-gray-700/70 bg-[#1e293b]/70 px-8 py-3 text-sm font-semibold text-gray-200 transition hover:border-gray-600"
+              className="gap-2"
             >
               <CalendarDays className="h-4 w-4" /> Explore upcoming salons
-            </button>
+            </Button>
           </div>
         </header>
 
@@ -204,29 +205,30 @@ const Splash = () => {
         </div>
 
         <section className="flowmaster-section mt-12">
-          <div className="relative overflow-hidden rounded-[2rem] border border-gray-800/60 bg-gradient-to-br from-[#1e293b]/80 via-[#0f172a] to-[#0f172a]">
-            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#f59e0b]/10 via-transparent to-transparent" />
+          <div className="relative overflow-hidden rounded-[2rem] border border-border bg-card">
+            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-primary/10 via-transparent to-transparent" />
             <img
               src={experienceImage}
               alt="Members connecting"
               className="h-[340px] w-full object-cover opacity-70"
             />
             <div className="absolute inset-0 flex flex-col justify-between p-8 sm:p-10">
-              <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.35em] text-gray-300">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#f59e0b]/20 text-[hsl(var(--highlight-text))]">
+              <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary">
                   <Star className="h-4 w-4" />
                 </span>
                 Connection begins here
               </div>
               <div className="space-y-4">
-                <p className="text-sm uppercase tracking-[0.4em] text-gray-400">Immersive storytelling</p>
-                <button
+                <p className="text-sm uppercase tracking-[0.4em] text-muted-foreground">Immersive storytelling</p>
+                <Button
+                  variant="outline"
                   onClick={() => navigate("/home")}
-                  className="inline-flex items-center gap-2 rounded-full border border-[#fcd34d]/40 bg-[#fbbf24]/10 px-6 py-2 text-sm font-semibold text-[hsl(var(--highlight-text))] transition hover:bg-[#fbbf24]/20"
+                  className="gap-2 w-fit"
                 >
                   <Play className="h-4 w-4" /> Watch story
-                </button>
-                <h2 className="text-3xl font-semibold text-white sm:text-4xl">
+                </Button>
+                <h2 className="text-3xl font-semibold text-foreground sm:text-4xl">
                   Step inside a world designed for meaningful chemistry.
                 </h2>
               </div>
@@ -236,11 +238,11 @@ const Splash = () => {
 
         <section className="flowmaster-section mt-16 space-y-8">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-[hsl(var(--highlight-text))]">Crafted experiences</p>
-            <h2 className="mt-4 text-balance text-3xl font-semibold text-white sm:text-4xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-primary">Crafted experiences</p>
+            <h2 className="mt-4 text-balance text-3xl font-semibold text-foreground sm:text-4xl">
               Curated experiences crafted for depth.
             </h2>
-            <p className="mt-4 text-pretty text-base text-gray-300">
+            <p className="mt-4 text-pretty text-base text-muted-foreground">
               Every gathering is intentionally designed to foster vulnerability, brilliance, and long-term collaboration.
             </p>
           </div>
@@ -248,24 +250,24 @@ const Splash = () => {
             {experienceCards.map((card) => (
               <FloatingParallaxCard
                 key={card.title}
-                className="flex flex-col border border-gray-800/70 bg-[#1e293b]/80 p-8 shadow-[0_25px_60px_-40px_rgba(15,23,42,0.8)]"
+                className="flex flex-col border border-border bg-card p-8 shadow-[var(--shadow-card)]"
               >
                 <div className="flex items-start gap-5">
-                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#fbbf24]/15 text-[hsl(var(--highlight-text))]">
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-primary">
                     <card.icon className="h-6 w-6" />
                   </div>
                   <div className="flex-grow space-y-3 text-left">
                     <div>
-                      <h3 className="text-lg font-semibold text-white">{card.title}</h3>
-                      <p className="mt-2 text-sm text-gray-300">{card.description}</p>
+                      <h3 className="text-lg font-semibold text-foreground">{card.title}</h3>
+                      <p className="mt-2 text-sm text-muted-foreground">{card.description}</p>
                     </div>
-                    <p className="text-xs uppercase tracking-[0.35em] text-gray-500">{card.detail}</p>
+                    <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground/70">{card.detail}</p>
                   </div>
                 </div>
                 <div className="mt-6 flex justify-end">
                   <Button
                     variant="ghost"
-                    className="inline-flex items-center gap-2 rounded-full text-sm font-semibold text-[hsl(var(--highlight-text))] hover:bg-[#fbbf24]/20 hover:text-[hsl(var(--highlight-text))]"
+                    className="inline-flex items-center gap-2 rounded-full text-sm font-semibold text-primary hover:bg-primary/10 hover:text-primary"
                     onClick={() => navigate(card.cta.path)}
                   >
                     {card.cta.label} <ArrowRight className="h-4 w-4" />
@@ -278,22 +280,22 @@ const Splash = () => {
 
         <section className="flowmaster-section mt-16 space-y-12">
           <div className="space-y-6 text-center">
-            <span className="inline-flex items-center gap-2 rounded-full border border-gray-800/60 bg-[#1e293b]/80 px-4 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-gray-400">
+            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-muted-foreground">
               Your journey
             </span>
-            <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
+            <h2 className="text-balance text-3xl font-semibold text-foreground sm:text-4xl">
               Your curated journey is guided by experts.
             </h2>
-            <p className="mx-auto max-w-2xl text-pretty text-base text-gray-300">
+            <p className="mx-auto max-w-2xl text-pretty text-base text-muted-foreground">
               We combine human insight with proprietary intelligence so every step feels intentional, elevated, and
               uniquely yours.
             </p>
           </div>
           <div className="grid gap-6 sm:grid-cols-3">
             {journeyStats.map((stat) => (
-              <div key={stat.label} className="rounded-3xl border border-gray-800/60 bg-[#1e293b]/80 p-6 text-left">
-                <p className="text-4xl font-semibold text-white">{stat.value}</p>
-                <p className="mt-3 text-sm text-gray-400">{stat.label}</p>
+              <div key={stat.label} className="rounded-3xl border border-border bg-card p-6 text-left">
+                <p className="text-4xl font-semibold text-foreground">{stat.value}</p>
+                <p className="mt-3 text-sm text-muted-foreground">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -301,7 +303,7 @@ const Splash = () => {
             {journeyHighlights.map((highlight) => (
               <FloatingParallaxCard
                 key={highlight.title}
-                className="flex h-full flex-col overflow-hidden border border-gray-800/60 bg-[#1e293b]/80 text-left"
+                className="flex h-full flex-col overflow-hidden border border-border bg-card text-left"
               >
                 <img
                   src={highlight.image}
@@ -310,8 +312,8 @@ const Splash = () => {
                   loading="lazy"
                 />
                 <div className="space-y-2 p-6">
-                  <h3 className="text-lg font-semibold text-white">{highlight.title}</h3>
-                  <p className="text-sm text-gray-300">{highlight.description}</p>
+                  <h3 className="text-lg font-semibold text-foreground">{highlight.title}</h3>
+                  <p className="text-sm text-muted-foreground">{highlight.description}</p>
                 </div>
               </FloatingParallaxCard>
             ))}
@@ -320,9 +322,9 @@ const Splash = () => {
 
         <section className="flowmaster-section mt-16 space-y-10">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-[hsl(var(--highlight-text))]">Member stories</p>
-            <h2 className="mt-4 text-balance text-3xl font-semibold text-white sm:text-4xl">What members say.</h2>
-            <p className="mt-4 text-pretty text-base text-gray-300">
+            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-primary">Member stories</p>
+            <h2 className="mt-4 text-balance text-3xl font-semibold text-foreground sm:text-4xl">What members say.</h2>
+            <p className="mt-4 text-pretty text-base text-muted-foreground">
               Intentionality meets momentum. Hear how Connective members translate chemistry into lasting impact.
             </p>
           </div>
@@ -330,15 +332,15 @@ const Splash = () => {
             {testimonials.map((testimonial) => (
               <FloatingParallaxCard
                 key={testimonial.name}
-                className="border border-slate-800/60 bg-slate-900/80 p-8 text-left shadow-[0_25px_60px_-40px_rgba(15,23,42,0.9)]"
+                className="border border-border bg-card p-8 text-left shadow-[var(--shadow-card)]"
               >
-                <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">
-                  <ShieldCheck className="h-4 w-4 text-amber-200" /> Verified member
+                <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground">
+                  <ShieldCheck className="h-4 w-4 text-primary" /> Verified member
                 </div>
-                <p className="mt-6 text-lg text-white">
+                <p className="mt-6 text-lg text-foreground">
                   “{testimonial.quote}”
                 </p>
-                <p className="mt-6 text-sm font-semibold text-slate-400">
+                <p className="mt-6 text-sm font-semibold text-muted-foreground">
                   {testimonial.name} · {testimonial.title}
                 </p>
               </FloatingParallaxCard>
@@ -347,16 +349,16 @@ const Splash = () => {
         </section>
 
         <section className="flowmaster-section mt-16">
-          <div className="overflow-hidden rounded-[2rem] border border-[#fbbf24]/40 bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-[#0f172a] p-[1px]">
-            <div className="flex h-full w-full flex-col gap-10 rounded-[calc(theme(borderRadius.4xl)-1px)] bg-[#0f172a]/95 p-10">
+          <div className="overflow-hidden rounded-[2rem] border border-primary/40 bg-card p-[1px]">
+            <div className="flex h-full w-full flex-col gap-10 rounded-[calc(theme(borderRadius.4xl)-1px)] bg-background/95 p-10">
               <div className="space-y-4">
-                <span className="inline-flex w-fit items-center gap-2 rounded-full border border-[#fbbf24]/30 bg-[#fbbf24]/10 px-4 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-[hsl(var(--highlight-text))]">
+                <span className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-primary">
                   Membership benefits
                 </span>
-                <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
+                <h2 className="text-balance text-3xl font-semibold text-foreground sm:text-4xl">
                   Membership benefits designed to elevate every interaction.
                 </h2>
-                <p className="max-w-2xl text-pretty text-base text-gray-300">
+                <p className="max-w-2xl text-pretty text-base text-muted-foreground">
                   From curated introductions to immersive residencies, every benefit is engineered so your circle, influence,
                   and wellbeing expand in tandem.
                 </p>
@@ -364,26 +366,27 @@ const Splash = () => {
               <div className="grid gap-4 sm:grid-cols-2">
                 {membershipBenefits.map((benefit) => (
                   <div key={benefit} className="flex items-start gap-4 text-left">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#fbbf24]/15 text-[hsl(var(--highlight-text))]">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 text-primary">
                       <UserCheck className="h-5 w-5" />
                     </div>
-                    <p className="text-sm text-gray-300">{benefit}</p>
+                    <p className="text-sm text-muted-foreground">{benefit}</p>
                   </div>
                 ))}
               </div>
               <div className="flex flex-col gap-3 sm:flex-row">
-                <button
+                <Button
                   onClick={() => navigate("/signup")}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#fcd34d] via-[#fbbf24] to-[#f59e0b] px-8 py-3 text-sm font-semibold text-[#0f172a] shadow-[0_12px_30px_-12px_rgba(250,204,21,0.6)] transition hover:scale-[1.02]"
+                  className="gap-2"
                 >
                   <ArrowRight className="h-4 w-4" /> Start your application
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={() => navigate("/login")}
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-gray-700/70 bg-[#1e293b]/80 px-8 py-3 text-sm font-semibold text-gray-200 transition hover:border-gray-600"
+                  className="gap-2"
                 >
                   <HeartHandshake className="h-4 w-4" /> Already a member?
-                </button>
+                </Button>
               </div>
             </div>
           </div>

@@ -10,10 +10,10 @@ const buttonVariants = cva(
   variants: {
     variant: {
       default:
-        "border-none bg-[linear-gradient(135deg,#ff9d47,#ff6b00)] text-white shadow-[0_12px_30px_-12px_rgba(255,120,40,0.35),0_0_22px_rgba(255,120,40,0.32)] hover:shadow-[0_14px_36px_-12px_rgba(255,120,40,0.42),0_0_26px_rgba(255,120,40,0.4)]",
-      destructive: "bg-destructive text-destructive-foreground shadow-[0_20px_48px_-28px_rgba(220,38,38,0.65)] hover:bg-destructive/90",
-      outline: "border border-border/60 bg-card/80 text-foreground/85 hover:border-border hover:bg-card shadow-[0_24px_60px_-32px_rgba(120,105,90,0.35)]",
-      secondary: "bg-[hsl(var(--ink))] text-white shadow-[0_30px_60px_-28px_rgba(15,15,15,0.75)] hover:brightness-[0.95]",
+        "border-none bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-[var(--shadow-soft)] hover:shadow-lg",
+      destructive: "bg-destructive text-destructive-foreground shadow-[var(--shadow-soft)] hover:bg-destructive/90",
+      outline: "border border-border bg-card/80 text-foreground hover:border-primary/50 hover:bg-card shadow-[var(--shadow-soft)]",
+      secondary: "bg-muted text-foreground shadow-[var(--shadow-soft)] hover:bg-muted/80",
       ghost: "bg-transparent text-foreground/80 hover:bg-foreground/10 hover:text-foreground",
       link: "text-primary underline-offset-4 hover:underline"
     },
