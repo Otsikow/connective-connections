@@ -277,28 +277,28 @@ const Home = () => {
   /* ------------------------------------------------------------ */
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-white pb-28 dark:bg-slate-950">
+    <div className="relative min-h-screen overflow-hidden bg-background pb-28">
       <ParallaxStrip />
 
       <div className="relative mx-auto w-full max-w-5xl space-y-10 px-4 py-8">
 
         {/* HERO */}
-        <section className="rounded-3xl border bg-white p-6 shadow dark:bg-slate-900">
-          <Badge className="rounded-full bg-[#fff4d1] text-[#a0772d] px-3 py-1">
+        <section className="rounded-3xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
+          <Badge className="rounded-full bg-primary/10 text-primary px-3 py-1">
             Experience connections differently
           </Badge>
 
-          <h2 className="mt-4 text-3xl font-bold dark:text-white">
+          <h2 className="mt-4 text-3xl font-bold text-foreground">
             Find genuine friends & real experiences—no pressure.
           </h2>
 
-          <p className="mt-2 text-slate-600 dark:text-slate-300">
+          <p className="mt-2 text-muted-foreground">
             Connective helps you find people you vibe with, join curated events,
             and chat naturally.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
-            <Button className="bg-[#f7c145] text-black" onClick={() => navigate("/signup")}>
+            <Button onClick={() => navigate("/signup")}>
               Get started
             </Button>
             <Button variant="outline" onClick={() => navigate("/splash")}>
@@ -321,12 +321,12 @@ const Home = () => {
         {/* FEATURES */}
         <section>
           <Tabs value={activeFeature} onValueChange={setActiveFeature}>
-            <TabsList className="grid grid-cols-4 mb-4 rounded-full bg-slate-100 p-1 dark:bg-slate-800">
+            <TabsList className="grid grid-cols-4 mb-4 rounded-full bg-muted p-1">
               {features.map(f => (
                 <TabsTrigger
                   key={f.value}
                   value={f.value}
-                  className="rounded-full text-sm data-[state=active]:bg-white data-[state=active]:text-black"
+                  className="rounded-full text-sm data-[state=active]:bg-background data-[state=active]:text-foreground"
                 >
                   {f.title.split(" ")[0]}
                 </TabsTrigger>
@@ -352,7 +352,6 @@ const Home = () => {
                 </CardHeader>
                 <CardContent className="flex items-center justify-between">
                   <Button
-                    className="bg-[#f7c145] text-black"
                     onClick={e => {
                       e.stopPropagation();
                       handleNavigate(selected.cta.path, {
@@ -369,8 +368,8 @@ const Home = () => {
                       <AvatarFallback>{selected.spotlight.name[0]}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-semibold">{selected.spotlight.name}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="font-semibold text-foreground">{selected.spotlight.name}</p>
+                      <p className="text-xs text-muted-foreground">
                         {selected.spotlight.tagline}
                       </p>
                     </div>
@@ -383,9 +382,9 @@ const Home = () => {
 
         {/* AI GROUP FORMATION */}
         <section className="grid gap-4 md:grid-cols-[1.6fr_1fr]">
-          <Card className="border-amber-100 bg-amber-50/70 shadow-sm dark:border-amber-500/40 dark:bg-slate-900">
+          <Card className="border-primary/20 bg-primary/5 shadow-sm">
             <CardHeader>
-              <div className="flex items-center gap-2 text-sm font-semibold text-amber-700 dark:text-amber-300">
+              <div className="flex items-center gap-2 text-sm font-semibold text-primary">
                 <Sparkles className="h-4 w-4" />
                 AI Event Discovery & Group Formation
               </div>
@@ -397,23 +396,23 @@ const Home = () => {
             </CardHeader>
 
               <CardContent className="space-y-4">
-              <div className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm dark:border-amber-500/30 dark:bg-slate-950">
-                <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+              <div className="rounded-2xl border border-primary/20 bg-card p-4 shadow-sm">
+                <p className="text-sm font-semibold text-primary">
                   Live example
                 </p>
-                <div className="mt-2 rounded-xl bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-500/10 dark:text-amber-100">
+                <div className="mt-2 rounded-xl bg-primary/10 p-3 text-sm text-foreground">
                   “6 people near you love football and are free on Saturday.
                   Want me to organise a friendly meetup?”
                 </div>
 
-                <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300">
-                  <Badge variant="secondary" className="bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-100">
+                <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted-foreground">
+                  <Badge variant="secondary" className="bg-primary/10 text-primary">
                     Suggested name, date & time
                   </Badge>
-                  <Badge variant="secondary" className="bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-100">
+                  <Badge variant="secondary" className="bg-primary/10 text-primary">
                     Automatic RSVPs
                   </Badge>
-                  <Badge variant="secondary" className="bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-100">
+                  <Badge variant="secondary" className="bg-primary/10 text-primary">
                     Group page with chat
                   </Badge>
                 </div>
@@ -424,13 +423,13 @@ const Home = () => {
                 {aiGroupFeatures.map(feature => (
                   <div
                     key={feature.title}
-                    className="rounded-xl border border-amber-200/60 bg-white p-3 text-sm dark:border-amber-500/30 dark:bg-slate-950"
+                    className="rounded-xl border border-border bg-card p-3 text-sm"
                   >
-                    <div className="flex items-center gap-2 font-semibold text-slate-900 dark:text-white">
+                    <div className="flex items-center gap-2 font-semibold text-foreground">
                       {feature.icon}
                       {feature.title}
                     </div>
-                    <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       {feature.description}
                     </p>
                   </div>
@@ -439,7 +438,7 @@ const Home = () => {
 
               <div className="flex flex-wrap gap-3">
                 <Button
-                  className="bg-[#f7c145] text-black"
+                  className=""
                   onClick={() => handleNavigate("/events", { requiresAuth: true })}
                 >
                   Preview AI meetup
@@ -461,7 +460,7 @@ const Home = () => {
           </Card>
 
           {/* Right column — Group Autopilot */}
-            <Card className="h-full shadow-sm dark:bg-slate-900">
+            <Card className="h-full shadow-sm">
               <CardHeader>
                 <CardTitle className="text-lg">Group autopilot</CardTitle>
                 <CardDescription>
@@ -469,8 +468,8 @@ const Home = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="rounded-xl bg-slate-50 p-4 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-200">
-                  <p className="font-semibold text-slate-900 dark:text-white">What the autopilot handles</p>
+                <div className="rounded-xl bg-muted p-4 text-sm text-muted-foreground">
+                  <p className="font-semibold text-foreground">What the autopilot handles</p>
                   <ul className="mt-2 space-y-2 list-disc pl-4">
                     <li>Tracks interest signals and nudges the right people.</li>
                     <li>Suggests dates, venues, and sends invites automatically.</li>
@@ -478,20 +477,20 @@ const Home = () => {
                   </ul>
                 </div>
 
-                <div className="flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300">
-                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-100">
+                <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                  <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                     Auto reminders
                   </Badge>
-                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-100">
+                  <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                     AI agenda prompts
                   </Badge>
-                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-100">
+                  <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                     Post-event follow-ups
                   </Badge>
                 </div>
 
                 <Button
-                  className="bg-[#f7c145] text-black"
+                  className=""
                   onClick={() =>
                     handleNavigate("/community", {
                       requiresAuth: true,
@@ -533,15 +532,15 @@ const Home = () => {
                         />
                         <div className="p-4 space-y-2">
                           <h3 className="font-semibold">{ev.title}</h3>
-                          <p className="text-sm text-slate-500">{ev.date}</p>
-                          <p className="text-sm text-slate-500">{ev.location}</p>
+                          <p className="text-sm text-muted-foreground">{ev.date}</p>
+                          <p className="text-sm text-muted-foreground">{ev.location}</p>
 
                           <div className="flex justify-between items-center">
                             <span className="text-sm">{ev.attendees}+ going</span>
 
                             <Button
                               size="sm"
-                              className="bg-[#f7c145] text-black"
+                              className=""
                               onClick={e => {
                                 e.stopPropagation();
                                 handleNavigate(`/events/${ev.id}`, {
@@ -578,10 +577,10 @@ const Home = () => {
               {communities.map(c => (
                 <div
                   key={c.name}
-                  className="rounded-xl border p-4 hover:border-[#f7c145] cursor-pointer"
+                  className="rounded-xl border border-border p-4 hover:border-primary cursor-pointer"
                 >
                   <p className="font-semibold">{c.name}</p>
-                  <p className="text-sm text-slate-500">{c.members}</p>
+                  <p className="text-sm text-muted-foreground">{c.members}</p>
                 </div>
               ))}
             </CardContent>
@@ -610,7 +609,7 @@ const Home = () => {
 
       {/* FLOATING CTA */}
       <Button
-        className="fixed right-4 rounded-full bg-[#f7c145] text-black shadow-lg bottom-[calc(env(safe-area-inset-bottom,0px)+5.5rem)] sm:right-6 sm:bottom-[calc(env(safe-area-inset-bottom,0px)+5.75rem)]"
+        className="fixed right-4 rounded-full shadow-lg bottom-[calc(env(safe-area-inset-bottom,0px)+5.5rem)] sm:right-6 sm:bottom-[calc(env(safe-area-inset-bottom,0px)+5.75rem)]"
         onClick={() =>
           handleNavigate("/host/create-event", {
             requiresAuth: true
@@ -632,7 +631,7 @@ const Home = () => {
 
           <DialogFooter>
             <Button
-              className="bg-[#f7c145] text-black"
+              className=""
               onClick={() =>
                 handleNavigate("/profile", {
                   requiresAuth: true
@@ -678,7 +677,7 @@ const Home = () => {
             </Button>
 
             <Button
-              className="bg-[#f7c145] text-black"
+              className=""
               onClick={() => {
                 setShowAuthPrompt(false);
                 navigate("/signup", {

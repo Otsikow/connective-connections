@@ -4,12 +4,12 @@
 
 /* ==========================================================
    CONNECTIVE DESIGN SYSTEM
-   FlowMaster x Aura Dark Theme
+   FlowMaster x Aura Theme (Light + Dark)
    ========================================================== */
 
 @layer base {
   :root {
-    /* Core Palette */
+    /* Core Palette - Default to Dark */
     --background: 0 0% 2%;
     --foreground: 0 0% 100%;
 
@@ -60,6 +60,62 @@
 
     /* Transitions */
     --transition-smooth: all 0.22s ease-out;
+  }
+
+  /* ==========================================================
+     LIGHT MODE - Premium, Fresh, Minimalist
+     ========================================================== */
+  .light {
+    /* Core Palette */
+    --background: 0 0% 99%;
+    --foreground: 220 15% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 15%;
+
+    /* Primary - Warm amber/orange accent */
+    --primary: 28 85% 52%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Soft blue */
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 220 15% 20%;
+
+    /* Muted - Subtle gray for backgrounds */
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 10% 45%;
+
+    /* Accent - Warm accent for highlights */
+    --accent: 28 80% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Destructive - Softer red for light mode */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders & Inputs */
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 28 85% 52%;
+
+    /* Glow System - Softer for light mode */
+    --glow-primary-start: #ff8c42;
+    --glow-primary-end: #ffb980;
+    --glow-secondary-start: #4a9fff;
+    --glow-secondary-end: #8cc4ff;
+    --glow-opacity: 0.08;
+
+    /* Gradients - Softer for light backgrounds */
+    --gradient-primary: linear-gradient(135deg, hsl(28 85% 52%), hsl(24 90% 48%));
+    --gradient-warm: linear-gradient(155deg, hsl(28 85% 52%), hsl(24 90% 48%));
+    --app-gradient: linear-gradient(145deg, #ffffff 0%, #f8f9fb 60%, #f5f6f8 100%);
+
+    /* Shadows - Softer, more diffuse for light mode */
+    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.06);
+    --shadow-card: 0 8px 30px -12px rgba(0, 0, 0, 0.12);
   }
 
   /* DARK MODE */
@@ -131,12 +187,23 @@
 
   body {
     @apply min-h-full overflow-x-hidden bg-background text-foreground;
-    background-image: linear-gradient(145deg, #000 0%, #0a0a0a 60%, #000 100%), var(--app-gradient);
     background-attachment: fixed;
     background-size: cover;
     position: relative;
     font-family: "Inter", "Plus Jakarta Sans", "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     letter-spacing: 0.01em;
+  }
+
+  /* Light mode body background */
+  .light body {
+    background-image: var(--app-gradient);
+    background-color: hsl(var(--background));
+  }
+
+  /* Dark mode body background */
+  .dark body {
+    background-image: linear-gradient(150deg, #040404 0%, #0a0a0a 52%, #000 100%);
+    background-color: hsl(var(--background));
   }
 
   #root {
@@ -145,20 +212,35 @@
     z-index: 1;
   }
 
-  .dark body {
-    background-image: linear-gradient(150deg, #040404 0%, #0a0a0a 52%, #000 100%);
-  }
-
-  /* ===== Aura Floating Backdrop ===== */
-  body::before {
+  /* ===== Aura Floating Backdrop - Light Mode ===== */
+  .light body::before {
     content: "";
     position: fixed;
     inset: -12%;
     background-image:
-      linear-gradient(125deg, rgba(255,157,71,0.12), transparent 48%),
-      linear-gradient(215deg, rgba(130,208,255,0.1), transparent 42%),
-      radial-gradient(circle at 12% 22%, rgba(255,107,0,0.36), transparent 45%),
-      radial-gradient(circle at 82% 16%, rgba(130,208,255,0.28), transparent 46%);
+      linear-gradient(125deg, rgba(255,180,100,0.06), transparent 48%),
+      linear-gradient(215deg, rgba(130,180,255,0.05), transparent 42%),
+      radial-gradient(circle at 12% 22%, rgba(255,150,80,0.12), transparent 45%),
+      radial-gradient(circle at 82% 16%, rgba(130,180,255,0.1), transparent 46%);
+    background-size: 120%, 120%, 145%, 155%;
+    filter: blur(40px) saturate(1.2);
+    opacity: 0.4;
+    mix-blend-mode: multiply;
+    animation: auraDrift 24s ease-in-out infinite alternate, gradientSweep 18s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ===== Aura Floating Backdrop - Dark Mode ===== */
+  .dark body::before {
+    content: "";
+    position: fixed;
+    inset: -12%;
+    background-image:
+      linear-gradient(125deg, rgba(255,157,71,0.16), transparent 52%),
+      linear-gradient(215deg, rgba(130,208,255,0.14), transparent 48%),
+      radial-gradient(circle at 14% 22%, rgba(255,107,0,0.4), transparent 48%),
+      radial-gradient(circle at 86% 18%, rgba(130,208,255,0.34), transparent 52%);
     background-size: 120%, 120%, 145%, 155%;
     filter: blur(26px) saturate(1.08);
     opacity: 0.75;
@@ -168,16 +250,23 @@
     z-index: 0;
   }
 
-  .dark body::before {
+  /* ===== Vertical Stripes + Texture - Light Mode ===== */
+  .light body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
     background-image:
-      linear-gradient(125deg, rgba(255,157,71,0.16), transparent 52%),
-      linear-gradient(215deg, rgba(130,208,255,0.14), transparent 48%),
-      radial-gradient(circle at 14% 22%, rgba(255,107,0,0.4), transparent 48%),
-      radial-gradient(circle at 86% 18%, rgba(130,208,255,0.34), transparent 52%);
+      linear-gradient(90deg, rgba(0,0,0,0.01) 0%, rgba(0,0,0,0.02) 2%, rgba(0,0,0,0.01) 4%, transparent 8%),
+      linear-gradient(90deg, rgba(0,0,0,0.01) 0%, rgba(0,0,0,0.015) 1.5%, rgba(0,0,0,0.01) 3%, transparent 6%);
+    background-size: 140px 100%, 220px 100%;
+    opacity: 0.08;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    z-index: 0;
   }
 
-  /* ===== Vertical Stripes + Texture ===== */
-  body::after {
+  /* ===== Vertical Stripes + Texture - Dark Mode ===== */
+  .dark body::after {
     content: "";
     position: fixed;
     inset: 0;
@@ -210,8 +299,19 @@
     var(--glow-end) 46%,
     transparent 72%
   );
-  mix-blend-mode: screen;
   transition: opacity 0.3s ease, transform 0.4s ease;
+}
+
+/* Light mode glow blend */
+.light .glow-spot {
+  mix-blend-mode: multiply;
+  filter: blur(80px);
+}
+
+/* Dark mode glow blend */
+.dark .glow-spot {
+  mix-blend-mode: screen;
+  filter: blur(64px);
 }
 
 .glow-spot.glow-primary {
@@ -225,9 +325,23 @@
 }
 
 /* ==========================================
-   PREMIUM DARK CARD (Option A — Your Choice)
+   PREMIUM CARD STYLES
    ========================================== */
 
+/* Light mode cards */
+.light .card,
+.light [class*="card"] {
+  background: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(220 14% 98%) 100%);
+  border-color: hsl(var(--border));
+  box-shadow: 0 4px 20px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.light .card:hover,
+.light [class*="card"]:hover {
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+}
+
+/* Dark mode cards */
 .dark .card,
 .dark [class*="card"] {
   background: radial-gradient(circle at 22% 18%, #141414 0%, #0d0d0d 55%, #080808 100%);
@@ -239,7 +353,17 @@
    GLASS SURFACE
    ========================================== */
 
-.glass-surface {
+/* Light mode glass */
+.light .glass-surface {
+  background: rgba(255,255,255,0.8);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02);
+  backdrop-filter: blur(18px) saturate(160%);
+  border-radius: 1.1rem;
+}
+
+/* Dark mode glass */
+.dark .glass-surface {
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.08);
   box-shadow: 0 4px 20px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03);
@@ -256,7 +380,27 @@
   isolation: isolate;
 }
 
-.card-glow-border::before {
+/* Light mode glow border */
+.light .card-glow-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, hsl(28 85% 52%), hsl(28 90% 60%));
+  background-size: 200% 200%;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.35s ease;
+  animation: cardBorderGlow 1.4s linear infinite;
+  box-shadow: 0 0 20px rgba(255,140,60,0.08);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+
+/* Dark mode glow border */
+.dark .card-glow-border::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -285,6 +429,33 @@
    INPUTS + BUTTONS + TYPOGRAPHY
    ========================================== */
 
+/* Light mode inputs */
+.light input:not([type="checkbox"]):not([type="radio"]),
+.light textarea,
+.light select {
+  background: hsl(var(--background));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+.light input:focus:not([type="checkbox"]):not([type="radio"]),
+.light textarea:focus,
+.light select:focus {
+  background: hsl(var(--background));
+  border-color: hsl(var(--primary) / 0.5);
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1), 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.light button:not(.ghost):not(.outline) {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.02);
+}
+
+.light button:hover:not(.ghost):not(.outline) {
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04);
+  transform: translateY(-1px);
+}
+
+/* Dark mode inputs */
 .dark input:not([type="checkbox"]):not([type="radio"]),
 .dark textarea,
 .dark select {
@@ -309,8 +480,25 @@
   transform: translateY(-1px);
 }
 
-h1,h2,h3,h4,h5,h6 { letter-spacing: 0.02em; }
-p,span,li { color: #bdbdbd; }
+/* Typography */
+h1,h2,h3,h4,h5,h6 { 
+  letter-spacing: 0.02em; 
+  color: hsl(var(--foreground));
+}
+
+/* Light mode text */
+.light p,
+.light span,
+.light li { 
+  color: hsl(var(--muted-foreground)); 
+}
+
+/* Dark mode text */
+.dark p,
+.dark span,
+.dark li { 
+  color: #bdbdbd; 
+}
 
 /* ==========================================
    PREMIUM AMBIENT MODE (used by Card highlighted)
@@ -321,7 +509,22 @@ p,span,li { color: #bdbdbd; }
   overflow: hidden;
 }
 
-.premium-ambient::after {
+/* Light mode ambient */
+.light .premium-ambient::after {
+  content: "";
+  position: absolute;
+  inset: -5%;
+  background:
+    radial-gradient(circle at 20% 20%, hsl(var(--primary) / 0.06), transparent 45%),
+    radial-gradient(circle at 80% 20%, hsl(var(--accent) / 0.06), transparent 42%),
+    linear-gradient(120deg, transparent, hsl(var(--primary) / 0.08), transparent);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  animation: ambientShimmer 3.6s ease-in-out infinite;
+}
+
+/* Dark mode ambient */
+.dark .premium-ambient::after {
   content: "";
   position: absolute;
   inset: -5%;
@@ -354,7 +557,22 @@ p,span,li { color: #bdbdbd; }
    RADIAL CLICK HIGHLIGHT
    ========================================== */
 
-.click-radial-highlight {
+/* Light mode click highlight */
+.light .click-radial-highlight {
+  position: fixed;
+  width: 180px;
+  height: 180px;
+  pointer-events: none;
+  background: radial-gradient(circle, hsl(var(--primary) / 0.2) 0%, transparent 65%);
+  border-radius: 9999px;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: multiply;
+  animation: radialHighlight 620ms ease-out forwards;
+  z-index: 60;
+}
+
+/* Dark mode click highlight */
+.dark .click-radial-highlight {
   position: fixed;
   width: 180px;
   height: 180px;
