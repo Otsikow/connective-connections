@@ -8,6 +8,7 @@ import { PageTransition } from "@/components/PageTransition";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SubscriptionProvider, useSubscription } from "@/hooks/useSubscription";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { BottomNav } from "@/components/BottomNav";
 import { Footer } from "@/components/Footer";
 import { LoadingScreen } from "@/components/LoadingScreen";
@@ -132,6 +133,8 @@ const AnimatedRoutes = () => {
 const AppContent = () => {
   const location = useLocation();
   const { isLoading: isSubscriptionLoading } = useSubscription();
+
+  useScrollReveal();
 
   const showFooter = location.pathname === "/home";
 
