@@ -63,38 +63,39 @@ const Index = () => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
+  // Midnight Social Glow themed gradients
   const heroOverlayGradient = isDark
-    ? "linear-gradient(rgba(11,14,23,0.9) 0%, rgba(11,14,23,0.6) 50%, rgba(11,14,23,1) 100%)"
+    ? "linear-gradient(rgba(5,5,5,0.92) 0%, rgba(5,5,5,0.6) 50%, rgba(5,5,5,1) 100%)"
     : "linear-gradient(rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.8) 50%, rgba(241,245,249,0.95) 100%)";
 
   const friendFinderOverlay = isDark
-    ? "linear-gradient(0deg, rgba(15,23,42,0.7) 0%, rgba(15,23,42,0.1) 100%)"
+    ? "linear-gradient(0deg, rgba(5,5,5,0.85) 0%, rgba(5,5,5,0.1) 100%)"
     : "linear-gradient(0deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.2) 100%)";
 
-  const secondaryTextClass = isDark ? "text-slate-400" : "text-slate-600";
+  const secondaryTextClass = isDark ? "text-[#BDBDBD]" : "text-slate-600";
   const overlayTextClass = isDark ? "text-white" : "text-slate-900";
 
   const surfaceClass = isDark
-    ? "rounded-xl border border-white/10 bg-white/5"
-    : "rounded-xl border border-slate-200 bg-white shadow-sm";
+    ? "rounded-[20px] border border-[rgba(255,255,255,0.06)] bg-[#111111] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03),0_8px_38px_rgba(0,0,0,0.55)]"
+    : "rounded-[20px] border border-slate-200 bg-white shadow-lg";
 
   const outlineButtonClass = cn(
-    "w-full sm:w-auto",
+    "w-full sm:w-auto rounded-full",
     isDark
-      ? "border-slate-600 text-white hover:bg-white/10"
+      ? "border-[rgba(255,255,255,0.12)] text-white hover:bg-[rgba(255,255,255,0.08)]"
       : "border-slate-300 text-slate-900 hover:bg-slate-100",
   );
 
   const joinOutlineButtonClass = cn(
-    "w-full",
+    "w-full rounded-full",
     isDark
-      ? "border-slate-600 text-white hover:bg-white/10"
+      ? "border-[rgba(255,255,255,0.12)] text-white hover:bg-[rgba(255,255,255,0.08)]"
       : "border-slate-300 text-slate-900 hover:bg-slate-100",
   );
 
   const joinSectionBackground = isDark
-    ? "linear-gradient(to top, rgba(125,92,255,0.2), rgb(11,14,23))"
-    : "linear-gradient(to top, rgba(125,92,255,0.15), rgb(248,250,252))";
+    ? "linear-gradient(to top, rgba(255,138,60,0.15), rgb(5,5,5))"
+    : "linear-gradient(to top, rgba(255,138,60,0.1), rgb(248,250,252))";
 
   const friendPreviewProfiles = [
     {
@@ -186,10 +187,10 @@ const Index = () => {
   return (
     <div
       className={cn(
-        "relative w-full min-h-screen bg-gradient-to-b transition-colors duration-300",
+        "relative w-full min-h-screen transition-colors duration-300",
         isDark
-          ? "from-slate-950 via-slate-950 to-black text-white"
-          : "from-white via-slate-50 to-slate-100 text-slate-900",
+          ? "bg-[#050505] text-white"
+          : "bg-gradient-to-b from-white via-slate-50 to-slate-100 text-slate-900",
       )}
     >
       {/* ---------------------------------------------------------------- */}
@@ -214,7 +215,7 @@ const Index = () => {
           </p>
 
           {/* Original Small Badge AFTER Modern Headline */}
-          <div className="inline-flex items-center gap-2 rounded-full bg-[#F8D57E]/20 px-4 py-1 text-sm font-semibold text-[#F8D57E] shadow-sm">
+          <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#FF8A3C]/20 to-[#FFB377]/20 px-4 py-1.5 text-sm font-semibold text-[#FFB377] shadow-lg shadow-[rgba(255,138,60,0.15)]">
             <HeartHandshake className="h-4 w-4" />
             Made for building real friendships
           </div>
@@ -223,7 +224,7 @@ const Index = () => {
           <div className="grid gap-3 sm:grid-cols-[auto_auto] justify-center">
             <Button
               onClick={() => navigate("/friend-finder")}
-              className="w-full sm:w-auto bg-[#F8D57E] hover:bg-[#e8c56e] text-slate-950 font-bold shadow-[0_0_12px_rgba(248,213,126,0.45)] hover:scale-105 transition-transform"
+              className="btn-magnetic-glow w-full sm:w-auto rounded-full bg-gradient-to-r from-[#FF8A3C] to-[#FFB377] text-white font-bold shadow-lg shadow-[rgba(255,138,60,0.4)] hover:shadow-[rgba(255,138,60,0.55)] hover:scale-105 transition-all"
             >
               Find friends now
             </Button>
@@ -240,14 +241,14 @@ const Index = () => {
           {/* Stats Row */}
           <div
             className={cn(
-              "mx-auto flex flex-col gap-4 rounded-2xl px-6 py-5 sm:flex-row sm:items-center sm:gap-8",
-              isDark ? "bg-white/5 border border-white/10" : "bg-white/80 border border-white shadow-lg",
+              "mx-auto flex flex-col gap-4 rounded-[20px] px-6 py-5 sm:flex-row sm:items-center sm:gap-8 backdrop-blur-sm",
+              isDark ? "bg-[#111111]/90 border border-[rgba(255,255,255,0.06)] shadow-card" : "bg-white/80 border border-white shadow-lg",
             )}
           >
             <div className="flex items-center gap-3">
-              <Smile className="h-8 w-8 text-[#F8D57E]" />
+              <Smile className="h-8 w-8 text-gradient-brand" style={{ color: '#FF8A3C' }} />
               <div>
-                <p className="text-sm font-semibold uppercase tracking-widest text-[#F8D57E]">
+                <p className="text-sm font-semibold uppercase tracking-widest text-gradient-brand" style={{ background: 'linear-gradient(90deg, #FF8A3C, #FFB377)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                   Friendship outcomes
                 </p>
                 <p className="text-lg font-bold">
@@ -273,34 +274,35 @@ const Index = () => {
               <div
                 key={profile.id}
                 className={cn(
-                  "group relative flex w-64 shrink-0 flex-col overflow-hidden rounded-3xl border backdrop-blur transition-transform duration-200 hover:-translate-y-1",
+                  "group relative flex w-64 shrink-0 flex-col overflow-hidden rounded-[20px] border backdrop-blur transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_14px_48px_rgba(0,0,0,0.65)]",
                   isDark
-                    ? "border-white/10 bg-white/5 shadow-[0_20px_40px_rgba(15,23,42,0.45)]"
-                    : "border-slate-200 bg-white shadow-[0_20px_40px_rgba(15,23,42,0.08)]",
+                    ? "border-[rgba(255,255,255,0.06)] bg-[#111111] shadow-card"
+                    : "border-slate-200 bg-white shadow-lg",
                 )}
               >
                 <div className="relative h-72 w-full overflow-hidden">
                   <img
                     src={profile.image}
+                    alt={profile.name}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/90 via-[#050505]/20 to-transparent" />
 
                   <div className="absolute top-4 right-4">
-                    <Badge className="rounded-full bg-[#F8D57E] text-slate-950 shadow">
+                    <Badge className="rounded-full bg-gradient-to-r from-[#FF8A3C] to-[#FFB377] text-white shadow-lg shadow-[rgba(255,138,60,0.3)]">
                       {profile.compatibility}
                     </Badge>
                   </div>
 
                   <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <h3 className="text-lg font-semibold text-white">
+                    <h3 className="text-lg font-semibold text-white drop-shadow-lg">
                       {profile.name} · {profile.age}
                     </h3>
                     <p className="text-sm text-white/80">{profile.location}</p>
                   </div>
                 </div>
 
-                <div className="space-y-3 p-4">
+                <div className="space-y-3 p-5">
                   <p className={cn("text-sm", secondaryTextClass)}>Curated by Friend Finder</p>
 
                   <div className="flex flex-wrap gap-2">
@@ -308,7 +310,7 @@ const Index = () => {
                       <Badge
                         key={highlight}
                         variant="secondary"
-                        className="rounded-full bg-muted text-xs"
+                        className="rounded-full bg-[rgba(255,255,255,0.06)] text-xs text-[#BDBDBD]"
                       >
                         {highlight}
                       </Badge>
@@ -317,7 +319,7 @@ const Index = () => {
 
                   <Button
                     onClick={() => navigate(`/friend-finder?focus=${profile.id}`)}
-                    className="w-full rounded-full bg-[#F8D57E] text-slate-950 hover:bg-[#e8c56e]"
+                    className="btn-magnetic-glow w-full rounded-full bg-gradient-to-r from-[#FF8A3C] to-[#FFB377] text-white font-semibold shadow-lg shadow-[rgba(255,138,60,0.25)] hover:shadow-[rgba(255,138,60,0.4)]"
                   >
                     View profile preview
                   </Button>
@@ -342,8 +344,8 @@ const Index = () => {
           )}
         >
           <div className="flex flex-wrap items-center gap-3 mb-6">
-            <Badge className="bg-[#F8D57E] text-slate-950">New</Badge>
-            <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#F8D57E]">
+            <Badge className="bg-[#FF8A3C] text-slate-950">New</Badge>
+            <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#FF8A3C]">
               AI Icebreaker Engine
             </p>
           </div>
@@ -358,7 +360,7 @@ const Index = () => {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
-                  <Sparkles className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <Sparkles className="h-5 w-5 text-[#FF8A3C] mt-0.5" />
                   <div className="space-y-1">
                     <p className="font-semibold">Personalized daily icebreakers</p>
                     <p className={cn("text-sm", secondaryTextClass)}>
@@ -368,7 +370,7 @@ const Index = () => {
                 </div>
 
                 <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
-                  <UserCheck className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <UserCheck className="h-5 w-5 text-[#FF8A3C] mt-0.5" />
                   <div className="space-y-1">
                     <p className="font-semibold">Profile-aware topics</p>
                     <p className={cn("text-sm", secondaryTextClass)}>
@@ -378,7 +380,7 @@ const Index = () => {
                 </div>
 
                 <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
-                  <MessageCircle className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <MessageCircle className="h-5 w-5 text-[#FF8A3C] mt-0.5" />
                   <div className="space-y-1">
                     <p className="font-semibold">Friendly nudge prompts</p>
                     <p className={cn("text-sm", secondaryTextClass)}>
@@ -388,7 +390,7 @@ const Index = () => {
                 </div>
 
                 <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
-                  <CheckCircle2 className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <CheckCircle2 className="h-5 w-5 text-[#FF8A3C] mt-0.5" />
                   <div className="space-y-1">
                     <p className="font-semibold">Measured impact</p>
                     <p className={cn("text-sm", secondaryTextClass)}>
@@ -404,20 +406,20 @@ const Index = () => {
                 <h3 className="text-xl font-semibold">How it works</h3>
                 <ul className="space-y-3 text-sm">
                   <li className="flex gap-2">
-                    <Sparkles className="h-4 w-4 text-[#F8D57E] mt-0.5" />
+                    <Sparkles className="h-4 w-4 text-[#FF8A3C] mt-0.5" />
                     <span>Auto-generates fresh icebreakers every morning for your active chats.</span>
                   </li>
                   <li className="flex gap-2">
-                    <UserCheck className="h-4 w-4 text-[#F8D57E] mt-0.5" />
+                    <UserCheck className="h-4 w-4 text-[#FF8A3C] mt-0.5" />
                     <span>Reads both profiles to surface shared interests and timely topics.</span>
                   </li>
                   <li className="flex gap-2">
-                    <MessageSquare className="h-4 w-4 text-[#F8D57E] mt-0.5" />
+                    <MessageSquare className="h-4 w-4 text-[#FF8A3C] mt-0.5" />
                     <span>Sends warm, friendly nudges that keep the conversation flowing.</span>
                   </li>
                 </ul>
 
-                <div className="rounded-lg bg-[#F8D57E]/15 border border-[#F8D57E]/30 p-4 text-sm text-slate-900">
+                <div className="rounded-lg bg-[#FF8A3C]/15 border border-[#FF8A3C]/30 p-4 text-sm text-slate-900">
                   <p className="font-semibold text-slate-900">Impact</p>
                   <p>
                     Members see higher reply rates, smoother chats, and more meetups because the
@@ -444,8 +446,8 @@ const Index = () => {
           )}
         >
           <div className="flex flex-wrap items-center gap-3 mb-6">
-            <Badge className="bg-[#F8D57E] text-slate-950">AI</Badge>
-            <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#F8D57E]">
+            <Badge className="bg-[#FF8A3C] text-slate-950">AI</Badge>
+            <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#FF8A3C]">
               Lifestyle Activity Generator
             </p>
           </div>
@@ -472,7 +474,7 @@ const Index = () => {
                     >
                       <AnimatedPulseIcon
                         icon={signal.icon}
-                        className="h-5 w-5 text-[#F8D57E]"
+                        className="h-5 w-5 text-[#FF8A3C]"
                       />
                       <p className="text-sm font-medium">{signal.label}</p>
                     </div>
@@ -484,7 +486,7 @@ const Index = () => {
                 <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
                   <AnimatedPulseIcon
                     icon={CloudSun}
-                    className="h-5 w-5 text-[#F8D57E] mt-0.5"
+                    className="h-5 w-5 text-[#FF8A3C] mt-0.5"
                   />
                   <div className="space-y-1">
                     <p className="font-semibold">Weather-aware routes</p>
@@ -497,7 +499,7 @@ const Index = () => {
                 <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
                   <AnimatedPulseIcon
                     icon={MapPin}
-                    className="h-5 w-5 text-[#F8D57E] mt-0.5"
+                    className="h-5 w-5 text-[#FF8A3C] mt-0.5"
                   />
                   <div className="space-y-1">
                     <p className="font-semibold">Distance + cost filters</p>
@@ -510,7 +512,7 @@ const Index = () => {
                 <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
                   <AnimatedPulseIcon
                     icon={BatteryMedium}
-                    className="h-5 w-5 text-[#F8D57E] mt-0.5"
+                    className="h-5 w-5 text-[#FF8A3C] mt-0.5"
                   />
                   <div className="space-y-1">
                     <p className="font-semibold">Energy matched</p>
@@ -523,7 +525,7 @@ const Index = () => {
                 <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
                   <AnimatedPulseIcon
                     icon={Wallet}
-                    className="h-5 w-5 text-[#F8D57E] mt-0.5"
+                    className="h-5 w-5 text-[#FF8A3C] mt-0.5"
                   />
                   <div className="space-y-1">
                     <p className="font-semibold">Budget smart</p>
@@ -538,7 +540,7 @@ const Index = () => {
             <div className={cn("p-6 rounded-xl border space-y-4", isDark ? "border-white/10" : "border-slate-200")}> 
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#F8D57E]">Live suggestions</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#FF8A3C]">Live suggestions</p>
                   <h3 className="text-xl font-semibold">Your week, auto-planned</h3>
                 </div>
                 <Badge variant="outline" className={cn(isDark ? "border-white/20 text-white" : "border-slate-300")}>Updated hourly</Badge>
@@ -558,24 +560,24 @@ const Index = () => {
                         <p className="text-lg font-semibold">{activity.title}</p>
                         <p className={cn("text-sm", secondaryTextClass)}>{activity.context}</p>
                       </div>
-                      <Badge className="bg-[#F8D57E] text-slate-950">Fit for you</Badge>
+                      <Badge className="bg-[#FF8A3C] text-slate-950">Fit for you</Badge>
                     </div>
 
                     <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                       <div className="flex items-center gap-2">
-                        <CloudSun className="h-4 w-4 text-[#F8D57E]" />
+                        <CloudSun className="h-4 w-4 text-[#FF8A3C]" />
                         <span>{activity.weather}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-[#F8D57E]" />
+                        <MapPin className="h-4 w-4 text-[#FF8A3C]" />
                         <span>{activity.distance}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Wallet className="h-4 w-4 text-[#F8D57E]" />
+                        <Wallet className="h-4 w-4 text-[#FF8A3C]" />
                         <span>{activity.cost}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <BatteryMedium className="h-4 w-4 text-[#F8D57E]" />
+                        <BatteryMedium className="h-4 w-4 text-[#FF8A3C]" />
                         <span>{activity.energy}</span>
                       </div>
                     </div>
@@ -607,8 +609,8 @@ const Index = () => {
           )}
         >
           <div className="flex flex-wrap items-center gap-3 mb-6">
-            <Badge className="bg-[#F8D57E] text-slate-950">Beta</Badge>
-            <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#F8D57E]">
+            <Badge className="bg-[#FF8A3C] text-slate-950">Beta</Badge>
+            <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#FF8A3C]">
               AI Profile Builder
             </p>
           </div>
@@ -623,7 +625,7 @@ const Index = () => {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
-                  <PenLine className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <PenLine className="h-5 w-5 text-[#FF8A3C] mt-0.5" />
                   <div className="space-y-1">
                     <p className="font-semibold">5-question mini interview</p>
                     <p className={cn("text-sm", secondaryTextClass)}>
@@ -633,7 +635,7 @@ const Index = () => {
                 </div>
 
                 <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
-                  <Tags className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <Tags className="h-5 w-5 text-[#FF8A3C] mt-0.5" />
                   <div className="space-y-1">
                     <p className="font-semibold">Smart interest tags</p>
                     <p className={cn("text-sm", secondaryTextClass)}>
@@ -643,7 +645,7 @@ const Index = () => {
                 </div>
 
                 <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
-                  <Camera className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <Camera className="h-5 w-5 text-[#FF8A3C] mt-0.5" />
                   <div className="space-y-1">
                     <p className="font-semibold">Photo guidance</p>
                     <p className={cn("text-sm", secondaryTextClass)}>
@@ -653,7 +655,7 @@ const Index = () => {
                 </div>
 
                 <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
-                  <Sparkles className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <Sparkles className="h-5 w-5 text-[#FF8A3C] mt-0.5" />
                   <div className="space-y-1">
                     <p className="font-semibold">Friendship Personality Profile</p>
                     <p className={cn("text-sm", secondaryTextClass)}>
@@ -672,8 +674,8 @@ const Index = () => {
             <div className={cn("p-6 rounded-xl border space-y-5", isDark ? "border-white/10" : "border-slate-200")}> 
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-[#F8D57E]" />
-                  <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#F8D57E]">Preview</p>
+                  <Sparkles className="h-5 w-5 text-[#FF8A3C]" />
+                  <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#FF8A3C]">Preview</p>
                 </div>
                 <h3 className="text-xl font-semibold">Friend-ready profile</h3>
                 <p className={cn("text-sm", secondaryTextClass)}>
@@ -691,7 +693,7 @@ const Index = () => {
                 </ul>
               </div>
 
-              <div className="rounded-lg bg-[#F8D57E]/15 border border-[#F8D57E]/30 p-4 text-sm text-slate-900">
+              <div className="rounded-lg bg-[#FF8A3C]/15 border border-[#FF8A3C]/30 p-4 text-sm text-slate-900">
                 <p className="font-semibold text-slate-900">Impact</p>
                 <p>
                   Members with AI-tuned profiles see higher match rates, more replies, and faster
@@ -718,7 +720,7 @@ const Index = () => {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
           {/* Step 1 */}
           <div className={cn("p-6 text-left space-y-3", surfaceClass)}>
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F8D57E]/20 text-[#F8D57E]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FF8A3C]/20 text-[#FF8A3C]">
               <Users className="h-6 w-6" />
             </div>
             <h3 className="text-xl font-semibold">Tell us about your vibe</h3>
@@ -729,7 +731,7 @@ const Index = () => {
 
           {/* Step 2 */}
           <div className={cn("p-6 text-left space-y-3", surfaceClass)}>
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F8D57E]/20 text-[#F8D57E]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FF8A3C]/20 text-[#FF8A3C]">
               <HeartHandshake className="h-6 w-6" />
             </div>
             <h3 className="text-xl font-semibold">Match with nearby friends</h3>
@@ -740,7 +742,7 @@ const Index = () => {
 
           {/* Step 3 */}
           <div className={cn("p-6 text-left space-y-3", surfaceClass)}>
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F8D57E]/20 text-[#F8D57E]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FF8A3C]/20 text-[#FF8A3C]">
               <CalendarCheck className="h-6 w-6" />
             </div>
             <h3 className="text-xl font-semibold">Meet up with confidence</h3>
@@ -827,10 +829,10 @@ const Index = () => {
             <div
               className={cn(
                 "h-16 w-16 rounded-full flex items-center justify-center border-2",
-                isDark ? "border-[#F8D57E]/50 bg-[#F8D57E]/10" : "border-[#F8D57E]/40 bg-[#F8D57E]/20",
+                isDark ? "border-[#FF8A3C]/50 bg-[#FF8A3C]/10" : "border-[#FF8A3C]/40 bg-[#FF8A3C]/20",
               )}
             >
-              <HeadphonesIcon className="text-[#F8D57E] h-8 w-8" />
+              <HeadphonesIcon className="text-[#FF8A3C] h-8 w-8" />
             </div>
             <h3 className="text-lg font-bold mt-2">Concierge onboarding</h3>
             <p className={cn("text-sm", secondaryTextClass)}>
@@ -843,10 +845,10 @@ const Index = () => {
             <div
               className={cn(
                 "h-16 w-16 rounded-full flex items-center justify-center border-2",
-                isDark ? "border-[#F8D57E]/50 bg-[#F8D57E]/10" : "border-[#F8D57E]/40 bg-[#F8D57E]/20",
+                isDark ? "border-[#FF8A3C]/50 bg-[#FF8A3C]/10" : "border-[#FF8A3C]/40 bg-[#FF8A3C]/20",
               )}
             >
-              <ShieldCheck className="text-[#F8D57E] h-8 w-8" />
+              <ShieldCheck className="text-[#FF8A3C] h-8 w-8" />
             </div>
             <h3 className="text-lg font-bold mt-2">Verified hosts</h3>
             <p className={cn("text-sm", secondaryTextClass)}>
@@ -859,10 +861,10 @@ const Index = () => {
             <div
               className={cn(
                 "h-16 w-16 rounded-full flex items-center justify-center border-2",
-                isDark ? "border-[#F8D57E]/50 bg-[#F8D57E]/10" : "border-[#F8D57E]/40 bg-[#F8D57E]/20",
+                isDark ? "border-[#FF8A3C]/50 bg-[#FF8A3C]/10" : "border-[#FF8A3C]/40 bg-[#FF8A3C]/20",
               )}
             >
-              <MessageSquare className="text-[#F8D57E] h-8 w-8" />
+              <MessageSquare className="text-[#FF8A3C] h-8 w-8" />
             </div>
             <h3 className="text-lg font-bold mt-2">Guided conversations</h3>
             <p className={cn("text-sm", secondaryTextClass)}>
@@ -889,16 +891,16 @@ const Index = () => {
             <div className="space-y-2">
               <h3 className="text-xl font-bold">Neighborhood Coffee Crawl ☕</h3>
               <div className={cn("flex items-center gap-2 text-sm", secondaryTextClass)}>
-                <Star className="text-[#F8D57E] h-4 w-4 fill-current" />
+                <Star className="text-[#FF8A3C] h-4 w-4 fill-current" />
                 <span>4.9 (120 reviews)</span>
                 <span className="mx-1">·</span>
                 <span>Downtown</span>
               </div>
               <div className="flex flex-wrap gap-2">
-                <span className="rounded-full bg-[#F8D57E]/20 px-3 py-1 text-xs font-medium text-[#F8D57E]">
+                <span className="rounded-full bg-[#FF8A3C]/20 px-3 py-1 text-xs font-medium text-[#FF8A3C]">
                   Social
                 </span>
-                <span className="rounded-full bg-[#F8D57E]/20 px-3 py-1 text-xs font-medium text-[#F8D57E]">
+                <span className="rounded-full bg-[#FF8A3C]/20 px-3 py-1 text-xs font-medium text-[#FF8A3C]">
                   Food & Drink
                 </span>
               </div>
@@ -918,16 +920,16 @@ const Index = () => {
             <div className="space-y-2">
               <h3 className="text-xl font-bold">Cooking Class: Italian Cuisine 🍝</h3>
               <div className={cn("flex items-center gap-2 text-sm", secondaryTextClass)}>
-                <Star className="text-[#F8D57E] h-4 w-4 fill-current" />
+                <Star className="text-[#FF8A3C] h-4 w-4 fill-current" />
                 <span>5.0 (98 reviews)</span>
                 <span className="mx-1">·</span>
                 <span>North End</span>
               </div>
               <div className="flex flex-wrap gap-2">
-                <span className="rounded-full bg-[#F8D57E]/20 px-3 py-1 text-xs font-medium text-[#F8D57E]">
+                <span className="rounded-full bg-[#FF8A3C]/20 px-3 py-1 text-xs font-medium text-[#FF8A3C]">
                   Workshop
                 </span>
-                <span className="rounded-full bg-[#F8D57E]/20 px-3 py-1 text-xs font-medium text-[#F8D57E]">
+                <span className="rounded-full bg-[#FF8A3C]/20 px-3 py-1 text-xs font-medium text-[#FF8A3C]">
                   Food & Drink
                 </span>
               </div>
@@ -995,7 +997,7 @@ const Index = () => {
           <div className="flex flex-col gap-3">
             <Button
               onClick={() => navigate("/signup")}
-              className="w-full bg-[#F8D57E] hover:bg-[#e8c56e] text-slate-950 font-bold shadow-[0_0_10px_rgba(248,213,126,0.4)] hover:scale-105 transition-transform"
+              className="w-full bg-[#FF8A3C] hover:bg-[#D96B26] text-slate-950 font-bold shadow-[0_0_10px_rgba(248,213,126,0.4)] hover:scale-105 transition-transform"
             >
               Become a member
             </Button>

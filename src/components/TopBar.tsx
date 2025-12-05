@@ -4,6 +4,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { useSubscription } from "@/hooks/useSubscription";
 import { cn } from "@/lib/utils";
+
 export const TopBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -13,12 +14,25 @@ export const TopBar = () => {
     signOut,
   } = useSubscription();
   const shouldShowAuthButtons = !userId || isLoading;
+  
   const navButtonClass =
-    "relative overflow-hidden rounded-full border border-foreground/10 bg-foreground/[0.04] px-5 text-sm font-semibold text-foreground/90 shadow-[0_16px_38px_-28px_rgba(15,15,15,0.45)] transition-colors duration-300 hover:border-foreground/20 hover:bg-foreground/[0.08] focus-visible:ring-2 focus-visible:ring-offset-1 dark:border-white/10 dark:bg-white/[0.06] dark:text-foreground dark:hover:bg-white/[0.14]";
-  return <div className="sticky top-0 z-[60] border-b border-black/5 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/65 dark:border-white/5">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-foreground/80 transition hover:text-foreground">
-          <Logo size="sm" tagline="By Connective" taglineClassName="hidden sm:inline-flex text-xs tracking-[0.3em]" />
+    "relative overflow-hidden rounded-full border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.04)] px-5 text-sm font-semibold text-[#BDBDBD] shadow-card transition-all duration-300 hover:border-[rgba(255,255,255,0.12)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white focus-visible:ring-2 focus-visible:ring-[#FF8A3C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]";
+  
+  return (
+    <header className="nav-connective sticky top-0 z-[60] border-b border-[rgba(255,255,255,0.06)] bg-[#0C0C0C]/90 backdrop-blur-xl supports-[backdrop-filter]:bg-[#0C0C0C]/80">
+      {/* Subtle gradient line at bottom */}
+      <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,138,60,0.2)] to-transparent" />
+      
+      <div className="mx-auto flex h-[72px] w-full max-w-6xl items-center justify-between px-4 sm:px-6">
+        <Link 
+          to="/" 
+          className="inline-flex items-center gap-2 text-sm font-semibold text-[#BDBDBD] transition-colors hover:text-white"
+        >
+          <Logo 
+            size="sm" 
+            tagline="By Connective" 
+            taglineClassName="hidden sm:inline-flex text-xs tracking-[0.3em] text-[#7B7B7B]" 
+          />
         </Link>
 
         <div className="flex items-center gap-3">
@@ -35,10 +49,7 @@ export const TopBar = () => {
               </Button>
               <Button
                 size="sm"
-                className={cn(
-                  "shadow-[0_20px_48px_-28px_rgba(190,150,80,0.85)] hover:shadow-[0_22px_60px_-30px_rgba(190,150,80,0.95)]",
-                  "text-primary-foreground"
-                )}
+                className="btn-magnetic-glow rounded-full bg-gradient-to-r from-[#FF8A3C] to-[#FFB377] px-5 font-semibold text-white shadow-lg shadow-[rgba(255,138,60,0.3)] transition-all hover:shadow-[rgba(255,138,60,0.5)]"
                 onClick={() => navigate("/signup")}
                 aria-current={location.pathname === "/signup" ? "page" : undefined}
               >
@@ -59,6 +70,8 @@ export const TopBar = () => {
           <ThemeToggle className="relative z-10" />
         </div>
       </div>
-    </div>;
+    </header>
+  );
 };
+
 export default TopBar;

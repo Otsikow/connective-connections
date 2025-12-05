@@ -6,18 +6,20 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   animated?: boolean;
   hoverScale?: boolean;
   highlighted?: boolean;
+  idleFloat?: boolean;
 }
 
 const baseCardClasses =
-  "relative w-full overflow-hidden rounded-[22px] border border-[rgba(255,255,255,0.06)] bg-[#0d0d0d] bg-[radial-gradient(circle_at_20%_18%,#141414_0%,#0d0d0d_55%,#080808_100%)] text-card-foreground shadow-[0_8px_40px_rgba(0,0,0,0.6)] transition-all duration-500 supports-[backdrop-filter]:backdrop-blur-xl card-glow-border focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_1px_rgba(255,140,50,0.35),0_0_0_12px_rgba(255,140,50,0.12)]";
+  "relative w-full overflow-hidden rounded-[20px] border border-[rgba(255,255,255,0.06)] bg-[#111111] text-card-foreground shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03),0_8px_38px_rgba(0,0,0,0.55)] transition-all duration-350 ease-spring supports-[backdrop-filter]:backdrop-blur-xl card-glow-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8A3C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]";
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, animated = true, hoverScale = true, highlighted = false, ...props }, ref) => {
+  ({ className, animated = true, hoverScale = true, highlighted = false, idleFloat = false, ...props }, ref) => {
     
     const mergedClasses = cn(
       baseCardClasses,
       "stagger-card",
       highlighted && "premium-ambient",
+      idleFloat && "card-idle-float",
       className
     );
 
@@ -33,7 +35,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       );
     }
 
-    // Animated version
+    // Animated version with world-class hover effects
     return (
       <motion.div
         ref={ref}
@@ -41,19 +43,26 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
         className={mergedClasses}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+        transition={{ duration: 0.38, ease: [0.4, 0, 0.2, 1] }}
         whileHover={
           hoverScale
             ? {
                 y: -6,
-                rotateX: -2.5,
-                rotateY: 2.5,
-                scale: 1.03,
-                transition: { duration: 0.35 },
+                rotateX: -3,
+                rotateY: 3,
+                scale: 1.02,
+                boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.06), 0 14px 48px rgba(0,0,0,0.65)",
+                transition: { 
+                  duration: 0.35,
+                  ease: [0.34, 1.56, 0.64, 1]
+                },
               }
             : undefined
         }
-        whileTap={{ scale: 0.995 }}
+        whileTap={{ 
+          scale: 0.97,
+          transition: { duration: 0.1 }
+        }}
         {...props}
       />
     );

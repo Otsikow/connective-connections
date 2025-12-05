@@ -24,20 +24,34 @@ export const Logo = ({
 }: LogoProps) => {
   return (
     <div className={cn("relative inline-flex flex-col items-start", className)}>
+      {/* Brand wordmark glow — warm-orange subtle glow behind letters */}
       {showGlow && (
-        <div className="pointer-events-none absolute -inset-x-6 -inset-y-4 -z-10 rounded-[2.75rem] bg-gradient-to-r from-amber-400/40 via-yellow-400/25 to-orange-400/35 blur-3xl" />
+        <div 
+          className="pointer-events-none absolute -inset-x-8 -inset-y-6 -z-10 rounded-[3rem] opacity-80"
+          style={{
+            background: "radial-gradient(ellipse at center, rgba(255,150,70,0.35) 0%, rgba(255,138,60,0.15) 40%, transparent 70%)",
+            filter: "blur(24px)",
+            boxShadow: "0 4px 18px rgba(255,150,70,0.25)",
+          }}
+        />
       )}
       <div className="relative inline-flex items-center">
         <img
           src={logo}
           alt="Connective"
-          className={cn("w-auto object-contain", sizeMap[size])}
+          className={cn(
+            "w-auto object-contain transition-transform duration-300 hover:scale-105",
+            sizeMap[size]
+          )}
+          style={{
+            filter: showGlow ? "drop-shadow(0 4px 18px rgba(255,150,70,0.25))" : undefined,
+          }}
         />
       </div>
       {tagline && (
         <span
           className={cn(
-            "mt-2 inline-flex items-center gap-2 text-[0.7rem] font-medium uppercase tracking-[0.3em] text-foreground/70 sm:font-semibold sm:tracking-[0.45em]",
+            "mt-2 inline-flex items-center gap-2 text-[0.7rem] font-medium uppercase tracking-[0.3em] text-[#7B7B7B] transition-colors hover:text-[#BDBDBD] sm:font-semibold sm:tracking-[0.45em]",
             taglineClassName,
           )}
         >

@@ -277,38 +277,42 @@ const Home = () => {
   /* ------------------------------------------------------------ */
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-white pb-28 dark:bg-slate-950">
+    <div className="relative min-h-screen overflow-hidden bg-[#050505] pb-28">
       <ParallaxStrip />
 
       <div className="relative mx-auto w-full max-w-5xl space-y-10 px-4 py-8">
 
         {/* HERO */}
-        <section className="rounded-3xl border bg-white p-6 shadow dark:bg-slate-900">
-          <Badge className="rounded-full bg-[#fff4d1] text-[#a0772d] px-3 py-1">
+        <section className="card-premium rounded-[20px] border border-[rgba(255,255,255,0.06)] bg-[#111111] p-6 shadow-card">
+          <Badge className="rounded-full bg-gradient-to-r from-[#FF8A3C]/20 to-[#FFB377]/20 text-[#FFB377] px-3 py-1.5 border-none">
             Experience connections differently
           </Badge>
 
-          <h2 className="mt-4 text-3xl font-bold dark:text-white">
+          <h2 className="mt-4 text-3xl font-bold text-white heading-brand">
             Find genuine friends & real experiences—no pressure.
           </h2>
 
-          <p className="mt-2 text-slate-600 dark:text-slate-300">
+          <p className="mt-2 text-[#BDBDBD]">
             Connective helps you find people you vibe with, join curated events,
             and chat naturally.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
-            <Button className="bg-[#f7c145] text-black" onClick={() => navigate("/signup")}>
+            <Button 
+              className="btn-magnetic-glow rounded-full bg-gradient-to-r from-[#FF8A3C] to-[#FFB377] text-white font-semibold shadow-lg shadow-[rgba(255,138,60,0.3)]" 
+              onClick={() => navigate("/signup")}
+            >
               Get started
             </Button>
-            <Button variant="outline" onClick={() => navigate("/splash")}>
+            <Button variant="outline" className="rounded-full border-[rgba(255,255,255,0.12)] text-[#BDBDBD] hover:text-white hover:bg-[rgba(255,255,255,0.06)]" onClick={() => navigate("/splash")}>
               <PlayCircle className="h-4 w-4 mr-2" /> Watch demo
             </Button>
-            <Button variant="secondary" onClick={() => navigate("/real-life-engine")}>
+            <Button variant="secondary" className="rounded-full bg-[rgba(92,184,255,0.15)] text-[#5CB8FF] hover:bg-[rgba(92,184,255,0.25)]" onClick={() => navigate("/real-life-engine")}>
               <Sparkles className="h-4 w-4 mr-2" /> Real-life first AI
             </Button>
             <Button
               variant="ghost"
+              className="rounded-full text-[#7B7B7B] hover:text-white hover:bg-[rgba(255,255,255,0.06)]"
               onClick={() => handleNavigate("/community", {
                 requiresAuth: true
               })}
@@ -321,12 +325,12 @@ const Home = () => {
         {/* FEATURES */}
         <section>
           <Tabs value={activeFeature} onValueChange={setActiveFeature}>
-            <TabsList className="grid grid-cols-4 mb-4 rounded-full bg-slate-100 p-1 dark:bg-slate-800">
+            <TabsList className="grid grid-cols-4 mb-4 rounded-full bg-slate-100 p-1 bg-[#111111]">
               {features.map(f => (
                 <TabsTrigger
                   key={f.value}
                   value={f.value}
-                  className="rounded-full text-sm data-[state=active]:bg-white data-[state=active]:text-black"
+                  className="rounded-full text-sm data-[state=active]:bg-white data-[state=active]:text-white"
                 >
                   {f.title.split(" ")[0]}
                 </TabsTrigger>
@@ -352,7 +356,7 @@ const Home = () => {
                 </CardHeader>
                 <CardContent className="flex items-center justify-between">
                   <Button
-                    className="bg-[#f7c145] text-black"
+                    className="bg-gradient-to-r from-[#FF8A3C] to-[#FFB377] text-white"
                     onClick={e => {
                       e.stopPropagation();
                       handleNavigate(selected.cta.path, {
@@ -383,7 +387,7 @@ const Home = () => {
 
         {/* AI GROUP FORMATION */}
         <section className="grid gap-4 md:grid-cols-[1.6fr_1fr]">
-          <Card className="border-amber-100 bg-amber-50/70 shadow-sm dark:border-amber-500/40 dark:bg-slate-900">
+          <Card className="border-amber-100 bg-amber-50/70 shadow-sm dark:border-amber-500/40 bg-[#111111]">
             <CardHeader>
               <div className="flex items-center gap-2 text-sm font-semibold text-amber-700 dark:text-amber-300">
                 <Sparkles className="h-4 w-4" />
@@ -397,7 +401,7 @@ const Home = () => {
             </CardHeader>
 
               <CardContent className="space-y-4">
-              <div className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm dark:border-amber-500/30 dark:bg-slate-950">
+              <div className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm dark:border-amber-500/30 bg-[#0C0C0C]">
                 <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
                   Live example
                 </p>
@@ -424,7 +428,7 @@ const Home = () => {
                 {aiGroupFeatures.map(feature => (
                   <div
                     key={feature.title}
-                    className="rounded-xl border border-amber-200/60 bg-white p-3 text-sm dark:border-amber-500/30 dark:bg-slate-950"
+                    className="rounded-xl border border-amber-200/60 bg-white p-3 text-sm dark:border-amber-500/30 bg-[#0C0C0C]"
                   >
                     <div className="flex items-center gap-2 font-semibold text-slate-900 dark:text-white">
                       {feature.icon}
@@ -439,7 +443,7 @@ const Home = () => {
 
               <div className="flex flex-wrap gap-3">
                 <Button
-                  className="bg-[#f7c145] text-black"
+                  className="bg-gradient-to-r from-[#FF8A3C] to-[#FFB377] text-white"
                   onClick={() => handleNavigate("/events", { requiresAuth: true })}
                 >
                   Preview AI meetup
@@ -461,7 +465,7 @@ const Home = () => {
           </Card>
 
           {/* Right column — Group Autopilot */}
-            <Card className="h-full shadow-sm dark:bg-slate-900">
+            <Card className="h-full shadow-sm bg-[#111111]">
               <CardHeader>
                 <CardTitle className="text-lg">Group autopilot</CardTitle>
                 <CardDescription>
@@ -469,7 +473,7 @@ const Home = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="rounded-xl bg-slate-50 p-4 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                <div className="rounded-xl bg-slate-50 p-4 text-sm text-slate-700 bg-[#111111] dark:text-slate-200">
                   <p className="font-semibold text-slate-900 dark:text-white">What the autopilot handles</p>
                   <ul className="mt-2 space-y-2 list-disc pl-4">
                     <li>Tracks interest signals and nudges the right people.</li>
@@ -491,7 +495,7 @@ const Home = () => {
                 </div>
 
                 <Button
-                  className="bg-[#f7c145] text-black"
+                  className="bg-gradient-to-r from-[#FF8A3C] to-[#FFB377] text-white"
                   onClick={() =>
                     handleNavigate("/community", {
                       requiresAuth: true,
@@ -541,7 +545,7 @@ const Home = () => {
 
                             <Button
                               size="sm"
-                              className="bg-[#f7c145] text-black"
+                              className="bg-gradient-to-r from-[#FF8A3C] to-[#FFB377] text-white"
                               onClick={e => {
                                 e.stopPropagation();
                                 handleNavigate(`/events/${ev.id}`, {
@@ -610,7 +614,7 @@ const Home = () => {
 
       {/* FLOATING CTA */}
       <Button
-        className="fixed right-4 rounded-full bg-[#f7c145] text-black shadow-lg bottom-[calc(env(safe-area-inset-bottom,0px)+5.5rem)] sm:right-6 sm:bottom-[calc(env(safe-area-inset-bottom,0px)+5.75rem)]"
+        className="fixed right-4 rounded-full bg-gradient-to-r from-[#FF8A3C] to-[#FFB377] text-white shadow-lg bottom-[calc(env(safe-area-inset-bottom,0px)+5.5rem)] sm:right-6 sm:bottom-[calc(env(safe-area-inset-bottom,0px)+5.75rem)]"
         onClick={() =>
           handleNavigate("/host/create-event", {
             requiresAuth: true
@@ -632,7 +636,7 @@ const Home = () => {
 
           <DialogFooter>
             <Button
-              className="bg-[#f7c145] text-black"
+              className="bg-gradient-to-r from-[#FF8A3C] to-[#FFB377] text-white"
               onClick={() =>
                 handleNavigate("/profile", {
                   requiresAuth: true
@@ -678,7 +682,7 @@ const Home = () => {
             </Button>
 
             <Button
-              className="bg-[#f7c145] text-black"
+              className="bg-gradient-to-r from-[#FF8A3C] to-[#FFB377] text-white"
               onClick={() => {
                 setShowAuthPrompt(false);
                 navigate("/signup", {

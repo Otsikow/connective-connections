@@ -4,13 +4,23 @@ import { motion } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 
+interface AvatarProps extends React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> {
+  glowOnHover?: boolean;
+  glowAlways?: boolean;
+}
+
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
->(({ className, ...props }, ref) => (
+  AvatarProps
+>(({ className, glowOnHover = true, glowAlways = false, ...props }, ref) => (
   <AvatarPrimitive.Root
     ref={ref}
-    className={cn("relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full profile-hover-glow", className)}
+    className={cn(
+      "relative flex h-10 w-10 shrink-0 overflow-visible rounded-full",
+      glowOnHover && "profile-hover-glow",
+      glowAlways && "profile-glow-always",
+      className
+    )}
     asChild
     {...props}
   >
@@ -18,6 +28,7 @@ const Avatar = React.forwardRef<
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      className="relative overflow-hidden rounded-full"
     />
   </AvatarPrimitive.Root>
 ));
@@ -27,7 +38,11 @@ const AvatarImage = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Image>,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
 >(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Image ref={ref} className={cn("aspect-square h-full w-full", className)} {...props} />
+  <AvatarPrimitive.Image 
+    ref={ref} 
+    className={cn("aspect-square h-full w-full object-cover", className)} 
+    {...props} 
+  />
 ));
 AvatarImage.displayName = AvatarPrimitive.Image.displayName;
 
@@ -37,7 +52,10 @@ const AvatarFallback = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AvatarPrimitive.Fallback
     ref={ref}
-    className={cn("flex h-full w-full items-center justify-center rounded-full bg-muted", className)}
+    className={cn(
+      "flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-[#FF8A3C] to-[#D96B26] text-sm font-medium text-white",
+      className
+    )}
     {...props}
   />
 ));
