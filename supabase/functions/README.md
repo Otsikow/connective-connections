@@ -74,6 +74,47 @@ Processes Stripe billing events and updates subscription state on the `profiles`
 
 > ℹ️ Configure the secret via `STRIPE_WEBHOOK_SECRET` in your Supabase function settings.
 
+### friendship-compatibility
+AI-powered friendship compatibility engine that scores and clusters users for meaningful, non-romantic connections.
+
+**Endpoints (all require `Authorization: Bearer <access-token>`):**
+
+- `POST /functions/v1/friendship-compatibility/calculateScore`
+  - Body: `{ "user": <profile>, "candidate": <profile>, "weights?": { <category>: number } }`
+  - Returns a compatibility score (0-100), shared trait highlights, and recommended next steps.
+
+- `POST /functions/v1/friendship-compatibility/getCompatibleUsers`
+  - Body: `{ "user": <profile>, "candidates": [<profile>], "limit?": number }`
+  - Ranks candidates by compatibility score and surfaces recommendations for each.
+
+- `POST /functions/v1/friendship-compatibility/personalityClustering`
+  - Body: `{ "candidates": [<profile>], "similarityThreshold?": number, "maxClusters?": number }`
+  - Groups users into affinity clusters with anchor traits and cluster-level fit scores.
+
+**Profile payload shape:**
+
+```json
+{
+  "id": "user-123",
+  "personalityTraits": ["empathetic", "curious"],
+  "humorStyle": "witty",
+  "faithAlignment": "interfaith",
+  "lifestylePatterns": ["morning person", "fitness"],
+  "interests": ["art", "tech"],
+  "memes": ["wholesome", "surreal"],
+  "eventsAttended": ["hackathons", "community_service"],
+  "musicTaste": ["indie", "lofi"],
+  "learningGoals": ["spanish", "machine learning"],
+  "dailyRoutines": ["early workouts", "evening reading"],
+  "timezone": "UTC"
+}
+```
+
+**Security:**
+- Every endpoint requires a valid Supabase session token.
+- Requests without authentication receive `401` responses.
+- Payloads are validated with Zod before processing.
+
 ## Deployment
 
 ```bash

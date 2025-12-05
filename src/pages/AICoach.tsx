@@ -16,11 +16,15 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import {
   ArrowRight,
   Brain,
+  CalendarClock,
+  Clock3,
   HandHeart,
   Image as ImageIcon,
   MessageSquare,
   Mic,
   Sparkles,
+  TrendingUp,
+  Users,
   Wand2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -86,6 +90,24 @@ const icebreakerIdeas = [
   "What’s a low-pressure hangout you’d recommend this week?",
 ];
 
+const weeklyBehavior = {
+  eventsAttended: 3,
+  newConnections: 3,
+  messagesSent: 18,
+  voiceNotesShared: 2,
+  morningCheckIns: 4,
+  topMoments: [
+    "Sunrise walk RSVP in the Coastal Crew",
+    "Shared a playlist in Product Builders",
+    "Followed up with two new people from the dinner salon",
+  ],
+  timeOfDayActivity: [
+    { label: "Morning (7-11am)", value: 35 },
+    { label: "Afternoon (11-4pm)", value: 20 },
+    { label: "Evening (4-9pm)", value: 45 },
+  ],
+};
+
 const AICoach = () => {
   usePageTitle("AI Confidence Coach");
 
@@ -116,6 +138,58 @@ const AICoach = () => {
   ]);
 
   const groundedIcebreakers = useMemo(() => icebreakerIdeas.slice(0, 3), []);
+
+  const weeklyInsights = useMemo(
+    () => [
+      {
+        icon: Users,
+        label: `${weeklyBehavior.newConnections} new connections`,
+        detail:
+          "You added three new people this week—perfect for light follow-ups while the energy is fresh.",
+      },
+      {
+        icon: CalendarClock,
+        label: `${weeklyBehavior.eventsAttended} events attended`,
+        detail:
+          "Events skew evening-heavy. Try one early activity to meet members who prefer quieter starts.",
+      },
+      {
+        icon: MessageSquare,
+        label: `${weeklyBehavior.messagesSent} messages sent`,
+        detail:
+          "You kept chats moving with steady replies. One warm voice note could make the next invite land.",
+      },
+      {
+        icon: Clock3,
+        label: "Morning momentum",
+        detail:
+          `You checked in ${weeklyBehavior.morningCheckIns} mornings. A consistent morning walk could cement this streak.`,
+      },
+    ],
+    [],
+  );
+
+  const actionSteps = useMemo(
+    () => [
+      {
+        title: "Join one morning walk", 
+        description: "Pick a 7:30am walk to balance your evening-heavy week and meet early risers.",
+        tag: "Social stretch",
+      },
+      {
+        title: "Send two tailored follow-ups",
+        description:
+          "Reference the hike conversation and the playlist share—offer two time options for a low-pressure meetup.",
+        tag: "Relationships",
+      },
+      {
+        title: "Share one voice note",
+        description: "Drop a quick 20-second note in Product Builders to keep momentum without overtyping.",
+        tag: "Warmth boost",
+      },
+    ],
+    [],
+  );
 
   const handleGenerateStarter = () => {
     const trimmed = scenario.trim();
@@ -449,6 +523,106 @@ const AICoach = () => {
               })}
               <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 text-sm text-slate-800 shadow-inner dark:border-primary/30 dark:bg-primary/10 dark:text-white">
                 Micro-wins keep people coming back. Aim for two small actions per week to build trust and momentum.
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="mt-12 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <Card className="border-slate-200/80 bg-white/90 shadow-sm dark:border-white/5 dark:bg-white/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                Weekly personal insights
+              </CardTitle>
+              <CardDescription>
+                A fast reflection on how you showed up this week with gentle nudges for next time.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex flex-wrap gap-2 text-sm">
+                <Badge className="rounded-full bg-primary/10 text-primary">
+                  {weeklyBehavior.eventsAttended} events attended
+                </Badge>
+                <Badge className="rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-200">
+                  {weeklyBehavior.newConnections} new connections
+                </Badge>
+                <Badge className="rounded-full bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-200">
+                  {weeklyBehavior.messagesSent} messages
+                </Badge>
+                <Badge className="rounded-full bg-sky-100 text-sky-800 dark:bg-sky-500/10 dark:text-sky-200">
+                  {weeklyBehavior.voiceNotesShared} voice notes shared
+                </Badge>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                {weeklyInsights.map((insight) => {
+                  const Icon = insight.icon;
+                  return (
+                    <div
+                      key={insight.label}
+                      className="flex gap-3 rounded-2xl border border-slate-200/70 bg-slate-50/70 p-4 text-sm shadow-inner dark:border-white/10 dark:bg-white/5"
+                    >
+                      <div className="mt-1 rounded-full bg-primary/10 p-2 text-primary">
+                        <Icon className="h-4 w-4" />
+                      </div>
+                      <div className="space-y-1">
+                        <p className="font-semibold text-slate-900 dark:text-white">{insight.label}</p>
+                        <p className="text-slate-700 dark:text-slate-200">{insight.detail}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                {weeklyBehavior.timeOfDayActivity.map((block) => (
+                  <div
+                    key={block.label}
+                    className="space-y-2 rounded-2xl border border-slate-200/70 bg-slate-50/70 p-4 shadow-inner dark:border-white/10 dark:bg-white/5"
+                  >
+                    <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+                      <span>{block.label}</span>
+                      <span className="rounded-full bg-primary/10 px-2 py-0.5 text-primary">{block.value}%</span>
+                    </div>
+                    <Progress value={block.value} className="h-2" />
+                  </div>
+                ))}
+              </div>
+
+              <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 text-sm text-slate-800 shadow-inner dark:border-primary/30 dark:bg-primary/10 dark:text-white">
+                Top moments: {weeklyBehavior.topMoments.join(" • ")}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-slate-200/80 bg-white/90 shadow-sm dark:border-white/5 dark:bg-white/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Sparkles className="h-5 w-5 text-primary" />
+                Action plan for next week
+              </CardTitle>
+              <CardDescription>
+                Three lightweight moves to keep your social momentum going.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {actionSteps.map((step) => (
+                <div
+                  key={step.title}
+                  className="space-y-2 rounded-2xl border border-slate-200/70 bg-slate-50/70 p-4 shadow-inner dark:border-white/10 dark:bg-white/5"
+                >
+                  <div className="flex items-center justify-between text-sm font-semibold text-slate-900 dark:text-white">
+                    <span>{step.title}</span>
+                    <Badge className="rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900">
+                      {step.tag}
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-slate-700 dark:text-slate-200">{step.description}</p>
+                </div>
+              ))}
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 p-4 text-sm text-emerald-900 shadow-inner dark:border-emerald-400/40 dark:bg-emerald-500/10 dark:text-emerald-50">
+                Tip: Batch your invites on Sunday night with two time options. It keeps the energy warm and respectful of everyone’s time.
               </div>
             </CardContent>
           </Card>
