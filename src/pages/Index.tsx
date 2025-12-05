@@ -6,6 +6,12 @@ import {
   CheckCircle2,
   MapPin,
   Users,
+  Sunrise,
+  Dumbbell,
+  Music2,
+  CloudSun,
+  BatteryMedium,
+  Wallet,
   MessageCircle,
   Sparkles,
   UserCheck,
@@ -108,6 +114,54 @@ const Index = () => {
       image: bookChat,
       compatibility: "90% match",
       highlights: ["Indie film club", "Plant swaps"],
+    },
+  ];
+
+  const lifestyleSignals = [
+    { label: "Morning routines", icon: Sunrise },
+    { label: "Gym cadence", icon: Dumbbell },
+    { label: "Prayer rhythm", icon: Sparkles },
+    { label: "Work schedule", icon: CalendarCheck },
+    { label: "Music taste", icon: Music2 },
+    { label: "Past meetups", icon: HeartHandshake },
+  ];
+
+  const activitySuggestions = [
+    {
+      title: "Study session at Costa",
+      context: "6:45am start + lo-fi playlists",
+      weather: "Clear • 68°F",
+      distance: "0.8 mi walk",
+      cost: "$8-12",
+      energy: "Low-focus",
+      note: "Pairs your sunrise journaling habit with quiet seating and free refills.",
+    },
+    {
+      title: "Sunday prayer walk",
+      context: "Post-service wind-down",
+      weather: "Breezy • 63°F",
+      distance: "1.2 mi loop",
+      cost: "$0",
+      energy: "Restorative",
+      note: "Keeps your reflective routine while matching a friend who shares that cadence.",
+    },
+    {
+      title: "Evening coding meetup",
+      context: "After-work creative block",
+      weather: "Clouds • 59°F",
+      distance: "2.4 mi transit",
+      cost: "$15",
+      energy: "High-focus",
+      note: "Aligned to your 6–9pm maker window with playlists you follow and friends you met last month.",
+    },
+    {
+      title: "Photography walk",
+      context: "Weekend gym recovery day",
+      weather: "Sunset • 71°F",
+      distance: "1.6 mi stroll",
+      cost: "$5-10",
+      energy: "Light-moderate",
+      note: "Low-impact route that tags murals and café stops your crew liked last time.",
     },
   ];
 
@@ -353,6 +407,154 @@ const Index = () => {
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* AI LIFESTYLE ACTIVITY GENERATOR */}
+      {/* ---------------------------------------------------------------- */}
+      <div className="px-4 pb-16 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div
+          className={cn(
+            "relative overflow-hidden p-8 sm:p-10 rounded-2xl",
+            surfaceClass,
+            isDark
+              ? "bg-gradient-to-br from-white/5 via-white/0 to-white/5"
+              : "bg-gradient-to-br from-white via-[#e9f7ff] to-white",
+          )}
+        >
+          <div className="flex flex-wrap items-center gap-3 mb-6">
+            <Badge className="bg-[#F8D57E] text-slate-950">AI</Badge>
+            <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#F8D57E]">
+              Lifestyle Activity Generator
+            </p>
+          </div>
+
+          <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+            <div className="space-y-5">
+              <h2 className="text-3xl font-bold">Plans that match your daily rhythm.</h2>
+              <p className={cn("text-base", secondaryTextClass)}>
+                Connective reads your morning routines, gym habits, prayer cadence, work schedule, music tastes,
+                and past meetups to suggest activities that fit your energy, budget, and weather in real time.
+              </p>
+
+              <div className="space-y-3">
+                <p className="text-sm font-semibold">Signals we watch</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {lifestyleSignals.map((signal) => (
+                    <div
+                      key={signal.label}
+                      className={cn(
+                        "flex items-center gap-3 p-4 rounded-xl text-left",
+                        surfaceClass,
+                        isDark ? "bg-white/5" : "bg-slate-50",
+                      )}
+                    >
+                      <signal.icon className="h-5 w-5 text-[#F8D57E]" />
+                      <p className="text-sm font-medium">{signal.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
+                  <CloudSun className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-semibold">Weather-aware routes</p>
+                    <p className={cn("text-sm", secondaryTextClass)}>
+                      Adjusts walkable plans and indoor swaps based on live forecasts.
+                    </p>
+                  </div>
+                </div>
+
+                <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
+                  <MapPin className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-semibold">Distance + cost filters</p>
+                    <p className={cn("text-sm", secondaryTextClass)}>
+                      Keeps every suggestion within your radius, commute window, and budget.
+                    </p>
+                  </div>
+                </div>
+
+                <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
+                  <BatteryMedium className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-semibold">Energy matched</p>
+                    <p className={cn("text-sm", secondaryTextClass)}>
+                      Suggests low-key or high-energy options based on your daily rhythm.
+                    </p>
+                  </div>
+                </div>
+
+                <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
+                  <Wallet className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-semibold">Budget smart</p>
+                    <p className={cn("text-sm", secondaryTextClass)}>
+                      Mixes free, $-friendly, and splurge options tied to your meetups history.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className={cn("p-6 rounded-xl border space-y-4", isDark ? "border-white/10" : "border-slate-200")}> 
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#F8D57E]">Live suggestions</p>
+                  <h3 className="text-xl font-semibold">Your week, auto-planned</h3>
+                </div>
+                <Badge variant="outline" className={cn(isDark ? "border-white/20 text-white" : "border-slate-300")}>Updated hourly</Badge>
+              </div>
+
+              <div className="space-y-4">
+                {activitySuggestions.map((activity) => (
+                  <div
+                    key={activity.title}
+                    className={cn(
+                      "rounded-xl border p-4",
+                      isDark ? "border-white/10 bg-white/5" : "border-slate-200 bg-slate-50",
+                    )}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="space-y-1">
+                        <p className="text-lg font-semibold">{activity.title}</p>
+                        <p className={cn("text-sm", secondaryTextClass)}>{activity.context}</p>
+                      </div>
+                      <Badge className="bg-[#F8D57E] text-slate-950">Fit for you</Badge>
+                    </div>
+
+                    <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                      <div className="flex items-center gap-2">
+                        <CloudSun className="h-4 w-4 text-[#F8D57E]" />
+                        <span>{activity.weather}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-[#F8D57E]" />
+                        <span>{activity.distance}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Wallet className="h-4 w-4 text-[#F8D57E]" />
+                        <span>{activity.cost}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <BatteryMedium className="h-4 w-4 text-[#F8D57E]" />
+                        <span>{activity.energy}</span>
+                      </div>
+                    </div>
+
+                    <p className={cn("mt-3 text-sm", secondaryTextClass)}>{activity.note}</p>
+                  </div>
+                ))}
+              </div>
+
+              <p className={cn("text-xs", secondaryTextClass)}>
+                We cross-check weather, transit, and your recent meetups to keep suggestions fresh and actionable.
+              </p>
             </div>
           </div>
         </div>
