@@ -47,6 +47,13 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { cn } from "@/lib/utils";
 import { generateAvatarUrl } from "@/lib/avatar";
+import { generateIcebreakerSuggestions } from "@/lib/icebreaker-engine";
+import {
+  DIRECT_ICEBREAKER_PROFILES,
+  SELF_ICEBREAKER_PROFILE,
+  buildGroupProfilesFromCommunity,
+  buildGroupProfilesFromEvent,
+} from "@/data/icebreaker-contexts";
 
 interface Message {
   id: number;
@@ -484,6 +491,25 @@ const Messages = () => {
     ];
   }, [groupEvent, communityGroup, selectedConversation]);
 
+  const icebreakerParticipants = useMemo(() => {
+    if (selectedConversation?.type === "direct") {
+      const partnerProfile = DIRECT_ICEBREAKER_PROFILES[directConversationId];
+      if (partnerProfile) {
+        return [SELF_ICEBREAKER_PROFILE, partnerProfile];
+      }
+    }
+
+    if (selectedConversation?.type === "group" && groupEvent) {
+      return buildGroupProfilesFromEvent(groupEvent);
+    }
+
+    if (selectedConversation?.type === "community" && communityGroup) {
+      return buildGroupProfilesFromCommunity(communityGroup);
+    }
+
+    return undefined;
+  }, [communityGroup, directConversationId, groupEvent, selectedConversation?.type]);
+
   const dynamicSuggestions = useMemo(() => {
     const base = [...quickReplies];
     if (selectedConversation?.nextStep) {
@@ -505,6 +531,28 @@ const Messages = () => {
     }
     return base.slice(0, 3);
   }, [displayMessages, quickReplies, selectedConversation]);
+
+  const aiIcebreakerSuggestions = useMemo(() => {
+    if (!icebreakerParticipants) return [];
+    const contextType: "direct" | "group" = selectedConversation?.type === "direct" ? "direct" : "group";
+
+    return generateIcebreakerSuggestions(
+      {
+        type: contextType,
+        participants: icebreakerParticipants,
+        eventName: groupEvent?.title ?? communityGroup?.name,
+        meetupPurpose: selectedConversation?.subtitle,
+      },
+      { limit: 3 },
+    ).map((suggestion) => suggestion.text);
+  }, [communityGroup, groupEvent, icebreakerParticipants, selectedConversation]);
+
+  const combinedSuggestions = useMemo(() => {
+    if (aiIcebreakerSuggestions.length) {
+      return [...aiIcebreakerSuggestions, ...dynamicSuggestions].slice(0, 3);
+    }
+    return dynamicSuggestions;
+  }, [aiIcebreakerSuggestions, dynamicSuggestions]);
 
   const handleSendMessage = async (text: string) => {
     if (!isEncryptionReady || encryptionError) return;
@@ -1126,19 +1174,19 @@ const Messages = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            <MessageInput
-              className="border-t border-border/80 bg-card/95 shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.18)] backdrop-blur supports-[backdrop-filter]:bg-card/80"
-              onSendMessage={handleSendMessage}
-              onSelectIcebreaker={(text) => {
-                if (requireProFeature()) {
-                  void handleSendMessage(text);
-                }
-              }}
-              suggestions={dynamicSuggestions}
-              isDisabled={!isEncryptionReady || Boolean(encryptionError)}
-              isPremiumFeatureLocked={!isProMember}
-              onRequestPremiumFeature={requireProFeature}
-            />
+              <MessageInput
+                className="border-t border-border/80 bg-card/95 shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.18)] backdrop-blur supports-[backdrop-filter]:bg-card/80"
+                onSendMessage={handleSendMessage}
+                onSelectIcebreaker={(text) => {
+                  if (requireProFeature()) {
+                    void handleSendMessage(text);
+                  }
+                }}
+                suggestions={combinedSuggestions}
+                isDisabled={!isEncryptionReady || Boolean(encryptionError)}
+                isPremiumFeatureLocked={!isProMember}
+                onRequestPremiumFeature={requireProFeature}
+              />
 
             <div className="border-t border-border/80 bg-card/90 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-card/80">
               <div className="flex gap-2 overflow-x-auto pb-1">
