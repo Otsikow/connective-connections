@@ -174,6 +174,7 @@ const Events = () => {
               className="self-stretch"
             >
               <Card
+                highlighted
                 className="h-full border-border/60 shadow-lg shadow-primary/10 cursor-pointer hover:border-primary/80"
                 onClick={() => navigate(`/events/${featuredEvent.slug}`)}
               >

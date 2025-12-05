@@ -338,7 +338,7 @@ const UserAnalyticsDashboard = () => {
                     <Flame className="mr-1 h-3.5 w-3.5" /> Renewal risk: 8%
                   </Badge>
                   <Badge variant="outline" className="rounded-full border-border/60">
-                    <Bell className="mr-1 h-3.5 w-3.5" /> Dunning flows healthy
+                    <Bell className="mr-1 h-3.5 w-3.5 notification-micro-bounce" /> Dunning flows healthy
                   </Badge>
                 </div>
               </div>
