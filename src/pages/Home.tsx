@@ -288,6 +288,9 @@ const Home = () => {
             <Button variant="outline" onClick={() => navigate("/splash")}>
               <PlayCircle className="h-4 w-4 mr-2" /> Watch demo
             </Button>
+            <Button variant="secondary" onClick={() => navigate("/real-life-engine")}>
+              <Sparkles className="h-4 w-4 mr-2" /> Real-life first AI
+            </Button>
             <Button
               variant="ghost"
               onClick={() => handleNavigate("/community", {
