@@ -14,11 +14,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ArrowLeft,
   Check,
+  Eye,
+  EyeOff,
+  Handshake,
   Heart,
+  Lock,
   Lightbulb,
   MessageSquare,
   ShieldCheck,
   Sparkles,
+  Unlock,
   Users,
   X,
 } from "lucide-react";
@@ -163,6 +168,73 @@ const aiSuggestions: MatchSuggestion[] = [
   },
 ];
 
+interface BlindCompatibilityMatch {
+  id: string;
+  name: string;
+  age: number;
+  distance: string;
+  compatibility: number;
+  photo: string;
+  values: string[];
+  interests: string[];
+  lifestyle: string;
+  behaviorSignals: string[];
+}
+
+const blindCompatibilityMatches: BlindCompatibilityMatch[] = [
+  {
+    id: "blind-1",
+    name: "Jules — Intentional community builder",
+    age: 30,
+    distance: "1.1 miles away",
+    compatibility: 96,
+    photo:
+      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=900&q=80&sat=5",
+    values: ["Reciprocity first", "Shows up consistently", "Prefers small groups"],
+    interests: ["Slow dinners", "Story-forward meetups", "Sunrise walks"],
+    lifestyle: "Weeknight meetups, early mornings, car-free city explorer",
+    behaviorSignals: [
+      "Replies within a day and confirms plans",
+      "Hosts two intros per month to stitch the community",
+      "Shares concise recaps after events to keep momentum",
+    ],
+  },
+  {
+    id: "blind-2",
+    name: "Emi — Rituals over hype",
+    age: 28,
+    distance: "0.8 miles away",
+    compatibility: 93,
+    photo:
+      "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=900&q=80&sat=10",
+    values: ["Boundaries respected", "Gentle leadership", "Follow-through"],
+    interests: ["Analog photography", "Tea sessions", "Film club"],
+    lifestyle: "Flexible schedule, bikes everywhere, prefers cozy venues",
+    behaviorSignals: [
+      "Logs post-event feedback within 24 hours",
+      "Keeps groups under six to protect vibe",
+      "Matches weekly energy check-ins with their friends",
+    ],
+  },
+  {
+    id: "blind-3",
+    name: "Theo — Curious collaborator",
+    age: 33,
+    distance: "2.0 miles away",
+    compatibility: 91,
+    photo:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=80&sat=12",
+    values: ["Shared accountability", "Warm candor", "Playful learning"],
+    interests: ["Indie game jams", "Urban hikes", "Skill swaps"],
+    lifestyle: "Weekend mornings, hybrid-friendly, public transit lover",
+    behaviorSignals: [
+      "Introduces people with context instead of cold DMs",
+      "Shows up early and leaves thoughtful reviews",
+      "Sends co-working prompts that respect focus time",
+    ],
+  },
+];
+
 interface ConnectionFeedback {
   id: string;
   name: string;
@@ -203,9 +275,48 @@ const Matches = () => {
   const [likedProfiles, setLikedProfiles] = useState<string[]>([]);
   const [showMatchModal, setShowMatchModal] = useState(false);
   const [connectionFeedback, setConnectionFeedback] = useState(connectionFeedbackSeeds);
+  const [blindAcceptances, setBlindAcceptances] = useState<Record<
+    string,
+    { you: boolean; them: boolean; revealed: boolean }
+  >>(() =>
+    blindCompatibilityMatches.reduce(
+      (acc, match) => {
+        acc[match.id] = { you: false, them: false, revealed: false };
+        return acc;
+      },
+      {} as Record<string, { you: boolean; them: boolean; revealed: boolean }>,
+    ),
+  );
   const { attemptConnection } = useSubscription();
   const { toast } = useToast();
   usePageTitle("Your Matches");
+
+  const updateBlindAcceptance = useCallback(
+    (id: string, changes: Partial<{ you: boolean; them: boolean }>) => {
+      setBlindAcceptances((prev) => {
+        const current =
+          prev[id] ?? ({ you: false, them: false, revealed: false } as const);
+        const next = { ...current, ...changes };
+        return {
+          ...prev,
+          [id]: { ...next, revealed: next.you && next.them },
+        };
+      });
+    },
+    [],
+  );
+
+  const handleBlindAccept = useCallback(
+    (id: string) => {
+      updateBlindAcceptance(id, { you: true });
+
+      // Simulate the other person opting in once they see alignment
+      setTimeout(() => {
+        updateBlindAcceptance(id, { them: true });
+      }, 900);
+    },
+    [updateBlindAcceptance],
+  );
 
   useEffect(() => {
     const loadExistingFeedback = async () => {
@@ -381,6 +492,174 @@ const Matches = () => {
 
         {/* Discover Tab */}
         <TabsContent value="discover" className="mt-6 space-y-6">
+          <Card className="border-border/60 bg-gradient-to-br from-background via-background to-muted/40 shadow-sm">
+            <CardHeader className="space-y-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Lock className="w-4 h-4" />
+                <span>Blind Compatibility Mode</span>
+              </div>
+              <CardTitle>Lead with values, reveal photos later</CardTitle>
+              <CardDescription>
+                Profiles stay blurred until you both accept the match. We rank by
+                compatibility, shared traits, and behavior signals so you focus
+                on alignment first.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {blindCompatibilityMatches.map((match) => {
+                const acceptance = blindAcceptances[match.id];
+                const isAwaiting = acceptance?.you && !acceptance.them;
+                const isRevealed = acceptance?.revealed;
+                return (
+                  <div
+                    key={match.id}
+                    className="grid gap-4 rounded-2xl border border-border/60 bg-card/70 p-4 md:grid-cols-[auto,1fr] md:items-center"
+                  >
+                    <div className="relative h-28 w-28 overflow-hidden rounded-2xl bg-muted">
+                      <img
+                        src={match.photo}
+                        alt={match.name}
+                        className={`h-full w-full rounded-2xl object-cover transition-[filter,transform] duration-700 ease-out ${isRevealed ? "blur-0 scale-100" : "blur-xl scale-105"}`}
+                      />
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-background/40 via-transparent to-background/80" />
+                      <div className="absolute inset-0 flex flex-col justify-between p-3">
+                        <Badge className="w-fit gap-1 bg-[linear-gradient(135deg,hsl(var(--primary)),hsl(var(--accent)))] text-[hsl(var(--primary-foreground))]">
+                          <Users className="h-3.5 w-3.5" />
+                          {match.compatibility}% match
+                        </Badge>
+                        <div className="flex items-center gap-2 text-xs font-semibold text-white drop-shadow">
+                          {isRevealed ? <Unlock className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                          {isRevealed ? "Photos unlocked" : "Blurred until mutual yes"}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                          <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                            {match.distance}
+                          </p>
+                          <h3 className="text-lg font-semibold leading-tight">
+                            {match.name} · {match.age}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            Lifestyle: {match.lifestyle}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <div className={`flex items-center gap-1 rounded-full px-3 py-1 ${acceptance?.you ? "bg-[hsl(var(--accent))]/15 text-[hsl(var(--highlight-text))]" : "bg-muted"}`}>
+                            <Handshake className="h-3.5 w-3.5" /> You said yes
+                          </div>
+                          <div className={`flex items-center gap-1 rounded-full px-3 py-1 ${acceptance?.them ? "bg-[hsl(var(--primary))]/15 text-[hsl(var(--primary-foreground))]" : "bg-muted"}`}>
+                            <Check className="h-3.5 w-3.5" /> They accepted
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid gap-3 md:grid-cols-3">
+                        <div className="space-y-2">
+                          <p className="text-xs font-semibold uppercase text-muted-foreground">
+                            Values alignment
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {match.values.map((value) => (
+                              <Badge
+                                key={value}
+                                variant="secondary"
+                                className="rounded-full bg-muted text-foreground"
+                              >
+                                {value}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <p className="text-xs font-semibold uppercase text-muted-foreground">
+                            Shared interests
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {match.interests.map((interest) => (
+                              <Badge
+                                key={interest}
+                                variant="outline"
+                                className="rounded-full"
+                              >
+                                {interest}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <p className="text-xs font-semibold uppercase text-muted-foreground">
+                            Behavior signals
+                          </p>
+                          <ul className="space-y-1.5 text-sm text-muted-foreground">
+                            {match.behaviorSignals.map((signal) => (
+                              <li key={signal} className="flex items-start gap-2">
+                                <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[hsl(var(--accent))]" />
+                                <span>{signal}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+
+                      <div className="rounded-xl bg-muted/50 p-3 text-sm text-muted-foreground">
+                        {isRevealed
+                          ? "Mutual acceptance confirmed. Photos fade in now so you can plan the first hello with context."
+                          : "We’re prioritizing compatibility, shared rhythms, and reliability cues so you can decide before seeing photos."}
+                      </div>
+
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="text-xs text-muted-foreground">
+                          {isRevealed
+                            ? "You both opted into this intro. Start with the values you share, then plan the meet."
+                            : isAwaiting
+                              ? "You accepted. We’ll reveal once they confirm the alignment feels right, too."
+                              : "Photos unlock only after both people agree the values and interests fit."}
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          <Button
+                            size="sm"
+                            className="rounded-full"
+                            variant={isRevealed ? "default" : "secondary"}
+                            onClick={() => handleBlindAccept(match.id)}
+                            disabled={acceptance?.you}
+                          >
+                            {isRevealed ? (
+                              <>
+                                <Eye className="h-4 w-4" /> View now
+                              </>
+                            ) : isAwaiting ? (
+                              <>
+                                <Lock className="h-4 w-4" /> Waiting on them
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="h-4 w-4" /> Accept by compatibility
+                              </>
+                            )}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="rounded-full"
+                          >
+                            <MessageSquare className="h-4 w-4" />
+                            Start with interests
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+
           <Card className="border-border/60 shadow-sm">
             <CardHeader className="space-y-1">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
