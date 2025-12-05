@@ -186,6 +186,40 @@
     backdrop-filter: blur(20px) saturate(180%);
   }
 
+  /* Animated card border glow */
+  .card-glow-border {
+    background-clip: padding-box;
+    isolation: isolate;
+  }
+
+  .card-glow-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1.5px;
+    border-radius: inherit;
+    background: linear-gradient(
+      120deg,
+      hsl(24 95% 52%),
+      hsl(43 95% 64%),
+      hsl(24 95% 52%)
+    );
+    background-size: 240% 240%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    animation: cardBorderGlow 1.2s linear infinite;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+  }
+
+  .card-glow-border:hover::before,
+  .card-glow-border:focus-visible::before {
+    opacity: 1;
+  }
+
   /* Inputs and selects */
   .dark input:not([type="checkbox"]):not([type="radio"]),
   .dark textarea,
@@ -316,6 +350,15 @@
   }
   100% {
     background-position: 200% center;
+  }
+}
+
+@keyframes cardBorderGlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
   }
 }
 
