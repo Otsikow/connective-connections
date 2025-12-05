@@ -13,7 +13,7 @@ import { Footer } from "@/components/Footer";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { TopBar } from "@/components/TopBar";
 
-// Pages
+/* ----------------------------- Pages ----------------------------- */
 import Splash from "./pages/Splash";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
@@ -26,20 +26,29 @@ import Concierge from "./pages/Concierge";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
 import Community from "./pages/Community";
+
 import Events from "./pages/Events";
 import EventDetail from "./pages/EventDetail";
 import CreateEvent from "./pages/CreateEvent";
+
 import Admin from "./pages/Admin";
 import ModerationPanel from "./pages/ModerationPanel";
+
 import HostDashboard from "./pages/HostDashboard";
 import HostEvent from "./pages/HostEvent";
 import HostCreateExperience from "./pages/HostCreateExperience";
+
 import Dashboard from "./pages/Dashboard";
 import UserAnalyticsDashboard from "./pages/UserAnalyticsDashboard";
 import AIGrowthAnalytics from "./pages/AIGrowthAnalytics";
 import AICoach from "./pages/AICoach";
+
+import AIAutoMeetups from "./pages/AIAutoMeetups"; // <-- Correct final branch version
+
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback";
+
+/* Legal Pages */
 import Privacy from "./pages/legal/Privacy";
 import Terms from "./pages/legal/Terms";
 import Accessibility from "./pages/legal/Accessibility";
@@ -48,7 +57,7 @@ import Cookies from "./pages/legal/Cookies";
 const queryClient = new QueryClient();
 
 /* ------------------------------------------------------------ */
-/* Animated Routes */
+/* Animated Routes Component */
 /* ------------------------------------------------------------ */
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -77,11 +86,11 @@ const AnimatedRoutes = () => {
         <Route path="/matches" element={<PageTransition><Matches /></PageTransition>} />
         <Route path="/friend-finder" element={<PageTransition><FriendFinder /></PageTransition>} />
 
-        {/* Messages */}
+        {/* Messaging */}
         <Route path="/messages" element={<PageTransition><Messages /></PageTransition>} />
         <Route path="/messages/:id" element={<PageTransition><Messages /></PageTransition>} />
 
-        {/* Community */}
+        {/* Community / Profile */}
         <Route path="/community" element={<PageTransition><Community /></PageTransition>} />
         <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
 
@@ -101,9 +110,10 @@ const AnimatedRoutes = () => {
           element={<PageTransition><UserAnalyticsDashboard /></PageTransition>}
         />
 
-        {/* AI */}
+        {/* AI Features */}
         <Route path="/ai-growth-analytics" element={<PageTransition><AIGrowthAnalytics /></PageTransition>} />
         <Route path="/ai-coach" element={<PageTransition><AICoach /></PageTransition>} />
+        <Route path="/ai-auto-meetups" element={<PageTransition><AIAutoMeetups /></PageTransition>} />
 
         {/* Legal */}
         <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />
@@ -119,7 +129,7 @@ const AnimatedRoutes = () => {
 };
 
 /* ------------------------------------------------------------ */
-/* App Content Layout */
+/* AppContent Layout */
 /* ------------------------------------------------------------ */
 const AppContent = () => {
   const location = useLocation();
@@ -130,33 +140,28 @@ const AppContent = () => {
   const [isBooting, setIsBooting] = useState(true);
   const [hasCompletedInitialLoad, setHasCompletedInitialLoad] = useState(false);
 
-  // Initial load
+  /* Simulated initial loading */
   useEffect(() => {
     const timer = window.setTimeout(() => setIsBooting(false), 500);
     return () => window.clearTimeout(timer);
   }, []);
 
-  // Scroll restore
+  /* Scroll reset on navigation */
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
   }, [location.pathname]);
 
-  // Subscription fallback
+  /* Subscription fallback loader */
   useEffect(() => {
     if (hasCompletedInitialLoad) return;
 
-    const fallback = window.setTimeout(() => {
-      setHasCompletedInitialLoad(true);
-    }, 1500);
+    const fallback = window.setTimeout(() => setHasCompletedInitialLoad(true), 1500);
 
     if (!isSubscriptionLoading) {
-      const fastReady = window.setTimeout(() => {
-        setHasCompletedInitialLoad(true);
-      }, 200);
-
+      const fast = window.setTimeout(() => setHasCompletedInitialLoad(true), 200);
       return () => {
         clearTimeout(fallback);
-        clearTimeout(fastReady);
+        clearTimeout(fast);
       };
     }
 
@@ -165,10 +170,10 @@ const AppContent = () => {
 
   const showLoadingScreen = isBooting || !hasCompletedInitialLoad;
 
-  const layoutStyles = {
+  const layoutStyles: CSSProperties = {
     "--bottom-nav-height": "5.75rem",
     "--top-bar-height": "4rem",
-  } as React.CSSProperties;
+  };
 
   return (
     <div className="relative flex min-h-screen flex-col" style={layoutStyles}>
@@ -179,8 +184,7 @@ const AppContent = () => {
         className="flex-1 px-4 pt-6 sm:px-6 lg:px-8"
         style={{
           paddingTop: "calc(var(--top-bar-height) + 0.75rem)",
-          paddingBottom:
-            "calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px))",
+          paddingBottom: "calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px))",
         }}
       >
         <AnimatedRoutes />
