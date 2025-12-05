@@ -55,6 +55,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { generateAvatarUrl } from "@/lib/avatar";
 import { cn } from "@/lib/utils";
+import { ParallaxStrip } from "@/components/ParallaxStrip";
 
 /* ------------------------------------------------------------ */
 /* UTILITIES */
@@ -276,8 +277,10 @@ const Home = () => {
   /* ------------------------------------------------------------ */
 
   return (
-    <div className="min-h-screen bg-white pb-28 dark:bg-slate-950">
-      <div className="mx-auto w-full max-w-5xl space-y-10 px-4 py-8">
+    <div className="relative min-h-screen overflow-hidden bg-white pb-28 dark:bg-slate-950">
+      <ParallaxStrip />
+
+      <div className="relative mx-auto w-full max-w-5xl space-y-10 px-4 py-8">
 
         {/* HERO */}
         <section className="rounded-3xl border bg-white p-6 shadow dark:bg-slate-900">

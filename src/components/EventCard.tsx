@@ -47,7 +47,7 @@ export const EventCard = ({ event }: EventCardProps) => {
         <img
           src={event.bannerImage}
           alt={event.title}
-          className="w-full h-full object-cover"
+          className="parallax-media h-full w-full object-cover"
         />
         <Badge className="absolute top-3 right-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-black shadow-sm hover:bg-white">
           {event.category}
