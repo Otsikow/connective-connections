@@ -4,10 +4,13 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { animate, motion, useMotionValue, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { triggerHaptic } from "@/lib/haptics";
-const buttonVariants = cva("inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-base font-semibold tracking-tight ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-5 [&_svg]:shrink-0", {
+const buttonVariants = cva(
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[16px] text-base font-semibold tracking-tight ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-5 [&_svg]:shrink-0 [&_svg]:animate-magnetic-icon [&_svg]:origin-center",
+  {
   variants: {
     variant: {
-      default: "border border-transparent bg-[linear-gradient(135deg,hsl(var(--primary)),hsl(var(--accent)))] text-primary-foreground shadow-[0_24px_60px_-30px_rgba(190,150,80,0.85)] hover:shadow-[0_28px_70px_-28px_rgba(190,150,80,0.92)]",
+      default:
+        "border-none bg-[linear-gradient(135deg,#ff9d47,#ff6b00)] text-white shadow-[0_12px_30px_-12px_rgba(255,120,40,0.35),0_0_22px_rgba(255,120,40,0.32)] hover:shadow-[0_14px_36px_-12px_rgba(255,120,40,0.42),0_0_26px_rgba(255,120,40,0.4)]",
       destructive: "bg-destructive text-destructive-foreground shadow-[0_20px_48px_-28px_rgba(220,38,38,0.65)] hover:bg-destructive/90",
       outline: "border border-border/60 bg-card/80 text-foreground/85 hover:border-border hover:bg-card shadow-[0_24px_60px_-32px_rgba(120,105,90,0.35)]",
       secondary: "bg-[hsl(var(--ink))] text-white shadow-[0_30px_60px_-28px_rgba(15,15,15,0.75)] hover:brightness-[0.95]",
@@ -91,6 +94,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       return `drop-shadow(0 14px 36px rgba(15,23,42,${opacity.toFixed(3)}))`;
     });
 
+    const glowShadow = useTransform(shadowStrength, (value) => {
+      const warmAura = 0.32 + value * 0.2;
+      const bloom = 0.26 + value * 0.18;
+      return `0 12px 28px rgba(255,120,40,${bloom.toFixed(3)}), 0 0 30px rgba(255,120,40,${warmAura.toFixed(3)})`;
+    });
+
     const magneticTransition = React.useMemo(() => ({
       duration: 0.35,
       ease: [0.22, 1, 0.36, 1] as const,
@@ -116,7 +125,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       const dx = event.clientX - centerX;
       const dy = event.clientY - centerY;
       const distance = Math.hypot(dx, dy);
-      const influenceRadius = 120;
+      const influenceRadius = 100;
 
       if (distance > influenceRadius) {
         resetMagnetic();
@@ -129,7 +138,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       const maxMove = 12;
       const translateX = distance === 0 ? 0 : (dx / distance) * (maxMove * pullRatio);
       const translateY = distance === 0 ? 0 : (dy / distance) * (maxMove * pullRatio);
-      const targetScale = 1 + 0.04 * pullRatio;
+      const targetScale = 1 + 0.05 * pullRatio;
 
       animate(x, translateX, { ...magneticTransition });
       animate(y, translateY, { ...magneticTransition });
@@ -144,6 +153,19 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       resetMagnetic();
       onPointerLeave?.(event);
       onMouseLeave?.(event);
+    };
+
+    const handlePointerDown = (event: React.PointerEvent<HTMLButtonElement>) => {
+      if (!disabled) {
+        const currentScale = scale.get();
+        animate(scale, [currentScale * 0.98, currentScale * 1.02, currentScale], {
+          duration: 0.42,
+          times: [0, 0.55, 1],
+          ease: [0.22, 1, 0.36, 1],
+        });
+      }
+
+      restProps?.onPointerDown?.(event);
     };
 
     return (
@@ -164,12 +186,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           y,
           scale,
           filter: dropShadow,
+          boxShadow: glowShadow,
           willChange: magnetic ? "transform" : undefined,
         }}
         onPointerMove={handlePointerMove}
         onPointerLeave={handlePointerLeave}
-        whileHover={magnetic || disabled ? undefined : { scale: 1.02, translateY: -1 }}
-        whileTap={disabled ? undefined : { scale: 0.97 }}
+        onPointerDown={handlePointerDown}
+        whileHover={magnetic || disabled ? undefined : { scale: 1.05, translateY: -1 }}
         onClick={handleClick}
         {...(restProps as any)}
       >
