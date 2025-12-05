@@ -38,6 +38,7 @@ import Dashboard from "./pages/Dashboard";
 import UserAnalyticsDashboard from "./pages/UserAnalyticsDashboard";
 import AIGrowthAnalytics from "./pages/AIGrowthAnalytics";
 import AICoach from "./pages/AICoach";
+import AISafetyLayer from "./pages/AISafetyLayer";
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback";
 import Privacy from "./pages/legal/Privacy";
@@ -104,6 +105,7 @@ const AnimatedRoutes = () => {
         {/* AI */}
         <Route path="/ai-growth-analytics" element={<PageTransition><AIGrowthAnalytics /></PageTransition>} />
         <Route path="/ai-coach" element={<PageTransition><AICoach /></PageTransition>} />
+        <Route path="/ai-safety-layer" element={<PageTransition><AISafetyLayer /></PageTransition>} />
 
         {/* Legal */}
         <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />
