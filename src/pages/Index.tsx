@@ -23,6 +23,7 @@ import {
   PenLine,
   Tags,
   Camera,
+  LucideIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,23 @@ import memberDavid from "@/assets/member-david.jpg";
 
 import { useTheme } from "@/components/ThemeProvider";
 import { cn } from "@/lib/utils";
+import { useInViewPulse } from "@/hooks/useInViewPulse";
+
+type AnimatedIconProps = {
+  icon: LucideIcon;
+  className?: string;
+};
+
+const AnimatedPulseIcon = ({ icon: Icon, className }: AnimatedIconProps) => {
+  const { ref, isVisible } = useInViewPulse<SVGSVGElement>();
+
+  return (
+    <Icon
+      ref={ref}
+      className={cn(className, isVisible ? "icon-pulse-soft" : "")}
+    />
+  );
+};
 
 const Index = () => {
   const navigate = useNavigate();
@@ -452,7 +470,10 @@ const Index = () => {
                         isDark ? "bg-white/5" : "bg-slate-50",
                       )}
                     >
-                      <signal.icon className="h-5 w-5 text-[#F8D57E]" />
+                      <AnimatedPulseIcon
+                        icon={signal.icon}
+                        className="h-5 w-5 text-[#F8D57E]"
+                      />
                       <p className="text-sm font-medium">{signal.label}</p>
                     </div>
                   ))}
@@ -461,7 +482,10 @@ const Index = () => {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
-                  <CloudSun className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <AnimatedPulseIcon
+                    icon={CloudSun}
+                    className="h-5 w-5 text-[#F8D57E] mt-0.5"
+                  />
                   <div className="space-y-1">
                     <p className="font-semibold">Weather-aware routes</p>
                     <p className={cn("text-sm", secondaryTextClass)}>
@@ -471,7 +495,10 @@ const Index = () => {
                 </div>
 
                 <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
-                  <MapPin className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <AnimatedPulseIcon
+                    icon={MapPin}
+                    className="h-5 w-5 text-[#F8D57E] mt-0.5"
+                  />
                   <div className="space-y-1">
                     <p className="font-semibold">Distance + cost filters</p>
                     <p className={cn("text-sm", secondaryTextClass)}>
@@ -481,7 +508,10 @@ const Index = () => {
                 </div>
 
                 <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
-                  <BatteryMedium className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <AnimatedPulseIcon
+                    icon={BatteryMedium}
+                    className="h-5 w-5 text-[#F8D57E] mt-0.5"
+                  />
                   <div className="space-y-1">
                     <p className="font-semibold">Energy matched</p>
                     <p className={cn("text-sm", secondaryTextClass)}>
@@ -491,7 +521,10 @@ const Index = () => {
                 </div>
 
                 <div className={cn("flex items-start gap-3 p-4 rounded-xl", surfaceClass)}>
-                  <Wallet className="h-5 w-5 text-[#F8D57E] mt-0.5" />
+                  <AnimatedPulseIcon
+                    icon={Wallet}
+                    className="h-5 w-5 text-[#F8D57E] mt-0.5"
+                  />
                   <div className="space-y-1">
                     <p className="font-semibold">Budget smart</p>
                     <p className={cn("text-sm", secondaryTextClass)}>
