@@ -41,11 +41,8 @@ import {
   PlayCircle,
   Users,
   Send,
-  Brain,
   MapPin,
   Clock,
-  CalendarCheck2,
-  Wand2,
   CalendarClock,
   ShieldCheck,
   Sparkle
@@ -109,7 +106,7 @@ const Home = () => {
       title: "AI Friendship Concierge",
       desc: "Tell us who you want to meet—concierge matches, schedules, and sends invites for you.",
       highlight: "Handles invites, venues, and follow-ups automatically.",
-      badge: "bg-purple-500/15 text-purple-600",
+      badge: "bg-primary/10 text-primary",
       cta: { path: "/concierge", requiresAuth: true },
       spotlight: {
         avatar: generateAvatarUrl("Concierge spotlight"),
@@ -122,7 +119,7 @@ const Home = () => {
       title: "Find your kind of people",
       desc: "Tell us what lights you up and we introduce you to people already on your wavelength.",
       highlight: "12 new connections matched for you this week.",
-      badge: "bg-emerald-500/15 text-emerald-600",
+      badge: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
       cta: { path: "/friend-finder", requiresAuth: true },
       spotlight: {
         avatar: generateAvatarUrl("Jordan spotlight"),
@@ -135,7 +132,7 @@ const Home = () => {
       title: "Discover local experiences",
       desc: "Curated gatherings, classes, and adventures hosted by members.",
       highlight: "120 local experiences this month.",
-      badge: "bg-blue-500/15 text-blue-600",
+      badge: "bg-blue-500/15 text-blue-600 dark:text-blue-400",
       cta: { path: "/events", requiresAuth: true },
       spotlight: {
         avatar: generateAvatarUrl("Lucia spotlight"),
@@ -148,7 +145,7 @@ const Home = () => {
       title: "Join meaningful groups",
       desc: "Micro-communities built around interests and vibes.",
       highlight: "4 new communities recommended today.",
-      badge: "bg-amber-500/15 text-amber-600",
+      badge: "bg-primary/10 text-primary",
       cta: { path: "/community", requiresAuth: true, requiresSubscription: true },
       spotlight: {
         avatar: generateAvatarUrl("Priya spotlight"),
@@ -161,7 +158,7 @@ const Home = () => {
       title: "Auto-form micro-groups",
       desc: "AI assembles 3–6 person crews by hobbies, rhythms, and faith cues.",
       highlight: "Instantly outputs a ready-to-launch circle.",
-      badge: "bg-emerald-500/15 text-emerald-700",
+      badge: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
       cta: { path: "/ai-group-builder", requiresAuth: true },
       spotlight: {
         avatar: generateAvatarUrl("Micro groups spotlight"),
@@ -174,7 +171,7 @@ const Home = () => {
       title: "Chat without awkward starts",
       desc: "Guided prompts keep conversations natural and fun.",
       highlight: "Instant translation in 28 languages with Pro.",
-      badge: "bg-rose-500/15 text-rose-600",
+      badge: "bg-rose-500/15 text-rose-600 dark:text-rose-400",
       cta: {
         path: "/messages",
         requiresAuth: true,
@@ -191,8 +188,8 @@ const Home = () => {
   const selected = features.find(f => f.value === activeFeature)!;
 
   /* ------------------------------------------------------------ */
-  /* ACCESS HANDLER */
-  /* ------------------------------------------------------------ */
+  /* ACCESS HANDLERS */
+/* ------------------------------------------------------------ */
 
   const handleNavigate = (path: string, opts?: any) => {
     if (opts?.requiresAuth && !isAuthenticated) {
@@ -210,8 +207,8 @@ const Home = () => {
   };
 
   /* ------------------------------------------------------------ */
-  /* DATA (EVENTS / COMMUNITIES / TESTIMONIALS) */
-  /* ------------------------------------------------------------ */
+  /* MOCK DATA */
+/* ------------------------------------------------------------ */
 
   const events = [
     {
@@ -247,34 +244,30 @@ const Home = () => {
     { author: "Malik", quote: "Hosting workshops has never been easier." }
   ];
 
-  /* ------------------------------------------------------------ */
-  /* AI GROUP FORMATION FEATURES */
-  /* ------------------------------------------------------------ */
-
   const aiGroupFeatures = [
     {
       title: "Smart clustering",
       description:
         "Groups 4–10 people who share interests, vibe, and free time windows.",
-      icon: <Sparkle className="h-5 w-5 text-amber-500" />
+      icon: <Sparkle className="h-5 w-5 text-primary" />
     },
     {
       title: "Auto meetup planning",
       description:
         "Suggests names, venues, and dates so you can just say yes.",
-      icon: <CalendarClock className="h-5 w-5 text-emerald-500" />
+      icon: <CalendarClock className="h-5 w-5 text-primary" />
     },
     {
       title: "Built-in safety",
       description:
         "RSVP tracking, chat moderation, and reminders are handled for you.",
-      icon: <ShieldCheck className="h-5 w-5 text-sky-500" />
+      icon: <ShieldCheck className="h-5 w-5 text-primary" />
     }
   ];
 
   /* ------------------------------------------------------------ */
   /* RENDER */
-  /* ------------------------------------------------------------ */
+/* ------------------------------------------------------------ */
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background pb-28">
@@ -301,17 +294,27 @@ const Home = () => {
             <Button onClick={() => navigate("/signup")}>
               Get started
             </Button>
-            <Button variant="outline" onClick={() => navigate("/splash")}>
+
+            <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={() => navigate("/splash")}
+            >
               <PlayCircle className="h-4 w-4 mr-2" /> Watch demo
             </Button>
-            <Button variant="secondary" onClick={() => navigate("/real-life-engine")}>
+
+            <Button
+              variant="secondary"
+              onClick={() => navigate("/real-life-engine")}
+            >
               <Sparkles className="h-4 w-4 mr-2" /> Real-life first AI
             </Button>
+
             <Button
               variant="ghost"
-              onClick={() => handleNavigate("/community", {
-                requiresAuth: true
-              })}
+              onClick={() =>
+                handleNavigate("/community", { requiresAuth: true })
+              }
             >
               <Users className="h-4 w-4 mr-2" /> Explore community
             </Button>
@@ -350,6 +353,7 @@ const Home = () => {
                   <CardTitle>{selected.title}</CardTitle>
                   <CardDescription>{selected.desc}</CardDescription>
                 </CardHeader>
+
                 <CardContent className="flex items-center justify-between">
                   <Button
                     onClick={e => {
@@ -362,13 +366,16 @@ const Home = () => {
                   >
                     Continue
                   </Button>
+
                   <div className="flex items-center gap-3">
                     <Avatar>
                       <AvatarImage src={selected.spotlight.avatar} />
                       <AvatarFallback>{selected.spotlight.name[0]}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-semibold text-foreground">{selected.spotlight.name}</p>
+                      <p className="font-semibold text-foreground">
+                        {selected.spotlight.name}
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         {selected.spotlight.tagline}
                       </p>
@@ -382,7 +389,8 @@ const Home = () => {
 
         {/* AI GROUP FORMATION */}
         <section className="grid gap-4 md:grid-cols-[1.6fr_1fr]">
-          <Card className="border-primary/20 bg-primary/5 shadow-sm">
+          {/* Left Column */}
+          <Card className="border-primary/20 bg-card shadow-sm">
             <CardHeader>
               <div className="flex items-center gap-2 text-sm font-semibold text-primary">
                 <Sparkles className="h-4 w-4" />
@@ -395,11 +403,12 @@ const Home = () => {
               </CardDescription>
             </CardHeader>
 
-              <CardContent className="space-y-4">
+            <CardContent className="space-y-4">
               <div className="rounded-2xl border border-primary/20 bg-card p-4 shadow-sm">
                 <p className="text-sm font-semibold text-primary">
                   Live example
                 </p>
+
                 <div className="mt-2 rounded-xl bg-primary/10 p-3 text-sm text-foreground">
                   “6 people near you love football and are free on Saturday.
                   Want me to organise a friendly meetup?”
@@ -418,7 +427,6 @@ const Home = () => {
                 </div>
               </div>
 
-              {/* Feature list */}
               <div className="grid gap-3 md:grid-cols-3">
                 {aiGroupFeatures.map(feature => (
                   <div
@@ -438,7 +446,6 @@ const Home = () => {
 
               <div className="flex flex-wrap gap-3">
                 <Button
-                  className=""
                   onClick={() => handleNavigate("/events", { requiresAuth: true })}
                 >
                   Preview AI meetup
@@ -459,50 +466,53 @@ const Home = () => {
             </CardContent>
           </Card>
 
-          {/* Right column — Group Autopilot */}
-            <Card className="h-full shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-lg">Group autopilot</CardTitle>
-                <CardDescription>
-                  AI keeps the momentum so meetups actually happen.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="rounded-xl bg-muted p-4 text-sm text-muted-foreground">
-                  <p className="font-semibold text-foreground">What the autopilot handles</p>
-                  <ul className="mt-2 space-y-2 list-disc pl-4">
-                    <li>Tracks interest signals and nudges the right people.</li>
-                    <li>Suggests dates, venues, and sends invites automatically.</li>
-                    <li>Shares recaps and keeps the chat lively after the meetup.</li>
-                  </ul>
-                </div>
+          {/* Right Column */}
+          <Card className="h-full shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg">Group autopilot</CardTitle>
+              <CardDescription>
+                AI keeps the momentum so meetups actually happen.
+              </CardDescription>
+            </CardHeader>
 
-                <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                  <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                    Auto reminders
-                  </Badge>
-                  <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                    AI agenda prompts
-                  </Badge>
-                  <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                    Post-event follow-ups
-                  </Badge>
-                </div>
+            <CardContent className="space-y-4">
+              <div className="rounded-xl bg-muted p-4 text-sm text-muted-foreground">
+                <p className="font-semibold text-foreground">
+                  What the autopilot handles
+                </p>
 
-                <Button
-                  className=""
-                  onClick={() =>
-                    handleNavigate("/community", {
-                      requiresAuth: true,
-                      requiresSubscription: true
-                    })
-                  }
-                >
-                  Enable autopilot
-                </Button>
-              </CardContent>
-            </Card>
-          </section>
+                <ul className="mt-2 space-y-2 list-disc pl-4">
+                  <li>Tracks interest signals and nudges the right people.</li>
+                  <li>Suggests dates, venues, and sends invites automatically.</li>
+                  <li>Shares recaps and keeps the chat lively after the meetup.</li>
+                </ul>
+              </div>
+
+              <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                <Badge variant="secondary" className="text-emerald-500">
+                  Auto reminders
+                </Badge>
+                <Badge variant="secondary" className="text-emerald-500">
+                  AI agenda prompts
+                </Badge>
+                <Badge variant="secondary" className="text-emerald-500">
+                  Post-event follow-ups
+                </Badge>
+              </div>
+
+              <Button
+                onClick={() =>
+                  handleNavigate("/community", {
+                    requiresAuth: true,
+                    requiresSubscription: true
+                  })
+                }
+              >
+                Enable autopilot
+              </Button>
+            </CardContent>
+          </Card>
+        </section>
 
         {/* EVENTS */}
         <section>
@@ -518,7 +528,7 @@ const Home = () => {
                   {events.map(ev => (
                     <CarouselItem key={ev.id} className="md:basis-1/2">
                       <div
-                        className="rounded-xl border shadow-sm overflow-hidden cursor-pointer"
+                        className="rounded-xl border border-border shadow-sm overflow-hidden cursor-pointer"
                         onClick={() =>
                           handleNavigate(`/events/${ev.id}`, {
                             requiresAuth: true
@@ -530,17 +540,21 @@ const Home = () => {
                           className="h-44 w-full object-cover"
                           alt=""
                         />
+
                         <div className="p-4 space-y-2">
-                          <h3 className="font-semibold">{ev.title}</h3>
+                          <h3 className="font-semibold text-foreground">
+                            {ev.title}
+                          </h3>
                           <p className="text-sm text-muted-foreground">{ev.date}</p>
                           <p className="text-sm text-muted-foreground">{ev.location}</p>
 
                           <div className="flex justify-between items-center">
-                            <span className="text-sm">{ev.attendees}+ going</span>
+                            <span className="text-sm text-muted-foreground">
+                              {ev.attendees}+ going
+                            </span>
 
                             <Button
                               size="sm"
-                              className=""
                               onClick={e => {
                                 e.stopPropagation();
                                 handleNavigate(`/events/${ev.id}`, {
@@ -579,7 +593,7 @@ const Home = () => {
                   key={c.name}
                   className="rounded-xl border border-border p-4 hover:border-primary cursor-pointer"
                 >
-                  <p className="font-semibold">{c.name}</p>
+                  <p className="font-semibold text-foreground">{c.name}</p>
                   <p className="text-sm text-muted-foreground">{c.members}</p>
                 </div>
               ))}
@@ -592,14 +606,18 @@ const Home = () => {
           {testimonials.map(t => (
             <Card key={t.author} className="shadow-sm">
               <CardContent className="p-5">
-                <p className="text-lg font-medium">“{t.quote}”</p>
+                <p className="text-lg font-medium text-foreground">
+                  “{t.quote}”
+                </p>
 
                 <div className="flex items-center gap-3 mt-4">
                   <Avatar>
                     <AvatarImage src={generateAvatarUrl(t.author)} />
                     <AvatarFallback>{t.author[0]}</AvatarFallback>
                   </Avatar>
-                  <span className="font-semibold">{t.author}</span>
+                  <span className="font-semibold text-foreground">
+                    {t.author}
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -609,7 +627,7 @@ const Home = () => {
 
       {/* FLOATING CTA */}
       <Button
-        className="fixed right-4 rounded-full shadow-lg bottom-[calc(env(safe-area-inset-bottom,0px)+5.5rem)] sm:right-6 sm:bottom-[calc(env(safe-area-inset-bottom,0px)+5.75rem)]"
+        className="fixed right-4 bottom-[calc(env(safe-area-inset-bottom,0px)+5.5rem)] sm:right-6 sm:bottom-[calc(env(safe-area-inset-bottom,0px)+5.75rem)] rounded-full shadow-lg"
         onClick={() =>
           handleNavigate("/host/create-event", {
             requiresAuth: true
@@ -631,15 +649,13 @@ const Home = () => {
 
           <DialogFooter>
             <Button
-              className=""
               onClick={() =>
-                handleNavigate("/profile", {
-                  requiresAuth: true
-                })
+                handleNavigate("/profile", { requiresAuth: true })
               }
             >
               Subscribe
             </Button>
+
             <Button variant="outline" onClick={() => setShowSubPrompt(false)}>
               Not now
             </Button>
@@ -677,7 +693,6 @@ const Home = () => {
             </Button>
 
             <Button
-              className=""
               onClick={() => {
                 setShowAuthPrompt(false);
                 navigate("/signup", {

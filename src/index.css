@@ -3,614 +3,228 @@
 @tailwind utilities;
 
 /* ==========================================================
-   CONNECTIVE DESIGN SYSTEM
-   FlowMaster x Aura Theme (Light + Dark)
+   CONNECTIVE DESIGN SYSTEM — CLEAN + PROFESSIONAL
+   Unified Light/Dark Tokens • Warm Ember Primary
    ========================================================== */
 
 @layer base {
   :root {
-    /* Core Palette - Default to Dark */
-    --background: 0 0% 2%;
-    --foreground: 0 0% 100%;
+    /* ============ BRAND COLOR SYSTEM ============ */
 
-    --card: 0 0% 6%;
+    /* Primary Brand — Warm Ember Orange */
+    --brand-primary: #FF8A3C;
+    --brand-primary-light: #FFB377;
+    --brand-primary-dark: #D96B26;
+
+    /* Secondary Brand — Electric Soft Blue */
+    --brand-secondary: #5CB8FF;
+    --brand-secondary-light: #92D2FF;
+    --brand-secondary-dark: #2F96DF;
+
+    /* Glow variables */
+    --glow-primary-start: #FF8A3C;
+    --glow-primary-end: #FFB377;
+
+    /* ============ CORE HSL TOKENS (Tailwind-Compatible) ============ */
+
+    --background: 0 0% 2%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 6.7%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 6%;
+    --popover: 0 0% 5%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 28 100% 63%;
+    --primary: 24 100% 62%; /* Warm Ember */
     --primary-foreground: 0 0% 6%;
 
-    --secondary: 198 100% 75%;
-    --secondary-foreground: 0 0% 8%;
+    --secondary: 205 100% 68%;
+    --secondary-foreground: 0 0% 6%;
 
-    --muted: 0 0% 22%;
+    --muted: 0 0% 18%;
     --muted-foreground: 0 0% 70%;
 
-    --accent: 28 100% 56%;
+    --accent: 24 100% 56%;
     --accent-foreground: 0 0% 6%;
 
-    --destructive: 3 84% 62%;
+    --destructive: 3 84% 58%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 14%;
-    --input: 0 0% 14%;
-    --ring: 28 100% 63%;
+    --border: 0 0% 10%;
+    --input: 0 0% 12%;
+    --ring: 24 100% 62%;
 
-    --radius: 1.1rem;
+    --radius: 1.2rem;
 
-    /* Glow System */
-    --glow-primary-start: #ff6b00;
-    --glow-primary-end: #ff9d47;
-    --glow-secondary-start: #1d7aff;
-    --glow-secondary-end: #56c0ff;
-    --glow-opacity: 0.14;
-    --glow-size-min: 120px;
-    --glow-size-max: 240px;
-
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(28 100% 63%), hsl(24 100% 50%));
-    --gradient-warm: linear-gradient(155deg, hsl(28 100% 63%), hsl(24 100% 50%));
-    --app-gradient: radial-gradient(circle at 12% 18%, #0a0a0a 0%, #000 42%, #050505 75%);
-
-    /* Shadows */
+    /* ============ Shadows ============ */
     --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.45);
-    --shadow-card: 0 28px 65px -32px rgba(0, 0, 0, 0.75);
+    --shadow-card: 0 8px 38px rgba(0, 0, 0, 0.55);
+    --shadow-card-hover: 0 14px 48px rgba(0, 0, 0, 0.65);
 
-    /* Transitions */
-    --transition-smooth: all 0.22s ease-out;
+    /* ============ Spacing Scale (8pt Grid) ============ */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-7: 32px;
+    --space-8: 48px;
+    
+    /* Navigation */
+    --nav-height: 72px;
   }
 
   /* ==========================================================
-     LIGHT MODE - Premium, Fresh, Minimalist
+     LIGHT MODE — Clean, Bright, Premium
      ========================================================== */
   .light {
-    /* Core Palette */
-    --background: 0 0% 99%;
-    --foreground: 220 15% 15%;
+    --background: 0 0% 100%;
+    --foreground: 225 15% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 15% 15%;
+    --card-foreground: 225 15% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 15%;
+    --popover-foreground: 225 15% 15%;
 
-    /* Primary - Warm amber/orange accent */
-    --primary: 28 85% 52%;
+    --primary: 24 100% 55%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Soft blue */
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 220 15% 20%;
+    --secondary: 205 90% 90%;
+    --secondary-foreground: 225 20% 20%;
 
-    /* Muted - Subtle gray for backgrounds */
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 225 14% 95%;
+    --muted-foreground: 225 10% 45%;
 
-    /* Accent - Warm accent for highlights */
-    --accent: 28 80% 55%;
+    --accent: 24 100% 55%;
     --accent-foreground: 0 0% 100%;
 
-    /* Destructive - Softer red for light mode */
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
+    --border: 225 13% 90%;
+    --input: 225 13% 92%;
+    --ring: 24 100% 55%;
 
-    /* Borders & Inputs */
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 28 85% 52%;
-
-    /* Glow System - Softer for light mode */
-    --glow-primary-start: #ff8c42;
-    --glow-primary-end: #ffb980;
-    --glow-secondary-start: #4a9fff;
-    --glow-secondary-end: #8cc4ff;
-    --glow-opacity: 0.08;
-
-    /* Gradients - Softer for light backgrounds */
-    --gradient-primary: linear-gradient(135deg, hsl(28 85% 52%), hsl(24 90% 48%));
-    --gradient-warm: linear-gradient(155deg, hsl(28 85% 52%), hsl(24 90% 48%));
-    --app-gradient: linear-gradient(145deg, #ffffff 0%, #f8f9fb 60%, #f5f6f8 100%);
-
-    /* Shadows - Softer, more diffuse for light mode */
     --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.06);
     --shadow-card: 0 8px 30px -12px rgba(0, 0, 0, 0.12);
+
+    background-color: hsl(var(--background));
   }
 
-  /* DARK MODE */
+  /* ==========================================================
+     DARK MODE — Deep, Elegant, Premium
+     ========================================================== */
   .dark {
-    --background: 0 0% 3%;
+    --background: 0 0% 2%;
     --foreground: 0 0% 98%;
+
     --card: 0 0% 6%;
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 6%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 28 100% 63%;
-    --primary-foreground: 0 0% 6%;
-    --secondary: 198 100% 75%;
-    --secondary-foreground: 0 0% 6%;
-    --muted: 0 0% 18%;
-    --muted-foreground: 0 0% 68%;
-    --accent: 28 100% 56%;
-    --accent-foreground: 0 0% 6%;
-    --destructive: 3 84% 58%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 12%;
-    --input: 0 0% 12%;
-    --ring: 28 100% 63%;
-    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.45);
-    --shadow-card: 0 32px 80px -36px rgba(0, 0, 0, 0.85);
+
+    --border: 0 0% 10%;
+
+    background-color: hsl(var(--background));
   }
-}
 
-/* ==========================================
-   ICON PULSES & MICRO-INTERACTIONS
-   ========================================== */
-
-@keyframes iconPulseSoft {
-  0% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.06); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.9; }
-}
-
-.icon-pulse-soft {
-  animation: iconPulseSoft 2.8s ease-in-out infinite;
-}
-
-@keyframes magneticButtonIconPulse {
-  0% { transform: scale(1); opacity: 0.94; }
-  40% { transform: scale(1.08); opacity: 1; }
-  55% { transform: scale(0.97); opacity: 0.98; }
-  100% { transform: scale(1); opacity: 0.94; }
-}
-
-.animate-magnetic-icon {
-  animation: magneticButtonIconPulse 4s ease-in-out infinite;
-}
-
-/* ==========================================
-   GLOBAL BASE RESET + BODY BACKGROUND
-   ========================================== */
-
-@layer base {
+  /* ==========================================================
+     GLOBAL BASE RESET
+     ========================================================== */
   * {
     @apply border-border;
-    transition: color var(--transition-smooth), background-color var(--transition-smooth),
-      border-color var(--transition-smooth), box-shadow var(--transition-smooth),
-      transform var(--transition-smooth);
+    transition: background-color 0.25s ease,
+                color 0.25s ease,
+                border-color 0.25s ease,
+                box-shadow 0.25s ease;
   }
 
-  html {
-    @apply h-full antialiased;
-  }
+  html { @apply h-full antialiased; }
 
   body {
-    @apply min-h-full overflow-x-hidden bg-background text-foreground;
-    background-attachment: fixed;
-    background-size: cover;
-    position: relative;
-    font-family: "Inter", "Plus Jakarta Sans", "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    letter-spacing: 0.01em;
+    @apply min-h-full bg-background text-foreground overflow-x-hidden;
+    font-family: "Inter", "Plus Jakarta Sans", system-ui, sans-serif;
   }
 
-  /* Light mode body background */
-  .light body {
-    background-image: var(--app-gradient);
-    background-color: hsl(var(--background));
-  }
-
-  /* Dark mode body background */
-  .dark body {
-    background-image: linear-gradient(150deg, #040404 0%, #0a0a0a 52%, #000 100%);
-    background-color: hsl(var(--background));
-  }
-
-  #root {
-    @apply min-h-screen;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* ===== Aura Floating Backdrop - Light Mode ===== */
-  .light body::before {
-    content: "";
-    position: fixed;
-    inset: -12%;
-    background-image:
-      linear-gradient(125deg, rgba(255,180,100,0.06), transparent 48%),
-      linear-gradient(215deg, rgba(130,180,255,0.05), transparent 42%),
-      radial-gradient(circle at 12% 22%, rgba(255,150,80,0.12), transparent 45%),
-      radial-gradient(circle at 82% 16%, rgba(130,180,255,0.1), transparent 46%);
-    background-size: 120%, 120%, 145%, 155%;
-    filter: blur(40px) saturate(1.2);
-    opacity: 0.4;
-    mix-blend-mode: multiply;
-    animation: auraDrift 24s ease-in-out infinite alternate, gradientSweep 18s linear infinite;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* ===== Aura Floating Backdrop - Dark Mode ===== */
-  .dark body::before {
-    content: "";
-    position: fixed;
-    inset: -12%;
-    background-image:
-      linear-gradient(125deg, rgba(255,157,71,0.16), transparent 52%),
-      linear-gradient(215deg, rgba(130,208,255,0.14), transparent 48%),
-      radial-gradient(circle at 14% 22%, rgba(255,107,0,0.4), transparent 48%),
-      radial-gradient(circle at 86% 18%, rgba(130,208,255,0.34), transparent 52%);
-    background-size: 120%, 120%, 145%, 155%;
-    filter: blur(26px) saturate(1.08);
-    opacity: 0.75;
-    mix-blend-mode: screen;
-    animation: auraDrift 24s ease-in-out infinite alternate, gradientSweep 18s linear infinite;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* ===== Vertical Stripes + Texture - Light Mode ===== */
-  .light body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(90deg, rgba(0,0,0,0.01) 0%, rgba(0,0,0,0.02) 2%, rgba(0,0,0,0.01) 4%, transparent 8%),
-      linear-gradient(90deg, rgba(0,0,0,0.01) 0%, rgba(0,0,0,0.015) 1.5%, rgba(0,0,0,0.01) 3%, transparent 6%);
-    background-size: 140px 100%, 220px 100%;
-    opacity: 0.08;
-    mix-blend-mode: multiply;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* ===== Vertical Stripes + Texture - Dark Mode ===== */
-  .dark body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.06) 2%, rgba(255,255,255,0.02) 4%, transparent 8%),
-      linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.05) 1.5%, rgba(255,255,255,0.02) 3%, transparent 6%);
-    background-size: 140px 100%, 220px 100%;
-    opacity: 0.12;
-    mix-blend-mode: soft-light;
-    pointer-events: none;
-    z-index: 0;
-  }
+  #root { @apply min-h-screen; }
 }
 
-/* ==========================================
-   PREMIUM GLOW UTILITY SYSTEM
-   ========================================== */
+/* ==========================================================
+   CARD SYSTEM — Clean, Premium, Compatible
+   ========================================================== */
 
-.glow-spot {
-  position: absolute;
-  width: clamp(var(--glow-size-min), 18vw, var(--glow-size-max));
-  aspect-ratio: 1 / 1;
-  border-radius: 9999px;
-  pointer-events: none;
-  filter: blur(64px);
-  opacity: var(--glow-opacity);
-  background: radial-gradient(
-    circle,
-    var(--glow-start) 0%,
-    var(--glow-end) 46%,
-    transparent 72%
-  );
-  transition: opacity 0.3s ease, transform 0.4s ease;
+.card {
+  background: hsl(var(--card));
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  box-shadow: var(--shadow-card);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Light mode glow blend */
-.light .glow-spot {
-  mix-blend-mode: multiply;
-  filter: blur(80px);
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-4px);
 }
 
-/* Dark mode glow blend */
-.dark .glow-spot {
-  mix-blend-mode: screen;
-  filter: blur(64px);
-}
-
-.glow-spot.glow-primary {
-  --glow-start: var(--glow-primary-start);
-  --glow-end: var(--glow-primary-end);
-}
-
-.glow-spot.glow-secondary {
-  --glow-start: var(--glow-secondary-start);
-  --glow-end: var(--glow-secondary-end);
-}
-
-/* ==========================================
-   PREMIUM CARD STYLES
-   ========================================== */
-
-/* Light mode cards */
-.light .card,
-.light [class*="card"] {
-  background: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(220 14% 98%) 100%);
+/* For Card Components (class*="card" catch-all) */
+[class*="card"] {
   border-color: hsl(var(--border));
-  box-shadow: 0 4px 20px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.06);
 }
 
-.light .card:hover,
-.light [class*="card"]:hover {
-  box-shadow: 0 8px 30px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
-}
+/* ==========================================================
+   INPUTS + BUTTONS
+   ========================================================== */
 
-/* Dark mode cards */
-.dark .card,
-.dark [class*="card"] {
-  background: radial-gradient(circle at 22% 18%, #141414 0%, #0d0d0d 55%, #080808 100%);
-  border-color: rgba(255,255,255,0.06);
-  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
-}
-
-/* ==========================================
-   GLASS SURFACE
-   ========================================== */
-
-/* Light mode glass */
-.light .glass-surface {
-  background: rgba(255,255,255,0.8);
-  border: 1px solid rgba(0,0,0,0.06);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02);
-  backdrop-filter: blur(18px) saturate(160%);
-  border-radius: 1.1rem;
-}
-
-/* Dark mode glass */
-.dark .glass-surface {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03);
-  backdrop-filter: blur(18px) saturate(160%);
-  border-radius: 1.1rem;
-}
-
-/* ==========================================
-   CARD GLOW BORDER
-   ========================================== */
-
-.card-glow-border {
-  background-clip: padding-box;
-  isolation: isolate;
-}
-
-/* Light mode glow border */
-.light .card-glow-border::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  padding: 1.5px;
-  border-radius: inherit;
-  background: linear-gradient(90deg, hsl(28 85% 52%), hsl(28 90% 60%));
-  background-size: 200% 200%;
-  opacity: 0;
-  transition: opacity 0.25s ease, transform 0.35s ease;
-  animation: cardBorderGlow 1.4s linear infinite;
-  box-shadow: 0 0 20px rgba(255,140,60,0.08);
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  -webkit-mask-composite: xor;
-}
-
-/* Dark mode glow border */
-.dark .card-glow-border::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  padding: 1.5px;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #ff9d47, #ff6b00);
-  background-size: 200% 200%;
-  opacity: 0;
-  transition: opacity 0.25s ease, transform 0.35s ease;
-  animation: cardBorderGlow 1.4s linear infinite;
-  box-shadow: 0 0 32px rgba(255,107,0,0.12);
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  -webkit-mask-composite: xor;
-}
-
-.card-glow-border:hover::before,
-.card-glow-border:focus-visible::before,
-.card-glow-border:focus-within::before {
-  opacity: 1;
-  transform: translateY(-1px);
-}
-
-/* ==========================================
-   INPUTS + BUTTONS + TYPOGRAPHY
-   ========================================== */
-
-/* Light mode inputs */
-.light input:not([type="checkbox"]):not([type="radio"]),
-.light textarea,
-.light select {
-  background: hsl(var(--background));
-  border-color: hsl(var(--border));
+input,
+textarea,
+select {
+  background: hsl(var(--input));
+  border: 1px solid hsl(var(--border));
   color: hsl(var(--foreground));
+  border-radius: calc(var(--radius) - 4px);
 }
 
-.light input:focus:not([type="checkbox"]):not([type="radio"]),
-.light textarea:focus,
-.light select:focus {
-  background: hsl(var(--background));
-  border-color: hsl(var(--primary) / 0.5);
-  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1), 0 2px 8px rgba(0,0,0,0.06);
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.25);
 }
 
-.light button:not(.ghost):not(.outline) {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.02);
+/* Buttons */
+button {
+  transition: all 0.25s ease;
 }
 
-.light button:hover:not(.ghost):not(.outline) {
-  box-shadow: 0 6px 16px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04);
+button:hover {
   transform: translateY(-1px);
 }
 
-/* Dark mode inputs */
-.dark input:not([type="checkbox"]):not([type="radio"]),
-.dark textarea,
-.dark select {
-  background: rgba(18,18,18,0.95);
-  border-color: rgba(255,255,255,0.08);
-}
+/* ==========================================================
+   TYPOGRAPHY
+   ========================================================== */
 
-.dark input:focus:not([type="checkbox"]):not([type="radio"]),
-.dark textarea:focus,
-.dark select:focus {
-  background: rgba(22,22,22,0.98);
-  border-color: hsl(198 100% 75% / 0.9);
-  box-shadow: 0 0 0 3px hsl(198 100% 75% / 0.18), 0 6px 18px rgba(0,0,0,0.35);
-}
-
-.dark button:not(.ghost):not(.outline) {
-  box-shadow: 0 4px 20px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.04);
-}
-
-.dark button:hover:not(.ghost):not(.outline) {
-  box-shadow: 0 6px 24px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
-  transform: translateY(-1px);
-}
-
-/* Typography */
-h1,h2,h3,h4,h5,h6 { 
-  letter-spacing: 0.02em; 
+h1, h2, h3, h4, h5, h6 {
   color: hsl(var(--foreground));
+  letter-spacing: 0.01em;
 }
 
-/* Light mode text */
-.light p,
-.light span,
-.light li { 
-  color: hsl(var(--muted-foreground)); 
+p, span, li {
+  color: hsl(var(--muted-foreground));
 }
 
-/* Dark mode text */
-.dark p,
-.dark span,
-.dark li { 
-  color: #bdbdbd; 
+/* ==========================================================
+   BRAND GRADIENT TEXT
+   ========================================================== */
+
+.text-gradient-brand {
+  background: linear-gradient(90deg, #FF8A3C, #FFB377);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* ==========================================
-   PREMIUM AMBIENT MODE (used by Card highlighted)
-   ========================================== */
+/* ==========================================================
+   NAVIGATION HEIGHT
+   ========================================================== */
 
-.premium-ambient {
-  position: relative;
-  overflow: hidden;
-}
-
-/* Light mode ambient */
-.light .premium-ambient::after {
-  content: "";
-  position: absolute;
-  inset: -5%;
-  background:
-    radial-gradient(circle at 20% 20%, hsl(var(--primary) / 0.06), transparent 45%),
-    radial-gradient(circle at 80% 20%, hsl(var(--accent) / 0.06), transparent 42%),
-    linear-gradient(120deg, transparent, hsl(var(--primary) / 0.08), transparent);
-  mix-blend-mode: multiply;
-  pointer-events: none;
-  animation: ambientShimmer 3.6s ease-in-out infinite;
-}
-
-/* Dark mode ambient */
-.dark .premium-ambient::after {
-  content: "";
-  position: absolute;
-  inset: -5%;
-  background:
-    radial-gradient(circle at 20% 20%, hsl(var(--primary) / 0.08), transparent 45%),
-    radial-gradient(circle at 80% 20%, hsl(var(--accent) / 0.08), transparent 42%),
-    linear-gradient(120deg, transparent, hsl(var(--primary) / 0.14), transparent);
-  mix-blend-mode: screen;
-  pointer-events: none;
-  animation: ambientShimmer 3.6s ease-in-out infinite;
-}
-
-/* ==========================================
-   STAGGER CARD SYSTEM (scroll animations)
-   ========================================== */
-
-.stagger-card {
-  opacity: 0.85;
-  transform: translateY(18px);
-  transition: opacity 0.55s ease, transform 0.6s cubic-bezier(0.25,0.8,0.25,1);
-  transition-delay: var(--stagger-delay, 0ms);
-}
-
-.stagger-card-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ==========================================
-   RADIAL CLICK HIGHLIGHT
-   ========================================== */
-
-/* Light mode click highlight */
-.light .click-radial-highlight {
-  position: fixed;
-  width: 180px;
-  height: 180px;
-  pointer-events: none;
-  background: radial-gradient(circle, hsl(var(--primary) / 0.2) 0%, transparent 65%);
-  border-radius: 9999px;
-  transform: translate(-50%, -50%);
-  mix-blend-mode: multiply;
-  animation: radialHighlight 620ms ease-out forwards;
-  z-index: 60;
-}
-
-/* Dark mode click highlight */
-.dark .click-radial-highlight {
-  position: fixed;
-  width: 180px;
-  height: 180px;
-  pointer-events: none;
-  background: radial-gradient(circle, hsl(var(--primary) / 0.35) 0%, transparent 65%);
-  border-radius: 9999px;
-  transform: translate(-50%, -50%);
-  mix-blend-mode: screen;
-  animation: radialHighlight 620ms ease-out forwards;
-  z-index: 60;
-}
-
-/* ==========================================
-   ANIMATION KEYFRAMES
-   ========================================== */
-
-@keyframes auraDrift { 0%{background-position:12% 18%;}50%{background-position:18% 22%;}100%{background-position:24% 30%;}}
-@keyframes gradientSweep {0%{background-position:0% 50%;}50%{background-position:40% 55%;}100%{background-position:100% 50%;}}
-@keyframes stripDrift {0%{background-position:0 0;}50%{background-position:10% 6%;}100%{background-position:20% 12%;}}
-@keyframes fadeIn {from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-@keyframes fadeInUp {from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
-@keyframes fadeInDown {from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
-@keyframes shimmer {0%{background-position:-200% center;}100%{background-position:200% center;}}
-@keyframes ambientShimmer {0%{opacity:.14;transform:translateY(0);}40%{opacity:.28;transform:translateY(-6px);}80%{opacity:.18;transform:translateY(4px);}100%{opacity:.14;transform:translateY(0);}}
-@keyframes radialHighlight {from{opacity:.4;transform:translate(-50%,-50%) scale(.85);}to{opacity:0;transform:translate(-50%,-50%) scale(1.35);}}
-@keyframes cardBorderGlow {0%{background-position:0% 50%;}100%{background-position:200% 50%;}}
-
-/* ==========================================
-   SCROLL REVEAL
-   ========================================== */
-
-.section-reveal {
-  opacity: .8;
-  transform: translateY(20px);
-  transition: .4s ease-out;
-}
-
-.section-reveal.section-reveal-visible {
-  opacity: 1;
-  transform: translateY(0);
+.nav-connective {
+  height: var(--nav-height);
 }
