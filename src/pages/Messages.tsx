@@ -1153,8 +1153,8 @@ const Messages = () => {
                         className={cn(
                           "rounded-2xl px-4 py-3",
                           msg.isMine
-                            ? "rounded-br-sm bg-[#E8B956] text-black"
-                            : "rounded-bl-sm bg-[#FF8663] text-white",
+                            ? "rounded-br-sm bg-[#E8B956] text-neutral-900"
+                            : "rounded-bl-sm bg-[#FF8663] text-neutral-900",
                         )}
                       >
                         <p className="text-sm leading-relaxed">{msg.content}</p>
