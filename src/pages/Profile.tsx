@@ -995,7 +995,7 @@ export default function Profile() {
             <Card className="border-border/60 shadow-lg">
               <CardHeader>
                 <div className="flex items-center gap-3">
-                  <Bell className="h-5 w-5 text-primary" />
+                  <Bell className="h-5 w-5 text-primary notification-micro-bounce" />
                   <div>
                     <CardTitle>Notifications</CardTitle>
                     <CardDescription>Fine-tune when you hear from Connective.</CardDescription>

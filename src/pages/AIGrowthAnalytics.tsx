@@ -635,7 +635,9 @@ const AIGrowthAnalytics = () => {
             {adminActions.map((action) => (
               <div key={action.label} className="flex items-start gap-3 rounded-lg border border-border/60 bg-background/60 p-3">
                 <div className="mt-1 rounded-full bg-primary/10 p-2 text-primary">
-                  <action.icon className="h-4 w-4" />
+                  <action.icon
+                    className={`h-4 w-4 ${action.icon === BellRing ? "notification-micro-bounce" : ""}`}
+                  />
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-semibold">{action.label}</p>

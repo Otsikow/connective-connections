@@ -152,6 +152,22 @@ const AppContent = () => {
     window.scrollTo({ top: 0, behavior: "auto" });
   }, [location.pathname]);
 
+  /* Radial highlight on clicks */
+  useEffect(() => {
+    const handleClick = (event: MouseEvent) => {
+      const highlight = document.createElement("span");
+      highlight.className = "click-radial-highlight";
+      highlight.style.left = `${event.clientX}px`;
+      highlight.style.top = `${event.clientY}px`;
+
+      document.body.appendChild(highlight);
+      highlight.addEventListener("animationend", () => highlight.remove());
+    };
+
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, []);
+
   /* Subscription fallback loader */
   useEffect(() => {
     if (hasCompletedInitialLoad) return;
