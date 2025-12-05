@@ -5,6 +5,7 @@ import {
   AreaChart,
   Bar,
   BarChart,
+  ComposedChart,
   CartesianGrid,
   Cell,
   Line,
@@ -94,6 +95,10 @@ const UserAnalyticsDashboard = () => {
         label: "Weekly active users",
         color: "hsl(var(--chart-4))",
       },
+      retention: {
+        label: "Week 4 retention",
+        color: "hsl(var(--chart-5))",
+      },
     }),
     [],
   );
@@ -133,6 +138,25 @@ const UserAnalyticsDashboard = () => {
       messages: { label: "Messages sent", color: "hsl(var(--chart-1))" },
       replies: { label: "Replies", color: "hsl(var(--chart-2))" },
       sessions: { label: "Avg sessions", color: "hsl(var(--chart-3))" },
+    }),
+    [],
+  );
+
+  const engagementMix = useMemo(
+    () => [
+      { channel: "Community", threads: 1280, replies: 980, reactions: 720 },
+      { channel: "Events", threads: 890, replies: 650, reactions: 420 },
+      { channel: "Matches", threads: 1460, replies: 1110, reactions: 860 },
+      { channel: "Concierge", threads: 620, replies: 510, reactions: 380 },
+    ],
+    [],
+  );
+
+  const engagementMixConfig = useMemo<ChartConfig>(
+    () => ({
+      threads: { label: "New threads", color: "hsl(var(--chart-1))" },
+      replies: { label: "Replies", color: "hsl(var(--chart-2))" },
+      reactions: { label: "Reactions", color: "hsl(var(--chart-4))" },
     }),
     [],
   );
@@ -337,14 +361,31 @@ const UserAnalyticsDashboard = () => {
             </CardHeader>
             <CardContent>
               <ChartContainer config={activeUsageConfig} className="h-[300px]">
-                <BarChart data={activeUsage}>
+                <ComposedChart data={activeUsage}>
                   <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.25} />
                   <XAxis dataKey="week" axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))" }} />
-                  <YAxis tickLine={false} axisLine={false} tick={{ fill: "hsl(var(--muted-foreground))" }} />
+                  <YAxis yAxisId="left" tickLine={false} axisLine={false} tick={{ fill: "hsl(var(--muted-foreground))" }} />
+                  <YAxis
+                    yAxisId="right"
+                    orientation="right"
+                    tickFormatter={(value: number) => `${Math.round(value * 100)}%`}
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: "hsl(var(--muted-foreground))" }}
+                    domain={[0.5, 0.8]}
+                  />
                   <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: "hsl(var(--muted))" }} />
-                  <Bar dataKey="wau" fill="hsl(var(--chart-4))" radius={[8, 8, 0, 0]} />
-                  <Bar dataKey="dau" fill="hsl(var(--chart-3))" radius={[8, 8, 0, 0]} />
-                </BarChart>
+                  <Bar yAxisId="left" dataKey="wau" fill="hsl(var(--chart-4))" radius={[8, 8, 0, 0]} />
+                  <Bar yAxisId="left" dataKey="dau" fill="hsl(var(--chart-3))" radius={[8, 8, 0, 0]} />
+                  <Line
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="retention"
+                    stroke="hsl(var(--chart-5))"
+                    strokeWidth={2.25}
+                    dot={{ r: 3.5 }}
+                  />
+                </ComposedChart>
               </ChartContainer>
             </CardContent>
             <CardContent className="flex flex-wrap gap-3 border-t border-dashed border-border/70 bg-muted/40 py-4 text-sm text-muted-foreground">
@@ -356,6 +397,11 @@ const UserAnalyticsDashboard = () => {
               <div className="flex items-center gap-2">
                 <span className="inline-flex h-2 w-2 rounded-full bg-[hsl(var(--chart-4))]" />
                 68% of weekly users return within 48 hours.
+              </div>
+              <Separator orientation="vertical" className="hidden h-5 sm:block" />
+              <div className="flex items-center gap-2">
+                <span className="inline-flex h-2 w-2 rounded-full bg-[hsl(var(--chart-5))]" />
+                Retention line tracks seven-day returning users.
               </div>
             </CardContent>
           </Card>
@@ -391,6 +437,30 @@ const UserAnalyticsDashboard = () => {
                 </div>
                 <p>Guided prompts and pairing leads continue to lift sustained conversations.</p>
               </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/60">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xl">Engagement mix</CardTitle>
+              <CardDescription>Where conversations and reactions are happening.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={engagementMixConfig} className="h-[260px]">
+                <BarChart data={engagementMix} stackOffset="expand">
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.25} />
+                  <XAxis dataKey="channel" axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))" }} />
+                  <YAxis hide />
+                  <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: "hsl(var(--muted))" }} />
+                  <Bar dataKey="threads" stackId="mix" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="replies" stackId="mix" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="reactions" stackId="mix" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ChartContainer>
+              <p className="mt-4 text-sm text-muted-foreground">
+                Community rooms and curated matches are driving the majority of conversations, with reactions picking up as
+                weekly digests highlight trending threads.
+              </p>
             </CardContent>
           </Card>
         </section>
