@@ -65,7 +65,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     if (asChild) {
       const Comp = Slot;
       return (
-        <Comp className={classes} ref={ref} onClick={handleClick} {...props}>
+        <Comp
+          className={classes}
+          data-primary-action={variant === "default" ? true : undefined}
+          ref={ref}
+          onClick={handleClick}
+          {...props}
+        >
           {children}
         </Comp>
       );
@@ -158,6 +164,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         }}
         type={type}
         className={classes}
+        data-primary-action={variant === "default" ? true : undefined}
         disabled={disabled}
         style={{
           x,
