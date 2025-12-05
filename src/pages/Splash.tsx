@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import experienceImage from "@/assets/onboarding-1.png";
 import { Logo } from "@/components/Logo";
+import { FloatingParallaxCard } from "@/components/FloatingParallaxCard";
 
 const experienceCards = [
   {
@@ -241,9 +242,9 @@ const Splash = () => {
           </div>
           <div className="grid gap-6">
             {experienceCards.map((card) => (
-              <div
+              <FloatingParallaxCard
                 key={card.title}
-                className="flex flex-col rounded-3xl border border-gray-800/70 bg-[#1e293b]/80 p-8 shadow-[0_25px_60px_-40px_rgba(15,23,42,0.8)]"
+                className="flex flex-col border border-gray-800/70 bg-[#1e293b]/80 p-8 shadow-[0_25px_60px_-40px_rgba(15,23,42,0.8)]"
               >
                 <div className="flex items-start gap-5">
                   <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#fbbf24]/15 text-[hsl(var(--highlight-text))]">
@@ -266,7 +267,7 @@ const Splash = () => {
                     {card.cta.label} <ArrowRight className="h-4 w-4" />
                   </Button>
                 </div>
-              </div>
+              </FloatingParallaxCard>
             ))}
           </div>
         </section>
@@ -294,9 +295,9 @@ const Splash = () => {
           </div>
           <div className="grid gap-6 sm:grid-cols-2">
             {journeyHighlights.map((highlight) => (
-              <div
+              <FloatingParallaxCard
                 key={highlight.title}
-                className="flex h-full flex-col rounded-3xl border border-gray-800/60 bg-[#1e293b]/80 text-left overflow-hidden"
+                className="flex h-full flex-col overflow-hidden border border-gray-800/60 bg-[#1e293b]/80 text-left"
               >
                 <img
                   src={highlight.image}
@@ -308,7 +309,7 @@ const Splash = () => {
                   <h3 className="text-lg font-semibold text-white">{highlight.title}</h3>
                   <p className="text-sm text-gray-300">{highlight.description}</p>
                 </div>
-              </div>
+              </FloatingParallaxCard>
             ))}
           </div>
         </section>
@@ -323,9 +324,9 @@ const Splash = () => {
           </div>
           <div className="grid gap-6">
             {testimonials.map((testimonial) => (
-              <div
+              <FloatingParallaxCard
                 key={testimonial.name}
-                className="rounded-3xl border border-slate-800/60 bg-slate-900/80 p-8 text-left shadow-[0_25px_60px_-40px_rgba(15,23,42,0.9)]"
+                className="border border-slate-800/60 bg-slate-900/80 p-8 text-left shadow-[0_25px_60px_-40px_rgba(15,23,42,0.9)]"
               >
                 <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">
                   <ShieldCheck className="h-4 w-4 text-amber-200" /> Verified member
@@ -336,7 +337,7 @@ const Splash = () => {
                 <p className="mt-6 text-sm font-semibold text-slate-400">
                   {testimonial.name} · {testimonial.title}
                 </p>
-              </div>
+              </FloatingParallaxCard>
             ))}
           </div>
         </section>
