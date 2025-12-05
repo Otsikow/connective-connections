@@ -198,8 +198,9 @@
   /* Enhanced card appearance */
   .dark .card,
   .dark [class*="card"] {
-    background: linear-gradient(135deg, hsl(222 47% 14%) 0%, hsl(222 47% 12%) 100%);
-    border-color: hsl(217 33% 25%);
+    background: radial-gradient(circle at 22% 18%, #141414 0%, #0d0d0d 55%, #080808 100%);
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
   }
 
   /* Subtle backdrop blur for modals */
@@ -219,17 +220,13 @@
     inset: 0;
     padding: 1.5px;
     border-radius: inherit;
-    background: linear-gradient(
-      120deg,
-      hsl(24 95% 52%),
-      hsl(43 95% 64%),
-      hsl(24 95% 52%)
-    );
-    background-size: 240% 240%;
+    background: linear-gradient(90deg, #ff9d47, #ff6b00);
+    background-size: 200% 200%;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s ease;
-    animation: cardBorderGlow 1.2s linear infinite;
+    transition: opacity 0.25s ease, transform 0.35s ease;
+    animation: cardBorderGlow 1.4s linear infinite;
+    box-shadow: 0 0 32px rgba(255, 107, 0, 0.12);
     mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     mask-composite: exclude;
@@ -237,8 +234,10 @@
   }
 
   .card-glow-border:hover::before,
-  .card-glow-border:focus-visible::before {
+  .card-glow-border:focus-visible::before,
+  .card-glow-border:focus-within::before {
     opacity: 1;
+    transform: translateY(-1px);
   }
 
   /* Inputs and selects */

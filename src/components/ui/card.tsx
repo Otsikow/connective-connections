@@ -9,7 +9,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const baseCardClasses =
-  "relative w-full overflow-hidden rounded-[26px] border border-transparent bg-card/90 text-card-foreground shadow-[0_26px_60px_-32px_rgba(190,150,80,0.6)] transition-all duration-500 supports-[backdrop-filter]:backdrop-blur-xl sm:rounded-[32px] card-glow-border";
+  "relative w-full overflow-hidden rounded-[22px] border border-[rgba(255,255,255,0.06)] bg-[#0d0d0d] bg-[radial-gradient(circle_at_20%_18%,#141414_0%,#0d0d0d_55%,#080808_100%)] text-card-foreground shadow-[0_8px_40px_rgba(0,0,0,0.6)] transition-all duration-500 supports-[backdrop-filter]:backdrop-blur-xl card-glow-border focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_1px_rgba(255,140,50,0.35),0_0_0_12px_rgba(255,140,50,0.12)]";
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, animated = true, hoverScale = true, ...props }, ref) => {
@@ -26,11 +26,17 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     return (
       <motion.div
         ref={ref}
-        className={cn(baseCardClasses, className)}
+        className={cn(baseCardClasses, "hover:[&>*]:brightness-105 hover:[&_img]:brightness-110", className)}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-        whileHover={hoverScale ? { scale: 1.01, y: -2 } : undefined}
+        style={{ perspective: 1200 }}
+        whileHover={
+          hoverScale
+            ? { y: -6, rotateX: -2.5, rotateY: 2.5, transition: { duration: 0.35 } }
+            : undefined
+        }
+        whileTap={{ scale: 0.995 }}
         {...(props as any)}
       />
     );
