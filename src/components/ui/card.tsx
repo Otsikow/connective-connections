@@ -1,5 +1,5 @@
 import * as React from "react";
-import { motion } from "framer-motion";
+import { animate, motion, useMotionValue, useSpring } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 
@@ -23,18 +23,111 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       );
     }
 
+    const { onPointerMove, onPointerLeave, ...restProps } = props;
+
+    const cardRef = React.useRef<HTMLDivElement | null>(null);
+    const opacity = useMotionValue(0);
+    const idleY = useMotionValue(20);
+    const tiltX = useSpring(0, { stiffness: 220, damping: 28 });
+    const tiltY = useSpring(0, { stiffness: 220, damping: 28 });
+    const hoverScaleValue = useSpring(1, { stiffness: 220, damping: 28 });
+
+    const setParallax = (x: number, y: number) => {
+      if (!cardRef.current) return;
+
+      cardRef.current.style.setProperty("--card-parallax-x", `${x}%`);
+      cardRef.current.style.setProperty("--card-parallax-y", `${y}%`);
+    };
+
+    React.useEffect(() => {
+      const fadeIn = animate(opacity, 1, {
+        duration: 0.35,
+        ease: [0.4, 0, 0.2, 1],
+      });
+
+      const settle = animate(idleY, 0, {
+        duration: 0.35,
+        ease: [0.4, 0, 0.2, 1],
+      });
+
+      let floatControls: ReturnType<typeof animate> | undefined;
+
+      settle.then(() => {
+        floatControls = animate(idleY, [0, -6, 0, 0], {
+          duration: 4.5,
+          ease: "easeInOut",
+          repeat: Infinity,
+          repeatType: "loop",
+          times: [0, 0.088, 0.177, 1],
+        });
+      });
+
+      return () => {
+        fadeIn.stop();
+        settle.stop();
+        floatControls?.stop();
+      };
+    }, [idleY, opacity]);
+
+    const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+      if (!cardRef.current) return;
+
+      const rect = cardRef.current.getBoundingClientRect();
+      const relativeX = (event.clientX - rect.left) / rect.width - 0.5;
+      const relativeY = (event.clientY - rect.top) / rect.height - 0.5;
+      const maxTilt = 4;
+
+      tiltX.set(-relativeY * maxTilt * 2);
+      tiltY.set(relativeX * maxTilt * 2);
+      setParallax(50 + relativeX * 6, 50 + relativeY * 6);
+
+      if (hoverScale) {
+        hoverScaleValue.set(1.03);
+      }
+
+      onPointerMove?.(event);
+    };
+
+    const handlePointerLeave = (event: React.PointerEvent<HTMLDivElement>) => {
+      tiltX.set(0);
+      tiltY.set(0);
+      setParallax(50, 50);
+
+      if (hoverScale) {
+        hoverScaleValue.set(1);
+      }
+
+      onPointerLeave?.(event);
+    };
+
+    const composedStyle = {
+      opacity,
+      rotateX: tiltX,
+      rotateY: tiltY,
+      scale: hoverScale ? hoverScaleValue : 1,
+      y: idleY,
+      perspective: 1200,
+      transformStyle: "preserve-3d",
+    };
+
     return (
       <motion.div
-        ref={ref}
-        className={cn(baseCardClasses, className)}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-        whileHover={hoverScale ? { scale: 1.01, y: -2 } : undefined}
-        {...(props as any)}
+        ref={(node) => {
+          if (typeof ref === "function") {
+            ref(node);
+          } else if (ref) {
+            (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+          }
+          cardRef.current = node;
+        }}
+        className={cn(baseCardClasses, "interactive-card", className)}
+        style={composedStyle}
+        onPointerMove={handlePointerMove}
+        onPointerLeave={handlePointerLeave}
+        {...(restProps as any)}
       />
     );
-  }
+  },
 );
 Card.displayName = "Card";
 

@@ -33,9 +33,9 @@ function Badge({ className, variant, animated = false, ...props }: BadgeProps) {
   return (
     <motion.div
       className={cn(badgeVariants({ variant }), className)}
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
-      transition={{ type: "spring", stiffness: 500, damping: 25 }}
+      initial={{ scale: 1 }}
+      animate={{ scale: [1, 1.08, 1] }}
+      transition={{ duration: 3, ease: "easeInOut", repeat: Infinity }}
       {...(props as any)}
     />
   );
