@@ -43,7 +43,7 @@ import UserAnalyticsDashboard from "./pages/UserAnalyticsDashboard";
 import AIGrowthAnalytics from "./pages/AIGrowthAnalytics";
 import AICoach from "./pages/AICoach";
 
-import AIAutoMeetups from "./pages/AIAutoMeetups"; // <-- Correct final branch version
+import AIAutoMeetups from "./pages/AIAutoMeetups"; // <-- Correct final version
 
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback";
@@ -65,6 +65,7 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
+        
         {/* Auth + Entry */}
         <Route path="/" element={<PageTransition><Splash /></PageTransition>} />
         <Route path="/signup" element={<PageTransition><Signup /></PageTransition>} />
@@ -105,12 +106,9 @@ const AnimatedRoutes = () => {
 
         {/* User Dashboard */}
         <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
-        <Route
-          path="/analytics/users"
-          element={<PageTransition><UserAnalyticsDashboard /></PageTransition>}
-        />
+        <Route path="/analytics/users" element={<PageTransition><UserAnalyticsDashboard /></PageTransition>} />
 
-        {/* AI Features */}
+        {/* AI */}
         <Route path="/ai-growth-analytics" element={<PageTransition><AIGrowthAnalytics /></PageTransition>} />
         <Route path="/ai-coach" element={<PageTransition><AICoach /></PageTransition>} />
         <Route path="/ai-auto-meetups" element={<PageTransition><AIAutoMeetups /></PageTransition>} />
@@ -123,6 +121,7 @@ const AnimatedRoutes = () => {
 
         {/* 404 */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+
       </Routes>
     </AnimatePresence>
   );
