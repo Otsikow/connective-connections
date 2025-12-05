@@ -104,7 +104,7 @@ const AnimatedRoutes = () => {
         <Route path="/host/create-experience" element={<PageTransition><HostCreateExperience /></PageTransition>} />
         <Route path="/host/event" element={<PageTransition><HostEvent /></PageTransition>} />
 
-        {/* User Dashboard */}
+        {/* User Dashboards */}
         <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
         <Route path="/analytics/users" element={<PageTransition><UserAnalyticsDashboard /></PageTransition>} />
 
@@ -121,7 +121,6 @@ const AnimatedRoutes = () => {
 
         {/* 404 */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
-
       </Routes>
     </AnimatePresence>
   );
@@ -139,13 +138,13 @@ const AppContent = () => {
   const [isBooting, setIsBooting] = useState(true);
   const [hasCompletedInitialLoad, setHasCompletedInitialLoad] = useState(false);
 
-  /* Simulated initial loading */
+  /* Initial loading */
   useEffect(() => {
     const timer = window.setTimeout(() => setIsBooting(false), 500);
     return () => window.clearTimeout(timer);
   }, []);
 
-  /* Scroll reset on navigation */
+  /* Scroll reset on route change */
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
   }, [location.pathname]);
