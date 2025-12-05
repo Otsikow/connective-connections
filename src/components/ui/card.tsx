@@ -9,7 +9,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const baseCardClasses =
-  "relative w-full overflow-hidden rounded-[26px] border border-border/40 bg-card/90 text-card-foreground shadow-[0_26px_60px_-32px_rgba(190,150,80,0.6)] transition-all duration-500 supports-[backdrop-filter]:backdrop-blur-xl sm:rounded-[32px]";
+  "relative w-full overflow-hidden rounded-[26px] border border-transparent bg-card/90 text-card-foreground shadow-[0_26px_60px_-32px_rgba(190,150,80,0.6)] transition-all duration-500 supports-[backdrop-filter]:backdrop-blur-xl sm:rounded-[32px] card-glow-border";
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, animated = true, hoverScale = true, ...props }, ref) => {
