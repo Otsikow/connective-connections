@@ -374,6 +374,62 @@
   }
 }
 
+@keyframes ambientShimmer {
+  0% {
+    transform: translateY(0);
+    opacity: 0.14;
+  }
+  40% {
+    transform: translateY(-6px);
+    opacity: 0.28;
+  }
+  80% {
+    transform: translateY(4px);
+    opacity: 0.18;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0.14;
+  }
+}
+
+@keyframes profileGlowPulse {
+  0% {
+    box-shadow: 0 0 0 0 hsl(var(--accent) / 0.35), 0 12px 34px -20px hsl(var(--primary) / 0.4);
+  }
+  60% {
+    box-shadow: 0 0 0 6px hsl(var(--primary) / 0.26), 0 14px 40px -22px hsl(var(--accent) / 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 0 hsl(var(--accent) / 0.35), 0 12px 34px -20px hsl(var(--primary) / 0.4);
+  }
+}
+
+@keyframes notificationMicroBounce {
+  0%,
+  92%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  94% {
+    transform: translateY(-1.5px) scale(1.02);
+  }
+  96% {
+    transform: translateY(1px) scale(0.995);
+  }
+}
+
+@keyframes radialHighlight {
+  from {
+    opacity: 0.4;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.35);
+  }
+}
+
 @keyframes cardBorderGlow {
   0% {
     background-position: 0% 50%;
@@ -437,4 +493,65 @@
 .section-reveal.section-reveal-visible > * {
   opacity: 1;
   transform: translateY(0);
+}
+
+.profile-hover-glow {
+  position: relative;
+  transition: filter 0.45s ease, transform 0.2s ease;
+  filter: drop-shadow(0 0 0 hsl(var(--primary) / 0));
+}
+
+.profile-hover-glow:hover,
+.profile-hover-glow:focus-visible {
+  filter: drop-shadow(0 0 18px hsl(var(--primary) / 0.28))
+    drop-shadow(0 10px 30px hsl(var(--accent) / 0.2));
+  animation: profileGlowPulse 2.6s ease-in-out infinite;
+}
+
+.premium-ambient {
+  position: relative;
+  overflow: hidden;
+}
+
+.premium-ambient::after {
+  content: "";
+  position: absolute;
+  inset: -5%;
+  background: radial-gradient(circle at 20% 20%, hsl(var(--primary) / 0.08), transparent 45%),
+    radial-gradient(circle at 80% 20%, hsl(var(--accent) / 0.08), transparent 42%),
+    linear-gradient(120deg, transparent, hsl(var(--primary) / 0.14), transparent);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: ambientShimmer 3.6s ease-in-out infinite;
+}
+
+.notification-micro-bounce {
+  animation: notificationMicroBounce 10s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.stagger-card {
+  opacity: 0.85;
+  transform: translateY(18px);
+  transition: opacity 0.55s ease, transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition-delay: var(--stagger-delay, 0ms);
+  will-change: transform, opacity;
+}
+
+.stagger-card-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.click-radial-highlight {
+  position: fixed;
+  width: 180px;
+  height: 180px;
+  pointer-events: none;
+  background: radial-gradient(circle, hsl(var(--primary) / 0.35) 0%, transparent 65%);
+  border-radius: 9999px;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+  animation: radialHighlight 620ms ease-out forwards;
+  z-index: 60;
 }
