@@ -116,14 +116,46 @@
     background-attachment: fixed;
     background-size: cover;
     transition: background 0.45s ease, color 0.45s ease;
+    position: relative;
   }
 
   #root {
     @apply min-h-screen;
+    position: relative;
+    z-index: 1;
   }
 
   .dark body {
     background-image: radial-gradient(circle at 20% 10%, hsl(229 33% 12%), hsl(229 33% 6%));
+  }
+
+  /* Aura liquid gradient backdrop */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: -12%;
+    background-image:
+      radial-gradient(circle at 18% 24%, rgba(176, 118, 28, 0.42), transparent 45%),
+      radial-gradient(circle at 76% 18%, rgba(146, 105, 32, 0.38), transparent 40%),
+      radial-gradient(circle at 46% 78%, rgba(44, 129, 209, 0.28), transparent 48%);
+    background-size: 125% 125%, 145% 145%, 160% 160%;
+    background-position: 12% 18%, 82% 14%, 48% 72%;
+    mix-blend-mode: soft-light;
+    opacity: 0.9;
+    filter: blur(36px);
+    pointer-events: none;
+    z-index: 0;
+    animation: auraDrift 18s ease-in-out infinite alternate, auraPulse 14s ease-in-out infinite;
+    transform: translateZ(0);
+  }
+
+  .dark body::before {
+    background-image:
+      radial-gradient(circle at 18% 24%, rgba(224, 168, 78, 0.26), transparent 50%),
+      radial-gradient(circle at 76% 18%, rgba(164, 119, 42, 0.24), transparent 46%),
+      radial-gradient(circle at 46% 78%, rgba(65, 154, 220, 0.24), transparent 50%);
+    mix-blend-mode: overlay;
+    filter: blur(28px) saturate(1.05);
   }
 
   ::selection {
@@ -195,6 +227,30 @@
 /* ===============================
    ANIMATION UTILITIES
    =============================== */
+
+@keyframes auraDrift {
+  0% {
+    background-position: 12% 18%, 82% 14%, 48% 72%;
+  }
+  50% {
+    background-position: 18% 22%, 76% 20%, 52% 68%;
+  }
+  100% {
+    background-position: 24% 30%, 70% 28%, 46% 78%;
+  }
+}
+
+@keyframes auraPulse {
+  0% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.88;
+  }
+}
 
 @keyframes fadeIn {
   from {
