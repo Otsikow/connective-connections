@@ -314,6 +314,96 @@ p, span, li { color: #bdbdbd; }
   .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
+
+  .flowmaster-hero {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .flowmaster-hero::before {
+    content: "";
+    position: absolute;
+    inset: -30% -35% auto auto;
+    aspect-ratio: 1 / 1;
+    background: radial-gradient(circle at 30% 30%, #ffb347 0%, #ff9d47 32%, rgba(255, 157, 71, 0.12) 68%, transparent 75%);
+    filter: blur(70px) saturate(1.05);
+    opacity: 0.7;
+    transform: translate3d(0, 0, 0);
+    animation: slowDrift 18s ease-in-out infinite alternate;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .flowmaster-hero-title {
+    position: relative;
+    display: inline-block;
+    background: linear-gradient(120deg, #ffffff 0%, #fff3d9 45%, #ff9d47 100%);
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 0 10px 45px rgba(255, 180, 71, 0.32);
+  }
+
+  .flowmaster-hero-title::after {
+    content: "";
+    position: absolute;
+    inset: auto 8% -14px 8%;
+    height: 28px;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 184, 76, 0.45), rgba(255, 157, 71, 0.08) 65%, transparent 75%);
+    filter: blur(18px);
+    opacity: 0.75;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .flowmaster-section {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(20px, 4vw, 32px);
+    border-radius: 28px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.04));
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 25px 60px -40px hsl(33 52% 40% / 0.55);
+    backdrop-filter: blur(14px) saturate(120%);
+    isolation: isolate;
+    z-index: 0;
+  }
+
+  .flowmaster-section::before {
+    content: "";
+    position: absolute;
+    inset: -25% auto -25% 26%;
+    width: 22%;
+    background: linear-gradient(180deg, transparent, rgba(255, 184, 76, 0.38), rgba(255, 157, 71, 0.24), transparent);
+    filter: blur(30px);
+    opacity: 0.65;
+    animation: verticalAurora 16s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .flowmaster-section::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: 26px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
+    opacity: 0.6;
+    pointer-events: none;
+    mix-blend-mode: screen;
+  }
+
+  .flowmaster-section > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .flowmaster-divider {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(90deg, transparent, #fbbf24, #ff9d47, transparent);
+    border-radius: 999px;
+    opacity: 0.85;
+  }
 }
 
 /* ===============================
@@ -385,6 +475,30 @@ p, span, li { color: #bdbdbd; }
 @keyframes cardBorderGlow {
   0% { background-position: 0% 50%; }
   100% { background-position: 200% 50%; }
+}
+
+@keyframes slowDrift {
+  0% {
+    transform: translate3d(-4%, 0, 0) scale(0.96);
+  }
+  50% {
+    transform: translate3d(2%, 4%, 0) scale(1.02);
+  }
+  100% {
+    transform: translate3d(-6%, 2%, 0) scale(1);
+  }
+}
+
+@keyframes verticalAurora {
+  0% {
+    transform: translate3d(0, -14%, 0);
+  }
+  50% {
+    transform: translate3d(0, 12%, 0);
+  }
+  100% {
+    transform: translate3d(0, -10%, 0);
+  }
 }
 
 /* Animation Classes */

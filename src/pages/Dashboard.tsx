@@ -339,7 +339,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/40">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-10">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flowmaster-section flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-3">
             <BackButton
               fallbackPath="/host-dashboard"
@@ -347,7 +347,7 @@ const Dashboard = () => {
             />
             <div>
               <p className="text-sm font-medium text-muted-foreground">Host Dashboard</p>
-              <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">
+              <h1 className="flowmaster-hero-title mt-1 text-3xl font-bold tracking-tight sm:text-4xl">
                 Build meaningful experiences
               </h1>
               <p className="mt-2 max-w-xl text-sm text-muted-foreground sm:text-base">
@@ -370,11 +370,13 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <section>
+        <div className="flowmaster-divider" />
+
+        <section className="flowmaster-section">
           <PartnerIntelligenceAssistant />
         </section>
 
-        <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <section className="flowmaster-section grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {statCards.map((stat) => (
             <Card key={stat.title} className="border-border/60">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -405,7 +407,7 @@ const Dashboard = () => {
           ))}
         </section>
 
-        <section className="grid gap-6 xl:grid-cols-3">
+        <section className="flowmaster-section grid gap-6 xl:grid-cols-3">
           <Card className="border-border/60 xl:col-span-2">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between gap-2">
@@ -522,7 +524,7 @@ const Dashboard = () => {
           </Card>
         </section>
 
-        <section className="grid gap-6 xl:grid-cols-3">
+        <section className="flowmaster-section grid gap-6 xl:grid-cols-3">
           <Card className="border-border/60 xl:col-span-2">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between gap-3">
@@ -679,7 +681,7 @@ const Dashboard = () => {
           </div>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-3">
+        <section className="flowmaster-section grid gap-6 lg:grid-cols-3">
           <Card className="border-border/60 lg:col-span-2">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between gap-2">
@@ -790,7 +792,7 @@ const Dashboard = () => {
           </Card>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-3">
+        <section className="flowmaster-section grid gap-6 lg:grid-cols-3">
           <Card className="border-border/60 lg:col-span-2">
             <CardHeader className="pb-4">
               <CardTitle className="text-2xl">Upcoming gatherings</CardTitle>
