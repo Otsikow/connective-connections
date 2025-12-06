@@ -190,10 +190,16 @@ const AppContent = () => {
   const layoutStyles: CSSProperties = {
     "--bottom-nav-height": "5.75rem",
     "--top-bar-height": "4rem",
+    backgroundImage: [
+      "radial-gradient(circle at 20% 20%, hsl(var(--primary) / 0.08), transparent 32%)",
+      "radial-gradient(circle at 80% 10%, hsl(var(--secondary) / 0.06), transparent 30%)",
+      "radial-gradient(circle at 15% 75%, hsl(var(--accent) / 0.06), transparent 30%)",
+      "linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background)) 100%)"
+    ].join(","),
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col" style={layoutStyles}>
+    <div className="relative flex min-h-screen flex-col bg-background text-foreground" style={layoutStyles}>
       <LoadingScreen show={showLoadingScreen} />
       <TopBar />
 
@@ -218,7 +224,7 @@ const AppContent = () => {
 /* ------------------------------------------------------------ */
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="dark">
+    <ThemeProvider defaultTheme="system">
       <TooltipProvider>
         <Toaster />
         <Sonner />
