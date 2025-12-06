@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light" | "dark";
+type Theme = "light" | "dark" | "system";
 type AccentColor = "emerald" | "sky" | "violet" | "amber" | "rose";
 
 type ThemeProviderProps = {
@@ -79,7 +79,13 @@ export function ThemeProvider({
     const prefersDark = window.matchMedia
       ? window.matchMedia("(prefers-color-scheme: dark)").matches
       : false;
+    if (defaultTheme === "system") return "system";
     return prefersDark ? "dark" : "light";
+  });
+
+  const [systemPrefersDark, setSystemPrefersDark] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
 
   const [accentColor, setAccentColorState] = useState<AccentColor>(() => {
@@ -102,10 +108,22 @@ export function ThemeProvider({
     }
 
     const root = window.document.documentElement;
+    const activeTheme = theme === "system" ? (systemPrefersDark ? "dark" : "light") : theme;
+
     root.classList.remove("light", "dark");
-    root.classList.add(theme);
-    root.style.colorScheme = theme;
-  }, [theme]);
+    root.classList.add(activeTheme);
+    root.style.colorScheme = activeTheme;
+  }, [theme, systemPrefersDark]);
+
+  // Listen for OS theme changes when in system mode
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (event: MediaQueryListEvent) => setSystemPrefersDark(event.matches);
+
+    media.addEventListener("change", handler);
+    return () => media.removeEventListener("change", handler);
+  }, []);
 
   // Apply accent color CSS variables
   useEffect(() => {
@@ -130,7 +148,8 @@ export function ThemeProvider({
       setTheme(newTheme);
     },
     toggleTheme: () => {
-      const newTheme = theme === "light" ? "dark" : "light";
+      const resolvedTheme = theme === "system" ? (systemPrefersDark ? "dark" : "light") : theme;
+      const newTheme = resolvedTheme === "light" ? "dark" : "light";
       if (typeof window !== "undefined") {
         window.localStorage.setItem(storageKey, newTheme);
       }
