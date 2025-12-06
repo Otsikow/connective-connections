@@ -135,7 +135,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7, ease: "easeOut" }}
-            className="mt-8 sm:mt-10 md:mt-12 flex flex-col sm:flex-row gap-3 sm:gap-5 justify-center items-center"
+            className="mt-8 sm:mt-10 md:mt-12 flex flex-col sm:flex-row gap-3 sm:gap-5 justify-center items-center flex-wrap"
           >
             <Button
               size="lg"
@@ -159,6 +159,17 @@ const HeroSection = () => {
                          transition-all duration-300 hover:scale-105"
             >
               Explore Activities
+            </Button>
+
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => navigate("/host/create-experience")}
+              className="w-full sm:w-auto min-w-[200px] h-12 text-base font-semibold sm:h-14 sm:text-lg
+                         border-primary bg-primary/10 text-white hover:bg-primary/20 hover:border-primary/80
+                         shadow-[0_4px_24px_rgba(0,0,0,0.3)] transition-all duration-300 hover:scale-105"
+            >
+              Host an experience
             </Button>
           </motion.div>
 
