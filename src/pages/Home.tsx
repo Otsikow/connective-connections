@@ -53,6 +53,13 @@ const Home = () => {
   const userInitials = useMemo(() => deriveInitials(fullName, email), [fullName, email]);
   const userAvatarUrl = generateAvatarUrl(fullName ?? email ?? "connective-user");
 
+  const badgeStyles = {
+    primary: "bg-primary/15 text-primary-dark dark:text-primary-light border border-primary/25 font-medium shadow-sm",
+    emerald: "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25 font-medium shadow-sm",
+    blue: "bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-500/25 font-medium shadow-sm",
+    rose: "bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/25 font-medium shadow-sm"
+  };
+
   /* ------------------------------------------------------------ */
   /* FEATURE DEFINITIONS */
   /* ------------------------------------------------------------ */
@@ -62,7 +69,7 @@ const Home = () => {
     title: "AI Friendship Concierge",
     desc: "Tell us who you want to meet—concierge matches, schedules, and sends invites for you.",
     highlight: "Handles invites, venues, and follow-ups automatically.",
-    badge: "bg-primary/10 text-primary",
+    badge: badgeStyles.primary,
     cta: {
       path: "/concierge",
       requiresAuth: true
@@ -77,7 +84,7 @@ const Home = () => {
     title: "Find your kind of people",
     desc: "Tell us what lights you up and we introduce you to people already on your wavelength.",
     highlight: "12 new connections matched for you this week.",
-    badge: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+    badge: badgeStyles.emerald,
     cta: {
       path: "/friend-finder",
       requiresAuth: true
@@ -92,7 +99,7 @@ const Home = () => {
     title: "Discover local experiences",
     desc: "Curated gatherings, classes, and adventures hosted by members.",
     highlight: "120 local experiences this month.",
-    badge: "bg-blue-500/15 text-blue-600 dark:text-blue-400",
+    badge: badgeStyles.blue,
     cta: {
       path: "/events",
       requiresAuth: true
@@ -107,7 +114,7 @@ const Home = () => {
     title: "Join meaningful groups",
     desc: "Micro-communities built around interests and vibes.",
     highlight: "4 new communities recommended today.",
-    badge: "bg-primary/10 text-primary",
+    badge: badgeStyles.primary,
     cta: {
       path: "/community",
       requiresAuth: true,
@@ -123,7 +130,7 @@ const Home = () => {
     title: "Auto-form micro-groups",
     desc: "AI assembles 3–6 person crews by hobbies, rhythms, and faith cues.",
     highlight: "Instantly outputs a ready-to-launch circle.",
-    badge: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
+    badge: badgeStyles.emerald,
     cta: {
       path: "/ai-group-builder",
       requiresAuth: true
@@ -138,7 +145,7 @@ const Home = () => {
     title: "Chat without awkward starts",
     desc: "Guided prompts keep conversations natural and fun.",
     highlight: "Instant translation in 28 languages with Pro.",
-    badge: "bg-rose-500/15 text-rose-600 dark:text-rose-400",
+    badge: badgeStyles.rose,
     cta: {
       path: "/messages",
       requiresAuth: true,
@@ -313,14 +320,14 @@ const Home = () => {
                   Want me to organise a friendly meetup?”
                 </div>
 
-                <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted-foreground">
-                  <Badge variant="secondary" className="bg-primary/10 text-primary">
+                <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                  <Badge variant="secondary" className={badgeStyles.primary}>
                     Suggested name, date & time
                   </Badge>
-                  <Badge variant="secondary" className="bg-primary/10 text-primary">
+                  <Badge variant="secondary" className={badgeStyles.primary}>
                     Automatic RSVPs
                   </Badge>
-                  <Badge variant="secondary" className="bg-primary/10 text-primary">
+                  <Badge variant="secondary" className={badgeStyles.primary}>
                     Group page with chat
                   </Badge>
                 </div>
@@ -378,13 +385,13 @@ const Home = () => {
               </div>
 
               <div className="flex flex-wrap gap-2 text-xs">
-                <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-medium">
+                <Badge variant="secondary" className={badgeStyles.emerald}>
                   Auto reminders
                 </Badge>
-                <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-medium">
+                <Badge variant="secondary" className={badgeStyles.emerald}>
                   AI agenda prompts
                 </Badge>
-                <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-medium">
+                <Badge variant="secondary" className={badgeStyles.emerald}>
                   Post-event follow-ups
                 </Badge>
               </div>
