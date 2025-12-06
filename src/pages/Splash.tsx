@@ -18,17 +18,16 @@ import {
   Users2,
   UserCheck,
 } from "lucide-react";
-import experienceImage from "@/assets/onboarding-1.png";
 import { Logo } from "@/components/Logo";
 import { FloatingParallaxCard } from "@/components/FloatingParallaxCard";
 
 const experienceCards = [
   {
     icon: Clock,
-    title: "Intimate salons",
+    title: "Salon nights",
     description:
-      "Weekly gatherings curated for candid conversation and co-creation with founders, creatives, and investors.",
-    detail: "Hosted in penthouses, ateliers, and private clubs across 12 global cities.",
+      "Weekly immersive salons where founders, creatives, and investors connect through guided prompts and shared rituals.",
+    detail: "Hosted in penthouses, ateliers, and member clubs across 12 global cities.",
     cta: {
       label: "Explore salons",
       path: "/events",
@@ -38,8 +37,8 @@ const experienceCards = [
     icon: Map,
     title: "Signature retreats",
     description:
-      "Immersive weekends designed for restoration, collaboration, and unlocking your next chapter together.",
-    detail: "From Napa estates to coastal hideaways, every itinerary is handcrafted.",
+      "Long-form residencies and restorative retreats engineered to unlock clarity, co-creation, and lifelong allies.",
+    detail: "From Napa estates to coastal hideaways, every itinerary is handcrafted with neuroscience-backed pacing.",
     cta: {
       label: "Discover retreats",
       path: "/events",
@@ -49,8 +48,8 @@ const experienceCards = [
     icon: Users2,
     title: "Priority introductions",
     description:
-      "Curated matches backed by neuroscience ensure every connection has the potential to become transformational.",
-    detail: "Receive warm intros, mastermind circles, and follow-up playbooks each month.",
+      "Neuroscience-backed matching scores ensure every introduction has potential to become transformational.",
+    detail: "Receive warm intros, mastermind circles, and personal follow-up playbooks each month.",
     cta: {
       label: "Start connecting",
       path: "/signup",
@@ -63,29 +62,33 @@ const journeyHighlights = [
     icon: Sparkles,
     title: "Membership concierge",
     description:
-      "A dedicated team architecting your first 90 days with white-glove onboarding and bespoke pathways.",
-    image: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "White-glove onboarding crafted around your ambitions with a 90-day blueprint and concierge calls.",
+    image:
+      "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y29uZmVyZW5jZXxlbnwwfHwwfHx8MA%3D%3D",
   },
   {
     icon: Brain,
     title: "Neuroscience-backed matching",
     description:
-      "Proprietary chemistry scores align energy, intention, and ambition for every member introduction.",
-    image: "https://images.unsplash.com/photo-1554328222-26301362453d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "Chemistry scores align energy, intention, and ambition for every member introduction and circle.",
+    image:
+      "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?q=80&w=1973&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8YnJhaW58ZW58MHx8MHx8fDA%3D",
   },
   {
     icon: Compass,
     title: "Intention frameworks",
     description:
       "Curated prompts, ritualized check-ins, and thematic salons keep every interaction purposeful.",
-    image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image:
+      "https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c3RyYXRlZ3l8ZW58MHx8MHx8fDA%3D",
   },
   {
     icon: MessageCircle,
     title: "Integrated follow-ups",
     description:
-      "Momentum continues with guided recaps, warm referrals, and digital salons between in-person gatherings.",
-    image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "Guided recaps, warm referrals, and digital salons extend momentum between in-person gatherings.",
+    image:
+      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y29sbGFib3JhdGlvbnxlbnwwfHwwfHx8MA%3D%3D",
   },
 ];
 
@@ -101,6 +104,24 @@ const journeyStats = [
   {
     value: "12",
     label: "Global cities with active Connective hosts",
+  },
+];
+
+const operatingLayers = [
+  {
+    icon: Compass,
+    title: "Connection concierge",
+    description: "Live strategists map your goals, then choreograph intros, salons, and accountability loops.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Signal-rich messaging",
+    description: "Shared rituals, recap templates, and follow-up nudges keep every interaction momentum-rich.",
+  },
+  {
+    icon: CalendarDays,
+    title: "Integrated hosting",
+    description: "Events, residencies, and peer circles are coordinated with travel assistance and curated agendas.",
   },
 ];
 
@@ -140,18 +161,19 @@ const Splash = () => {
   usePageTitle("Connective Connections | Exclusive Membership");
 
   const showAuthButtons = !isLoading && !userId;
+  const heroVideo = "https://videos.pexels.com/video-files/3183198/3183198-uhd_3840_2160_25fps.mp4";
 
   return (
     <div className="flowmaster-hero relative min-h-screen overflow-hidden bg-background text-foreground">
-      <div className="pointer-events-none absolute inset-0 -z-10 opacity-70">
-        <div className="absolute left-[-10%] top-[-15%] h-[28rem] w-[28rem] rounded-full bg-primary/20 blur-[120px]" />
-        <div className="absolute right-[-15%] top-[20%] h-[32rem] w-[32rem] rounded-full bg-secondary/20 blur-[130px]" />
-        <div className="absolute bottom-[-20%] right-[-5%] h-[30rem] w-[30rem] rounded-full bg-accent/20 blur-[140px]" />
+      <div className="pointer-events-none absolute inset-0 -z-10 opacity-80">
+        <div className="absolute left-[-10%] top-[-15%] h-[28rem] w-[28rem] rounded-full bg-primary/25 blur-[120px]" />
+        <div className="absolute right-[-15%] top-[20%] h-[32rem] w-[32rem] rounded-full bg-secondary/25 blur-[130px]" />
+        <div className="absolute bottom-[-20%] right-[-5%] h-[30rem] w-[30rem] rounded-full bg-accent/25 blur-[140px]" />
       </div>
 
-      <div className="relative mx-auto flex min-h-screen max-w-4xl flex-col px-6 pb-24 pt-32 sm:px-10 lg:px-0">
+      <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-6 pb-24 pt-24 sm:px-10 lg:px-12">
         <header className="flex flex-col items-center text-center">
-          <div className="absolute top-0 flex w-full items-center justify-between px-6 py-4 sm:px-10 lg:px-0">
+          <div className="absolute left-0 right-0 top-0 flex w-full items-center justify-between px-6 py-5 sm:px-10 lg:px-12">
             <Logo size="sm" tagline="By Connective" taglineClassName="hidden sm:inline-flex" />
             {showAuthButtons && (
               <div className="flex items-center gap-4">
@@ -177,62 +199,107 @@ const Splash = () => {
             Exclusive Experiential Membership
           </p>
           <h1 className="flowmaster-hero-title mt-6 text-balance text-4xl font-semibold leading-tight sm:text-5xl">
-            The future of connection is curated.
+            Curated chemistry for founders, creatives, and investors.
           </h1>
-          <p className="mt-6 max-w-2xl text-pretty text-lg text-muted-foreground sm:text-xl">
-            Backed by neuroscience and crafted by world-class hosts, Connective orchestrates immersive experiences
-            where ambitious humans build relationships that accelerate their impact.
+          <p className="mt-6 max-w-3xl text-pretty text-lg text-muted-foreground sm:text-xl">
+            Connective blends live experiences, concierge support, and intelligent matching so every interaction moves you toward your next collaboration, investment, or breakthrough.
           </p>
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Button
-              onClick={() => navigate("/signup")}
-              className="gap-2"
-            >
-              <Sparkles className="h-4 w-4" /> Request an invite
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => navigate("/events")}
-              className="gap-2"
-            >
-              <CalendarDays className="h-4 w-4" /> Explore upcoming salons
-            </Button>
-          </div>
         </header>
 
-        <div className="mt-12">
-          <div className="flowmaster-divider" />
-        </div>
-
-        <section className="flowmaster-section mt-12">
-          <div className="relative overflow-hidden rounded-[2rem] border border-border bg-card">
-            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-primary/10 via-transparent to-transparent" />
-            <img
-              src={experienceImage}
-              alt="Members connecting"
-              className="h-[340px] w-full object-cover opacity-70"
+        <section className="mt-12">
+          <div className="relative overflow-hidden rounded-[28px] border border-border/70 bg-card shadow-[0_25px_80px_-40px_rgba(0,0,0,0.6)]">
+            <video
+              className="absolute inset-0 h-full w-full object-cover"
+              autoPlay
+              loop
+              muted
+              playsInline
+              src={heroVideo}
             />
-            <div className="absolute inset-0 flex flex-col justify-between p-8 sm:p-10">
-              <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary">
-                  <Star className="h-4 w-4" />
-                </span>
-                Connection begins here
-              </div>
-              <div className="space-y-4">
-                <p className="text-sm uppercase tracking-[0.4em] text-muted-foreground">Immersive storytelling</p>
-                <Button
-                  variant="outline"
-                  onClick={() => navigate("/home")}
-                  className="gap-2 w-fit"
-                >
-                  <Play className="h-4 w-4" /> Watch story
-                </Button>
-                <h2 className="text-3xl font-semibold text-foreground sm:text-4xl">
-                  Step inside a world designed for meaningful chemistry.
+            <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/70 to-background/40" />
+            <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background via-background/70 to-transparent" />
+            <div className="relative z-10 grid items-start gap-10 px-6 py-12 sm:px-10 sm:py-14 lg:grid-cols-[1.2fr_0.8fr]">
+              <div className="space-y-6 text-left">
+                <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.3em] text-primary">
+                  <Play className="h-4 w-4" /> Product film
+                </div>
+                <h2 className="text-3xl font-semibold sm:text-4xl">
+                  The new operating system for trusted connection.
                 </h2>
+                <p className="text-base text-muted-foreground sm:text-lg">
+                  Watch how Connective choreographs every moment—from your first concierge call to intimate salons, retreats, and follow-ups that translate chemistry into shared outcomes.
+                </p>
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <Button onClick={() => navigate("/signup")} className="gap-2">
+                    <Sparkles className="h-4 w-4" /> Request an invite
+                  </Button>
+                  <Button variant="outline" onClick={() => navigate("/events")} className="gap-2">
+                    <CalendarDays className="h-4 w-4" /> Upcoming experiences
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2 rounded-full bg-background/70 px-3 py-2">
+                    <ShieldCheck className="h-4 w-4 text-primary" />
+                    Trust-first membership protocols
+                  </div>
+                  <div className="flex items-center gap-2 rounded-full bg-background/70 px-3 py-2">
+                    <Brain className="h-4 w-4 text-primary" />
+                    Neuroscience-backed matching
+                  </div>
+                  <div className="flex items-center gap-2 rounded-full bg-background/70 px-3 py-2">
+                    <Compass className="h-4 w-4 text-primary" />
+                    Guided accountability arcs
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid gap-4 rounded-3xl border border-border/60 bg-background/80 p-6 shadow-[var(--shadow-card)] backdrop-blur">
+                <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground">
+                  Impact snapshots
+                  <Star className="h-4 w-4 text-primary" />
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {journeyStats.map((stat) => (
+                    <div key={stat.label} className="rounded-2xl border border-border/60 bg-card/70 p-4">
+                      <p className="text-3xl font-semibold text-foreground">{stat.value}</p>
+                      <p className="mt-2 text-xs text-muted-foreground">{stat.label}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center gap-3 rounded-2xl bg-primary/10 p-4 text-left">
+                  <HeartHandshake className="h-5 w-5 text-primary" />
+                  <p className="text-sm text-muted-foreground">
+                    Dedicated concierge teams orchestrate every introduction, salon, and follow-up with white-glove care.
+                  </p>
+                </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        <section className="flowmaster-section mt-16 space-y-12">
+          <div className="text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-primary">Connection OS</p>
+            <h2 className="mt-4 text-balance text-3xl font-semibold text-foreground sm:text-4xl">
+              Designed to turn chance meetings into momentum.
+            </h2>
+            <p className="mt-4 text-pretty text-base text-muted-foreground">
+              Human strategy plus intelligent tooling keeps every interaction intentional—from the first hello to the follow-up that seals the partnership.
+            </p>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-3">
+            {operatingLayers.map((layer) => (
+              <FloatingParallaxCard
+                key={layer.title}
+                className="h-full border border-border bg-card/90 p-6 text-left shadow-[var(--shadow-card)]"
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/15 text-primary">
+                  <layer.icon className="h-6 w-6" />
+                </div>
+                <h3 className="mt-4 text-lg font-semibold text-foreground">{layer.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{layer.description}</p>
+              </FloatingParallaxCard>
+            ))}
           </div>
         </section>
 
@@ -240,7 +307,7 @@ const Splash = () => {
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.45em] text-primary">Crafted experiences</p>
             <h2 className="mt-4 text-balance text-3xl font-semibold text-foreground sm:text-4xl">
-              Curated experiences crafted for depth.
+              Experiences that move relationships forward.
             </h2>
             <p className="mt-4 text-pretty text-base text-muted-foreground">
               Every gathering is intentionally designed to foster vulnerability, brilliance, and long-term collaboration.
@@ -250,7 +317,7 @@ const Splash = () => {
             {experienceCards.map((card) => (
               <FloatingParallaxCard
                 key={card.title}
-                className="flex flex-col border border-border bg-card p-8 shadow-[var(--shadow-card)]"
+                className="flex flex-col border border-border bg-card/90 p-8 shadow-[var(--shadow-card)]"
               >
                 <div className="flex items-start gap-5">
                   <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-primary">
@@ -287,8 +354,7 @@ const Splash = () => {
               Your curated journey is guided by experts.
             </h2>
             <p className="mx-auto max-w-2xl text-pretty text-base text-muted-foreground">
-              We combine human insight with proprietary intelligence so every step feels intentional, elevated, and
-              uniquely yours.
+              We combine human insight with proprietary intelligence so every step feels intentional, elevated, and uniquely yours.
             </p>
           </div>
           <div className="grid gap-6 sm:grid-cols-3">
@@ -312,6 +378,9 @@ const Splash = () => {
                   loading="lazy"
                 />
                 <div className="space-y-2 p-6">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/15 text-primary">
+                    <highlight.icon className="h-5 w-5" />
+                  </div>
                   <h3 className="text-lg font-semibold text-foreground">{highlight.title}</h3>
                   <p className="text-sm text-muted-foreground">{highlight.description}</p>
                 </div>
@@ -359,8 +428,7 @@ const Splash = () => {
                   Membership benefits designed to elevate every interaction.
                 </h2>
                 <p className="max-w-2xl text-pretty text-base text-muted-foreground">
-                  From curated introductions to immersive residencies, every benefit is engineered so your circle, influence,
-                  and wellbeing expand in tandem.
+                  From curated introductions to immersive residencies, every benefit is engineered so your circle, influence, and wellbeing expand in tandem.
                 </p>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
