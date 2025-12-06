@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 
 const HeroSection = () => {
   const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [heroVideoSrc, setHeroVideoSrc] = useState("/videos/hero-video.mp4");
   const [videoLoaded, setVideoLoaded] = useState(false);
 
   useEffect(() => {
@@ -17,12 +19,55 @@ const HeroSection = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+
+    let isCancelled = false;
+
+    const loadHeroVideo = async () => {
+      const { data, error } = await supabase.storage.from("videos").list("hero", {
+        limit: 1,
+        sortBy: { column: "created_at", order: "desc" },
+      });
+
+      if (error) {
+        console.error("hero-video:list-error", error.message);
+        return;
+      }
+
+      if (!data || data.length === 0) return;
+
+      const latestVideo =
+        data.find((item) => /\.(mp4|mov|webm)$/i.test(item.name)) ?? data[0];
+
+      const { data: publicUrlData, error: publicUrlError } = supabase.storage
+        .from("videos")
+        .getPublicUrl(`hero/${latestVideo.name}`);
+
+      if (publicUrlError) {
+        console.error("hero-video:url-error", publicUrlError.message);
+        return;
+      }
+
+      if (!isCancelled && publicUrlData?.publicUrl) {
+        setHeroVideoSrc(publicUrlData.publicUrl);
+      }
+    };
+
+    loadHeroVideo();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
   return (
     <section className="relative w-full min-h-[70vh] h-[80vh] md:h-[90vh] lg:h-screen overflow-hidden">
       {/* Background Video Layer */}
       <div className="absolute inset-0 z-0">
         <motion.video
           ref={videoRef}
+          key={heroVideoSrc}
           initial={{ opacity: 0 }}
           animate={{ opacity: videoLoaded ? 1 : 0 }}
           transition={{ duration: 1.2, ease: "easeOut" }}
@@ -33,7 +78,7 @@ const HeroSection = () => {
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src="/videos/hero-video.mp4" type="video/mp4" />
+          <source src={heroVideoSrc} type="video/mp4" />
         </motion.video>
 
         {/* Dark Overlay Gradient - stronger on mobile for readability */}
