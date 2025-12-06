@@ -75,6 +75,13 @@ const createStubClient = (): SupabaseClient<Database> => {
     unsubscribe: () => {},
   });
 
+  const storage = {
+    from: () => ({
+      list: async () => ({ data: null, error }),
+      getPublicUrl: () => ({ data: { publicUrl: "" }, error }),
+    }),
+  };
+
   return {
     auth: {
       getSession: async () => ({ data: { session: null }, error }),
@@ -99,6 +106,7 @@ const createStubClient = (): SupabaseClient<Database> => {
     from: () => builder,
     channel,
     removeChannel: () => {},
+    storage,
   } as unknown as SupabaseClient<Database>;
 };
 
