@@ -377,14 +377,14 @@ const Home = () => {
                 </ul>
               </div>
 
-              <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                <Badge variant="secondary" className="text-emerald-500">
+              <div className="flex flex-wrap gap-2 text-xs">
+                <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-medium">
                   Auto reminders
                 </Badge>
-                <Badge variant="secondary" className="text-emerald-500">
+                <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-medium">
                   AI agenda prompts
                 </Badge>
-                <Badge variant="secondary" className="text-emerald-500">
+                <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-medium">
                   Post-event follow-ups
                 </Badge>
               </div>
