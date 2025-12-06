@@ -235,7 +235,7 @@ const Home = () => {
             Experience connections differently
           </Badge>
 
-          <h2 className="mt-4 text-3xl font-bold text-foreground">Find genuine friends & real experiences</h2>
+          <h2 className="mt-4 text-4xl md:text-5xl font-bold text-foreground">Find genuine friends & real experiences</h2>
 
           <p className="mt-2 text-muted-foreground">
             Connective helps you find people you vibe with, join curated events,
