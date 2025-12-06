@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-export const useInViewPulse = <T extends HTMLElement>() => {
+export const useInViewPulse = <T extends Element = HTMLElement>() => {
   const ref = useRef<T | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 

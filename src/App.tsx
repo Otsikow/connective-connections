@@ -187,7 +187,7 @@ const AppContent = () => {
 
   const showLoadingScreen = isBooting || !hasCompletedInitialLoad;
 
-  const layoutStyles: CSSProperties = {
+  const layoutStyles = {
     "--bottom-nav-height": "5.75rem",
     "--top-bar-height": "4rem",
     backgroundImage: [
@@ -196,7 +196,7 @@ const AppContent = () => {
       "radial-gradient(circle at 15% 75%, hsl(var(--accent) / 0.06), transparent 30%)",
       "linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background)) 100%)"
     ].join(","),
-  };
+  } as React.CSSProperties;
 
   return (
     <div className="relative flex min-h-screen flex-col bg-background text-foreground" style={layoutStyles}>

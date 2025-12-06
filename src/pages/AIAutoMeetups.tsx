@@ -198,7 +198,7 @@ const AIAutoMeetups = () => {
 
   return (
     <div className="space-y-6 pb-10">
-      <BackButton label="Back" />
+      <BackButton />
       <div className="flex flex-col gap-2">
         <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-primary">
           <Sparkles className="h-4 w-4" />
