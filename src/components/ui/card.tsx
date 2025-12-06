@@ -26,6 +26,8 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       hoverScale = true,
       highlighted = false,
       idleFloat = false,
+      children,
+      style,
       ...props
     },
     ref
@@ -45,8 +47,11 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
           ref={ref}
           data-stagger-card="true"
           className={mergedClasses}
+          style={style}
           {...props}
-        />
+        >
+          {children}
+        </div>
       );
     }
 
@@ -56,6 +61,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
         ref={ref}
         data-stagger-card="true"
         className={mergedClasses}
+        style={style}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.38, ease: [0.4, 0, 0.2, 1] }}
@@ -79,8 +85,9 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
           scale: 0.97,
           transition: { duration: 0.1 },
         }}
-        {...props}
-      />
+      >
+        {children}
+      </motion.div>
     );
   }
 );
