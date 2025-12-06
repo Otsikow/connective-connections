@@ -3,51 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription
-} from "@/components/ui/card";
-
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger
-} from "@/components/ui/tabs";
-
-import {
-  Carousel,
-  CarouselItem,
-  CarouselContent,
-  CarouselNext,
-  CarouselPrevious
-} from "@/components/ui/carousel";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription
-} from "@/components/ui/dialog";
-
-import {
-  Sparkles,
-  PlayCircle,
-  Users,
-  Send,
-  MapPin,
-  Clock,
-  CalendarClock,
-  ShieldCheck,
-  Sparkle
-} from "lucide-react";
-
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Carousel, CarouselItem, CarouselContent, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Sparkles, PlayCircle, Users, Send, MapPin, Clock, CalendarClock, ShieldCheck, Sparkle } from "lucide-react";
 import { useSubscription } from "@/hooks/useSubscription";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { generateAvatarUrl } from "@/lib/avatar";
@@ -65,10 +25,8 @@ const deriveInitials = (fullName?: string | null, email?: string | null) => {
     if (p.length >= 2) return `${p[0][0]}${p[p.length - 1][0]}`.toUpperCase();
     return p[0][0].toUpperCase();
   }
-
   const id = email?.split("@")[0];
   if (id) return id.slice(0, 2).toUpperCase();
-
   return "U";
 };
 
@@ -79,117 +37,123 @@ const deriveInitials = (fullName?: string | null, email?: string | null) => {
 const Home = () => {
   const navigate = useNavigate();
   usePageTitle("Member Home");
-
-  const { userId, fullName, email, tier } = useSubscription();
+  const {
+    userId,
+    fullName,
+    email,
+    tier
+  } = useSubscription();
   const isAuthenticated = Boolean(userId);
   const isSubscribed = tier !== "basic";
-
   const [activeFeature, setActiveFeature] = useState("friends");
   const [showSubPrompt, setShowSubPrompt] = useState(false);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const [pendingPath, setPendingPath] = useState<string | null>(null);
-
-  const userInitials = useMemo(
-    () => deriveInitials(fullName, email),
-    [fullName, email]
-  );
-
+  const userInitials = useMemo(() => deriveInitials(fullName, email), [fullName, email]);
   const userAvatarUrl = generateAvatarUrl(fullName ?? email ?? "connective-user");
 
   /* ------------------------------------------------------------ */
   /* FEATURE DEFINITIONS */
   /* ------------------------------------------------------------ */
 
-  const features = [
-    {
-      value: "concierge",
-      title: "AI Friendship Concierge",
-      desc: "Tell us who you want to meet—concierge matches, schedules, and sends invites for you.",
-      highlight: "Handles invites, venues, and follow-ups automatically.",
-      badge: "bg-primary/10 text-primary",
-      cta: { path: "/concierge", requiresAuth: true },
-      spotlight: {
-        avatar: generateAvatarUrl("Concierge spotlight"),
-        name: "Concierge",
-        tagline: "Organised your last three meetups"
-      }
+  const features = [{
+    value: "concierge",
+    title: "AI Friendship Concierge",
+    desc: "Tell us who you want to meet—concierge matches, schedules, and sends invites for you.",
+    highlight: "Handles invites, venues, and follow-ups automatically.",
+    badge: "bg-primary/10 text-primary",
+    cta: {
+      path: "/concierge",
+      requiresAuth: true
     },
-    {
-      value: "friends",
-      title: "Find your kind of people",
-      desc: "Tell us what lights you up and we introduce you to people already on your wavelength.",
-      highlight: "12 new connections matched for you this week.",
-      badge: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
-      cta: { path: "/friend-finder", requiresAuth: true },
-      spotlight: {
-        avatar: generateAvatarUrl("Jordan spotlight"),
-        name: "Jordan",
-        tagline: "Met three new hiking buddies"
-      }
-    },
-    {
-      value: "events",
-      title: "Discover local experiences",
-      desc: "Curated gatherings, classes, and adventures hosted by members.",
-      highlight: "120 local experiences this month.",
-      badge: "bg-blue-500/15 text-blue-600 dark:text-blue-400",
-      cta: { path: "/events", requiresAuth: true },
-      spotlight: {
-        avatar: generateAvatarUrl("Lucia spotlight"),
-        name: "Lucia",
-        tagline: "Hosts a monthly poetry circle"
-      }
-    },
-    {
-      value: "groups",
-      title: "Join meaningful groups",
-      desc: "Micro-communities built around interests and vibes.",
-      highlight: "4 new communities recommended today.",
-      badge: "bg-primary/10 text-primary",
-      cta: { path: "/community", requiresAuth: true, requiresSubscription: true },
-      spotlight: {
-        avatar: generateAvatarUrl("Priya spotlight"),
-        name: "Priya",
-        tagline: "Joined the storytellers collective"
-      }
-    },
-    {
-      value: "micro-groups",
-      title: "Auto-form micro-groups",
-      desc: "AI assembles 3–6 person crews by hobbies, rhythms, and faith cues.",
-      highlight: "Instantly outputs a ready-to-launch circle.",
-      badge: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
-      cta: { path: "/ai-group-builder", requiresAuth: true },
-      spotlight: {
-        avatar: generateAvatarUrl("Micro groups spotlight"),
-        name: "Samira",
-        tagline: "Formed a sunrise creative pod"
-      }
-    },
-    {
-      value: "chat",
-      title: "Chat without awkward starts",
-      desc: "Guided prompts keep conversations natural and fun.",
-      highlight: "Instant translation in 28 languages with Pro.",
-      badge: "bg-rose-500/15 text-rose-600 dark:text-rose-400",
-      cta: {
-        path: "/messages",
-        requiresAuth: true,
-        requiresSubscription: true
-      },
-      spotlight: {
-        avatar: generateAvatarUrl("Miguel spotlight"),
-        name: "Miguel",
-        tagline: "Had 5 new chats last weekend"
-      }
+    spotlight: {
+      avatar: generateAvatarUrl("Concierge spotlight"),
+      name: "Concierge",
+      tagline: "Organised your last three meetups"
     }
-  ];
-
+  }, {
+    value: "friends",
+    title: "Find your kind of people",
+    desc: "Tell us what lights you up and we introduce you to people already on your wavelength.",
+    highlight: "12 new connections matched for you this week.",
+    badge: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+    cta: {
+      path: "/friend-finder",
+      requiresAuth: true
+    },
+    spotlight: {
+      avatar: generateAvatarUrl("Jordan spotlight"),
+      name: "Jordan",
+      tagline: "Met three new hiking buddies"
+    }
+  }, {
+    value: "events",
+    title: "Discover local experiences",
+    desc: "Curated gatherings, classes, and adventures hosted by members.",
+    highlight: "120 local experiences this month.",
+    badge: "bg-blue-500/15 text-blue-600 dark:text-blue-400",
+    cta: {
+      path: "/events",
+      requiresAuth: true
+    },
+    spotlight: {
+      avatar: generateAvatarUrl("Lucia spotlight"),
+      name: "Lucia",
+      tagline: "Hosts a monthly poetry circle"
+    }
+  }, {
+    value: "groups",
+    title: "Join meaningful groups",
+    desc: "Micro-communities built around interests and vibes.",
+    highlight: "4 new communities recommended today.",
+    badge: "bg-primary/10 text-primary",
+    cta: {
+      path: "/community",
+      requiresAuth: true,
+      requiresSubscription: true
+    },
+    spotlight: {
+      avatar: generateAvatarUrl("Priya spotlight"),
+      name: "Priya",
+      tagline: "Joined the storytellers collective"
+    }
+  }, {
+    value: "micro-groups",
+    title: "Auto-form micro-groups",
+    desc: "AI assembles 3–6 person crews by hobbies, rhythms, and faith cues.",
+    highlight: "Instantly outputs a ready-to-launch circle.",
+    badge: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
+    cta: {
+      path: "/ai-group-builder",
+      requiresAuth: true
+    },
+    spotlight: {
+      avatar: generateAvatarUrl("Micro groups spotlight"),
+      name: "Samira",
+      tagline: "Formed a sunrise creative pod"
+    }
+  }, {
+    value: "chat",
+    title: "Chat without awkward starts",
+    desc: "Guided prompts keep conversations natural and fun.",
+    highlight: "Instant translation in 28 languages with Pro.",
+    badge: "bg-rose-500/15 text-rose-600 dark:text-rose-400",
+    cta: {
+      path: "/messages",
+      requiresAuth: true,
+      requiresSubscription: true
+    },
+    spotlight: {
+      avatar: generateAvatarUrl("Miguel spotlight"),
+      name: "Miguel",
+      tagline: "Had 5 new chats last weekend"
+    }
+  }];
   const selected = features.find(f => f.value === activeFeature)!;
 
   /* ------------------------------------------------------------ */
   /* ACCESS HANDLERS */
-/* ------------------------------------------------------------ */
+  /* ------------------------------------------------------------ */
 
   const handleNavigate = (path: string, opts?: any) => {
     if (opts?.requiresAuth && !isAuthenticated) {
@@ -197,80 +161,70 @@ const Home = () => {
       setShowAuthPrompt(true);
       return;
     }
-
     if (opts?.requiresSubscription && !isSubscribed) {
       setShowSubPrompt(true);
       return;
     }
-
     navigate(path);
   };
 
   /* ------------------------------------------------------------ */
   /* MOCK DATA */
-/* ------------------------------------------------------------ */
+  /* ------------------------------------------------------------ */
 
-  const events = [
-    {
-      id: "1",
-      title: "Sunrise Social Hike",
-      date: "Sat, Apr 20",
-      location: "Ridgeview Trail",
-      attendees: 18,
-      tags: ["Outdoors", "Mindfulness"],
-      image:
-        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&w=1200&q=80"
-    },
-    {
-      id: "2",
-      title: "Indie Coffee Crawl",
-      date: "Sun, Apr 28",
-      location: "Downtown",
-      attendees: 32,
-      tags: ["Food", "Creative"],
-      image:
-        "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&w=1200&q=80"
-    }
-  ];
-
-  const communities = [
-    { name: "The Gathering Table", members: "1.1k members" },
-    { name: "Rooftop Runners", members: "2.4k members" },
-    { name: "Side Quest Gamers", members: "3.0k members" }
-  ];
-
-  const testimonials = [
-    { author: "Serena", quote: "Someone finally listened to what I was looking for." },
-    { author: "Malik", quote: "Hosting workshops has never been easier." }
-  ];
-
-  const aiGroupFeatures = [
-    {
-      title: "Smart clustering",
-      description:
-        "Groups 4–10 people who share interests, vibe, and free time windows.",
-      icon: <Sparkle className="h-5 w-5 text-primary" />
-    },
-    {
-      title: "Auto meetup planning",
-      description:
-        "Suggests names, venues, and dates so you can just say yes.",
-      icon: <CalendarClock className="h-5 w-5 text-primary" />
-    },
-    {
-      title: "Built-in safety",
-      description:
-        "RSVP tracking, chat moderation, and reminders are handled for you.",
-      icon: <ShieldCheck className="h-5 w-5 text-primary" />
-    }
-  ];
+  const events = [{
+    id: "1",
+    title: "Sunrise Social Hike",
+    date: "Sat, Apr 20",
+    location: "Ridgeview Trail",
+    attendees: 18,
+    tags: ["Outdoors", "Mindfulness"],
+    image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&w=1200&q=80"
+  }, {
+    id: "2",
+    title: "Indie Coffee Crawl",
+    date: "Sun, Apr 28",
+    location: "Downtown",
+    attendees: 32,
+    tags: ["Food", "Creative"],
+    image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&w=1200&q=80"
+  }];
+  const communities = [{
+    name: "The Gathering Table",
+    members: "1.1k members"
+  }, {
+    name: "Rooftop Runners",
+    members: "2.4k members"
+  }, {
+    name: "Side Quest Gamers",
+    members: "3.0k members"
+  }];
+  const testimonials = [{
+    author: "Serena",
+    quote: "Someone finally listened to what I was looking for."
+  }, {
+    author: "Malik",
+    quote: "Hosting workshops has never been easier."
+  }];
+  const aiGroupFeatures = [{
+    title: "Smart clustering",
+    description: "Groups 4–10 people who share interests, vibe, and free time windows.",
+    icon: <Sparkle className="h-5 w-5 text-primary" />
+  }, {
+    title: "Auto meetup planning",
+    description: "Suggests names, venues, and dates so you can just say yes.",
+    icon: <CalendarClock className="h-5 w-5 text-primary" />
+  }, {
+    title: "Built-in safety",
+    description: "RSVP tracking, chat moderation, and reminders are handled for you.",
+    icon: <ShieldCheck className="h-5 w-5 text-primary" />
+  }];
 
   /* ------------------------------------------------------------ */
   /* RENDER */
-/* ------------------------------------------------------------ */
+  /* ------------------------------------------------------------ */
 
-  return (
-    <div className="relative min-h-screen overflow-hidden bg-background pb-28">
+  return <div className="relative min-h-screen overflow-hidden bg-background pb-28">
       <ParallaxStrip />
 
       <div className="relative mx-auto w-full max-w-5xl space-y-10 px-4 py-8">
@@ -281,9 +235,7 @@ const Home = () => {
             Experience connections differently
           </Badge>
 
-          <h2 className="mt-4 text-3xl font-bold text-foreground">
-            Find genuine friends & real experiences—no pressure.
-          </h2>
+          <h2 className="mt-4 text-3xl font-bold text-foreground">Find genuine friends & real experiences</h2>
 
           <p className="mt-2 text-muted-foreground">
             Connective helps you find people you vibe with, join curated events,
@@ -295,27 +247,17 @@ const Home = () => {
               Get started
             </Button>
 
-            <Button
-              variant="outline"
-              className="rounded-full"
-              onClick={() => navigate("/splash")}
-            >
+            <Button variant="outline" className="rounded-full" onClick={() => navigate("/splash")}>
               <PlayCircle className="h-4 w-4 mr-2" /> Watch demo
             </Button>
 
-            <Button
-              variant="secondary"
-              onClick={() => navigate("/real-life-engine")}
-            >
+            <Button variant="secondary" onClick={() => navigate("/real-life-engine")}>
               <Sparkles className="h-4 w-4 mr-2" /> Real-life first AI
             </Button>
 
-            <Button
-              variant="ghost"
-              onClick={() =>
-                handleNavigate("/community", { requiresAuth: true })
-              }
-            >
+            <Button variant="ghost" onClick={() => handleNavigate("/community", {
+            requiresAuth: true
+          })}>
               <Users className="h-4 w-4 mr-2" /> Explore community
             </Button>
           </div>
@@ -325,27 +267,16 @@ const Home = () => {
         <section>
           <Tabs value={activeFeature} onValueChange={setActiveFeature}>
             <TabsList className="grid grid-cols-4 mb-4 rounded-full bg-muted p-1">
-              {features.map(f => (
-                <TabsTrigger
-                  key={f.value}
-                  value={f.value}
-                  className="rounded-full text-sm data-[state=active]:bg-background data-[state=active]:text-foreground"
-                >
+              {features.map(f => <TabsTrigger key={f.value} value={f.value} className="rounded-full text-sm data-[state=active]:bg-background data-[state=active]:text-foreground">
                   {f.title.split(" ")[0]}
-                </TabsTrigger>
-              ))}
+                </TabsTrigger>)}
             </TabsList>
 
             <TabsContent value={selected.value}>
-              <Card
-                className="cursor-pointer"
-                onClick={() =>
-                  handleNavigate(selected.cta.path, {
-                    requiresAuth: selected.cta.requiresAuth,
-                    requiresSubscription: selected.cta.requiresSubscription
-                  })
-                }
-              >
+              <Card className="cursor-pointer" onClick={() => handleNavigate(selected.cta.path, {
+              requiresAuth: selected.cta.requiresAuth,
+              requiresSubscription: selected.cta.requiresSubscription
+            })}>
                 <CardHeader>
                   <Badge className={cn("rounded-full px-3 py-1", selected.badge)}>
                     {selected.highlight}
@@ -355,15 +286,13 @@ const Home = () => {
                 </CardHeader>
 
                 <CardContent className="flex items-center justify-between">
-                  <Button
-                    onClick={e => {
-                      e.stopPropagation();
-                      handleNavigate(selected.cta.path, {
-                        requiresAuth: selected.cta.requiresAuth,
-                        requiresSubscription: selected.cta.requiresSubscription
-                      });
-                    }}
-                  >
+                  <Button onClick={e => {
+                  e.stopPropagation();
+                  handleNavigate(selected.cta.path, {
+                    requiresAuth: selected.cta.requiresAuth,
+                    requiresSubscription: selected.cta.requiresSubscription
+                  });
+                }}>
                     Continue
                   </Button>
 
@@ -428,11 +357,7 @@ const Home = () => {
               </div>
 
               <div className="grid gap-3 md:grid-cols-3">
-                {aiGroupFeatures.map(feature => (
-                  <div
-                    key={feature.title}
-                    className="rounded-xl border border-border bg-card p-3 text-sm"
-                  >
+                {aiGroupFeatures.map(feature => <div key={feature.title} className="rounded-xl border border-border bg-card p-3 text-sm">
                     <div className="flex items-center gap-2 font-semibold text-foreground">
                       {feature.icon}
                       {feature.title}
@@ -440,26 +365,20 @@ const Home = () => {
                     <p className="mt-1 text-xs text-muted-foreground">
                       {feature.description}
                     </p>
-                  </div>
-                ))}
+                  </div>)}
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <Button
-                  onClick={() => handleNavigate("/events", { requiresAuth: true })}
-                >
+                <Button onClick={() => handleNavigate("/events", {
+                requiresAuth: true
+              })}>
                   Preview AI meetup
                 </Button>
 
-                <Button
-                  variant="outline"
-                  onClick={() =>
-                    handleNavigate("/community", {
-                      requiresAuth: true,
-                      requiresSubscription: true
-                    })
-                  }
-                >
+                <Button variant="outline" onClick={() => handleNavigate("/community", {
+                requiresAuth: true,
+                requiresSubscription: true
+              })}>
                   Let AI form a group
                 </Button>
               </div>
@@ -500,14 +419,10 @@ const Home = () => {
                 </Badge>
               </div>
 
-              <Button
-                onClick={() =>
-                  handleNavigate("/community", {
-                    requiresAuth: true,
-                    requiresSubscription: true
-                  })
-                }
-              >
+              <Button onClick={() => handleNavigate("/community", {
+              requiresAuth: true,
+              requiresSubscription: true
+            })}>
                 Enable autopilot
               </Button>
             </CardContent>
@@ -525,21 +440,11 @@ const Home = () => {
             <CardContent>
               <Carousel>
                 <CarouselContent>
-                  {events.map(ev => (
-                    <CarouselItem key={ev.id} className="md:basis-1/2">
-                      <div
-                        className="rounded-xl border border-border shadow-sm overflow-hidden cursor-pointer"
-                        onClick={() =>
-                          handleNavigate(`/events/${ev.id}`, {
-                            requiresAuth: true
-                          })
-                        }
-                      >
-                        <img
-                          src={ev.image}
-                          className="h-44 w-full object-cover"
-                          alt=""
-                        />
+                  {events.map(ev => <CarouselItem key={ev.id} className="md:basis-1/2">
+                      <div className="rounded-xl border border-border shadow-sm overflow-hidden cursor-pointer" onClick={() => handleNavigate(`/events/${ev.id}`, {
+                    requiresAuth: true
+                  })}>
+                        <img src={ev.image} className="h-44 w-full object-cover" alt="" />
 
                         <div className="p-4 space-y-2">
                           <h3 className="font-semibold text-foreground">
@@ -553,22 +458,18 @@ const Home = () => {
                               {ev.attendees}+ going
                             </span>
 
-                            <Button
-                              size="sm"
-                              onClick={e => {
-                                e.stopPropagation();
-                                handleNavigate(`/events/${ev.id}`, {
-                                  requiresAuth: true
-                                });
-                              }}
-                            >
+                            <Button size="sm" onClick={e => {
+                          e.stopPropagation();
+                          handleNavigate(`/events/${ev.id}`, {
+                            requiresAuth: true
+                          });
+                        }}>
                               Join
                             </Button>
                           </div>
                         </div>
                       </div>
-                    </CarouselItem>
-                  ))}
+                    </CarouselItem>)}
                 </CarouselContent>
 
                 <div className="flex justify-end gap-2 mt-4">
@@ -588,23 +489,17 @@ const Home = () => {
             </CardHeader>
 
             <CardContent className="space-y-3">
-              {communities.map(c => (
-                <div
-                  key={c.name}
-                  className="rounded-xl border border-border p-4 hover:border-primary cursor-pointer"
-                >
+              {communities.map(c => <div key={c.name} className="rounded-xl border border-border p-4 hover:border-primary cursor-pointer">
                   <p className="font-semibold text-foreground">{c.name}</p>
                   <p className="text-sm text-muted-foreground">{c.members}</p>
-                </div>
-              ))}
+                </div>)}
             </CardContent>
           </Card>
         </section>
 
         {/* TESTIMONIALS */}
         <section className="grid gap-6 md:grid-cols-2">
-          {testimonials.map(t => (
-            <Card key={t.author} className="shadow-sm">
+          {testimonials.map(t => <Card key={t.author} className="shadow-sm">
               <CardContent className="p-5">
                 <p className="text-lg font-medium text-foreground">
                   “{t.quote}”
@@ -620,20 +515,14 @@ const Home = () => {
                   </span>
                 </div>
               </CardContent>
-            </Card>
-          ))}
+            </Card>)}
         </section>
       </div>
 
       {/* FLOATING CTA */}
-      <Button
-        className="fixed right-4 bottom-[calc(env(safe-area-inset-bottom,0px)+5.5rem)] sm:right-6 sm:bottom-[calc(env(safe-area-inset-bottom,0px)+5.75rem)] rounded-full shadow-lg"
-        onClick={() =>
-          handleNavigate("/host/create-event", {
-            requiresAuth: true
-          })
-        }
-      >
+      <Button className="fixed right-4 bottom-[calc(env(safe-area-inset-bottom,0px)+5.5rem)] sm:right-6 sm:bottom-[calc(env(safe-area-inset-bottom,0px)+5.75rem)] rounded-full shadow-lg" onClick={() => handleNavigate("/host/create-event", {
+      requiresAuth: true
+    })}>
         <Send className="h-4 w-4 mr-2" /> Host an experience
       </Button>
 
@@ -648,11 +537,9 @@ const Home = () => {
           </DialogHeader>
 
           <DialogFooter>
-            <Button
-              onClick={() =>
-                handleNavigate("/profile", { requiresAuth: true })
-              }
-            >
+            <Button onClick={() => handleNavigate("/profile", {
+            requiresAuth: true
+          })}>
               Subscribe
             </Button>
 
@@ -664,13 +551,10 @@ const Home = () => {
       </Dialog>
 
       {/* AUTH DIALOG */}
-      <Dialog
-        open={showAuthPrompt}
-        onOpenChange={o => {
-          setShowAuthPrompt(o);
-          if (!o) setPendingPath(null);
-        }}
-      >
+      <Dialog open={showAuthPrompt} onOpenChange={o => {
+      setShowAuthPrompt(o);
+      if (!o) setPendingPath(null);
+    }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Sign in to continue</DialogTitle>
@@ -681,32 +565,26 @@ const Home = () => {
 
           <DialogFooter>
             <Button asChild variant="ghost">
-              <Link
-                to="/login"
-                state={{
-                  next: pendingPath ?? undefined
-                }}
-                onClick={() => setShowAuthPrompt(false)}
-              >
+              <Link to="/login" state={{
+              next: pendingPath ?? undefined
+            }} onClick={() => setShowAuthPrompt(false)}>
                 Sign in
               </Link>
             </Button>
 
-            <Button
-              onClick={() => {
-                setShowAuthPrompt(false);
-                navigate("/signup", {
-                  state: { next: pendingPath ?? undefined }
-                });
-              }}
-            >
+            <Button onClick={() => {
+            setShowAuthPrompt(false);
+            navigate("/signup", {
+              state: {
+                next: pendingPath ?? undefined
+              }
+            });
+          }}>
               Create account
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>;
 };
-
 export default Home;
