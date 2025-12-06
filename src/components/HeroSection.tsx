@@ -18,7 +18,7 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="relative w-full h-[80vh] md:h-[90vh] lg:h-screen overflow-hidden">
+    <section className="relative w-full min-h-[70vh] h-[80vh] md:h-[90vh] lg:h-screen overflow-hidden">
       {/* Background Video Layer */}
       <div className="absolute inset-0 z-0">
         <motion.video
@@ -37,9 +37,9 @@ const HeroSection = () => {
         </motion.video>
 
         {/* Dark Overlay Gradient - stronger on mobile for readability */}
-        <div 
-          className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/25 to-background/60 
-                     md:from-background/25 md:via-background/20 md:to-background/50"
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-background/45 via-background/35 to-background/70
+                     md:from-background/25 md:via-background/20 md:to-background/55"
           aria-hidden="true"
         />
         
@@ -52,15 +52,15 @@ const HeroSection = () => {
       </div>
 
       {/* Foreground Content Layer */}
-      <div className="relative z-10 h-full flex flex-col justify-center items-center px-6 md:px-12 lg:px-20">
-        <div className="max-w-4xl mx-auto text-center pt-[10vh] md:pt-[5vh]">
+      <div className="relative z-10 h-full flex flex-col justify-center items-center px-4 sm:px-6 md:px-12 lg:px-20">
+        <div className="max-w-4xl mx-auto text-center pt-[8vh] md:pt-[5vh]">
           
           {/* Headline */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight
+            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight
                        text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]
                        [text-shadow:0_2px_12px_rgba(0,0,0,0.6),0_4px_24px_rgba(0,0,0,0.4)]"
           >
@@ -76,7 +76,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
-            className="mt-6 md:mt-8 text-lg sm:text-xl md:text-2xl text-white/90 max-w-2xl mx-auto
+            className="mt-4 sm:mt-6 md:mt-8 text-base sm:text-xl md:text-2xl text-white/90 max-w-3xl mx-auto
                        font-medium leading-relaxed
                        drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]
                        [text-shadow:0_1px_8px_rgba(0,0,0,0.5)]"
@@ -90,12 +90,12 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7, ease: "easeOut" }}
-            className="mt-10 md:mt-12 flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center items-center"
+            className="mt-8 sm:mt-10 md:mt-12 flex flex-col sm:flex-row gap-3 sm:gap-5 justify-center items-center"
           >
             <Button
               size="lg"
               onClick={() => navigate("/signup")}
-              className="w-full sm:w-auto min-w-[200px] h-14 text-lg font-semibold
+              className="w-full sm:w-auto min-w-[200px] h-12 text-base font-semibold sm:h-14 sm:text-lg
                          bg-primary hover:bg-primary/90 text-primary-foreground
                          shadow-[0_8px_32px_rgba(255,138,60,0.4)] hover:shadow-[0_12px_40px_rgba(255,138,60,0.5)]
                          transition-all duration-300 hover:scale-105"
@@ -107,7 +107,7 @@ const HeroSection = () => {
               size="lg"
               variant="outline"
               onClick={() => navigate("/events")}
-              className="w-full sm:w-auto min-w-[200px] h-14 text-lg font-semibold
+              className="w-full sm:w-auto min-w-[200px] h-12 text-base font-semibold sm:h-14 sm:text-lg
                          bg-white/10 backdrop-blur-md border-white/30 text-white
                          hover:bg-white/20 hover:border-white/50
                          shadow-[0_4px_24px_rgba(0,0,0,0.3)]
@@ -122,19 +122,19 @@ const HeroSection = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 1.0 }}
-            className="mt-12 md:mt-16 flex flex-wrap justify-center gap-6 md:gap-10 text-white/70"
+            className="mt-8 sm:mt-12 md:mt-16 flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-10 text-white/80"
           >
-            <div className="flex items-center gap-2">
-              <span className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg">50K+</span>
-              <span className="text-sm md:text-base">Active Members</span>
+            <div className="flex items-center gap-2 rounded-full bg-black/25 px-4 py-2 backdrop-blur-sm shadow-sm">
+              <span className="text-xl sm:text-2xl md:text-3xl font-bold text-white drop-shadow-lg">50K+</span>
+              <span className="text-xs sm:text-sm md:text-base">Active Members</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg">1.2K+</span>
-              <span className="text-sm md:text-base">Monthly Events</span>
+            <div className="flex items-center gap-2 rounded-full bg-black/25 px-4 py-2 backdrop-blur-sm shadow-sm">
+              <span className="text-xl sm:text-2xl md:text-3xl font-bold text-white drop-shadow-lg">1.2K+</span>
+              <span className="text-xs sm:text-sm md:text-base">Monthly Events</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg">4.9★</span>
-              <span className="text-sm md:text-base">User Rating</span>
+            <div className="flex items-center gap-2 rounded-full bg-black/25 px-4 py-2 backdrop-blur-sm shadow-sm">
+              <span className="text-xl sm:text-2xl md:text-3xl font-bold text-white drop-shadow-lg">4.9★</span>
+              <span className="text-xs sm:text-sm md:text-base">User Rating</span>
             </div>
           </motion.div>
         </div>

@@ -490,9 +490,13 @@ const Home = () => {
       </div>
 
       {/* FLOATING CTA */}
-      <Button className="fixed right-4 bottom-[calc(env(safe-area-inset-bottom,0px)+5.5rem)] sm:right-6 sm:bottom-[calc(env(safe-area-inset-bottom,0px)+5.75rem)] rounded-full shadow-lg" onClick={() => handleNavigate("/host/create-event", {
-      requiresAuth: true
-    })}>
+      <Button
+        size="sm"
+        className="fixed inset-x-4 bottom-[calc(env(safe-area-inset-bottom,0px)+5.25rem)] w-auto max-w-md translate-x-0 rounded-full shadow-lg sm:inset-x-auto sm:right-6 sm:bottom-[calc(env(safe-area-inset-bottom,0px)+5.75rem)]"
+        onClick={() => handleNavigate("/host/create-event", {
+        requiresAuth: true
+      })}
+      >
         <Send className="h-4 w-4 mr-2" /> Host an experience
       </Button>
 

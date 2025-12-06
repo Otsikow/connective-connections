@@ -16,8 +16,8 @@ export const TopBar = () => {
     "relative overflow-hidden rounded-full border border-border bg-card/50 px-5 text-sm font-semibold text-foreground/90 shadow-[var(--shadow-soft)] transition-colors duration-300 hover:border-border hover:bg-card/80 focus-visible:ring-2 focus-visible:ring-offset-1";
 
   return (
-    <header className="sticky top-0 z-[60] border-b border-border/50 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/65">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
+    <header className="sticky top-0 z-[60] border-b border-border/50 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+      <div className="mx-auto flex min-h-[3.25rem] w-full max-w-6xl items-center justify-between px-3 py-2 sm:h-16 sm:px-6 sm:py-0">
         
         {/* Logo */}
         <Link
@@ -32,13 +32,13 @@ export const TopBar = () => {
         </Link>
 
         {/* Right Side Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {shouldShowAuthButtons ? (
             <>
               <Button
                 variant="outline"
                 size="sm"
-                className={cn(navButtonClass)}
+                className={cn(navButtonClass, "px-3 text-xs sm:px-5 sm:text-sm")}
                 onClick={() => navigate("/login")}
                 aria-current={location.pathname === "/login" ? "page" : undefined}
               >
@@ -47,7 +47,7 @@ export const TopBar = () => {
 
               <Button
                 size="sm"
-                className="rounded-full bg-gradient-to-r from-[#FF8A3C] to-[#FFB377] px-5 font-semibold text-white shadow-lg shadow-[rgba(255,138,60,0.3)] transition-all hover:shadow-[rgba(255,138,60,0.5)]"
+                className="rounded-full bg-gradient-to-r from-[#FF8A3C] to-[#FFB377] px-4 text-sm font-semibold text-white shadow-lg shadow-[rgba(255,138,60,0.3)] transition-all hover:shadow-[rgba(255,138,60,0.5)] sm:px-5 sm:text-base"
                 onClick={() => navigate("/signup")}
                 aria-current={location.pathname === "/signup" ? "page" : undefined}
               >
@@ -58,7 +58,7 @@ export const TopBar = () => {
             <Button
               variant="outline"
               size="sm"
-              className={cn(navButtonClass)}
+              className={cn(navButtonClass, "px-3 text-xs sm:px-5 sm:text-sm")}
               onClick={signOut}
             >
               Sign Out
@@ -66,7 +66,7 @@ export const TopBar = () => {
           )}
 
           {/* Theme Switch */}
-          <ThemeToggle className="relative z-10" />
+          <ThemeToggle className="relative z-10 hidden sm:inline-flex" />
         </div>
       </div>
     </header>
