@@ -114,8 +114,7 @@ Live Your Best Life.<br className="hidden sm:block" />
         }} className="mt-4 sm:mt-6 md:mt-8 text-base sm:text-xl md:text-2xl text-white/90 max-w-3xl mx-auto
                        font-medium leading-relaxed
                        drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]
-                       [text-shadow:0_1px_8px_rgba(0,0,0,0.5)]">Find Genuine Friends.
-Live Your Best Life.</motion.p>
+                       [text-shadow:0_1px_8px_rgba(0,0,0,0.5)]">Where Shared Interests Turn Into Real Friendships.</motion.p>
 
           {/* CTA Buttons */}
           <motion.div initial={{
