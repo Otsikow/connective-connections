@@ -13,6 +13,7 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { generateAvatarUrl } from "@/lib/avatar";
 import { cn } from "@/lib/utils";
 import { ParallaxStrip } from "@/components/ParallaxStrip";
+import HeroSection from "@/components/HeroSection";
 
 /* ------------------------------------------------------------ */
 /* UTILITIES */
@@ -225,43 +226,12 @@ const Home = () => {
   /* ------------------------------------------------------------ */
 
   return <div className="relative min-h-screen overflow-hidden bg-background pb-28">
+      {/* Full-Width Video Hero Section */}
+      <HeroSection />
+
       <ParallaxStrip />
 
       <div className="relative mx-auto w-full max-w-5xl space-y-10 px-4 py-8">
-
-        {/* HERO */}
-        <section className="rounded-3xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
-          <Badge className="rounded-full bg-primary/10 text-primary px-3 py-1">
-            Experience connections differently
-          </Badge>
-
-          <h2 className="mt-4 text-4xl md:text-5xl font-bold text-foreground">Find genuine friends & real experiences</h2>
-
-          <p className="mt-2 text-muted-foreground">
-            Connective helps you find people you vibe with, join curated events,
-            and chat naturally.
-          </p>
-
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Button onClick={() => navigate("/signup")}>
-              Get started
-            </Button>
-
-            <Button variant="outline" className="rounded-full" onClick={() => navigate("/splash")}>
-              <PlayCircle className="h-4 w-4 mr-2" /> Watch demo
-            </Button>
-
-            <Button variant="secondary" onClick={() => navigate("/real-life-engine")}>
-              <Sparkles className="h-4 w-4 mr-2" /> Real-life first AI
-            </Button>
-
-            <Button variant="ghost" onClick={() => handleNavigate("/community", {
-            requiresAuth: true
-          })}>
-              <Users className="h-4 w-4 mr-2" /> Explore community
-            </Button>
-          </div>
-        </section>
 
         {/* FEATURES */}
         <section>
