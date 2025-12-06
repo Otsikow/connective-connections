@@ -266,8 +266,8 @@ const Home = () => {
         {/* FEATURES */}
         <section>
           <Tabs value={activeFeature} onValueChange={setActiveFeature}>
-            <TabsList className="grid grid-cols-4 mb-4 rounded-full bg-muted p-1">
-              {features.map(f => <TabsTrigger key={f.value} value={f.value} className="rounded-full text-sm data-[state=active]:bg-background data-[state=active]:text-foreground">
+            <TabsList className="mb-4 grid grid-cols-2 gap-2 rounded-2xl bg-muted p-2 sm:grid-cols-3 lg:grid-cols-4">
+              {features.map(f => <TabsTrigger key={f.value} value={f.value} className="w-full rounded-full text-sm data-[state=active]:bg-background data-[state=active]:text-foreground">
                   {f.title.split(" ")[0]}
                 </TabsTrigger>)}
             </TabsList>
