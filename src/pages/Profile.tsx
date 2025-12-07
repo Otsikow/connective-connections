@@ -161,8 +161,15 @@ export default function Profile() {
     subscriptionExpires,
     openUpgrade,
     signOut,
+    refresh: refreshSubscription,
     fullName: subscriptionFullName,
     email,
+    phoneNumber: subscriptionPhoneNumber,
+    country: subscriptionCountry,
+    headline: subscriptionHeadline,
+    location: subscriptionLocation,
+    website: subscriptionWebsite,
+    bio: subscriptionBio,
     isVerified,
   } = useSubscription();
 
@@ -181,6 +188,8 @@ export default function Profile() {
     location: "",
     website: "",
     bio: "",
+    phoneNumber: "",
+    country: "",
   });
   const [focusAreas, setFocusAreas] = useState<string[]>([PROFILE_FOCUS_OPTIONS[0], PROFILE_FOCUS_OPTIONS[2]]);
   const [notificationPrefs, setNotificationPrefs] = useState<Record<NotificationKey, boolean>>({
@@ -201,6 +210,30 @@ export default function Profile() {
     return `${origin}/profile?user=${userId ?? "me"}`;
   }, [userId]);
 
+  // Load profile data from database (subscription context) first, then fallback to localStorage
+  useEffect(() => {
+    // First load from database via subscription context
+    setProfileForm((previous) => ({
+      ...previous,
+      fullName: subscriptionFullName ?? previous.fullName ?? "",
+      headline: subscriptionHeadline ?? previous.headline ?? "",
+      location: subscriptionLocation ?? previous.location ?? "",
+      website: subscriptionWebsite ?? previous.website ?? "",
+      bio: subscriptionBio ?? previous.bio ?? "",
+      phoneNumber: subscriptionPhoneNumber ?? previous.phoneNumber ?? "",
+      country: subscriptionCountry ?? previous.country ?? "",
+    }));
+  }, [
+    subscriptionFullName,
+    subscriptionHeadline,
+    subscriptionLocation,
+    subscriptionWebsite,
+    subscriptionBio,
+    subscriptionPhoneNumber,
+    subscriptionCountry,
+  ]);
+
+  // Load localStorage preferences (for non-database fields like focusAreas, notifications, etc.)
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -209,15 +242,10 @@ export default function Profile() {
 
     try {
       const parsed = JSON.parse(storedProfile) as Partial<{
-        profileForm: typeof profileForm;
         focusAreas: string[];
         notificationPrefs: Record<NotificationKey, boolean>;
         twoFactorEnabled: boolean;
       }>;
-
-      if (parsed.profileForm) {
-        setProfileForm((previous) => ({ ...previous, ...parsed.profileForm }));
-      }
 
       if (Array.isArray(parsed.focusAreas) && parsed.focusAreas.length) {
         setFocusAreas(parsed.focusAreas);
@@ -235,6 +263,7 @@ export default function Profile() {
     }
   }, []);
 
+  // Fallback to extract name from email if no name is set
   useEffect(() => {
     const fallbackName =
       subscriptionFullName?.trim() || (email ? email.split("@")[0] : "");
@@ -260,6 +289,27 @@ export default function Profile() {
   const displayHeadline =
     profileForm.headline.trim() || "Add a headline to let people know what you do.";
   const displayLocation = profileForm.location.trim() || "Add your location";
+
+  // Calculate profile completion percentage based on filled fields
+  const profileCompletionPercentage = useMemo(() => {
+    const fields = [
+      { value: profileForm.fullName?.trim(), weight: 15 },
+      { value: email?.trim(), weight: 15 },
+      { value: profileForm.phoneNumber?.trim(), weight: 15 },
+      { value: profileForm.country?.trim(), weight: 10 },
+      { value: profileForm.headline?.trim(), weight: 10 },
+      { value: profileForm.location?.trim(), weight: 10 },
+      { value: profileForm.website?.trim(), weight: 5 },
+      { value: profileForm.bio?.trim(), weight: 10 },
+      { value: focusAreas.length > 0, weight: 10 },
+    ];
+
+    const completedWeight = fields.reduce((sum, field) => {
+      return sum + (field.value ? field.weight : 0);
+    }, 0);
+
+    return completedWeight;
+  }, [profileForm, email, focusAreas]);
 
   const badge = getBadgeForTier(tier);
   const connectionLimit = PLAN_LIMITS[tier].connections;
@@ -435,6 +485,12 @@ export default function Profile() {
           .update({
             full_name: profileForm.fullName || null,
             email: email ?? null,
+            phone_number: profileForm.phoneNumber || null,
+            country: profileForm.country || null,
+            headline: profileForm.headline || null,
+            location: profileForm.location || null,
+            website: profileForm.website || null,
+            bio: profileForm.bio || null,
             updated_at: new Date().toISOString(),
           })
           .eq("id", userId);
@@ -442,13 +498,16 @@ export default function Profile() {
         if (error) {
           throw error;
         }
+
+        // Refresh the subscription context to get the latest data
+        await refreshSubscription();
       }
 
       persistProfileState();
       toast({
         title: "Profile updated",
         description: isSupabaseConfigured
-          ? "Your public details are now saved to your account."
+          ? "Your profile has been permanently saved to your account."
           : "Saved to this device. Sign in with the live app to sync your profile.",
       });
     } catch (error) {
@@ -468,7 +527,8 @@ export default function Profile() {
     email,
     isProfileSaving,
     persistProfileState,
-    profileForm.fullName,
+    profileForm,
+    refreshSubscription,
     toast,
     userId,
   ]);
@@ -741,6 +801,22 @@ export default function Profile() {
                     <span className="text-sm text-muted-foreground">Select focus areas below to highlight your expertise.</span>
                   )}
                 </div>
+
+                {/* Profile Completion Progress */}
+                <div className="mt-4 space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-medium">Profile Completion</span>
+                    <span className={`font-semibold ${profileCompletionPercentage === 100 ? 'text-emerald-500' : profileCompletionPercentage >= 70 ? 'text-amber-500' : 'text-muted-foreground'}`}>
+                      {profileCompletionPercentage}%
+                    </span>
+                  </div>
+                  <Progress value={profileCompletionPercentage} className="h-2" />
+                  {profileCompletionPercentage < 100 && (
+                    <p className="text-xs text-muted-foreground">
+                      Complete your profile to unlock better matches and visibility.
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -818,6 +894,27 @@ export default function Profile() {
                       value={profileForm.headline}
                       onChange={handleProfileChange("headline")}
                       placeholder="What should people know about you?"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="phoneNumber">Phone Number</Label>
+                    <Input
+                      id="phoneNumber"
+                      value={profileForm.phoneNumber}
+                      onChange={handleProfileChange("phoneNumber")}
+                      placeholder="+1234567890"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="country">Country</Label>
+                    <Input
+                      id="country"
+                      value={profileForm.country}
+                      onChange={handleProfileChange("country")}
+                      placeholder="Enter your country"
                     />
                   </div>
                 </div>

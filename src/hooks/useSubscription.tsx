@@ -40,6 +40,12 @@ type SubscriptionContextValue = {
   userId: string | null;
   fullName: string | null;
   email: string | null;
+  phoneNumber: string | null;
+  country: string | null;
+  headline: string | null;
+  location: string | null;
+  website: string | null;
+  bio: string | null;
   isVerified: boolean;
   tier: SubscriptionTier;
   monthlyConnections: number;
@@ -71,18 +77,29 @@ const defaultProfileState = {
   subscriptionExpires: null as Date | null,
   fullName: null as string | null,
   email: null as string | null,
+  phoneNumber: null as string | null,
+  country: null as string | null,
+  headline: null as string | null,
+  location: null as string | null,
+  website: null as string | null,
+  bio: null as string | null,
   isVerified: false,
 };
 
 type ProfileUsage = Pick<
   Tables<"profiles">,
-  |
-    "subscription_tier"
-    | "monthly_connections"
-    | "monthly_event_joins"
-    | "subscription_expires"
-    | "full_name"
-    | "email"
+  | "subscription_tier"
+  | "monthly_connections"
+  | "monthly_event_joins"
+  | "subscription_expires"
+  | "full_name"
+  | "email"
+  | "phone_number"
+  | "country"
+  | "headline"
+  | "location"
+  | "website"
+  | "bio"
 >;
 
 const normalizeProfileUsage = (profile?: ProfileUsage | null) => ({
@@ -94,6 +111,12 @@ const normalizeProfileUsage = (profile?: ProfileUsage | null) => ({
     : null,
   fullName: profile?.full_name ?? null,
   email: profile?.email ?? null,
+  phoneNumber: profile?.phone_number ?? null,
+  country: profile?.country ?? null,
+  headline: profile?.headline ?? null,
+  location: profile?.location ?? null,
+  website: profile?.website ?? null,
+  bio: profile?.bio ?? null,
 });
 
 export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
@@ -156,6 +179,12 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       subscriptionExpires: null,
       fullName: session.fullName,
       email: session.email,
+      phoneNumber: null,
+      country: null,
+      headline: null,
+      location: null,
+      website: null,
+      bio: null,
       isVerified: true,
       isLoading: false,
     });
@@ -231,7 +260,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
           const { data: profile, error } = await supabase
             .from("profiles")
             .select(
-              "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires, full_name, email",
+              "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires, full_name, email, phone_number, country, headline, location, website, bio",
             )
             .eq("id", id)
             .maybeSingle();
@@ -256,7 +285,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
                 .from("profiles")
                 .insert([{ id }])
                 .select(
-                  "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires, full_name, email",
+                  "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires, full_name, email, phone_number, country, headline, location, website, bio",
                 )
                 .maybeSingle();
 
@@ -412,7 +441,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
         })
         .eq("id", userId)
         .select(
-          "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires, full_name, email",
+          "subscription_tier, monthly_connections, monthly_event_joins, subscription_expires, full_name, email, phone_number, country, headline, location, website, bio",
         )
         .maybeSingle();
 
@@ -465,6 +494,12 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       userId,
       fullName: state.fullName,
       email: state.email,
+      phoneNumber: state.phoneNumber,
+      country: state.country,
+      headline: state.headline,
+      location: state.location,
+      website: state.website,
+      bio: state.bio,
       tier: state.tier,
       monthlyConnections: state.monthlyConnections,
       monthlyEventJoins: state.monthlyEventJoins,
@@ -487,6 +522,12 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       userId,
       state.fullName,
       state.email,
+      state.phoneNumber,
+      state.country,
+      state.headline,
+      state.location,
+      state.website,
+      state.bio,
       state.monthlyConnections,
       state.monthlyEventJoins,
       state.subscriptionExpires,
