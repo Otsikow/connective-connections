@@ -46,6 +46,9 @@ import AICoach from "./pages/AICoach";
 
 import AIAutoMeetups from "./pages/AIAutoMeetups"; // <-- Correct final version
 
+import Programmes from "./pages/Programmes";
+import ProgrammeDetail from "./pages/ProgrammeDetail";
+
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback";
 
@@ -87,6 +90,10 @@ const AnimatedRoutes = () => {
         {/* Social */}
         <Route path="/matches" element={<PageTransition><Matches /></PageTransition>} />
         <Route path="/friend-finder" element={<PageTransition><FriendFinder /></PageTransition>} />
+
+        {/* Programmes */}
+        <Route path="/programmes" element={<PageTransition><Programmes /></PageTransition>} />
+        <Route path="/programmes/:universityId" element={<PageTransition><ProgrammeDetail /></PageTransition>} />
 
         {/* Messaging */}
         <Route path="/messages" element={<PageTransition><Messages /></PageTransition>} />
