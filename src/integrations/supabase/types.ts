@@ -219,6 +219,45 @@ export type Database = {
         }
         Relationships: []
       }
+      programmes: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          type: Database["public"]["Enums"]["programme_type"]
+          duration: string | null
+          image_url: string | null
+          is_published: boolean
+          creator_id: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          type?: Database["public"]["Enums"]["programme_type"]
+          duration?: string | null
+          image_url?: string | null
+          is_published?: boolean
+          creator_id: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          type?: Database["public"]["Enums"]["programme_type"]
+          duration?: string | null
+          image_url?: string | null
+          is_published?: boolean
+          creator_id?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -234,6 +273,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      programme_type: "Bachelor" | "Master" | "PhD" | "Certificate" | "Diploma"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -362,6 +402,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      programme_type: ["Bachelor", "Master", "PhD", "Certificate", "Diploma"],
     },
   },
 } as const
