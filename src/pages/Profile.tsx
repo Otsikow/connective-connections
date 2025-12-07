@@ -480,7 +480,7 @@ export default function Profile() {
     setIsProfileSaving(true);
     try {
       if (isSupabaseConfigured && userId) {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from("profiles")
           .update({
             full_name: profileForm.fullName || null,
@@ -493,10 +493,17 @@ export default function Profile() {
             bio: profileForm.bio || null,
             updated_at: new Date().toISOString(),
           })
-          .eq("id", userId);
+          .eq("id", userId)
+          .select()
+          .single();
 
         if (error) {
+          console.error("profile:save:database", { error, userId });
           throw error;
+        }
+
+        if (!data) {
+          console.warn("profile:save:no-data-returned", { userId });
         }
 
         // Refresh the subscription context to get the latest data
@@ -512,12 +519,19 @@ export default function Profile() {
       });
     } catch (error) {
       console.error("profile:save", error);
+      
+      // Extract meaningful error message
+      let errorMessage = "Please try again. If the issue continues, contact support.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === "object" && error !== null) {
+        const errorObj = error as { message?: string; details?: string; hint?: string };
+        errorMessage = errorObj.message || errorObj.details || errorObj.hint || errorMessage;
+      }
+      
       toast({
         title: "Unable to save profile",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Please try again. If the issue continues, contact support.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
