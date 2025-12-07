@@ -119,37 +119,55 @@ export type Database = {
       }
       profiles: {
         Row: {
+          bio: string | null
+          country: string | null
           created_at: string
           email: string | null
           full_name: string | null
+          headline: string | null
           id: string
+          location: string | null
           monthly_connections: number
           monthly_event_joins: number
+          phone_number: string | null
           subscription_expires: string | null
           subscription_tier: string
           updated_at: string
+          website: string | null
         }
         Insert: {
+          bio?: string | null
+          country?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
+          headline?: string | null
           id: string
+          location?: string | null
           monthly_connections?: number
           monthly_event_joins?: number
+          phone_number?: string | null
           subscription_expires?: string | null
           subscription_tier?: string
           updated_at?: string
+          website?: string | null
         }
         Update: {
+          bio?: string | null
+          country?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
+          headline?: string | null
           id?: string
+          location?: string | null
           monthly_connections?: number
           monthly_event_joins?: number
+          phone_number?: string | null
           subscription_expires?: string | null
           subscription_tier?: string
           updated_at?: string
+          website?: string | null
         }
         Relationships: []
       }
