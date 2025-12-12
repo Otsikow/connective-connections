@@ -15,6 +15,7 @@ import {
 } from "@/integrations/supabase/client";
 import { Separator } from "@/components/ui/separator";
 import BackButton from "@/components/BackButton";
+import { Logo } from "@/components/Logo";
 import { hasCompletedOnboarding } from "@/lib/onboarding";
 import { activateDemoSession } from "@/lib/demoSession";
 
@@ -265,19 +266,15 @@ const Login = () => {
               </BackButton>
             </div>
 
-            <div className="mt-4">
+            <div className="mt-4 flex flex-col items-center text-center">
+              <Logo size="md" className="mb-6 items-center" />
               <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
-                Sign in to your account
+                Welcome Back
               </h2>
               <p className="mt-1 text-sm text-muted-foreground dark:text-slate-400">
-                New to Connective?{" "}
-                <Link
-                  to="/signup"
-                  className="font-medium text-[hsl(var(--highlight-text))] hover:underline"
-                >
-                  Create an account
-                </Link>
+                Sign in to continue building Ghana's future
               </p>
+              <div className="mt-4 h-1 w-full rounded-full bg-gradient-to-r from-[#FF6B6B] to-[#4ECDC4]" />
             </div>
 
             <div className="mt-6 grid gap-3">
@@ -377,6 +374,16 @@ const Login = () => {
                 {isLoading ? "Signing in..." : "Sign in"}
               </Button>
             </form>
+
+            <p className="mt-6 text-center text-sm text-muted-foreground dark:text-slate-400">
+              Don't have an account?{" "}
+              <Link
+                to="/signup"
+                className="font-medium text-[hsl(var(--highlight-text))] hover:underline"
+              >
+                Create account
+              </Link>
+            </p>
           </div>
         </motion.section>
       </div>
