@@ -56,9 +56,10 @@ CREATE POLICY "Creator can delete own groups" ON groups
   USING (auth.uid() = creator_id);
 
 -- RLS Policies for group_members
--- Anyone can view group members
-CREATE POLICY "Anyone can view group members" ON group_members
+-- Authenticated users can view group members
+CREATE POLICY "Authenticated users can view group members" ON group_members
   FOR SELECT
+  TO authenticated
   USING (true);
 
 -- Authenticated users can join groups
