@@ -55,9 +55,10 @@ CREATE TABLE IF NOT EXISTS public.group_members (
 ALTER TABLE public.group_members ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policies for group_members
-CREATE POLICY "Group members are viewable by everyone"
+CREATE POLICY "Authenticated users can view group members"
   ON public.group_members
   FOR SELECT
+  TO authenticated
   USING (true);
 
 CREATE POLICY "Authenticated users can join groups"
